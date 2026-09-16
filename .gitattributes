@@ -1,0 +1,15 @@
+* text=auto
+
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
+*.woff  binary
+*.woff2 binary
+
+# 락 파일은 diff에서 접어 둡니다
+package-lock.json  linguist-generated=true -diff
+pnpm-lock.yaml     linguist-generated=true -diff
+yarn.lock          linguist-generated=true -diff
+uv.lock            linguist-generated=true -diff
+poetry.lock        linguist-generated=true -diff

@@ -1,0 +1,57 @@
+# 환경 변수 / 비밀정보  ── 절대 커밋하지 않습니다
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+secrets/
+credentials*.json
+
+# 검사 대상으로 업로드된 자료 (신뢰할 수 없는 입력)
+/uploads/
+/samples/**/raw/
+/scan-workspace/
+
+# Node
+node_modules/
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# 데이터베이스 / 로그
+*.sqlite
+*.sqlite3
+*.db
+logs/
+*.log
+
+# 편집기 / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# 커버리지 / 임시
+coverage/
+.coverage
+htmlcov/
+tmp/
+.cache/
