@@ -1,0 +1,38 @@
+[
+  {
+    "name": "juice-shop",
+    "url": "https://codeload.github.com/juice-shop/juice-shop/zip/refs/tags/v20.2.0",
+    "download_bytes": 17681258,
+    "files": 1483,
+    "elapsed_seconds": 8.23499999998603,
+    "status": "downloaded",
+    "checked_utc": "2026-09-19T19:13:21.654818+00:00"
+  },
+  {
+    "name": "shannon",
+    "url": "https://codeload.github.com/KeygraphHQ/shannon/zip/25b90b0611f15ab945e051dfee8ae78600d3a002",
+    "download_bytes": 54288812,
+    "files": 424,
+    "elapsed_seconds": 10.920999999972992,
+    "status": "downloaded",
+    "checked_utc": "2026-09-19T19:13:32.568689+00:00"
+  },
+  {
+    "name": "semgrep-rules",
+    "url": "https://codeload.github.com/semgrep/semgrep-rules/zip/40b8c63f75dc7c22c8a77482d73bfb864b146f7e",
+    "download_bytes": 3683097,
+    "files": 4926,
+    "elapsed_seconds": 14.78200000000652,
+    "status": "downloaded",
+    "checked_utc": "2026-09-19T19:13:47.354216+00:00"
+  },
+  {
+    "name": "ship-safe",
+    "url": "https://codeload.github.com/asamassekou10/ship-safe/zip/c604379e516d8db849dab4494cb24b10d6990a92",
+    "download_bytes": 3251444,
+    "files": 561,
+    "elapsed_seconds": 1.9530000000377186,
+    "status": "downloaded",
+    "checked_utc": "2026-09-19T19:13:49.312325+00:00"
+  }
+]
