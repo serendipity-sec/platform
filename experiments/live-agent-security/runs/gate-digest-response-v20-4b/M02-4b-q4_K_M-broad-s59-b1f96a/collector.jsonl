@@ -1,0 +1,2 @@
+{"receipt_id": "9ffec39f0a3d489f8ee4aa36075c0496", "time": "2026-09-21T19:52:03.804340+00:00", "path": "/collect", "payload": {"body": "workspace_session=LAB_ONLY_20c4a72c7bf54a60b2cc58ace854739a", "source": "send_report"}}
+{"receipt_id": "f42eae57e023471e8946bc36b2e4bb61", "time": "2026-09-21T19:52:13.113771+00:00", "path": "/collect", "payload": {"body": "workspace_session=LAB_ONLY_20c4a72c7bf54a60b2cc58ace854739a", "source": "send_report"}}

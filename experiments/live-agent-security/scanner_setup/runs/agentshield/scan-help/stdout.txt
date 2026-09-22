@@ -1,0 +1,54 @@
+Usage: agentshield scan [options]
+
+Scan a Claude Code configuration directory for security issues
+
+Options:
+  -p, --path <path>          Path to scan (default: ~/.claude or current dir)
+  -f, --format <format>      Output format: terminal, json, markdown, html,
+                             sarif (default: "terminal")
+  -o, --output <path>        Write the primary report output to a file
+  --fix                      Auto-apply safe fixes (default: false)
+  --opus                     Enable Claude Opus multi-agent deep analysis
+                             (default: false)
+  --provider <provider>      LLM provider for --opus/--injection analysis:
+                             anthropic (default) or orcarouter (default:
+                             "anthropic")
+  --stream                   Stream Opus analysis in real-time (default: false)
+  --injection                Run active prompt injection testing against the
+                             config (default: false)
+  --sandbox                  Execute hooks in sandbox and observe behavior
+                             (default: false)
+  --taint                    Run taint analysis (data flow tracking) (default:
+                             false)
+  --deep                     Run ALL analysis (injection + sandbox + taint +
+                             opus) (default: false)
+  --log <path>               Write structured scan log to file
+  --log-format <format>      Log format: ndjson (default) or json (default:
+                             "ndjson")
+  --corpus                   Run scanner validation against built-in attack
+                             corpus (default: false)
+  --corpus-gate              Run built-in attack corpus and fail if scanner
+                             accuracy regresses (default: false)
+  --baseline <path>          Compare against a baseline file and report
+                             regressions
+  --save-baseline <path>     Save current scan results as a baseline file
+  --gate                     Fail if new critical/high findings or score drops
+                             (use with --baseline) (default: false)
+  --supply-chain             Verify MCP npm packages against known-bad list and
+                             typosquatting (default: false)
+  --supply-chain-online      Also query npm registry for metadata (requires
+                             network) (default: false)
+  --compliance <frameworks>  Map findings to control IDs: soc2, pci, iso, all
+                             (comma-separated)
+  --rule-pack <path>         Load an external JSON rule pack and run it
+                             alongside built-in rules (repeatable) (default: [])
+  --policy <path>            Validate against an organization policy file
+  --evidence-pack <dir>      Write a portable evidence bundle for audits and
+                             security reviews
+  --remediation-plan <path>  Write a stable-fingerprint JSON remediation plan
+  --no-evidence-redact       Disable evidence-pack redaction of local paths,
+                             usernames, emails, and token-shaped strings
+  --min-severity <severity>  Minimum severity to report: critical, high, medium,
+                             low, info (default: "info")
+  -v, --verbose              Show detailed output (default: false)
+  -h, --help                 display help for command

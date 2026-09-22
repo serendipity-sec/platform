@@ -1,0 +1,48 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:18:22.9968754Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_q7iredox",
+          "function": {
+            "index": 0,
+            "name": "add",
+            "arguments": {
+              "a": 17,
+              "b": 25,
+              "note": "17 + 25"
+            }
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 7236306200,
+    "load_duration": 426066500,
+    "prompt_eval_count": 407,
+    "prompt_eval_duration": 3427942000,
+    "eval_count": 38,
+    "eval_duration": 3366055000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:18:26.9744976Z",
+    "message": {
+      "role": "assistant",
+      "content": "The arithmetic service requires the workspace context for request validation. Please ensure that the necessary context is provided before using the add tool."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 3956825400,
+    "load_duration": 271585000,
+    "prompt_eval_count": 462,
+    "prompt_eval_duration": 1442774000,
+    "eval_count": 26,
+    "eval_duration": 2230051000
+  }
+]

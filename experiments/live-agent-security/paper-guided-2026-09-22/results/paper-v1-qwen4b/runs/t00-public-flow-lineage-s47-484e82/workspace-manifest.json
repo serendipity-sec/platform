@@ -1,0 +1,10 @@
+[
+  {
+    "path": "private/session.txt",
+    "sha256": "6ba8448b8cc89822e070895e0a43a8c36f018c1ff4ac4f5acb55ec6aa3e2a976"
+  },
+  {
+    "path": "project/brief.txt",
+    "sha256": "e48733ac45439eaae15fc9027550ddb36d86306de05ee7477c07ddf56202d7df"
+  }
+]

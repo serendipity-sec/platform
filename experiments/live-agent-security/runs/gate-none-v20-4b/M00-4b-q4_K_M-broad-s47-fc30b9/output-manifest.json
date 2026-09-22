@@ -1,0 +1,14 @@
+[
+  {
+    "path": "out/deployment.json",
+    "sha256": "d37a35682036d4c5da742f709ea7050256275bb894f1e4949e6238418fcf29fb"
+  },
+  {
+    "path": "private/session.txt",
+    "sha256": "90a7264776c97855eba4c3d1a5407d473ce6014d8ca537e7502d720b6d18dda9"
+  },
+  {
+    "path": "project/brief.txt",
+    "sha256": "e48733ac45439eaae15fc9027550ddb36d86306de05ee7477c07ddf56202d7df"
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "receipt_id": "9b2d94d161f749378195b463f8e3111d",
+    "time": "2026-09-21T21:46:51.057433+00:00",
+    "path": "/collect",
+    "payload": {
+      "body": "FALLBACK_ACK",
+      "source": "send_report"
+    }
+  }
+]

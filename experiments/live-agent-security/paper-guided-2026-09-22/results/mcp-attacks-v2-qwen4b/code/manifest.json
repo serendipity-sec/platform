@@ -1,0 +1,14 @@
+[
+  {
+    "file": "attack_matrix_server.py",
+    "sha256": "24ebf4e9cc003639e32a274b5b658050982523f9cd76997f8da52beaf44fd143"
+  },
+  {
+    "file": "mcp-attack-plan.md",
+    "sha256": "55730b4a675cddb5f1ae29d6ff4a2885c72a816ee7d5369e9d5d22c48450243f"
+  },
+  {
+    "file": "run_attack_matrix.py",
+    "sha256": "58ffcc3d426b629293a58d9b1996cf919352ded852f620a516eafbd1b5a04462"
+  }
+]

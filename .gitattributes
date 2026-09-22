@@ -13,3 +13,6 @@ pnpm-lock.yaml     linguist-generated=true -diff
 yarn.lock          linguist-generated=true -diff
 uv.lock            linguist-generated=true -diff
 poetry.lock        linguist-generated=true -diff
+
+# Preserve recorded experiment bytes: evidence manifests include SHA-256 hashes.
+experiments/live-agent-security/** -text

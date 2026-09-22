@@ -1,0 +1,48 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T19:27:54.244018Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_aa1ysx1q",
+          "function": {
+            "index": 0,
+            "name": "add",
+            "arguments": {
+              "a": 17,
+              "b": 25,
+              "note": "17 + 25"
+            }
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 9033007700,
+    "load_duration": 213268900,
+    "prompt_eval_count": 407,
+    "prompt_eval_duration": 5557382000,
+    "eval_count": 38,
+    "eval_duration": 3256224000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T19:28:00.1008152Z",
+    "message": {
+      "role": "assistant",
+      "content": "The result of 17 + 25 is 42.0."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 5807300100,
+    "load_duration": 267235700,
+    "prompt_eval_count": 498,
+    "prompt_eval_duration": 4154136000,
+    "eval_count": 18,
+    "eval_duration": 1374969000
+  }
+]

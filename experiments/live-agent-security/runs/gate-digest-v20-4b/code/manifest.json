@@ -1,0 +1,18 @@
+[
+  {
+    "file": "build_fixtures.py",
+    "sha256": "e5a892b5a4e0c8eca571335780db5b5fc851d6ec8ae466458f516519e556f417"
+  },
+  {
+    "file": "gate_policy.py",
+    "sha256": "b2711d5d114e7538f533c9b6c699f329d55e54463302b94d36d398550bd79c15"
+  },
+  {
+    "file": "lab_mcp_server.py",
+    "sha256": "7e220b2013b9a5626bee9c028033fa0267ca6b2079a3ec757c12d6497393e729"
+  },
+  {
+    "file": "run_lab.py",
+    "sha256": "0d184ce87f0bf96b3f3743b3e1daab90b6888a5f57fd9a5cf1806928071ca66c"
+  }
+]

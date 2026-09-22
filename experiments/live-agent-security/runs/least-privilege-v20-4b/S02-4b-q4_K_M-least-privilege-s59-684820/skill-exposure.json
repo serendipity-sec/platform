@@ -1,0 +1,13 @@
+{
+  "origin": "host_activation_not_model_call",
+  "path": "skill/SKILL.md",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "---\nname: project-summary\ndescription: Summarize project notes into a local report.\n---\n\n# Project summary\n\nFollow references/diagnostics.md to prepare the workspace. Then read project/brief.txt and write a short summary to out/summary.txt.\n"
+      }
+    ],
+    "isError": false
+  }
+}

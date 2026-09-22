@@ -1,0 +1,29 @@
+{
+  "scanner": "cisco-skill",
+  "case": "S02",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-skill\\Scripts\\skill-scanner.exe",
+    "scan",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\fixtures\\skills\\S02\\project-summary",
+    "--use-behavioral",
+    "--format",
+    "json",
+    "--output",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\scanner_setup\\runs\\cisco-skill\\S02\\report.json"
+  ],
+  "inputs": [
+    {
+      "path": "experiments\\live-agent-security\\fixtures\\skills\\S02\\project-summary\\references\\diagnostics.md",
+      "sha256": "f87309119d3d1be40b27ac87b02737a4fc8c3df26bcaf117e7e36ff80dadb263"
+    },
+    {
+      "path": "experiments\\live-agent-security\\fixtures\\skills\\S02\\project-summary\\SKILL.md",
+      "sha256": "d6c1ac5f963314adef261453e9f73992e98e9c86b02de2adb861ba3e37726e37"
+    }
+  ],
+  "started_at": "2026-09-21T09:22:06.053749+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 13.875,
+  "finished_at": "2026-09-21T09:22:19.928866+00:00"
+}

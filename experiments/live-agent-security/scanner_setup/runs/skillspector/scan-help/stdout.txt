@@ -1,0 +1,124 @@
+                                                                               
+ Usage: skillspector scan [OPTIONS] INPUT_PATH                                 
+                                                                               
+ Scan a skill for security vulnerabilities.                                    
+                                                                               
+ Examples:                                                                     
+                                                                               
+     skillspector scan ./my-skill/                                             
+     skillspector scan ./my-skill/ --format json --output report.json          
+     skillspector scan https://github.com/user/my-skill --no-llm               
+     skillspector scan ./skill-collection/ --recursive                         
+                                                                               
+ Environment variables:                                                        
+                                                                               
+     SKILLSPECTOR_PROVIDER  Active LLM provider: openai | anthropic |          
+                            anthropic_proxy | bedrock | nv_build |             
+                            nv_inference | ollama | azure_openai |             
+                            openai_compatible | claude_cli | codex_cli |       
+                            gemini_cli. Defaults to the NVIDIA path            
+                            (nv_inference, falling back to nv_build in         
+                            OSS builds).                                       
+     SKILLSPECTOR_MODEL     Override the active provider's default             
+                            model (applies to every analyzer slot).            
+     SKILLSPECTOR_LOG_LEVEL DEBUG | INFO | WARNING | ERROR (default WARNING).  
+                                                                               
+ Provider credentials (one of):                                                
+                                                                               
+     OPENAI_API_KEY [+ OPENAI_BASE_URL]   for SKILLSPECTOR_PROVIDER=openai     
+     ANTHROPIC_API_KEY                    for SKILLSPECTOR_PROVIDER=anthropic  
+     ANTHROPIC_PROXY_API_KEY +                                                 
+       ANTHROPIC_PROXY_ENDPOINT_URL       for anthropic_proxy                  
+     AWS_PROFILE (optional) + AWS_REGION  for SKILLSPECTOR_PROVIDER=bedrock    
+                                          (AWS_PROFILE: standard boto3         
+ credential                                                                    
+                                          chain when unset; AWS_REGION         
+ default: us-west-2)                                                           
+     NVIDIA_INFERENCE_KEY                 for the NVIDIA providers             
+     AZURE_OPENAI_API_KEY +                                                    
+       AZURE_OPENAI_ENDPOINT              for azure_openai                     
+     SKILLSPECTOR_COMPAT_API_KEY +                                             
+       SKILLSPECTOR_COMPAT_BASE_URL       for openai_compatible                
+                                                                               
+     ollama uses the local Ollama service. claude_cli, codex_cli, and          
+     gemini_cli use their CLI's existing local authentication session.         
+                                                                               
+┌─ Arguments ─────────────────────────────────────────────────────────────────┐
+│ *    input_path      TEXT  [required]                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌─ Options ───────────────────────────────────────────────────────────────────┐
+│ --format               -f      [terminal|json|markd  Output format.         │
+│                                own|sarif]            [default: terminal]    │
+│ --output               -o      PATH                  Output file path. If   │
+│                                                      not specified, prints  │
+│                                                      to stdout.             │
+│ --no-llm                                             Skip LLM analysis      │
+│                                                      (faster, less          │
+│                                                      accurate). Uses static │
+│                                                      analysis only.         │
+│ --yara-rules-dir               PATH                  Directory containing   │
+│                                                      additional YARA rule   │
+│                                                      files (.yar/.yara) to  │
+│                                                      load alongside         │
+│                                                      built-in rules.        │
+│ --recursive            -r                            Scan immediate         │
+│                                                      subdirectories that    │
+│                                                      each contain a         │
+│                                                      SKILL.md as            │
+│                                                      independent skills.    │
+│ --baseline             -b      PATH                  Baseline file          │
+│                                                      (YAML/JSON) of         │
+│                                                      suppressed findings.   │
+│                                                      Matching findings are  │
+│                                                      dropped before         │
+│                                                      scoring. Generate one  │
+│                                                      with 'skillspector     │
+│                                                      baseline'.             │
+│ --show-suppressed                                    List findings          │
+│                                                      suppressed by the      │
+│                                                      baseline in the report │
+│                                                      (they still do not     │
+│                                                      count toward the risk  │
+│                                                      score).                │
+│ --use-shipped-baseli…                                Apply a baseline       │
+│                                                      shipped at the top     │
+│                                                      level of the scanned   │
+│                                                      skill directory        │
+│                                                      (.skillspector-baseli… │
+│                                                      Off by default: a      │
+│                                                      skill author's         │
+│                                                      baseline can suppress  │
+│                                                      findings in your scan, │
+│                                                      so a discovered        │
+│                                                      baseline is only       │
+│                                                      reported until you opt │
+│                                                      in. Ignored when       │
+│                                                      --baseline is given.   │
+│ --transitive                                         Follow transitive      │
+│                                                      external references    │
+│                                                      after the initial      │
+│                                                      scan.                  │
+│ --transitive-depth             INTEGER               Maximum transitive     │
+│                                                      depth to scan for      │
+│                                                      external references.   │
+│                                                      [default: 1]           │
+│ --transitive-allow-p…          TEXT                  Only scan transitive   │
+│                                                      targets matching at    │
+│                                                      least one canonical    │
+│                                                      prefix. Repeatable.    │
+│ --transitive-deny-pr…          TEXT                  Skip transitive        │
+│                                                      targets matching any   │
+│                                                      canonical prefix.      │
+│                                                      Repeatable.            │
+│ --fail-on-incomplete                                 Exit 1 when relevant   │
+│                                                      analysis is partial or │
+│                                                      incomplete.            │
+│ --verbose              -V                            Show detailed          │
+│                                                      progress.              │
+│ --mcp-registry                                       Scan an MCP Registry   │
+│                                                      payload or URL instead │
+│                                                      of a skill.            │
+│ --help                                               Show this message and  │
+│                                                      exit.                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+

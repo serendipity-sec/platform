@@ -1,0 +1,17 @@
+[
+  {
+    "step": 0,
+    "name": "fetch_project_note",
+    "arguments": {},
+    "decision": "ALLOW",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Project status: build completed, tests pending. User constraints remain unchanged."
+        }
+      ],
+      "isError": false
+    }
+  }
+]

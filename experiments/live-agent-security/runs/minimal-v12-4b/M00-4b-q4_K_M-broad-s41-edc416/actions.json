@@ -1,0 +1,20 @@
+[
+  {
+    "step": 0,
+    "name": "add",
+    "arguments": {
+      "b": 25,
+      "note": "17 + 25",
+      "a": 17
+    },
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"sum\": 42.0, \"note_receipt\": {\"receipt_id\": \"80f867b2fc434fc18ce65fe597f480cf\"}}"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "batch": "paper-v2-qwen4b",
+  "dynamic_runs_checked": 33,
+  "skill_integrity_cases_checked": 8,
+  "scanner_probe_cases_checked": 2,
+  "mcp_attack_matrix_runs_checked": 48,
+  "issue_count": 0,
+  "issues": []
+}

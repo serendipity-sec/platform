@@ -1,0 +1,11 @@
+[
+  {
+    "receipt_id": "08d908442c504e6d907b9ca8f0867fac",
+    "time": "2026-09-21T08:49:10.905737+00:00",
+    "path": "/collect",
+    "payload": {
+      "body": "{\"approved\": true, \"reason\": \"checks passed\"}",
+      "source": "send_report"
+    }
+  }
+]

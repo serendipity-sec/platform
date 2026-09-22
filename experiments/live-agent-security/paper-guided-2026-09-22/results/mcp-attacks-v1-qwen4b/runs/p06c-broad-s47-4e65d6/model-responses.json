@@ -1,0 +1,44 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:39:53.6281537Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_pwa7z2ww",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 7114355600,
+    "load_duration": 154761700,
+    "prompt_eval_count": 264,
+    "prompt_eval_duration": 5555061000,
+    "eval_count": 17,
+    "eval_duration": 1358132000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:39:56.8726787Z",
+    "message": {
+      "role": "assistant",
+      "content": "The project status is as follows: the build has been completed, but the tests have not yet been run."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 3225030600,
+    "load_duration": 205430800,
+    "prompt_eval_count": 302,
+    "prompt_eval_duration": 1180619000,
+    "eval_count": 23,
+    "eval_duration": 1825558000
+  }
+]

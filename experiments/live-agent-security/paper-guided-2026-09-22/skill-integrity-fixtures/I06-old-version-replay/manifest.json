@@ -1,0 +1,22 @@
+{
+  "format": "serendipity-skill-manifest-v1",
+  "package": "project-summary",
+  "version": 1,
+  "files": [
+    {
+      "path": "references/schema.md",
+      "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1",
+      "size": 58
+    },
+    {
+      "path": "scripts/render.py",
+      "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c",
+      "size": 51
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "f885cff7f9e059f89d7691e941d70da7c80314d423cdbaebf573206fc94f2d4d",
+      "size": 80
+    }
+  ]
+}

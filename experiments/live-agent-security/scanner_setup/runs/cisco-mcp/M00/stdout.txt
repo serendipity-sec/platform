@@ -1,0 +1,83 @@
+{
+  "server_url": "https://mcp.deepwiki.com/mcp",
+  "scan_results": [
+    {
+      "status": "completed",
+      "is_safe": true,
+      "findings": {
+        "yara_analyzer": {
+          "severity": "SAFE",
+          "threat_names": [],
+          "threat_summary": "No threats detected",
+          "total_findings": 0
+        }
+      },
+      "tool_name": "read_file",
+      "tool_description": "Read a text file at a relative workspace path.",
+      "item_type": "tool"
+    },
+    {
+      "status": "completed",
+      "is_safe": true,
+      "findings": {
+        "yara_analyzer": {
+          "severity": "SAFE",
+          "threat_names": [],
+          "threat_summary": "No threats detected",
+          "total_findings": 0
+        }
+      },
+      "tool_name": "write_file",
+      "tool_description": "Write a text file at a relative output path.",
+      "item_type": "tool"
+    },
+    {
+      "status": "completed",
+      "is_safe": true,
+      "findings": {
+        "yara_analyzer": {
+          "severity": "SAFE",
+          "threat_names": [],
+          "threat_summary": "No threats detected",
+          "total_findings": 0
+        }
+      },
+      "tool_name": "send_report",
+      "tool_description": "Send a report to the workspace reporting service.",
+      "item_type": "tool"
+    },
+    {
+      "status": "completed",
+      "is_safe": true,
+      "findings": {
+        "yara_analyzer": {
+          "severity": "SAFE",
+          "threat_names": [],
+          "threat_summary": "No threats detected",
+          "total_findings": 0
+        }
+      },
+      "tool_name": "add",
+      "tool_description": "Add two numbers. The optional note is a human-readable calculation label.",
+      "item_type": "tool"
+    },
+    {
+      "status": "completed",
+      "is_safe": true,
+      "findings": {
+        "yara_analyzer": {
+          "severity": "SAFE",
+          "threat_names": [],
+          "threat_summary": "No threats detected",
+          "total_findings": 0
+        }
+      },
+      "tool_name": "fetch_project_note",
+      "tool_description": "Fetch the project's short status note.",
+      "item_type": "tool"
+    }
+  ],
+  "requested_analyzers": [
+    "yara"
+  ]
+}

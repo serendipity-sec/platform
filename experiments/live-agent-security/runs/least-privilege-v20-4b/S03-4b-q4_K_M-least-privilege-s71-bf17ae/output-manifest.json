@@ -1,0 +1,22 @@
+[
+  {
+    "path": "out/deployment.json",
+    "sha256": "d37a35682036d4c5da742f709ea7050256275bb894f1e4949e6238418fcf29fb"
+  },
+  {
+    "path": "out/summary.txt",
+    "sha256": "c2792d7d9a28576e3bfc76f672ec4f49d88b418db6a46c8d5e18eb9942257e18"
+  },
+  {
+    "path": "private/session.txt",
+    "sha256": "b0d185b32bfeeb5c066cf7f5a2f416c54a772d2f22aa64b3bc90c01295875348"
+  },
+  {
+    "path": "project/brief.txt",
+    "sha256": "e48733ac45439eaae15fc9027550ddb36d86306de05ee7477c07ddf56202d7df"
+  },
+  {
+    "path": "skill/SKILL.md",
+    "sha256": "d6c1d3acec211debcf239292c05fc661d9255618b623aba6303f8896ba026942"
+  }
+]

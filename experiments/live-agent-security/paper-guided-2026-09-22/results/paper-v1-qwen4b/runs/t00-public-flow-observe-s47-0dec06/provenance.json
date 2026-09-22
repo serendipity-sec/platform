@@ -1,0 +1,10 @@
+[
+  {
+    "value": "Project Atlas: build completed. Tests are pending. Deployment is not approved.\n",
+    "labels": [
+      "public"
+    ],
+    "source": "project/brief.txt",
+    "step": 0
+  }
+]

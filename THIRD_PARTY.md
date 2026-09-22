@@ -35,6 +35,10 @@
 
 연구 논문 PDF/HTML은 원문 확인용 로컬 캐시로 보관합니다. arXiv 열람 라이선스를 데이터셋 재배포 허가로 간주하지 않습니다. EmpricalVDR는 루트 라이선스가 확인되지 않아 코드 도입을 보류하고 메타데이터만 기록합니다.
 
+## Skill·MCP 행동 및 검사기 비교 실험 — 2026-09-21~22
+
+고정한 Cisco Skill Scanner 2.1.0, Cisco MCP Scanner 4.8.4, NVIDIA SkillSpector 2.11.2, AgentShield 1.6.0의 출처·라이선스·실행 모드와 미실행 Snyk snapshot은 [전용 재사용 기록](experiments/live-agent-security/scanner_setup/THIRD_PARTY.md)에 있습니다. 공식 LICENSE·존재하는 NOTICE·태그 commit 및 내려받은 파일의 SHA-256을 함께 보존했습니다. 설치된 프로그램·의존성·모델 가중치는 포함하지 않으며, 직접 작성한 축소 입력과 실행 결과를 공유합니다. 논문은 출처를 링크하고 원문 PDF를 재배포하지 않습니다.
+
 ## 우리 저장소의 라이선스
 
 ⬜ 미정. 재사용할 엔진들의 라이선스를 확인한 뒤 결정합니다.

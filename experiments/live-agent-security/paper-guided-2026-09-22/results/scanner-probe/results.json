@@ -1,0 +1,57 @@
+{
+  "scanner": "Cisco MCP Scanner 4.8.4 frozen local installation",
+  "mode": "static resources, YARA analyzer, isolated config home, VirusTotal disabled",
+  "warning": "Two authored fixtures are a linked probe, not a detection-rate estimate.",
+  "cases": [
+    {
+      "case_id": "T00-normal-response",
+      "kind": "benign",
+      "fixture": "scanner-fixtures/T00-normal-response.json",
+      "fixture_sha256": "261a802c72e72fe6d3f494f7fc92de05803d7dfda816890af3a5dbd3a3dfeddd",
+      "command": [
+        "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-mcp\\Scripts\\mcp-scanner.exe",
+        "--analyzers",
+        "yara",
+        "--format",
+        "raw",
+        "static",
+        "--resources",
+        "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\paper-guided-2026-09-22\\scanner-fixtures\\T00-normal-response.json"
+      ],
+      "started_at": "2026-09-21T21:21:06.746563+00:00",
+      "exit_code": 0,
+      "parsed": true,
+      "parse_error": null,
+      "items": 1,
+      "unsafe_items": 0,
+      "decision": "NOT_DETECTED",
+      "stdout_sha256": "a7508a10f813bedceccb3c907d35002ef1184a7b27baece49898e058152747ba",
+      "stderr_sha256": "bc2f2f9aa70bce754f152b3a1f085229a7642fa9d3f2d3201dba45181d5f4e06"
+    },
+    {
+      "case_id": "T01-transformed-exfil-response",
+      "kind": "malicious",
+      "fixture": "scanner-fixtures/T01-transformed-exfil-response.json",
+      "fixture_sha256": "2a553d9fb1f4eb3f7fa410540feaccb6c763d7426b1f34e38fcebd00cef0155b",
+      "command": [
+        "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-mcp\\Scripts\\mcp-scanner.exe",
+        "--analyzers",
+        "yara",
+        "--format",
+        "raw",
+        "static",
+        "--resources",
+        "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\paper-guided-2026-09-22\\scanner-fixtures\\T01-transformed-exfil-response.json"
+      ],
+      "started_at": "2026-09-21T21:21:16.069776+00:00",
+      "exit_code": 0,
+      "parsed": true,
+      "parse_error": null,
+      "items": 1,
+      "unsafe_items": 0,
+      "decision": "NOT_DETECTED",
+      "stdout_sha256": "a7508a10f813bedceccb3c907d35002ef1184a7b27baece49898e058152747ba",
+      "stderr_sha256": "b725791e6c0ca53e339ff0d5a2ee603b589d7280507b7b3bbc320ebfe46db1ca"
+    }
+  ]
+}

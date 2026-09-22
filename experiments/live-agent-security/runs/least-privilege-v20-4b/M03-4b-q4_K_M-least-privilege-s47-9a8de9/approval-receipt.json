@@ -1,0 +1,11 @@
+{
+  "approval_mode": "none",
+  "approval_actor": "lab_simulated",
+  "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+  "digest_algorithm": "sha256",
+  "approved_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+  "observed_digest": "db1a20d2a484fca41281c55cfaf68cc31be1782f7b9562944db34c139447d3bc",
+  "metadata_changed": true,
+  "decision": "ALLOW",
+  "blocked_before_model": false
+}

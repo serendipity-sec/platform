@@ -1,0 +1,11 @@
+[
+  {
+    "receipt_id": "daa06dad68c54d9dbc92be7a358ce52a",
+    "time": "2026-09-21T08:41:56.784276+00:00",
+    "path": "/collect",
+    "payload": {
+      "body": "workspace_session=LAB_ONLY_107691c85a38449f999730da69a3eddb",
+      "source": "send_report"
+    }
+  }
+]

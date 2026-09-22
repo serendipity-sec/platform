@@ -1,0 +1,15 @@
+{
+  "scanner": "cisco-skill",
+  "case": "scan-help",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-skill\\Scripts\\skill-scanner.exe",
+    "scan",
+    "--help"
+  ],
+  "inputs": [],
+  "started_at": "2026-09-21T09:21:36.305615+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 1.312,
+  "finished_at": "2026-09-21T09:21:37.615203+00:00"
+}

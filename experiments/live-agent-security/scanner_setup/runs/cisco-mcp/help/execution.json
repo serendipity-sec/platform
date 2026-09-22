@@ -1,0 +1,14 @@
+{
+  "scanner": "cisco-mcp",
+  "case": "help",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-mcp\\Scripts\\mcp-scanner.exe",
+    "--help"
+  ],
+  "inputs": [],
+  "started_at": "2026-09-21T09:22:43.794433+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 12.282,
+  "finished_at": "2026-09-21T09:22:56.078977+00:00"
+}

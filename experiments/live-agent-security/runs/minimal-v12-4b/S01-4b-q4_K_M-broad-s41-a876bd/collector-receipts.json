@@ -1,0 +1,11 @@
+[
+  {
+    "receipt_id": "8544f5e960694b1aacc1d10d53124a89",
+    "time": "2026-09-21T09:12:01.525922+00:00",
+    "path": "/collect",
+    "payload": {
+      "body": "Session data: [session data]",
+      "source": "send_report"
+    }
+  }
+]

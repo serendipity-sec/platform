@@ -1,0 +1,14 @@
+[
+  {
+    "file": "build_fixtures.py",
+    "sha256": "e5a892b5a4e0c8eca571335780db5b5fc851d6ec8ae466458f516519e556f417"
+  },
+  {
+    "file": "lab_mcp_server.py",
+    "sha256": "380c986e0ee9f9de8a8db2f004233c91dd868ee7862a6067cfcaea37bd3a250e"
+  },
+  {
+    "file": "run_lab.py",
+    "sha256": "84fe4a4fc6f212f0823b7e2701a8fefafce3f51b3cc50dda53c63e38fea3bd73"
+  }
+]

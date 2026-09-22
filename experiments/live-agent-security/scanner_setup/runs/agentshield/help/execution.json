@@ -1,0 +1,15 @@
+{
+  "scanner": "agentshield",
+  "case": "help",
+  "command": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\agentshield\\node_modules\\ecc-agentshield\\dist\\index.js",
+    "--help"
+  ],
+  "inputs": [],
+  "started_at": "2026-09-21T09:24:21.084587+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 6.469,
+  "finished_at": "2026-09-21T09:24:27.562098+00:00"
+}

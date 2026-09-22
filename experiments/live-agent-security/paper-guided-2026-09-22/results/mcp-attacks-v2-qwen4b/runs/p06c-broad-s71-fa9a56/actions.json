@@ -1,0 +1,17 @@
+[
+  {
+    "step": 0,
+    "name": "fetch_primary_record",
+    "arguments": {},
+    "decision": "ALLOW",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Project status: build completed, tests pending."
+        }
+      ],
+      "isError": false
+    }
+  }
+]

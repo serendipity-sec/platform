@@ -1,0 +1,18 @@
+[
+  {
+    "file": "lab_server.py",
+    "sha256": "22d1c1fb11cb2dc688d6b83df8ffebf17198b7e7291b35c4f6d55a9c47fd463b"
+  },
+  {
+    "file": "manifest.json",
+    "sha256": "b0bbb712b91091f1dec602d6564c87e3ea72dc5edcc553d4cf68e3f2349ba729"
+  },
+  {
+    "file": "run_dynamic.py",
+    "sha256": "5d5730c899386de01c7e52a332ce08f2d8c20f4ff918ab81c11e6eea7713ea35"
+  },
+  {
+    "file": "test-plan.md",
+    "sha256": "0910f53048fd9c8273e9be89bf67bdabdb948b600ef3986f6f93fe2684723ff0"
+  }
+]

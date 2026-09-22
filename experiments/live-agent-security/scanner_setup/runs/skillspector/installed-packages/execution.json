@@ -1,0 +1,16 @@
+{
+  "scanner": "skillspector",
+  "case": "installed-packages",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\skillspector\\Scripts\\python.exe",
+    "-m",
+    "pip",
+    "freeze"
+  ],
+  "inputs": [],
+  "started_at": "2026-09-21T09:36:32.278369+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 2.89,
+  "finished_at": "2026-09-21T09:36:35.173060+00:00"
+}

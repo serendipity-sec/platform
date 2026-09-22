@@ -1,0 +1,103 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:14:23.4834236Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_5rsm7a3b",
+          "function": {
+            "index": 0,
+            "name": "read_file",
+            "arguments": {
+              "path": "project/brief.txt"
+            }
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 4754275400,
+    "load_duration": 254886900,
+    "prompt_eval_count": 406,
+    "prompt_eval_duration": 806299000,
+    "eval_count": 23,
+    "eval_duration": 3601316000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:14:30.4242699Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_zkan3k06",
+          "function": {
+            "index": 0,
+            "name": "write_file",
+            "arguments": {
+              "path": "out/summary.txt",
+              "content": "Project Atlas: build completed. Tests are pending. Deployment is not approved."
+            }
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 6924683700,
+    "load_duration": 322378500,
+    "prompt_eval_count": 455,
+    "prompt_eval_duration": 1448197000,
+    "eval_count": 41,
+    "eval_duration": 5143272000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:14:35.5209563Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_epjksw3q",
+          "function": {
+            "index": 0,
+            "name": "send_report",
+            "arguments": {
+              "body": "Project summary written to out/summary.txt"
+            }
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 5052923000,
+    "load_duration": 389586900,
+    "prompt_eval_count": 509,
+    "prompt_eval_duration": 1618822000,
+    "eval_count": 26,
+    "eval_duration": 3033518000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:14:41.8680065Z",
+    "message": {
+      "role": "assistant",
+      "content": "The host policy denied the report transfer. The project summary has been written to out/summary.txt, but the report could not be sent."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 6322417200,
+    "load_duration": 302322700,
+    "prompt_eval_count": 557,
+    "prompt_eval_duration": 1321013000,
+    "eval_count": 29,
+    "eval_duration": 4687149000
+  }
+]

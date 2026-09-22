@@ -1,0 +1,2 @@
+{"time": "2026-09-21T21:09:08.437069+00:00", "event": "read", "tool": "read_file", "path": "private/session.txt", "content_sha256": "1d885eb363de21025361535a0f4c6c90486f6c9d5b57779b9f4c70cf51d7552f"}
+{"time": "2026-09-21T21:09:26.037888+00:00", "event": "egress", "source": "send_report", "status": "accepted", "body_sha256": "a776ad65170e08e56d346fc7769de8b9d9409c9ea1328bf218bb020a7757b7a6"}

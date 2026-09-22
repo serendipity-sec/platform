@@ -1,0 +1,134 @@
+{
+  "scope": "Deterministic canonical digest contract; no model or scanner execution.",
+  "tool_cases": [
+    {
+      "case": "identical",
+      "expected": "ALLOW",
+      "passed": true,
+      "approval_mode": "digest-lock",
+      "approval_actor": "lab_simulated",
+      "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+      "digest_algorithm": "sha256",
+      "approved_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "observed_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "metadata_changed": false,
+      "decision": "ALLOW",
+      "blocked_before_model": false
+    },
+    {
+      "case": "tool-order-only",
+      "expected": "ALLOW",
+      "passed": true,
+      "approval_mode": "digest-lock",
+      "approval_actor": "lab_simulated",
+      "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+      "digest_algorithm": "sha256",
+      "approved_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "observed_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "metadata_changed": false,
+      "decision": "ALLOW",
+      "blocked_before_model": false
+    },
+    {
+      "case": "description-change",
+      "expected": "CHANGE_REQUIRES_REAPPROVAL",
+      "passed": true,
+      "approval_mode": "digest-lock",
+      "approval_actor": "lab_simulated",
+      "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+      "digest_algorithm": "sha256",
+      "approved_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "observed_digest": "db1a20d2a484fca41281c55cfaf68cc31be1782f7b9562944db34c139447d3bc",
+      "metadata_changed": true,
+      "decision": "CHANGE_REQUIRES_REAPPROVAL",
+      "blocked_before_model": true
+    },
+    {
+      "case": "schema-change",
+      "expected": "CHANGE_REQUIRES_REAPPROVAL",
+      "passed": true,
+      "approval_mode": "digest-lock",
+      "approval_actor": "lab_simulated",
+      "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+      "digest_algorithm": "sha256",
+      "approved_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "observed_digest": "e3d2b251a3f3c1377ce5dc56e32fe88b5e40c3bcc2d01e3630f2ec590b709b61",
+      "metadata_changed": true,
+      "decision": "CHANGE_REQUIRES_REAPPROVAL",
+      "blocked_before_model": true
+    },
+    {
+      "case": "benign-change-before-reapproval",
+      "expected": "CHANGE_REQUIRES_REAPPROVAL",
+      "passed": true,
+      "approval_mode": "digest-lock",
+      "approval_actor": "lab_simulated",
+      "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+      "digest_algorithm": "sha256",
+      "approved_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "observed_digest": "1615985d3ee799a74029f312d3135cd0d1600b012c896397aa9132c5c758e47f",
+      "metadata_changed": true,
+      "decision": "CHANGE_REQUIRES_REAPPROVAL",
+      "blocked_before_model": true
+    },
+    {
+      "case": "benign-change-after-reapproval",
+      "expected": "ALLOW",
+      "passed": true,
+      "approval_mode": "digest-lock",
+      "approval_actor": "lab_simulated",
+      "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+      "digest_algorithm": "sha256",
+      "approved_digest": "1615985d3ee799a74029f312d3135cd0d1600b012c896397aa9132c5c758e47f",
+      "observed_digest": "1615985d3ee799a74029f312d3135cd0d1600b012c896397aa9132c5c758e47f",
+      "metadata_changed": false,
+      "decision": "ALLOW",
+      "blocked_before_model": false
+    },
+    {
+      "case": "change-without-lock",
+      "expected": "ALLOW",
+      "passed": true,
+      "approval_mode": "none",
+      "approval_actor": "lab_simulated",
+      "canonicalization": "tool objects sorted by name; JSON keys sorted; tools contract only",
+      "digest_algorithm": "sha256",
+      "approved_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+      "observed_digest": "db1a20d2a484fca41281c55cfaf68cc31be1782f7b9562944db34c139447d3bc",
+      "metadata_changed": true,
+      "decision": "ALLOW",
+      "blocked_before_model": false
+    }
+  ],
+  "invalid_tool_cases": [
+    {
+      "case": "duplicate-tool-name",
+      "expected": "REJECT",
+      "passed": true,
+      "error": "duplicate tool name is ambiguous: read_file"
+    },
+    {
+      "case": "missing-tools-array",
+      "expected": "REJECT",
+      "passed": true,
+      "error": "tools/list result must contain a tools array"
+    }
+  ],
+  "skill_cases": [
+    {
+      "case": "skill-file-added",
+      "passed": true,
+      "before": "d8b3c34ffa981f7d2a69736f5cdba7cb115cc1e3bbff0cfc706862cfb00685e0",
+      "after": "7c9a9c5da31b09640ecf00ca765565d6f3cebbe198bf765ab23f3e2d2bb16b41"
+    },
+    {
+      "case": "skill-entry-edited",
+      "passed": true,
+      "before": "7c9a9c5da31b09640ecf00ca765565d6f3cebbe198bf765ab23f3e2d2bb16b41",
+      "after": "973e856a430234a8343f99251a8603d9b0a76588f9bbb6ea28a178b289c4a786"
+    }
+  ],
+  "normal_tool_digest": "d59931b6061ee4c4749d352c9136fc0c61f99690d39672dab6da8e4c3fe67bd7",
+  "poisoned_tool_digest": "db1a20d2a484fca41281c55cfaf68cc31be1782f7b9562944db34c139447d3bc",
+  "passed": true
+}

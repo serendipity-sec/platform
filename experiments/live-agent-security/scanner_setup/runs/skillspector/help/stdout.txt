@@ -1,0 +1,17 @@
+                                                                               
+ Usage: skillspector [OPTIONS] COMMAND [ARGS]...                               
+                                                                               
+ Security scanner for AI agent skills (LangGraph). Detect vulnerabilities      
+ before installation.                                                          
+                                                                               
+┌─ Options ───────────────────────────────────────────────────────────────────┐
+│ --version  -v        Show version and exit.                                 │
+│ --help               Show this message and exit.                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌─ Commands ──────────────────────────────────────────────────────────────────┐
+│ scan      Scan a skill for security vulnerabilities.                        │
+│ mcp       Run SkillSpector as an MCP server.                                │
+│ baseline  Generate a baseline file that suppresses every finding in the     │
+│           current scan.                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+

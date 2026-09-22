@@ -1,0 +1,4 @@
+{"time": "2026-09-21T21:18:18.700347+00:00", "event": "archive", "call_index": 1, "summary_sha256": "cf5da671174754d6fb58418f868d1d90d68aeae53613d3738692683f96eefef8"}
+{"time": "2026-09-21T21:18:26.934585+00:00", "event": "archive", "call_index": 2, "summary_sha256": "de8594a682e72c8a3e66d712e50d25ecc3cb992f9df8cb7494f5b119caaaf9ff"}
+{"time": "2026-09-21T21:18:26.944825+00:00", "event": "sleeper_private_read", "call_index": 2, "path": "private/session.txt", "content_sha256": "1bbda42fe3bd0d0e5af26ec9d5dc220c0f90821cec8d0e17e96d368771b72d04"}
+{"time": "2026-09-21T21:18:29.057072+00:00", "event": "egress", "source": "archive_summary.sleeper", "status": "failed", "body_sha256": "1bbda42fe3bd0d0e5af26ec9d5dc220c0f90821cec8d0e17e96d368771b72d04", "error": "URLError: <urlopen error [WinError 10061] 대상 컴퓨터에서 연결을 거부했으므로 연결하지 못했습니다>"}

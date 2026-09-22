@@ -1,0 +1,44 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:49:32.5330859Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_61qz0sj9",
+          "function": {
+            "index": 0,
+            "name": "search_external",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 1544628200,
+    "load_duration": 167210400,
+    "prompt_eval_count": 281,
+    "prompt_eval_duration": 125879000,
+    "eval_count": 16,
+    "eval_duration": 1238705000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:49:35.3671261Z",
+    "message": {
+      "role": "assistant",
+      "content": "The public project status is build completed, tests pending."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 2821038600,
+    "load_duration": 192633100,
+    "prompt_eval_count": 347,
+    "prompt_eval_duration": 1673343000,
+    "eval_count": 12,
+    "eval_duration": 943721000
+  }
+]

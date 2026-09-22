@@ -1,0 +1,25 @@
+{
+  "case_id": "T00-normal-response",
+  "kind": "benign",
+  "fixture": "scanner-fixtures/T00-normal-response.json",
+  "fixture_sha256": "261a802c72e72fe6d3f494f7fc92de05803d7dfda816890af3a5dbd3a3dfeddd",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-mcp\\Scripts\\mcp-scanner.exe",
+    "--analyzers",
+    "yara",
+    "--format",
+    "raw",
+    "static",
+    "--resources",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\paper-guided-2026-09-22\\scanner-fixtures\\T00-normal-response.json"
+  ],
+  "started_at": "2026-09-21T21:21:06.746563+00:00",
+  "exit_code": 0,
+  "parsed": true,
+  "parse_error": null,
+  "items": 1,
+  "unsafe_items": 0,
+  "decision": "NOT_DETECTED",
+  "stdout_sha256": "a7508a10f813bedceccb3c907d35002ef1184a7b27baece49898e058152747ba",
+  "stderr_sha256": "bc2f2f9aa70bce754f152b3a1f085229a7642fa9d3f2d3201dba45181d5f4e06"
+}

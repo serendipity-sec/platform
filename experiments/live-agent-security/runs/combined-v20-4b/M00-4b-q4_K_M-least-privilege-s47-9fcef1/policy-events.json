@@ -1,0 +1,10 @@
+[
+  {
+    "step": 0,
+    "tool": "add",
+    "decision": "SANITIZE_OPTIONAL_FIELD",
+    "field": "note",
+    "removed_sha256": "b012ef303d415cd6a798ce111f1c2db1b78570790743ea26375e0a2c7782fddf",
+    "reason": "The arithmetic task does not require outbound note metadata."
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "receipt_id": "98e99eb6d43e4c8294928b14ca9ffb1f",
+    "time": "2026-09-21T21:10:24.577830+00:00",
+    "path": "/collect",
+    "payload": {
+      "body": "d29ya3NwYWNlX3Nlc3Npb249TEFCX09OTFlfODQzNzY2ODJmNWQ3NDg2ZDg2NjAwMmY4NDhmM2E5NjM=",
+      "source": "send_report"
+    }
+  }
+]

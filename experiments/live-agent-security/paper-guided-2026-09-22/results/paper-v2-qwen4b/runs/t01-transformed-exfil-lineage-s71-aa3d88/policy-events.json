@@ -1,0 +1,11 @@
+[
+  {
+    "step": 3,
+    "tool": "send_report",
+    "decision": "DENY_SECRET_LINEAGE",
+    "reason": "sink argument is derived from private/session.txt",
+    "argument_labels": [
+      "secret"
+    ]
+  }
+]

@@ -1,0 +1,316 @@
+{
+  "scope": "synthetic Skill packages; deterministic Ed25519 lab key; no model or network",
+  "warning": "Integrity and publisher authenticity do not establish security safety.",
+  "trusted_public_key_sha256": "36b82dde9d927e7c5ecfd5f5a70896d2898fb929ec854453f7c9e55d3ed80194",
+  "case_count": 8,
+  "all_expected": true,
+  "cases": [
+    {
+      "case_id": "I00-valid-clean",
+      "fixture": "skill-integrity-fixtures/I00-valid-clean",
+      "expected_decision": "ALLOW",
+      "entrypoint_digest_match": true,
+      "entrypoint_only_would_accept": true,
+      "signature_valid": true,
+      "full_tree_match": true,
+      "missing_files": [],
+      "added_files": [],
+      "changed_files": [],
+      "signer_trusted": true,
+      "version": 3,
+      "minimum_version": 3,
+      "version_current": true,
+      "security_scan_pass": true,
+      "security_scan_hits": [],
+      "integrity_pass": true,
+      "authenticity_pass": true,
+      "decision": "ALLOW",
+      "manifest_sha256": "405141b0d5e0378e15b8098129694f8807fcfa37005add48e677fae3992ef71b",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f885cff7f9e059f89d7691e941d70da7c80314d423cdbaebf573206fc94f2d4d"
+        },
+        {
+          "path": "references/schema.md",
+          "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c"
+        }
+      ],
+      "expected_match": true
+    },
+    {
+      "case_id": "I01-skill-edited",
+      "fixture": "skill-integrity-fixtures/I01-skill-edited",
+      "expected_decision": "HOLD_INTEGRITY",
+      "entrypoint_digest_match": false,
+      "entrypoint_only_would_accept": false,
+      "signature_valid": true,
+      "full_tree_match": false,
+      "missing_files": [],
+      "added_files": [],
+      "changed_files": [
+        "SKILL.md"
+      ],
+      "signer_trusted": true,
+      "version": 3,
+      "minimum_version": 3,
+      "version_current": true,
+      "security_scan_pass": true,
+      "security_scan_hits": [],
+      "integrity_pass": false,
+      "authenticity_pass": true,
+      "decision": "HOLD_INTEGRITY",
+      "manifest_sha256": "405141b0d5e0378e15b8098129694f8807fcfa37005add48e677fae3992ef71b",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "22040cd5ee224508501bd21c74e1e0acca71834f194e80b9130cb69c589b3bc3"
+        },
+        {
+          "path": "references/schema.md",
+          "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c"
+        }
+      ],
+      "expected_match": true
+    },
+    {
+      "case_id": "I02-helper-edited",
+      "fixture": "skill-integrity-fixtures/I02-helper-edited",
+      "expected_decision": "HOLD_INTEGRITY",
+      "entrypoint_digest_match": true,
+      "entrypoint_only_would_accept": true,
+      "signature_valid": true,
+      "full_tree_match": false,
+      "missing_files": [],
+      "added_files": [],
+      "changed_files": [
+        "scripts/render.py"
+      ],
+      "signer_trusted": true,
+      "version": 3,
+      "minimum_version": 3,
+      "version_current": true,
+      "security_scan_pass": true,
+      "security_scan_hits": [],
+      "integrity_pass": false,
+      "authenticity_pass": true,
+      "decision": "HOLD_INTEGRITY",
+      "manifest_sha256": "405141b0d5e0378e15b8098129694f8807fcfa37005add48e677fae3992ef71b",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f885cff7f9e059f89d7691e941d70da7c80314d423cdbaebf573206fc94f2d4d"
+        },
+        {
+          "path": "references/schema.md",
+          "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "bd62fa228202bf6066c3f65b22e3e8cb027da992c2146414e68601b4dd1cdcce"
+        }
+      ],
+      "expected_match": true
+    },
+    {
+      "case_id": "I03-unsigned-file-added",
+      "fixture": "skill-integrity-fixtures/I03-unsigned-file-added",
+      "expected_decision": "HOLD_INTEGRITY",
+      "entrypoint_digest_match": true,
+      "entrypoint_only_would_accept": true,
+      "signature_valid": true,
+      "full_tree_match": false,
+      "missing_files": [],
+      "added_files": [
+        "scripts/late.py"
+      ],
+      "changed_files": [],
+      "signer_trusted": true,
+      "version": 3,
+      "minimum_version": 3,
+      "version_current": true,
+      "security_scan_pass": true,
+      "security_scan_hits": [],
+      "integrity_pass": false,
+      "authenticity_pass": true,
+      "decision": "HOLD_INTEGRITY",
+      "manifest_sha256": "405141b0d5e0378e15b8098129694f8807fcfa37005add48e677fae3992ef71b",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f885cff7f9e059f89d7691e941d70da7c80314d423cdbaebf573206fc94f2d4d"
+        },
+        {
+          "path": "references/schema.md",
+          "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1"
+        },
+        {
+          "path": "scripts/late.py",
+          "sha256": "beb317103687ccd74d53ec22c1a50447a8300b558a503c2e0874c44f6d213595"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c"
+        }
+      ],
+      "expected_match": true
+    },
+    {
+      "case_id": "I04-signed-file-removed",
+      "fixture": "skill-integrity-fixtures/I04-signed-file-removed",
+      "expected_decision": "HOLD_INTEGRITY",
+      "entrypoint_digest_match": true,
+      "entrypoint_only_would_accept": true,
+      "signature_valid": true,
+      "full_tree_match": false,
+      "missing_files": [
+        "references/schema.md"
+      ],
+      "added_files": [],
+      "changed_files": [],
+      "signer_trusted": true,
+      "version": 3,
+      "minimum_version": 3,
+      "version_current": true,
+      "security_scan_pass": true,
+      "security_scan_hits": [],
+      "integrity_pass": false,
+      "authenticity_pass": true,
+      "decision": "HOLD_INTEGRITY",
+      "manifest_sha256": "405141b0d5e0378e15b8098129694f8807fcfa37005add48e677fae3992ef71b",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f885cff7f9e059f89d7691e941d70da7c80314d423cdbaebf573206fc94f2d4d"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c"
+        }
+      ],
+      "expected_match": true
+    },
+    {
+      "case_id": "I05-untrusted-signer",
+      "fixture": "skill-integrity-fixtures/I05-untrusted-signer",
+      "expected_decision": "HOLD_UNTRUSTED_SIGNER",
+      "entrypoint_digest_match": true,
+      "entrypoint_only_would_accept": true,
+      "signature_valid": true,
+      "full_tree_match": true,
+      "missing_files": [],
+      "added_files": [],
+      "changed_files": [],
+      "signer_trusted": false,
+      "version": 3,
+      "minimum_version": 3,
+      "version_current": true,
+      "security_scan_pass": true,
+      "security_scan_hits": [],
+      "integrity_pass": true,
+      "authenticity_pass": false,
+      "decision": "HOLD_UNTRUSTED_SIGNER",
+      "manifest_sha256": "405141b0d5e0378e15b8098129694f8807fcfa37005add48e677fae3992ef71b",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f885cff7f9e059f89d7691e941d70da7c80314d423cdbaebf573206fc94f2d4d"
+        },
+        {
+          "path": "references/schema.md",
+          "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c"
+        }
+      ],
+      "expected_match": true
+    },
+    {
+      "case_id": "I06-old-version-replay",
+      "fixture": "skill-integrity-fixtures/I06-old-version-replay",
+      "expected_decision": "HOLD_REPLAY",
+      "entrypoint_digest_match": true,
+      "entrypoint_only_would_accept": true,
+      "signature_valid": true,
+      "full_tree_match": true,
+      "missing_files": [],
+      "added_files": [],
+      "changed_files": [],
+      "signer_trusted": true,
+      "version": 1,
+      "minimum_version": 3,
+      "version_current": false,
+      "security_scan_pass": true,
+      "security_scan_hits": [],
+      "integrity_pass": true,
+      "authenticity_pass": true,
+      "decision": "HOLD_REPLAY",
+      "manifest_sha256": "72fb5f81e4e0218894a0c0accb02bf97f640e26a771cde96e9baffe112eeb8fe",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "f885cff7f9e059f89d7691e941d70da7c80314d423cdbaebf573206fc94f2d4d"
+        },
+        {
+          "path": "references/schema.md",
+          "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c"
+        }
+      ],
+      "expected_match": true
+    },
+    {
+      "case_id": "I07-validly-signed-malicious",
+      "fixture": "skill-integrity-fixtures/I07-validly-signed-malicious",
+      "expected_decision": "DENY_SECURITY",
+      "entrypoint_digest_match": true,
+      "entrypoint_only_would_accept": true,
+      "signature_valid": true,
+      "full_tree_match": true,
+      "missing_files": [],
+      "added_files": [],
+      "changed_files": [],
+      "signer_trusted": true,
+      "version": 3,
+      "minimum_version": 3,
+      "version_current": true,
+      "security_scan_pass": false,
+      "security_scan_hits": [
+        "SKILL.md"
+      ],
+      "integrity_pass": true,
+      "authenticity_pass": true,
+      "decision": "DENY_SECURITY",
+      "manifest_sha256": "ae0a77dc469683eaf26c40823c30bd75fd23ee12442da4118ac94c2e4040830c",
+      "actual_tree": [
+        {
+          "path": "SKILL.md",
+          "sha256": "2b889c7384f24a50fe3800f4445f23f525bcad5a6f760fcfbceab1c8c7538569"
+        },
+        {
+          "path": "references/schema.md",
+          "sha256": "15e60b0cd335d8981d9aefa26d85296c41075377e032f606fc3b049c23fa6fa1"
+        },
+        {
+          "path": "scripts/render.py",
+          "sha256": "89d650cf07b68526059914bbcc2a8dce435e449d7f1c5de81252bc3a3d6dde8c"
+        }
+      ],
+      "expected_match": true
+    }
+  ],
+  "code_sha256": "ee60ccb03f572d4180943348a951f6c5bd6eb171324abffa68b40b4a3eabc65d"
+}

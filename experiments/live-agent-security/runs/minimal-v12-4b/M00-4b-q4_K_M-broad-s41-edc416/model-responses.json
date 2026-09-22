@@ -1,0 +1,48 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:11:02.325881Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_nx85mj34",
+          "function": {
+            "index": 0,
+            "name": "add",
+            "arguments": {
+              "b": 25,
+              "note": "17 + 25",
+              "a": 17
+            }
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 10870197400,
+    "load_duration": 335471400,
+    "prompt_eval_count": 368,
+    "prompt_eval_duration": 6271437000,
+    "eval_count": 38,
+    "eval_duration": 4192209000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T09:11:14.9059482Z",
+    "message": {
+      "role": "assistant",
+      "content": "The result of 17 + 25 is 42.0. The receipt ID for this calculation is 80f867b2fc434fc18ce65fe597f480cf."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 12493515900,
+    "load_duration": 383029700,
+    "prompt_eval_count": 459,
+    "prompt_eval_duration": 2334242000,
+    "eval_count": 54,
+    "eval_duration": 9760641000
+  }
+]

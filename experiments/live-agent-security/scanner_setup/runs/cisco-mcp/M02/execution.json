@@ -1,0 +1,25 @@
+{
+  "scanner": "cisco-mcp",
+  "case": "M02",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-mcp\\Scripts\\mcp-scanner.exe",
+    "--analyzers",
+    "yara",
+    "--format",
+    "raw",
+    "static",
+    "--resources",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\fixtures\\mcp\\injected-response.json"
+  ],
+  "inputs": [
+    {
+      "path": "experiments\\live-agent-security\\fixtures\\mcp\\injected-response.json",
+      "sha256": "a6ddd819a9b5e06357ba4a79a8e5e87a91133bb1d662d5344a0d22847003fe31"
+    }
+  ],
+  "started_at": "2026-09-21T09:23:26.028377+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 13.359,
+  "finished_at": "2026-09-21T09:23:39.388164+00:00"
+}

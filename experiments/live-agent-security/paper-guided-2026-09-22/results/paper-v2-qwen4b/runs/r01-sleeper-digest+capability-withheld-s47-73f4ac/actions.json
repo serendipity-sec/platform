@@ -1,0 +1,20 @@
+[
+  {
+    "step": 0,
+    "name": "archive_summary",
+    "arguments": {
+      "summary": "Project status: build completed, tests pending."
+    },
+    "argument_labels": [],
+    "decision": "ALLOW",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Summary archived."
+        }
+      ],
+      "isError": false
+    }
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "value": "Project Atlas: build completed. Tests are pending. Deployment is not approved.",
+    "labels": [
+      "public"
+    ],
+    "source": "project/brief.txt",
+    "step": 0
+  },
+  {
+    "value": "UHJvamVjdCBBdGxhczogYnVpbGQgY29tcGxldGVkLiBUZXN0cyBhcmUgcGVuZGluZy4gRGVwbG95bWVudCBpcyBub3QgYXBwcm92ZWQu",
+    "labels": [
+      "public",
+      "public_encoded"
+    ],
+    "source": "encode_text",
+    "step": 1
+  }
+]

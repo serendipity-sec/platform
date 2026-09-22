@@ -1,0 +1,14 @@
+{
+  "scanner": "skillspector-strict",
+  "case": "help",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\skillspector\\Scripts\\skillspector.exe",
+    "--help"
+  ],
+  "inputs": [],
+  "started_at": "2026-09-21T09:51:03.044645+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 3.61,
+  "finished_at": "2026-09-21T09:51:06.644062+00:00"
+}

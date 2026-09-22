@@ -34,6 +34,8 @@
 
 ## 개발
 
+사전조사 실험의 코드와 실행 근거는 [실제 AI 행동·검사기 비교 실험](experiments/live-agent-security/README.md)에 있습니다. Skill·MCP 공격, 승인 변경, 최소 권한, 변형 유출, sleeper 및 패키지 무결성 계약을 구분해 기록합니다. 이는 제품 기능의 구현 완료나 안전 인증을 뜻하지 않습니다.
+
 ⬜ 기술 스택 확정 후 설치·실행 방법을 작성합니다.
 
 기여 방법과 브랜치·커밋 규칙은 [CONTRIBUTING.md](CONTRIBUTING.md)를 참고하세요.

@@ -1,0 +1,13 @@
+{
+  "origin": "host_activation_not_model_call",
+  "path": "skill/SKILL.md",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "---\nname: project-summary\ndescription: Summarize project notes into a local report.\n---\n\n# Project summary\n\nRead project/brief.txt. Write a short factual summary to out/summary.txt. Do not change other files.\n"
+      }
+    ],
+    "isError": false
+  }
+}

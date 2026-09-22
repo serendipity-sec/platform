@@ -1,0 +1,361 @@
+{
+  "checked_scanner_executions": 20,
+  "checked_input_files": 24,
+  "checked_source_files": 29,
+  "issue_count": 0,
+  "issues": [],
+  "runs": [
+    {
+      "scanner": "cisco-skill",
+      "case": "S00",
+      "execution_ok": true,
+      "observation": {
+        "is_safe": true,
+        "max_severity": "INFO",
+        "findings_count": 1
+      }
+    },
+    {
+      "scanner": "cisco-skill",
+      "case": "S01",
+      "execution_ok": true,
+      "observation": {
+        "is_safe": true,
+        "max_severity": "INFO",
+        "findings_count": 1
+      }
+    },
+    {
+      "scanner": "cisco-skill",
+      "case": "S02",
+      "execution_ok": true,
+      "observation": {
+        "is_safe": true,
+        "max_severity": "INFO",
+        "findings_count": 1
+      }
+    },
+    {
+      "scanner": "cisco-skill",
+      "case": "S03",
+      "execution_ok": true,
+      "observation": {
+        "is_safe": true,
+        "max_severity": "INFO",
+        "findings_count": 1
+      }
+    },
+    {
+      "scanner": "cisco-mcp",
+      "case": "M00",
+      "execution_ok": true,
+      "observation": {
+        "items": 5,
+        "unsafe_items": 0
+      }
+    },
+    {
+      "scanner": "cisco-mcp",
+      "case": "M01",
+      "execution_ok": true,
+      "observation": {
+        "items": 5,
+        "unsafe_items": 1
+      }
+    },
+    {
+      "scanner": "cisco-mcp",
+      "case": "M02C",
+      "execution_ok": true,
+      "observation": {
+        "items": 1,
+        "unsafe_items": 0
+      }
+    },
+    {
+      "scanner": "cisco-mcp",
+      "case": "M02",
+      "execution_ok": true,
+      "observation": {
+        "items": 1,
+        "unsafe_items": 0
+      }
+    },
+    {
+      "scanner": "skillspector",
+      "case": "S00",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "skillspector",
+      "case": "S01",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "skillspector",
+      "case": "S02",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "skillspector",
+      "case": "S03",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "skillspector-strict",
+      "case": "S00",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "skillspector-strict",
+      "case": "S01",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "skillspector-strict",
+      "case": "S02",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "skillspector-strict",
+      "case": "S03",
+      "execution_ok": true,
+      "observation": {
+        "score": 0,
+        "issues": 0,
+        "coverage_percent": 100.0,
+        "completeness": "partial"
+      }
+    },
+    {
+      "scanner": "agentshield",
+      "case": "S00",
+      "execution_ok": true,
+      "observation": {
+        "files_scanned": 0,
+        "findings": 0,
+        "score": 100
+      }
+    },
+    {
+      "scanner": "agentshield",
+      "case": "S01",
+      "execution_ok": true,
+      "observation": {
+        "files_scanned": 0,
+        "findings": 0,
+        "score": 100
+      }
+    },
+    {
+      "scanner": "agentshield",
+      "case": "S02",
+      "execution_ok": true,
+      "observation": {
+        "files_scanned": 0,
+        "findings": 0,
+        "score": 100
+      }
+    },
+    {
+      "scanner": "agentshield",
+      "case": "S03",
+      "execution_ok": true,
+      "observation": {
+        "files_scanned": 0,
+        "findings": 0,
+        "score": 100
+      }
+    }
+  ],
+  "source_files": [
+    {
+      "scanner": "cisco-skill",
+      "path": "sources\\cisco-skill\\release.json",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-skill",
+      "path": "sources\\cisco-skill\\tag-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-skill",
+      "path": "sources\\cisco-skill\\head-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-skill",
+      "path": "sources\\cisco-skill\\LICENSE",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-skill",
+      "path": "sources\\cisco-skill\\README.md",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-skill",
+      "path": "sources\\cisco-skill\\package-metadata.json",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-mcp",
+      "path": "sources\\cisco-mcp\\release.json",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-mcp",
+      "path": "sources\\cisco-mcp\\tag-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-mcp",
+      "path": "sources\\cisco-mcp\\head-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-mcp",
+      "path": "sources\\cisco-mcp\\LICENSE",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-mcp",
+      "path": "sources\\cisco-mcp\\README.md",
+      "verified": true
+    },
+    {
+      "scanner": "cisco-mcp",
+      "path": "sources\\cisco-mcp\\package-metadata.json",
+      "verified": true
+    },
+    {
+      "scanner": "skillspector",
+      "path": "sources\\skillspector\\release.json",
+      "verified": true
+    },
+    {
+      "scanner": "skillspector",
+      "path": "sources\\skillspector\\tag-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "skillspector",
+      "path": "sources\\skillspector\\head-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "skillspector",
+      "path": "sources\\skillspector\\LICENSE",
+      "verified": true
+    },
+    {
+      "scanner": "skillspector",
+      "path": "sources\\skillspector\\README.md",
+      "verified": true
+    },
+    {
+      "scanner": "skillspector",
+      "path": "sources\\skillspector\\pyproject.toml",
+      "verified": true
+    },
+    {
+      "scanner": "agentshield",
+      "path": "sources\\agentshield\\release.json",
+      "verified": true
+    },
+    {
+      "scanner": "agentshield",
+      "path": "sources\\agentshield\\tag-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "agentshield",
+      "path": "sources\\agentshield\\head-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "agentshield",
+      "path": "sources\\agentshield\\LICENSE",
+      "verified": true
+    },
+    {
+      "scanner": "agentshield",
+      "path": "sources\\agentshield\\README.md",
+      "verified": true
+    },
+    {
+      "scanner": "agentshield",
+      "path": "sources\\agentshield\\package.json",
+      "verified": true
+    },
+    {
+      "scanner": "snyk",
+      "path": "sources\\snyk\\release.json",
+      "verified": true
+    },
+    {
+      "scanner": "snyk",
+      "path": "sources\\snyk\\tag-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "snyk",
+      "path": "sources\\snyk\\head-commit.json",
+      "verified": true
+    },
+    {
+      "scanner": "snyk",
+      "path": "sources\\snyk\\LICENSE",
+      "verified": true
+    },
+    {
+      "scanner": "snyk",
+      "path": "sources\\snyk\\README.md",
+      "verified": true
+    }
+  ],
+  "scope": "Stored scanner execution/input/output contracts and downloaded source hashes only; not a proof of scanner accuracy."
+}

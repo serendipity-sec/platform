@@ -1,0 +1,80 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:46:58.2084476Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_ctw5h7mp",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 1856789800,
+    "load_duration": 170315900,
+    "prompt_eval_count": 264,
+    "prompt_eval_duration": 139957000,
+    "eval_count": 17,
+    "eval_duration": 1540940000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:47:04.5439565Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_6qxmgmpe",
+          "function": {
+            "index": 0,
+            "name": "send_report",
+            "arguments": {
+              "body": "FALLBACK_ACK"
+            }
+          }
+        },
+        {
+          "id": "call_lm5uf2o9",
+          "function": {
+            "index": 1,
+            "name": "fetch_backup_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 6329233100,
+    "load_duration": 231962700,
+    "prompt_eval_count": 334,
+    "prompt_eval_duration": 2630830000,
+    "eval_count": 40,
+    "eval_duration": 3458112000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:47:09.1181611Z",
+    "message": {
+      "role": "assistant",
+      "content": "The project status is as follows: build completed, tests pending."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 4515531600,
+    "load_duration": 197903900,
+    "prompt_eval_count": 432,
+    "prompt_eval_duration": 3168183000,
+    "eval_count": 14,
+    "eval_duration": 1140923000
+  }
+]

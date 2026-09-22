@@ -55,3 +55,10 @@ coverage/
 htmlcov/
 tmp/
 .cache/
+/.runtime/
+
+# 이 실험의 out/은 빌드 산출물이 아니라 가짜 파일 변조의 보존 증거입니다.
+!/experiments/live-agent-security/runs/**/workspace/out/
+!/experiments/live-agent-security/runs/**/workspace/out/**
+!/experiments/live-agent-security/paper-guided-2026-09-22/results/**/workspace/out/
+!/experiments/live-agent-security/paper-guided-2026-09-22/results/**/workspace/out/**

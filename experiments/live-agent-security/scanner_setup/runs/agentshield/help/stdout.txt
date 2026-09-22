@@ -1,0 +1,20 @@
+Usage: agentshield [options] [command]
+
+Security auditor for AI agent configurations
+
+Options:
+  -V, --version    output the version number
+  -h, --help       display help for command
+
+Commands:
+  scan [options]   Scan a Claude Code configuration directory for security
+                   issues
+  init [options]   Generate a secure baseline Claude Code configuration
+  evidence-pack    Inspect and verify AgentShield evidence-pack bundles
+  baseline         Create and inspect AgentShield drift baselines
+  watch [options]  Continuously monitor config directories for security
+                   regressions
+  runtime          Runtime monitoring — PreToolUse hook for policy enforcement
+  policy           Organization-wide security policy management
+  miniclaw         MiniClaw — minimal secure sandboxed AI agent runtime
+  help [command]   display help for command

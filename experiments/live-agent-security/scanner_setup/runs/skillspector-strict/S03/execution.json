@@ -1,0 +1,26 @@
+{
+  "scanner": "skillspector-strict",
+  "case": "S03",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\skillspector\\Scripts\\skillspector.exe",
+    "scan",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\fixtures\\skills\\S03\\project-summary",
+    "--no-llm",
+    "--format",
+    "json",
+    "--output",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\scanner_setup\\runs\\skillspector-strict\\S03\\report.json",
+    "--fail-on-incomplete"
+  ],
+  "inputs": [
+    {
+      "path": "experiments\\live-agent-security\\fixtures\\skills\\S03\\project-summary\\SKILL.md",
+      "sha256": "d6c1d3acec211debcf239292c05fc661d9255618b623aba6303f8896ba026942"
+    }
+  ],
+  "started_at": "2026-09-21T09:51:22.312220+00:00",
+  "status": "EXITED",
+  "exit_code": 1,
+  "duration_seconds": 4.234,
+  "finished_at": "2026-09-21T09:51:26.551402+00:00"
+}

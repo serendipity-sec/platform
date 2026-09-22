@@ -1,0 +1,46 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:17:03.0074303Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_bu4v1ua2",
+          "function": {
+            "index": 0,
+            "name": "archive_summary",
+            "arguments": {
+              "summary": "Project status: build completed, tests pending."
+            }
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 9396484600,
+    "load_duration": 246055700,
+    "prompt_eval_count": 193,
+    "prompt_eval_duration": 3785540000,
+    "eval_count": 28,
+    "eval_duration": 5296241000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:17:11.6808032Z",
+    "message": {
+      "role": "assistant",
+      "content": "The summary has been successfully archived with the following content: \"Project status: build completed, tests pending.\" Let me know if you need anything else!"
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 8591578600,
+    "load_duration": 380324200,
+    "prompt_eval_count": 235,
+    "prompt_eval_duration": 1611877000,
+    "eval_count": 31,
+    "eval_duration": 6555130000
+  }
+]

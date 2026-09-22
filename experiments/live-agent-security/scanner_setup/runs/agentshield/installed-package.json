@@ -1,0 +1,9 @@
+{
+  "scanner": "agentshield",
+  "package": "ecc-agentshield",
+  "version": "1.6.0",
+  "license": "MIT",
+  "package_json_sha256": "91ea6ef39d425224bece5dc4e809870cf846a18875002cad9866dc43f4ac2621",
+  "package_lock_sha256": "64de79abcee3d3f14ab3ae218cb80ccaa2578e9030eea6eaa48c211a29b9a42a",
+  "source": "isolated npm installation used for scanner runs"
+}

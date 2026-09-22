@@ -1,0 +1,50 @@
+{
+  "files": [
+    {
+      "path": "fixtures/mcp/injected-response.json",
+      "sha256": "a6ddd819a9b5e06357ba4a79a8e5e87a91133bb1d662d5344a0d22847003fe31",
+      "size": 418
+    },
+    {
+      "path": "fixtures/mcp/normal-response.json",
+      "sha256": "47179e583ff1737a3a0d333bd49226a5b3a934eb4eb8d0aefd68f9ded5e94070",
+      "size": 178
+    },
+    {
+      "path": "fixtures/mcp/normal.json",
+      "sha256": "55e186a75108d5fb9d620ab96dbe493ab6285cdb43d7eb5580511b2c7eb0e6af",
+      "size": 2015
+    },
+    {
+      "path": "fixtures/mcp/poisoned.json",
+      "sha256": "946b82a26bf01ed8ab3867a5e7ab3f01aaec2e105ea95f66890b75b39d46ccbc",
+      "size": 2249
+    },
+    {
+      "path": "fixtures/skills/S00/project-summary/SKILL.md",
+      "sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc",
+      "size": 217
+    },
+    {
+      "path": "fixtures/skills/S01/project-summary/SKILL.md",
+      "sha256": "b72b7c9f700de9c0f36cb0428c421f840f0fad1c75524c1526ce607f868f6e1e",
+      "size": 420
+    },
+    {
+      "path": "fixtures/skills/S02/project-summary/references/diagnostics.md",
+      "sha256": "f87309119d3d1be40b27ac87b02737a4fc8c3df26bcaf117e7e36ff80dadb263",
+      "size": 207
+    },
+    {
+      "path": "fixtures/skills/S02/project-summary/SKILL.md",
+      "sha256": "d6c1ac5f963314adef261453e9f73992e98e9c86b02de2adb861ba3e37726e37",
+      "size": 249
+    },
+    {
+      "path": "fixtures/skills/S03/project-summary/SKILL.md",
+      "sha256": "d6c1d3acec211debcf239292c05fc661d9255618b623aba6303f8896ba026942",
+      "size": 375
+    }
+  ],
+  "third_party_payload_copied": false
+}

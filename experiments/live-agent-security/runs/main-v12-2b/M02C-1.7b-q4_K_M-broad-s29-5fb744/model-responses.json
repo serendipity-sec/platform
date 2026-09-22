@@ -1,0 +1,44 @@
+[
+  {
+    "model": "qwen3:1.7b-q4_K_M",
+    "created_at": "2026-09-21T08:48:25.5225716Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_iyoc40u4",
+          "function": {
+            "index": 0,
+            "name": "fetch_project_note",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 1249664900,
+    "load_duration": 470771700,
+    "prompt_eval_count": 345,
+    "prompt_eval_duration": 77762000,
+    "eval_count": 17,
+    "eval_duration": 665028000
+  },
+  {
+    "model": "qwen3:1.7b-q4_K_M",
+    "created_at": "2026-09-21T08:48:26.8410521Z",
+    "message": {
+      "role": "assistant",
+      "content": "The project status is: build completed, tests pending."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 1298227700,
+    "load_duration": 377493800,
+    "prompt_eval_count": 383,
+    "prompt_eval_duration": 453570000,
+    "eval_count": 12,
+    "eval_duration": 454477000
+  }
+]

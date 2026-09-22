@@ -1,0 +1,802 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-21T20:07:24.730578+00:00",
+  "contract": {
+    "name": "scan-completion-fail-closed",
+    "version": "1.0.0",
+    "allow_condition": "complete + parseable + referenced + digest-bound + fully assessed + clean",
+    "blocking_outcomes": [
+      "DENY",
+      "HOLD"
+    ]
+  },
+  "summary": {
+    "total_cases": 11,
+    "actual_cases": 5,
+    "synthetic_cases": 6,
+    "expectations_passed": 11,
+    "all_expectations_met": true,
+    "outcome_counts": {
+      "ALLOW": 2,
+      "DENY": 1,
+      "HOLD": 8
+    }
+  },
+  "implementation_sources": [
+    {
+      "role": "policy",
+      "path": "scan_gate_policy.py",
+      "recorded_path": null,
+      "sha256": "17b79f547511d0842c0a2fc56c8e343a8cb2236efe1d216d36f8e01c1f3f41c7",
+      "size_bytes": 12148,
+      "exists": true
+    },
+    {
+      "role": "runner",
+      "path": "run_scan_gate_contract.py",
+      "recorded_path": null,
+      "sha256": "760f5e0058028c12b996ff24da7b18b3b1154015384a07b00b9b9f71b96933f0",
+      "size_bytes": 15806,
+      "exists": true
+    }
+  ],
+  "cases": [
+    {
+      "id": "REAL_CISCO_MCP_M00_CLEAN",
+      "source_type": "REAL",
+      "scanner": "Cisco MCP Scanner 4.8.4 / YARA",
+      "expected_outcome": "ALLOW",
+      "expected_reason": "COMPLETE_CLEAN_BOUND_SCAN",
+      "decision": {
+        "outcome": "ALLOW",
+        "blocks_activation": false,
+        "reason_codes": [
+          "COMPLETE_CLEAN_BOUND_SCAN"
+        ],
+        "detail": "완료되고 입력에 결합된 검사에서 위험 신호가 없었습니다.",
+        "facts": {
+          "scan_items": 5,
+          "completed_items": 5,
+          "severities": [
+            "SAFE",
+            "SAFE",
+            "SAFE",
+            "SAFE",
+            "SAFE"
+          ],
+          "threats": [],
+          "requested_analyzers": [
+            "yara"
+          ],
+          "scanner_family": "cisco-mcp",
+          "report_ref": "scanner_setup/runs/cisco-mcp/M00/stdout.txt",
+          "report_sha256": "d80402b7edb19130944dc60bd1e3ec488ba22e1b24b7d8005fc13b6d3f24460f",
+          "input_binding_count": 1,
+          "exit_code": 0
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "COMPLETED",
+          "original_status": "EXITED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "scanner_setup/runs/cisco-mcp/M00/stdout.txt",
+          "sha256": "d80402b7edb19130944dc60bd1e3ec488ba22e1b24b7d8005fc13b6d3f24460f"
+        },
+        "input_bindings": [
+          {
+            "ref": "fixtures/mcp/normal.json",
+            "recorded_ref": "experiments\\live-agent-security\\fixtures\\mcp\\normal.json",
+            "scanned_sha256": "55e186a75108d5fb9d620ab96dbe493ab6285cdb43d7eb5580511b2c7eb0e6af",
+            "current_sha256": "55e186a75108d5fb9d620ab96dbe493ab6285cdb43d7eb5580511b2c7eb0e6af"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "execution",
+          "path": "scanner_setup/runs/cisco-mcp/M00/execution.json",
+          "recorded_path": null,
+          "sha256": "fe05d58cd1618c34748a7f22bfc5f48be4fe0eac2df1f69e68f3a100eeaf6a29",
+          "size_bytes": 801,
+          "exists": true
+        },
+        {
+          "role": "scanner_report",
+          "path": "scanner_setup/runs/cisco-mcp/M00/stdout.txt",
+          "recorded_path": null,
+          "sha256": "d80402b7edb19130944dc60bd1e3ec488ba22e1b24b7d8005fc13b6d3f24460f",
+          "size_bytes": 2257,
+          "exists": true
+        },
+        {
+          "role": "scanner_input",
+          "path": "fixtures/mcp/normal.json",
+          "recorded_path": "experiments\\live-agent-security\\fixtures\\mcp\\normal.json",
+          "sha256": "55e186a75108d5fb9d620ab96dbe493ab6285cdb43d7eb5580511b2c7eb0e6af",
+          "size_bytes": 2015,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "REAL_CISCO_MCP_M01_DETECTED",
+      "source_type": "REAL",
+      "scanner": "Cisco MCP Scanner 4.8.4 / YARA",
+      "expected_outcome": "DENY",
+      "expected_reason": "CONFIRMED_SECURITY_FINDING",
+      "decision": {
+        "outcome": "DENY",
+        "blocks_activation": true,
+        "reason_codes": [
+          "CONFIRMED_SECURITY_FINDING"
+        ],
+        "detail": "검사 결과에서 위험 신호가 확인되었습니다.",
+        "facts": {
+          "scan_items": 5,
+          "completed_items": 5,
+          "severities": [
+            "SAFE",
+            "SAFE",
+            "SAFE",
+            "HIGH",
+            "SAFE"
+          ],
+          "threats": [
+            "PROMPT INJECTION"
+          ],
+          "requested_analyzers": [
+            "yara"
+          ],
+          "scanner_family": "cisco-mcp",
+          "report_ref": "scanner_setup/runs/cisco-mcp/M01/stdout.txt",
+          "report_sha256": "7e76a264a2595dd541e318edba08dbb126f398abc8374fbf0631e3d9e4090a5c",
+          "input_binding_count": 1,
+          "exit_code": 0,
+          "confirmed_findings": [
+            "PROMPT INJECTION"
+          ]
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "COMPLETED",
+          "original_status": "EXITED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "scanner_setup/runs/cisco-mcp/M01/stdout.txt",
+          "sha256": "7e76a264a2595dd541e318edba08dbb126f398abc8374fbf0631e3d9e4090a5c"
+        },
+        "input_bindings": [
+          {
+            "ref": "fixtures/mcp/poisoned.json",
+            "recorded_ref": "experiments\\live-agent-security\\fixtures\\mcp\\poisoned.json",
+            "scanned_sha256": "946b82a26bf01ed8ab3867a5e7ab3f01aaec2e105ea95f66890b75b39d46ccbc",
+            "current_sha256": "946b82a26bf01ed8ab3867a5e7ab3f01aaec2e105ea95f66890b75b39d46ccbc"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "execution",
+          "path": "scanner_setup/runs/cisco-mcp/M01/execution.json",
+          "recorded_path": null,
+          "sha256": "2db68ff475b915abe425d6387e666eb5b9d369e7af0d7dbd5cd488ab4270d91f",
+          "size_bytes": 804,
+          "exists": true
+        },
+        {
+          "role": "scanner_report",
+          "path": "scanner_setup/runs/cisco-mcp/M01/stdout.txt",
+          "recorded_path": null,
+          "sha256": "7e76a264a2595dd541e318edba08dbb126f398abc8374fbf0631e3d9e4090a5c",
+          "size_bytes": 3242,
+          "exists": true
+        },
+        {
+          "role": "scanner_input",
+          "path": "fixtures/mcp/poisoned.json",
+          "recorded_path": "experiments\\live-agent-security\\fixtures\\mcp\\poisoned.json",
+          "sha256": "946b82a26bf01ed8ab3867a5e7ab3f01aaec2e105ea95f66890b75b39d46ccbc",
+          "size_bytes": 2249,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "REAL_SKILLSPECTOR_DEFAULT_PARTIAL",
+      "source_type": "REAL",
+      "scanner": "NVIDIA SkillSpector 2.11.2 / --no-llm",
+      "expected_outcome": "HOLD",
+      "expected_reason": "INCOMPLETE_ANALYSIS",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "INCOMPLETE_ANALYSIS",
+          "UNRESOLVED_REFERENCE"
+        ],
+        "detail": "검사는 결과를 냈지만 승인에 필요한 완료 조건을 충족하지 못했습니다.",
+        "facts": {
+          "risk_score": 0,
+          "risk_severity": "LOW",
+          "issues": 0,
+          "coverage_percent": 100.0,
+          "completeness_status": "partial",
+          "is_complete": false,
+          "scanner_family": "skillspector",
+          "report_ref": "scanner_setup/runs/skillspector/S00/report.json",
+          "report_sha256": "f573d1f82a0367e3ba506931155202dd4ef99b5e09bbe9bfb5066998061b1142",
+          "input_binding_count": 1,
+          "exit_code": 0
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "skillspector",
+        "transport": {
+          "status": "COMPLETED",
+          "original_status": "EXITED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "scanner_setup/runs/skillspector/S00/report.json",
+          "sha256": "f573d1f82a0367e3ba506931155202dd4ef99b5e09bbe9bfb5066998061b1142"
+        },
+        "input_bindings": [
+          {
+            "ref": "fixtures/skills/S00/project-summary/SKILL.md",
+            "recorded_ref": "experiments\\live-agent-security\\fixtures\\skills\\S00\\project-summary\\SKILL.md",
+            "scanned_sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc",
+            "current_sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "execution",
+          "path": "scanner_setup/runs/skillspector/S00/execution.json",
+          "recorded_path": null,
+          "sha256": "cfe750699e975c5d8bc22ac390b80cd96236b2e444ac4399b1dd38444129531c",
+          "size_bytes": 974,
+          "exists": true
+        },
+        {
+          "role": "scanner_report",
+          "path": "scanner_setup/runs/skillspector/S00/report.json",
+          "recorded_path": null,
+          "sha256": "f573d1f82a0367e3ba506931155202dd4ef99b5e09bbe9bfb5066998061b1142",
+          "size_bytes": 9236,
+          "exists": true
+        },
+        {
+          "role": "scanner_input",
+          "path": "fixtures/skills/S00/project-summary/SKILL.md",
+          "recorded_path": "experiments\\live-agent-security\\fixtures\\skills\\S00\\project-summary\\SKILL.md",
+          "sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc",
+          "size_bytes": 217,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "REAL_SKILLSPECTOR_STRICT_PARTIAL",
+      "source_type": "REAL",
+      "scanner": "NVIDIA SkillSpector 2.11.2 / --no-llm --fail-on-incomplete",
+      "expected_outcome": "HOLD",
+      "expected_reason": "NONZERO_EXIT",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "INCOMPLETE_ANALYSIS",
+          "UNRESOLVED_REFERENCE",
+          "NONZERO_EXIT"
+        ],
+        "detail": "검사는 결과를 냈지만 승인에 필요한 완료 조건을 충족하지 못했습니다.",
+        "facts": {
+          "risk_score": 0,
+          "risk_severity": "LOW",
+          "issues": 0,
+          "coverage_percent": 100.0,
+          "completeness_status": "partial",
+          "is_complete": false,
+          "scanner_family": "skillspector",
+          "report_ref": "scanner_setup/runs/skillspector-strict/S00/report.json",
+          "report_sha256": "829c031705a14cdde3700c8778199a0fd54907282b414abcf511d9871ab087a3",
+          "input_binding_count": 1,
+          "exit_code": 1
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "skillspector",
+        "transport": {
+          "status": "COMPLETED",
+          "original_status": "EXITED",
+          "exit_code": 1,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "scanner_setup/runs/skillspector-strict/S00/report.json",
+          "sha256": "829c031705a14cdde3700c8778199a0fd54907282b414abcf511d9871ab087a3"
+        },
+        "input_bindings": [
+          {
+            "ref": "fixtures/skills/S00/project-summary/SKILL.md",
+            "recorded_ref": "experiments\\live-agent-security\\fixtures\\skills\\S00\\project-summary\\SKILL.md",
+            "scanned_sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc",
+            "current_sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "execution",
+          "path": "scanner_setup/runs/skillspector-strict/S00/execution.json",
+          "recorded_path": null,
+          "sha256": "83f5d74651d4bfc8f9051322426654f03b01d9618dd104d0571dc77f9621b2c9",
+          "size_bytes": 1016,
+          "exists": true
+        },
+        {
+          "role": "scanner_report",
+          "path": "scanner_setup/runs/skillspector-strict/S00/report.json",
+          "recorded_path": null,
+          "sha256": "829c031705a14cdde3700c8778199a0fd54907282b414abcf511d9871ab087a3",
+          "size_bytes": 9236,
+          "exists": true
+        },
+        {
+          "role": "scanner_input",
+          "path": "fixtures/skills/S00/project-summary/SKILL.md",
+          "recorded_path": "experiments\\live-agent-security\\fixtures\\skills\\S00\\project-summary\\SKILL.md",
+          "sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc",
+          "size_bytes": 217,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "REAL_AGENTSHIELD_ZERO_FILES",
+      "source_type": "REAL",
+      "scanner": "AgentShield 1.6.0",
+      "expected_outcome": "HOLD",
+      "expected_reason": "ZERO_FILES_SCANNED",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "ZERO_FILES_SCANNED",
+          "NO_ADAPTER_MATCH"
+        ],
+        "detail": "검사는 결과를 냈지만 승인에 필요한 완료 조건을 충족하지 못했습니다.",
+        "facts": {
+          "files_scanned": 0,
+          "adapter_matches": 0,
+          "findings": 0,
+          "total_findings": 0,
+          "scanner_family": "agentshield",
+          "report_ref": "scanner_setup/runs/agentshield/S00/stdout.txt",
+          "report_sha256": "b902234c2737563fdba6f1664a22e5638e3ceebab9ce5ccdd4f0a8a36c8750eb",
+          "input_binding_count": 1,
+          "exit_code": 0
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "agentshield",
+        "transport": {
+          "status": "COMPLETED",
+          "original_status": "EXITED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "scanner_setup/runs/agentshield/S00/stdout.txt",
+          "sha256": "b902234c2737563fdba6f1664a22e5638e3ceebab9ce5ccdd4f0a8a36c8750eb"
+        },
+        "input_bindings": [
+          {
+            "ref": "fixtures/skills/S00/project-summary/SKILL.md",
+            "recorded_ref": "experiments\\live-agent-security\\fixtures\\skills\\S00\\project-summary\\SKILL.md",
+            "scanned_sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc",
+            "current_sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "execution",
+          "path": "scanner_setup/runs/agentshield/S00/execution.json",
+          "recorded_path": null,
+          "sha256": "cfbdf3ee96c39f3f33567e09d35f6806d8d4634479737f6aac9895050aa86e8f",
+          "size_bytes": 868,
+          "exists": true
+        },
+        {
+          "role": "scanner_report",
+          "path": "scanner_setup/runs/agentshield/S00/stdout.txt",
+          "recorded_path": null,
+          "sha256": "b902234c2737563fdba6f1664a22e5638e3ceebab9ce5ccdd4f0a8a36c8750eb",
+          "size_bytes": 9881,
+          "exists": true
+        },
+        {
+          "role": "scanner_input",
+          "path": "fixtures/skills/S00/project-summary/SKILL.md",
+          "recorded_path": "experiments\\live-agent-security\\fixtures\\skills\\S00\\project-summary\\SKILL.md",
+          "sha256": "31a42642a351e569a000420911780469d148a648a00e18cbb3fb13a4f76654bc",
+          "size_bytes": 217,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "SYNTHETIC_TIMEOUT",
+      "source_type": "SYNTHETIC",
+      "scanner": "synthetic Cisco-compatible contract fixture",
+      "expected_outcome": "HOLD",
+      "expected_reason": "SCAN_TIMEOUT",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "SCAN_TIMEOUT"
+        ],
+        "detail": "검사가 제한 시간 안에 완료되지 않았습니다.",
+        "facts": {}
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "TIMEOUT",
+          "exit_code": null,
+          "timed_out": true,
+          "truncated": false
+        },
+        "report": {
+          "ref": "synthetic://SYNTHETIC_TIMEOUT/report.json",
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5"
+        },
+        "input_bindings": [
+          {
+            "ref": "synthetic://SYNTHETIC_TIMEOUT/input.txt",
+            "scanned_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c",
+            "current_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "synthetic_case",
+          "path": "synthetic://SYNTHETIC_TIMEOUT/case.json",
+          "recorded_path": null,
+          "sha256": "c4ce37a4a893f0cd502c2512758dd5d144a9ef54c3e8b25b89a281fee3547cbd",
+          "size_bytes": 593,
+          "exists": true
+        },
+        {
+          "role": "synthetic_report",
+          "path": "synthetic://SYNTHETIC_TIMEOUT/report.json",
+          "recorded_path": "synthetic://SYNTHETIC_TIMEOUT/report.json",
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5",
+          "size_bytes": 208,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "SYNTHETIC_MALFORMED",
+      "source_type": "SYNTHETIC",
+      "scanner": "synthetic Cisco-compatible contract fixture",
+      "expected_outcome": "HOLD",
+      "expected_reason": "MALFORMED_REPORT",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "MALFORMED_REPORT"
+        ],
+        "detail": "검사 결과 JSON을 완전하게 해석할 수 없습니다.",
+        "facts": {
+          "error": "JSONDecodeError: Expecting value: line 1 column 19 (char 18)"
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "synthetic://SYNTHETIC_MALFORMED/report.json",
+          "sha256": "e7a7df512baaf25caac8d00245b2141da2549f219e39c839ea0cc2fc8af5ab2f"
+        },
+        "input_bindings": [
+          {
+            "ref": "synthetic://SYNTHETIC_MALFORMED/input.txt",
+            "scanned_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c",
+            "current_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "synthetic_case",
+          "path": "synthetic://SYNTHETIC_MALFORMED/case.json",
+          "recorded_path": null,
+          "sha256": "046615920eceebf17dd379695c2257a0ce82e068a2ab885864a0af581135390a",
+          "size_bytes": 599,
+          "exists": true
+        },
+        {
+          "role": "synthetic_report",
+          "path": "synthetic://SYNTHETIC_MALFORMED/report.json",
+          "recorded_path": "synthetic://SYNTHETIC_MALFORMED/report.json",
+          "sha256": "e7a7df512baaf25caac8d00245b2141da2549f219e39c839ea0cc2fc8af5ab2f",
+          "size_bytes": 18,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "SYNTHETIC_TRUNCATED",
+      "source_type": "SYNTHETIC",
+      "scanner": "synthetic Cisco-compatible contract fixture",
+      "expected_outcome": "HOLD",
+      "expected_reason": "TRUNCATED_REPORT",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "TRUNCATED_REPORT"
+        ],
+        "detail": "검사 출력이 잘려 완전성을 확인할 수 없습니다.",
+        "facts": {}
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": true
+        },
+        "report": {
+          "ref": "synthetic://SYNTHETIC_TRUNCATED/report.json",
+          "sha256": "12555079da5a05f1aa87490be4f903b7a70d1c1d585b9400618c66a6a590b69a"
+        },
+        "input_bindings": [
+          {
+            "ref": "synthetic://SYNTHETIC_TRUNCATED/input.txt",
+            "scanned_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c",
+            "current_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "synthetic_case",
+          "path": "synthetic://SYNTHETIC_TRUNCATED/case.json",
+          "recorded_path": null,
+          "sha256": "670a63d2a7482ca810deabbdee1d01121b42070698cd6aef95a91f58061d9fdc",
+          "size_bytes": 598,
+          "exists": true
+        },
+        {
+          "role": "synthetic_report",
+          "path": "synthetic://SYNTHETIC_TRUNCATED/report.json",
+          "recorded_path": "synthetic://SYNTHETIC_TRUNCATED/report.json",
+          "sha256": "12555079da5a05f1aa87490be4f903b7a70d1c1d585b9400618c66a6a590b69a",
+          "size_bytes": 197,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "SYNTHETIC_MISSING_REF",
+      "source_type": "SYNTHETIC",
+      "scanner": "synthetic Cisco-compatible contract fixture",
+      "expected_outcome": "HOLD",
+      "expected_reason": "MISSING_REPORT_REFERENCE",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "MISSING_REPORT_REFERENCE"
+        ],
+        "detail": "검사 결과 원본 경로가 없습니다.",
+        "facts": {}
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "",
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5"
+        },
+        "input_bindings": [
+          {
+            "ref": "synthetic://SYNTHETIC_MISSING_REF/input.txt",
+            "scanned_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c",
+            "current_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "synthetic_case",
+          "path": "synthetic://SYNTHETIC_MISSING_REF/case.json",
+          "recorded_path": null,
+          "sha256": "e2af1da608744d29767fe828f22e286d1361aed781d7bd5ee18a07af3745f4b7",
+          "size_bytes": 560,
+          "exists": true
+        },
+        {
+          "role": "synthetic_report",
+          "path": "synthetic://SYNTHETIC_MISSING_REF/report.json",
+          "recorded_path": null,
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5",
+          "size_bytes": 208,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "SYNTHETIC_STALE_DIGEST",
+      "source_type": "SYNTHETIC",
+      "scanner": "synthetic Cisco-compatible contract fixture",
+      "expected_outcome": "HOLD",
+      "expected_reason": "STALE_INPUT_DIGEST",
+      "decision": {
+        "outcome": "HOLD",
+        "blocks_activation": true,
+        "reason_codes": [
+          "STALE_INPUT_DIGEST"
+        ],
+        "detail": "검사 시점과 현재 입력의 SHA-256이 달라 재검사가 필요합니다.",
+        "facts": {
+          "input_ref": "synthetic://SYNTHETIC_STALE_DIGEST/input.txt",
+          "scanned": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c",
+          "current": "5a21fc153d2b85d5b5eae06c8393ccf9768400e4f63e08b5dd54987554d1fdff"
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "synthetic://SYNTHETIC_STALE_DIGEST/report.json",
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5"
+        },
+        "input_bindings": [
+          {
+            "ref": "synthetic://SYNTHETIC_STALE_DIGEST/input.txt",
+            "scanned_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c",
+            "current_sha256": "5a21fc153d2b85d5b5eae06c8393ccf9768400e4f63e08b5dd54987554d1fdff"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "synthetic_case",
+          "path": "synthetic://SYNTHETIC_STALE_DIGEST/case.json",
+          "recorded_path": null,
+          "sha256": "f79e5c681748dce017da97e0c942b5886012729f8c06dccd1acfbca71dec002a",
+          "size_bytes": 608,
+          "exists": true
+        },
+        {
+          "role": "synthetic_report",
+          "path": "synthetic://SYNTHETIC_STALE_DIGEST/report.json",
+          "recorded_path": "synthetic://SYNTHETIC_STALE_DIGEST/report.json",
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5",
+          "size_bytes": 208,
+          "exists": true
+        }
+      ]
+    },
+    {
+      "id": "SYNTHETIC_CLEAN",
+      "source_type": "SYNTHETIC",
+      "scanner": "synthetic Cisco-compatible contract fixture",
+      "expected_outcome": "ALLOW",
+      "expected_reason": "COMPLETE_CLEAN_BOUND_SCAN",
+      "decision": {
+        "outcome": "ALLOW",
+        "blocks_activation": false,
+        "reason_codes": [
+          "COMPLETE_CLEAN_BOUND_SCAN"
+        ],
+        "detail": "완료되고 입력에 결합된 검사에서 위험 신호가 없었습니다.",
+        "facts": {
+          "scan_items": 1,
+          "completed_items": 1,
+          "severities": [
+            "SAFE"
+          ],
+          "threats": [],
+          "requested_analyzers": [
+            "yara"
+          ],
+          "scanner_family": "cisco-mcp",
+          "report_ref": "synthetic://SYNTHETIC_CLEAN/report.json",
+          "report_sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5",
+          "input_binding_count": 1,
+          "exit_code": 0
+        }
+      },
+      "expectation_met": true,
+      "envelope": {
+        "scanner_family": "cisco-mcp",
+        "transport": {
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "timed_out": false,
+          "truncated": false
+        },
+        "report": {
+          "ref": "synthetic://SYNTHETIC_CLEAN/report.json",
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5"
+        },
+        "input_bindings": [
+          {
+            "ref": "synthetic://SYNTHETIC_CLEAN/input.txt",
+            "scanned_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c",
+            "current_sha256": "95310715b4fab848b596e5b76108852a1445e09ab80c471d4c13bb5354f1876c"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "role": "synthetic_case",
+          "path": "synthetic://SYNTHETIC_CLEAN/case.json",
+          "recorded_path": null,
+          "sha256": "e2d0c492d8cd4cb8c5726ac26fec77b57275bf10b24be279bd7ccaafacd65b51",
+          "size_bytes": 587,
+          "exists": true
+        },
+        {
+          "role": "synthetic_report",
+          "path": "synthetic://SYNTHETIC_CLEAN/report.json",
+          "recorded_path": "synthetic://SYNTHETIC_CLEAN/report.json",
+          "sha256": "70d00ece138bfdb24c2364c7694303c33ef00dbb82fc5156f951b5b17c9bc8f5",
+          "size_bytes": 208,
+          "exists": true
+        }
+      ]
+    }
+  ]
+}

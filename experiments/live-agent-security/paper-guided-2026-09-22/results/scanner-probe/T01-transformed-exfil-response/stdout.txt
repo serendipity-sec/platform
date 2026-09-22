@@ -1,0 +1,24 @@
+{
+  "server_url": "https://mcp.deepwiki.com/mcp",
+  "scan_results": [
+    {
+      "status": "completed",
+      "is_safe": true,
+      "findings": {
+        "yara_analyzer": {
+          "severity": "SAFE",
+          "threat_names": [],
+          "threat_summary": "No threats detected",
+          "total_findings": 0
+        }
+      },
+      "resource_uri": "lab://project/status",
+      "resource_name": "lab://project/status",
+      "resource_mime_type": "text/plain",
+      "item_type": "resource"
+    }
+  ],
+  "requested_analyzers": [
+    "yara"
+  ]
+}

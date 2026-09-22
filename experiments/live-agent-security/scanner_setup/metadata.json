@@ -1,0 +1,238 @@
+{
+  "collected_at": "2026-09-21T09:39:58.935545+00:00",
+  "scanners": [
+    {
+      "name": "cisco-skill",
+      "repo": "cisco-ai-defense/skill-scanner",
+      "tag": "2.1.0",
+      "files": [
+        {
+          "path": "sources\\cisco-skill\\release.json",
+          "url": "https://api.github.com/repos/cisco-ai-defense/skill-scanner/releases/latest",
+          "sha256": "9ba1957ff1fd430a69220e9e1b80d2b3ee6a7bd9ec79e5b0bacb3753088ce1bb",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-skill\\tag-commit.json",
+          "url": "https://api.github.com/repos/cisco-ai-defense/skill-scanner/commits/2.1.0",
+          "sha256": "11227c564b8f0cc617bd8a9e270bce475b3fa19e99151ec9d21d71d0a7702783",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-skill\\head-commit.json",
+          "url": "https://api.github.com/repos/cisco-ai-defense/skill-scanner/commits?per_page=1",
+          "sha256": "47b3f7c7ed60881ba29a7548ca7120448dfac5d7b2e9a87d70d5fd4f3b141b03",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-skill\\LICENSE",
+          "url": "https://raw.githubusercontent.com/cisco-ai-defense/skill-scanner/2.1.0/LICENSE",
+          "sha256": "6f8bdae6c2bf096c697839ce3b6305d0c2aab22c14fb761b94c9962a79ae5998",
+          "status": 200
+        },
+        {
+          "url": "https://raw.githubusercontent.com/cisco-ai-defense/skill-scanner/2.1.0/NOTICE",
+          "status": 404
+        },
+        {
+          "path": "sources\\cisco-skill\\README.md",
+          "url": "https://raw.githubusercontent.com/cisco-ai-defense/skill-scanner/2.1.0/README.md",
+          "sha256": "c17924c61ad2ab04ee6d689a8d09b18bffd8725641c636bb624d6b2e6dafafc1",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-skill\\package-metadata.json",
+          "url": "https://pypi.org/pypi/cisco-ai-skill-scanner/2.1.0/json",
+          "sha256": "aec79a738241ee69efb01aec0a8ce3bc92dd5ac280b84d7c95e251a4d3ad4d12",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "cisco-mcp",
+      "repo": "cisco-ai-defense/mcp-scanner",
+      "tag": "4.8.4",
+      "files": [
+        {
+          "path": "sources\\cisco-mcp\\release.json",
+          "url": "https://api.github.com/repos/cisco-ai-defense/mcp-scanner/releases/latest",
+          "sha256": "75451f5eee7c4e69f98c1e9f6765a5f8238737b2073a9bc5df904d83f40a6eb3",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-mcp\\tag-commit.json",
+          "url": "https://api.github.com/repos/cisco-ai-defense/mcp-scanner/commits/4.8.4",
+          "sha256": "65f529157c6eb5bb20dbee41cc6873f10473ca9557e3f79cb16ccf1e6a853881",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-mcp\\head-commit.json",
+          "url": "https://api.github.com/repos/cisco-ai-defense/mcp-scanner/commits?per_page=1",
+          "sha256": "2b32a2477cd8ecaeeec338f2da66d99cca5dd6179e11c14240df4ad872e41bfb",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-mcp\\LICENSE",
+          "url": "https://raw.githubusercontent.com/cisco-ai-defense/mcp-scanner/4.8.4/LICENSE",
+          "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+          "status": 200
+        },
+        {
+          "url": "https://raw.githubusercontent.com/cisco-ai-defense/mcp-scanner/4.8.4/NOTICE",
+          "status": 404
+        },
+        {
+          "path": "sources\\cisco-mcp\\README.md",
+          "url": "https://raw.githubusercontent.com/cisco-ai-defense/mcp-scanner/4.8.4/README.md",
+          "sha256": "00f7bb1065ec92f963420d3b7207c99e5bfeea7a172903d8a8ce61518f95a89b",
+          "status": 200
+        },
+        {
+          "path": "sources\\cisco-mcp\\package-metadata.json",
+          "url": "https://pypi.org/pypi/cisco-ai-mcp-scanner/4.8.4/json",
+          "sha256": "5968d760d5ba11372ac10384bb3ef01d0f014fa8c96aeca69641f93dcefb8cea",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "skillspector",
+      "repo": "NVIDIA/SkillSpector",
+      "tag": "v2.11.2",
+      "files": [
+        {
+          "path": "sources\\skillspector\\release.json",
+          "url": "https://api.github.com/repos/NVIDIA/SkillSpector/releases/latest",
+          "sha256": "3a5fe433053067d1e0778d5dceca31235cacdf51ac2a4932727820c8238bc4e2",
+          "status": 200
+        },
+        {
+          "path": "sources\\skillspector\\tag-commit.json",
+          "url": "https://api.github.com/repos/NVIDIA/SkillSpector/commits/v2.11.2",
+          "sha256": "8115684152e38f2e8e5a7647a6162387ef10074b93ba784d1cd3408515c50023",
+          "status": 200
+        },
+        {
+          "path": "sources\\skillspector\\head-commit.json",
+          "url": "https://api.github.com/repos/NVIDIA/SkillSpector/commits?per_page=1",
+          "sha256": "6e8cf562ae52e3c12ed64bd59a406fa1a8e52f59c141589728b64b227ff5d2bb",
+          "status": 200
+        },
+        {
+          "path": "sources\\skillspector\\LICENSE",
+          "url": "https://raw.githubusercontent.com/NVIDIA/SkillSpector/v2.11.2/LICENSE",
+          "sha256": "9f8785b47596b2993a17a3fa8d747ae63126a2c5e80a9e77195a907273d71839",
+          "status": 200
+        },
+        {
+          "url": "https://raw.githubusercontent.com/NVIDIA/SkillSpector/v2.11.2/NOTICE",
+          "status": 404
+        },
+        {
+          "path": "sources\\skillspector\\README.md",
+          "url": "https://raw.githubusercontent.com/NVIDIA/SkillSpector/v2.11.2/README.md",
+          "sha256": "eb8fc1a27539e10d2470b72e930a25c24d73e485b326d1e818826b13d7ae5530",
+          "status": 200
+        },
+        {
+          "path": "sources\\skillspector\\pyproject.toml",
+          "url": "https://raw.githubusercontent.com/NVIDIA/SkillSpector/v2.11.2/pyproject.toml",
+          "sha256": "e6c98e2724424e2b291b25719506c544d1bb17d061ee8ffdd35d4f97971a19ae",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "agentshield",
+      "repo": "affaan-m/agentshield",
+      "tag": "v1.6.0",
+      "files": [
+        {
+          "path": "sources\\agentshield\\release.json",
+          "url": "https://api.github.com/repos/affaan-m/agentshield/releases/latest",
+          "sha256": "a9ace3a1cadeacd44eca9b2799958b51590ea74db66b8a1399c76b4303f4f073",
+          "status": 200
+        },
+        {
+          "path": "sources\\agentshield\\tag-commit.json",
+          "url": "https://api.github.com/repos/affaan-m/agentshield/commits/v1.6.0",
+          "sha256": "2982554d402bd219413375893c2669500750c2e30294aaac85da6a8863fc72b8",
+          "status": 200
+        },
+        {
+          "path": "sources\\agentshield\\head-commit.json",
+          "url": "https://api.github.com/repos/affaan-m/agentshield/commits?per_page=1",
+          "sha256": "61d405f40798de9e56d974c9f786fcb799f2b0e2b5c4c880549018575882a13c",
+          "status": 200
+        },
+        {
+          "path": "sources\\agentshield\\LICENSE",
+          "url": "https://raw.githubusercontent.com/affaan-m/agentshield/v1.6.0/LICENSE",
+          "sha256": "c7b4cd9db1818a97fbc3ca0ee5a00a2ecaf7ae01c193a6875fd23a6627b43395",
+          "status": 200
+        },
+        {
+          "url": "https://raw.githubusercontent.com/affaan-m/agentshield/v1.6.0/NOTICE",
+          "status": 404
+        },
+        {
+          "path": "sources\\agentshield\\README.md",
+          "url": "https://raw.githubusercontent.com/affaan-m/agentshield/v1.6.0/README.md",
+          "sha256": "7c6d30830c1e1088b2ad94bde586d4038f659a7fa104bb923ee82d232964c237",
+          "status": 200
+        },
+        {
+          "path": "sources\\agentshield\\package.json",
+          "url": "https://raw.githubusercontent.com/affaan-m/agentshield/v1.6.0/package.json",
+          "sha256": "91ea6ef39d425224bece5dc4e809870cf846a18875002cad9866dc43f4ac2621",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "name": "snyk",
+      "repo": "snyk/agent-scan",
+      "tag": "v0.6.3",
+      "files": [
+        {
+          "path": "sources\\snyk\\release.json",
+          "url": "https://api.github.com/repos/snyk/agent-scan/releases/latest",
+          "sha256": "a7eb2a55138ebb112c78bc95ab199eafc2ab482d4d1c76c50c7c34c28c44f511",
+          "status": 200
+        },
+        {
+          "path": "sources\\snyk\\tag-commit.json",
+          "url": "https://api.github.com/repos/snyk/agent-scan/commits/v0.6.3",
+          "sha256": "21e4a56d30598628cd965747159700e210b2a17eaca51296fdbd6e4936614e56",
+          "status": 200
+        },
+        {
+          "path": "sources\\snyk\\head-commit.json",
+          "url": "https://api.github.com/repos/snyk/agent-scan/commits?per_page=1",
+          "sha256": "397ed0546b663aa3b452384bbe0c18467502832aafb77ef4b1aa8d637e8e9d82",
+          "status": 200
+        },
+        {
+          "path": "sources\\snyk\\LICENSE",
+          "url": "https://raw.githubusercontent.com/snyk/agent-scan/v0.6.3/LICENSE",
+          "sha256": "90154031b70befefac025106f493124530e13c608b876cc1418b5f65ba945f14",
+          "status": 200
+        },
+        {
+          "url": "https://raw.githubusercontent.com/snyk/agent-scan/v0.6.3/NOTICE",
+          "status": 404
+        },
+        {
+          "path": "sources\\snyk\\README.md",
+          "url": "https://raw.githubusercontent.com/snyk/agent-scan/v0.6.3/README.md",
+          "sha256": "9c4f3a459c04fea6e3ec12706a18b99b3a59b76db19854d358818c796085093b",
+          "status": 200
+        },
+        {
+          "url": "https://raw.githubusercontent.com/snyk/agent-scan/v0.6.3/package.json",
+          "status": 404
+        }
+      ]
+    }
+  ]
+}

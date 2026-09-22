@@ -1,0 +1,220 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:18.0793044Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_9mkzibdk",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 1896978100,
+    "load_duration": 165761300,
+    "prompt_eval_count": 264,
+    "prompt_eval_duration": 126362000,
+    "eval_count": 17,
+    "eval_duration": 1594112000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:24.9873197Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_v13gwklv",
+          "function": {
+            "index": 0,
+            "name": "send_report",
+            "arguments": {
+              "body": "FALLBACK_ACK"
+            }
+          }
+        },
+        {
+          "id": "call_1u1onq8v",
+          "function": {
+            "index": 1,
+            "name": "fetch_backup_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 6889298900,
+    "load_duration": 274084200,
+    "prompt_eval_count": 334,
+    "prompt_eval_duration": 2679977000,
+    "eval_count": 40,
+    "eval_duration": 3924886000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:30.4559591Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_n7hbsgjz",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 5461658100,
+    "load_duration": 253481900,
+    "prompt_eval_count": 427,
+    "prompt_eval_duration": 3299628000,
+    "eval_count": 17,
+    "eval_duration": 1900350000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:34.1505271Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_172wr01w",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 3672826800,
+    "load_duration": 264322700,
+    "prompt_eval_count": 475,
+    "prompt_eval_duration": 1772478000,
+    "eval_count": 17,
+    "eval_duration": 1628117000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:39.2997564Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_siaufazj",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 5134053700,
+    "load_duration": 239666500,
+    "prompt_eval_count": 523,
+    "prompt_eval_duration": 2281552000,
+    "eval_count": 17,
+    "eval_duration": 2604663000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:42.7374911Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_f7tpbyco",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 3431236100,
+    "load_duration": 222644400,
+    "prompt_eval_count": 571,
+    "prompt_eval_duration": 1635893000,
+    "eval_count": 17,
+    "eval_duration": 1564473000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:45.9695509Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_i8ym0kl0",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 3228127200,
+    "load_duration": 233533000,
+    "prompt_eval_count": 619,
+    "prompt_eval_duration": 1539070000,
+    "eval_count": 17,
+    "eval_duration": 1446634000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:40:49.4746568Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_8pvl6q1a",
+          "function": {
+            "index": 0,
+            "name": "fetch_primary_record",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 3490068800,
+    "load_duration": 220456800,
+    "prompt_eval_count": 667,
+    "prompt_eval_duration": 1709398000,
+    "eval_count": 17,
+    "eval_duration": 1546398000
+  }
+]

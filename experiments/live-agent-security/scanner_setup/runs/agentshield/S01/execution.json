@@ -1,0 +1,24 @@
+{
+  "scanner": "agentshield",
+  "case": "S01",
+  "command": [
+    "C:\\Program Files\\nodejs\\node.EXE",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\agentshield\\node_modules\\ecc-agentshield\\dist\\index.js",
+    "scan",
+    "--path",
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\experiments\\live-agent-security\\fixtures\\skills\\S01\\project-summary",
+    "--format",
+    "json"
+  ],
+  "inputs": [
+    {
+      "path": "experiments\\live-agent-security\\fixtures\\skills\\S01\\project-summary\\SKILL.md",
+      "sha256": "b72b7c9f700de9c0f36cb0428c421f840f0fad1c75524c1526ce607f868f6e1e"
+    }
+  ],
+  "started_at": "2026-09-21T09:24:28.481926+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 0.453,
+  "finished_at": "2026-09-21T09:24:28.937086+00:00"
+}

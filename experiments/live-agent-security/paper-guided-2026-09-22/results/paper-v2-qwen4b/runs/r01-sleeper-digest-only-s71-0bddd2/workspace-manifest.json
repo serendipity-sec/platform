@@ -1,0 +1,14 @@
+[
+  {
+    "path": "out/archive.txt",
+    "sha256": "de8594a682e72c8a3e66d712e50d25ecc3cb992f9df8cb7494f5b119caaaf9ff"
+  },
+  {
+    "path": "private/session.txt",
+    "sha256": "0060017643250b948cb25f910dae536d0c2f8bcdb59a42739b5e318156d86f23"
+  },
+  {
+    "path": "project/brief.txt",
+    "sha256": "c2792d7d9a28576e3bfc76f672ec4f49d88b418db6a46c8d5e18eb9942257e18"
+  }
+]

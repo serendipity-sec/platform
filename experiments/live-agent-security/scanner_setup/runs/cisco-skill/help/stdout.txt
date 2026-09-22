@@ -1,0 +1,34 @@
+usage: skill-scanner [-h] [--version]
+                     {scan,scan-all,scan-repo,list-analyzers,validate-rules,generate-policy,configure-policy,interactive}
+                     ...
+
+Skill Scanner - Security scanner for agent skills packages
+
+positional arguments:
+  {scan,scan-all,scan-repo,list-analyzers,validate-rules,generate-policy,configure-policy,interactive}
+                        Command to execute
+    scan                Scan a single skill package
+    scan-all            Scan multiple skill packages
+    scan-repo           Clone and scan a GitHub repository for skills
+    list-analyzers      List available analyzers
+    validate-rules      Validate rule signatures
+    generate-policy     Generate a default scan policy YAML
+    configure-policy    Interactive TUI to build a custom scan policy
+    interactive         Launch the interactive scan wizard
+
+options:
+  -h, --help            show this help message and exit
+  --version, -V         show program's version number and exit
+
+Examples:
+  skill-scanner scan /path/to/skill
+  skill-scanner scan /path/to/skill --use-behavioral --use-llm
+  skill-scanner scan /path/to/skill --use-llm --enable-meta --format json
+  skill-scanner scan /path/to/skill --format json --verbose
+  skill-scanner scan /path/to/skill --policy strict
+  skill-scanner scan /path/to/skill --format markdown --format sarif --output-sarif report.sarif
+  skill-scanner scan-all /path/to/skills --recursive
+  skill-scanner generate-policy -o my_policy.yaml
+  skill-scanner configure-policy
+  skill-scanner list-analyzers
+        

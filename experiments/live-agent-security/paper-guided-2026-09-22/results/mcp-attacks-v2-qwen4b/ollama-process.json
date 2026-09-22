@@ -1,0 +1,9 @@
+{
+  "pid": 6792,
+  "no_cloud": true,
+  "executable": "C:\\Users\\andyw\\AppData\\Local\\Temp\\ai-supply-chain-lab-20260919\\portable-cpu\\ollama.exe",
+  "port": 11436,
+  "model_cache": "C:\\Users\\andyw\\AppData\\Local\\Temp\\ai-supply-chain-lab-20260919\\models",
+  "started_at": "2026-09-21T21:38:01.5242534Z",
+  "note": "Same dedicated process was reused after the excluded seed-47 smoke; v2 runtime.json fixes model/version."
+}

@@ -1,0 +1,16 @@
+{
+  "scanner": "cisco-mcp",
+  "case": "installed-packages",
+  "command": [
+    "C:\\Users\\andyw\\Desktop\\serendipity-sec\\platform\\.runtime\\live-agent-security-scanners\\cisco-mcp\\Scripts\\python.exe",
+    "-m",
+    "pip",
+    "freeze"
+  ],
+  "inputs": [],
+  "started_at": "2026-09-21T09:22:56.078977+00:00",
+  "status": "EXITED",
+  "exit_code": 0,
+  "duration_seconds": 1.218,
+  "finished_at": "2026-09-21T09:22:57.290578+00:00"
+}

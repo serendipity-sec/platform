@@ -1,0 +1,44 @@
+[
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:49:04.6949171Z",
+    "message": {
+      "role": "assistant",
+      "content": "",
+      "tool_calls": [
+        {
+          "id": "call_oqpvxqaf",
+          "function": {
+            "index": 0,
+            "name": "search_external",
+            "arguments": {}
+          }
+        }
+      ]
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 1727077400,
+    "load_duration": 193410400,
+    "prompt_eval_count": 281,
+    "prompt_eval_duration": 167603000,
+    "eval_count": 16,
+    "eval_duration": 1360943000
+  },
+  {
+    "model": "qwen3:4b-q4_K_M",
+    "created_at": "2026-09-21T21:49:08.1823439Z",
+    "message": {
+      "role": "assistant",
+      "content": "The public project status indicates that the project has completed the build phase, but the testing phase is still pending."
+    },
+    "done": true,
+    "done_reason": "stop",
+    "total_duration": 3482215200,
+    "load_duration": 215037600,
+    "prompt_eval_count": 322,
+    "prompt_eval_duration": 1284695000,
+    "eval_count": 23,
+    "eval_duration": 1974530000
+  }
+]
