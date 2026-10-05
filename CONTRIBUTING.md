@@ -18,7 +18,7 @@ fix/31-graph-edge-dedup
 docs/07-threat-model
 ```
 
-`type`: `feat` `fix` `docs` `refactor` `test` `chore`
+`type`: `feat` `fix` `docs` `refactor` `test` `chore` `experiment`
 
 ## 커밋 메시지
 
@@ -49,6 +49,19 @@ Refs: #12
 - **리뷰어 1명 이상의 승인** 후 머지합니다. 본인 PR을 본인이 승인하지 않습니다.
 - 머지는 **Squash and merge** 로 통일합니다. `main` 이력이 PR 단위로 읽힙니다.
 - 머지 후 브랜치는 삭제합니다.
+
+## 자동 검사
+
+PR을 올리면 아래가 자동으로 돕니다. 빨간불이면 머지하지 않습니다.
+
+| 검사 | 실패하면 |
+|---|---|
+| `pr-check` | PR 제목을 `<type>(<scope>): <요약>` 형식으로, 본문에 `Closes #이슈번호` 추가 |
+| `secret-scan` | 토큰·키를 커밋에서 빼고 해당 키는 폐기·재발급 |
+| `auto-label` | 실패할 일 없음. 경로별 라벨과 담당자(작성자)를 자동으로 붙입니다 |
+
+`main`에 PR 없이 push하면 `main-push-guard`가 그 커밋에 댓글을 남깁니다.
+Free 플랜 private 저장소라 브랜치 보호를 켤 수 없어서, 막는 대신 알립니다.
 
 ## 이슈
 

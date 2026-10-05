@@ -1,0 +1,14 @@
+version: 2
+updates:
+  # 워크플로에 SHA로 고정한 Action의 새 버전을 매주 PR로 올립니다.
+  # 기술 스택이 정해지면 pip·npm 등 패키지 생태계를 여기에 추가합니다.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: Asia/Seoul
+    commit-message:
+      prefix: chore
+      include: scope

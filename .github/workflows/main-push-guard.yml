@@ -1,0 +1,40 @@
+name: main-push-guard
+
+# Free 플랜 private 저장소는 브랜치 보호를 켤 수 없습니다.
+# 막는 대신, PR 없이 main에 들어온 커밋을 찾아 커밋 댓글로 작성자에게 알립니다.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write # 커밋 댓글 작성
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR 없이 들어온 커밋 찾기
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          found=0
+          for sha in $(jq -r '.commits[].id' "$GITHUB_EVENT_PATH"); do
+            prs=$(gh api "repos/$REPO/commits/$sha/pulls" --jq 'length')
+            [ "$prs" != "0" ] && continue
+            found=$((found + 1))
+            login=$(gh api "repos/$REPO/commits/$sha" --jq '.author.login // empty')
+            who=${login:+@$login}
+            echo "::warning title=main 직접 push::${sha:0:7} 커밋이 PR 없이 main에 들어왔습니다"
+            echo "- \`${sha:0:7}\` ${login:-unknown}" >> "$GITHUB_STEP_SUMMARY"
+            gh api "repos/$REPO/commits/$sha/comments" -f body="${who:-작성자님} 이 커밋은 PR 없이 \`main\`에 직접 push됐습니다.
+
+          팀 규칙: 브랜치 → PR → 리뷰어 1명 승인 → Squash and merge.
+          이미 들어간 커밋은 그대로 두면 됩니다. 다음 작업부터 브랜치를 만들어 주세요.
+
+          \`\`\`bash
+          git switch -c <type>/<이슈번호>-<설명>
+          \`\`\`" > /dev/null
+          done
+          echo "PR 없는 커밋: $found 건"
