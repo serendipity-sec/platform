@@ -58,7 +58,7 @@ PR을 올리면 아래가 자동으로 돕니다. 빨간불이면 머지하지 �
 |---|---|
 | `pr-check` | PR 제목을 `<type>(<scope>): <요약>` 형식으로, 본문에 `Closes #이슈번호` 추가 |
 | `secret-scan` | 토큰·키를 커밋에서 빼고 해당 키는 폐기·재발급 |
-| `semgrep/ci` | PR 댓글과 [semgrep.dev](https://semgrep.dev/orgs/-/findings) 대시보드에서 취약점·의존성 문제를 확인하고 수정. 오탐이면 대시보드에서 Ignore 처리 |
+| `semgrep-cloud-platform/scan` | Semgrep 앱이 직접 검사합니다(워크플로 파일 없음). PR 댓글과 [semgrep.dev](https://semgrep.dev/orgs/-/findings) 대시보드에서 확인하고 수정. 오탐이면 대시보드에서 Ignore 처리 |
 | `auto-label` | 실패할 일 없음. 경로별 라벨과 담당자(작성자)를 자동으로 붙입니다 |
 
 `main`에 PR 없이 push하면 `main-push-guard`가 그 커밋에 댓글을 남깁니다.
