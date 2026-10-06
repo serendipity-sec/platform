@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write # 커밋 댓글 작성
+  pull-requests: read # 커밋에 연결된 PR 조회
 
 jobs:
   check:
