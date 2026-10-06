@@ -1,0 +1,12 @@
+# 바뀐 경로 → 라벨. 코드 디렉터리가 생기면(7주차) area:scanner 등을 여기에 추가합니다.
+area:infra:
+  - changed-files:
+      - any-glob-to-any-file: ['.github/**', '.env.example']
+
+area:eval:
+  - changed-files:
+      - any-glob-to-any-file: ['experiments/**']
+
+research:
+  - changed-files:
+      - any-glob-to-any-file: ['experiments/**/*.md']
