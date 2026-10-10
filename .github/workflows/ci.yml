@@ -27,10 +27,29 @@ jobs:
         with:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
-      - run: uv sync --frozen
-      - run: uv run --frozen ruff check src tests
-      - run: uv run --frozen ruff format --check src tests
-      - run: uv run --frozen mypy
-      - run: uv run --frozen pytest
-      - run: uv run --frozen flowdelta inspect-case examples/order-lookup
+      - run: uv sync --frozen --extra baseline
+      - run: uv run --frozen --extra baseline ruff check src tests
+      - run: uv run --frozen --extra baseline ruff format --check src tests
+      - run: uv run --frozen --extra baseline mypy
+      - run: uv run --frozen --extra baseline pytest
+      - run: uv run --frozen --extra baseline flowdelta inspect-case examples/order-lookup
+      - run: uv run --frozen --extra baseline flowdelta check-examples examples/contracts/order-lookup
       - run: uv build
+
+  normal-n8n-baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONUTF8: "1"
+      UV_NO_PROGRESS: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version-file: .python-version
+      - run: python -m pip install uv==0.9.30
+      - run: uv sync --frozen --extra baseline
+      - run: docker build --tag flowdelta-order-fixture:0.1.0 --file runtime/order-lookup/fixture.Dockerfile .
+      - run: uv run --frozen --extra baseline flowdelta baseline --out var/ci-baseline

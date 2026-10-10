@@ -147,6 +147,8 @@ def load_case(bundle_dir: Path) -> LoadedCase:
     for artifact in manifest.artifacts:
         if artifact.kind != "source":
             raise InputError("SOURCE_ARTIFACT_REQUIRED")
+        if artifact.media_type != "application/json":
+            raise InputError("JSON_SOURCE_REQUIRED")
         data = _read_local(root, artifact.path)
         total += len(data)
         if total > MAX_TOTAL_BYTES:

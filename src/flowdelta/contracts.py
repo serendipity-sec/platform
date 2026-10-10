@@ -43,7 +43,7 @@ class ArtifactRef(Contract):
     path: str
     sha256: Sha256
     size_bytes: Annotated[int, Field(ge=0, le=8 * 1024 * 1024)]
-    media_type: Literal["application/json"] = "application/json"
+    media_type: Literal["application/json", "text/plain"] = "application/json"
     kind: Literal["source", "generated"]
 
     _path = field_validator("path")(validate_relative_path)
@@ -195,7 +195,7 @@ class NormalizedNode(Contract):
     # Unknown n8n fields are preserved; they do not enter the strict contract namespace.
     opaque_fields: dict[str, JsonValue]
     source: SourceLocation
-    semantic_support: Literal["UNKNOWN"] = "UNKNOWN"
+    semantic_support: Literal["SUPPORTED", "UNSUPPORTED", "UNKNOWN"] = "UNKNOWN"
 
 
 class Connection(Contract):
@@ -219,7 +219,7 @@ class NormalizedWorkflow(Contract):
     # Empty output ports and original ordering remain available here, too.
     original_connections: dict[str, JsonValue]
     processing_status: Literal["STRUCTURE_PARSED"] = "STRUCTURE_PARSED"
-    semantic_support: Literal["UNKNOWN"] = "UNKNOWN"
+    semantic_support: Literal["SUPPORTED", "PARTIAL", "UNSUPPORTED", "UNKNOWN"] = "UNKNOWN"
     execution_status: Literal["NOT_RUN"] = "NOT_RUN"
     limitations: list[str]
 
@@ -233,8 +233,12 @@ class NodeSemantics(Contract):
     reads: list[str] | None = None
     writes: list[str] | None = None
     effects: list[str] | None = None
-    support: Literal["UNKNOWN"] = "UNKNOWN"
-    reason: Literal["L03_ADAPTER_NOT_IMPLEMENTED"] = "L03_ADAPTER_NOT_IMPLEMENTED"
+    support: Literal["SUPPORTED", "UNSUPPORTED", "UNKNOWN"] = "UNKNOWN"
+    reason: str = "NO_PROFILE_SELECTED"
+    adapter_version: str | None = None
+    engine_version: str | None = None
+    capabilities: list[str] | None = None
+    parameter_sources: list[SourceLocation] = Field(default_factory=list)
     source: SourceLocation
 
 

@@ -55,9 +55,28 @@
 | actions/setup-python | CI Python 설치 | ece7cb06caefa5fff74198d8649806c4678c61a1 (v6) | [MIT](https://github.com/actions/setup-python/blob/ece7cb06caefa5fff74198d8649806c4678c61a1/LICENSE) | CI에서 원본 사용 |
 
 `examples/order-lookup`은 이 구현을 위해 작성한 합성 자료다. 외부 workflow나 운영 자료를
-복사하지 않았다. n8n 자체를 이 패키지에 포함하거나 실행하지 않는다.
+복사하지 않았다. n8n 자체를 Python 배포물에 포함하지 않으며, 기준 환경 명령은 별도의
+공식 Docker 이미지를 실행한다.
 
-## 우리 저장소의 라이선스 결정 상태
+## 팀장 기준 환경 — 2026-10-11
+
+도입 전 공식 원문을 확인했다. 아래 항목은 팀 관리 정상 사례의 로컬 개발 환경이다.
+
+| 구성요소 | 고정 버전 | 출처·라이선스 원문 | 사용 방식 |
+|---|---|---|---|
+| n8n Community image | 2.42.6; digest는 runtime lock에 기록 | [Sustainable Use License](https://github.com/n8n-io/n8n/blob/n8n%402.42.6/LICENSE.md) | 공식 이미지의 비상업적 로컬 사용. 엔터프라이즈 기능·재호스팅 판매 없음. n8n 바이너리·소스는 저장소에 포함하지 않음 |
+| FastAPI | 0.141.1 | [MIT](https://github.com/fastapi/fastapi/blob/0.141.1/LICENSE) | 합성 주문 API. 배포물의 고지 보존 |
+| Uvicorn | 0.53.0 | [BSD-3-Clause](https://github.com/Kludex/uvicorn/blob/0.53.0/LICENSE.md) | 합성 서비스의 ASGI 실행. 배포물의 고지 보존 |
+| CPython / official Python image | 3.13.15-slim; digest는 runtime lock에 기록 | [PSF-2.0 및 포함 고지](https://github.com/python/cpython/blob/v3.13.15/LICENSE), [image build MIT](https://github.com/docker-library/python/blob/688a0b86bb44289df16a363e9f41d90514c1a5f9/LICENSE) | 공식 이미지를 로컬 서비스 기반으로 사용. 원본·OS 패키지 고지 보존 |
+| n8n template 1750 | 확인일 2026-10-11 | [Creating an API endpoint](https://n8n.io/workflows/1750-creating-an-api-endpoint/) | 공개 설명의 API 구성 방식 참고. template JSON·코드 복사/재배포 없음 |
+| n8n template 18823 | 확인일 2026-10-11 | [Order status workflow](https://n8n.io/workflows/18823-track-secure-order-status-and-email-alerts-with-webhooks-gmail-and-data-tables/) | 주문 조회 업무 조건 비교. JSON·코드 복사/재배포 없음 |
+
+공개 template의 무료 사용 표기를 별도 코드·데이터 재배포 허가로 해석하지 않는다.
+선택한 API 구성 방식에 맞춰 정상 주문 조회 workflow를 팀이 작성한다. 원본 template를 그대로
+실행했다거나 운영 데이터를 확보했다고 표시하지 않는다. 공식 template API의 원본 JSON 요청은
+403으로 실패했으며, 공개 설명만 확인했다. 상세 선택 근거와 대체 범위는 기준 환경 문서에 기록한다.
+
+## 공개 라이선스 결정 상태
 
 ⬜ 미정. 재사용할 엔진들의 라이선스를 확인한 뒤 결정합니다.
 (Apache-2.0 계열 엔진을 링크할 경우 Apache-2.0이 무난하고, 특허 조항이 있어 팀에도 유리합니다.)

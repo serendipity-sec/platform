@@ -16,6 +16,7 @@ from flowdelta.contracts import (
 )
 from flowdelta.ingestion import MAX_FILE_BYTES, InputError, LoadedCase, digest, json_bytes
 from flowdelta.normalize import describe_nodes, normalize, structural_digest
+from flowdelta.semantics import PROFILE, describe_profile
 
 GENERATED_PATHS = {
     "before.normalized.json",
@@ -32,6 +33,32 @@ def build_handoff(loaded: LoadedCase) -> Handoff:
     by_path = {ref.path: ref for ref in loaded.manifest.artifacts}
     before = normalize(loaded.documents[case.before_ref], by_path[case.before_ref].artifact_id)
     after = normalize(loaded.documents[case.after_ref], by_path[case.after_ref].artifact_id)
+    semantics = [*describe_nodes(before, "before"), *describe_nodes(after, "after")]
+    if loaded.environment.extensions.get("flowdelta.semantic_profile") == PROFILE:
+        semantics = []
+        for side, workflow in [("before", before), ("after", after)]:
+            typed_semantic_side: Literal["before", "after"] = (
+                "before" if side == "before" else "after"
+            )
+            described = describe_profile(
+                workflow, typed_semantic_side, loaded.environment.target_version
+            )
+            semantics.extend(described)
+            for node, description in zip(workflow.nodes, described, strict=True):
+                node.semantic_support = description.support
+            statuses = {item.support for item in described}
+            workflow.semantic_support = (
+                "SUPPORTED"
+                if statuses == {"SUPPORTED"}
+                else "UNSUPPORTED"
+                if statuses == {"UNSUPPORTED"}
+                else "PARTIAL"
+            )
+            workflow.limitations = [
+                "Semantic adapter covers only the registered normal order-lookup profile.",
+                "Effects are static possibilities; observations live in ExecutionRun artifacts.",
+                "No dependency resolution or semantic equivalence hash is implemented.",
+            ]
     contexts = [by_path[path] for path in ["case.json", *case.references()[2:]]]
     snapshots = []
     for side, path in [("before", case.before_ref), ("after", case.after_ref)]:
@@ -72,9 +99,7 @@ def build_handoff(loaded: LoadedCase) -> Handoff:
         snapshots=SnapshotIndex(snapshots=snapshots),
         before=before,
         after=after,
-        semantics=SemanticsIndex(
-            semantics=[*describe_nodes(before, "before"), *describe_nodes(after, "after")]
-        ),
+        semantics=SemanticsIndex(semantics=semantics),
     )
 
 

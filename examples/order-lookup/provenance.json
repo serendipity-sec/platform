@@ -1,9 +1,20 @@
 {
-  "schema_version": "0.3.0",
+  "extensions": {
+    "flowdelta.source_urls": [
+      "https://n8n.io/workflows/1750-creating-an-api-endpoint/",
+      "https://n8n.io/workflows/18823-track-secure-order-status-and-email-alerts-with-webhooks-gmail-and-data-tables/"
+    ],
+    "flowdelta.template_json_status": "NOT_ACQUIRED_HTTP_403"
+  },
+  "production_equivalence": "NOT_CLAIMED",
   "provenance_id": "team-demo-20261011",
-  "source_kind": "TEAM_SYNTHETIC",
-  "source": "FlowDelta L-START 구현을 위해 작성한 정상 주문 조회 예시. 운영 업무·외부 workflow를 복사하지 않았다.",
   "reuse_status": "팀 작성 예제. 프로젝트 공개 라이선스는 별도 결정한다.",
-  "transformations": ["after workflow에는 정상 응답의 표시용 display_status 필드만 추가했다."],
-  "production_equivalence": "NOT_CLAIMED"
+  "schema_version": "0.3.0",
+  "source": "Team-authored local order lookup, informed by the public descriptions of n8n templates 1750 and 18823; no source JSON copied.",
+  "source_kind": "TEAM_SYNTHETIC",
+  "transformations": [
+    "API endpoint pattern adapted to a local order service.",
+    "Gmail, Data Tables and status updates omitted from this read-only baseline.",
+    "after adds display_status only; actor, policy and initial state remain fixed."
+  ]
 }

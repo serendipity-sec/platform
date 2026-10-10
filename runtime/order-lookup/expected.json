@@ -1,0 +1,18 @@
+{
+  "after_response": {
+    "display_status": "주문 상태: 준비중",
+    "order_id": "ORD-1001",
+    "status": "준비중"
+  },
+  "before_response": {
+    "order_id": "ORD-1001",
+    "status": "준비중"
+  },
+  "expected_events_per_run": 1,
+  "normal_input": {
+    "order_id": "ORD-1001"
+  },
+  "origin": "TEAM_DEFINED_NORMAL_EXPECTATION",
+  "schema_version": "0.3.0",
+  "unchanged_state": "orders"
+}

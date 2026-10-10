@@ -17,8 +17,8 @@
       "media_type": "application/json",
       "path": "environment.json",
       "schema_version": "0.3.0",
-      "sha256": "ff3aea6efb3575e3057ccfae47980823480f2cabb914ee252d1e8d9e15801d11",
-      "size_bytes": 408
+      "sha256": "e66d66cfcef03832f03e01cb4fe7fc90a636fb4fe57558e9458423c1635a5929",
+      "size_bytes": 499
     },
     {
       "artifact_id": "input-2",
@@ -27,8 +27,8 @@
       "media_type": "application/json",
       "path": "policy.json",
       "schema_version": "0.3.0",
-      "sha256": "c0c5b5d0ac9158324570c4e1f9b063a69d84c6a195415eb6380b020c63bc6c05",
-      "size_bytes": 862
+      "sha256": "65b0a8d24e01db4e92206cb802cc8a31950f5645e51d695bc1e8f0b0805bbee2",
+      "size_bytes": 879
     },
     {
       "artifact_id": "input-3",
@@ -37,8 +37,8 @@
       "media_type": "application/json",
       "path": "provenance.json",
       "schema_version": "0.3.0",
-      "sha256": "c5d458c833761b2f4f15497677477513a93074e12500975b80404f84ef445c1c",
-      "size_bytes": 508
+      "sha256": "ea487a73fc66ad7252883c8c36ffd846db3483b1f1addc34dd3c5b2c85fed76c",
+      "size_bytes": 953
     },
     {
       "artifact_id": "input-4",
@@ -47,8 +47,8 @@
       "media_type": "application/json",
       "path": "state/initial.json",
       "schema_version": "0.3.0",
-      "sha256": "44b1f0fcc1f7628f66082fbf91b2ede8810d09cd24fbb8070ac7755fe460dfb8",
-      "size_bytes": 243
+      "sha256": "e955e721254e2ab79e46e784ae06de607dfa873d50a25be9839d4f0a8bd8e40e",
+      "size_bytes": 571
     },
     {
       "artifact_id": "input-5",
@@ -67,8 +67,8 @@
       "media_type": "application/json",
       "path": "workflow/after.json",
       "schema_version": "0.3.0",
-      "sha256": "ac296264b6f606b39053c81a697707426cc6de5a490a676eb34a94a1358cb0d3",
-      "size_bytes": 1241
+      "sha256": "451130cac81f9df1431823932b3560dc8e6f0035d156c2d1ff5224027cd657ca",
+      "size_bytes": 2518
     },
     {
       "artifact_id": "input-7",
@@ -77,8 +77,8 @@
       "media_type": "application/json",
       "path": "workflow/before.json",
       "schema_version": "0.3.0",
-      "sha256": "9f3e25e8e58b758b20998a15187d75e0723c2888abb28f58fdfaadcc5abffe38",
-      "size_bytes": 1191
+      "sha256": "a8f9e7bc9535823e5bda7aa6cfad848d6d82def30cf30878026a90618204d350",
+      "size_bytes": 2468
     }
   ],
   "extensions": {},

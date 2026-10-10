@@ -1,0 +1,136 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "input-0",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "case.json",
+      "schema_version": "0.3.0",
+      "sha256": "16d1bd0daf37281bbaef048581845056c9d7b94064a4091af16114b31cbe08a0",
+      "size_bytes": 964
+    },
+    {
+      "artifact_id": "input-1",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "environment.json",
+      "schema_version": "0.3.0",
+      "sha256": "e66d66cfcef03832f03e01cb4fe7fc90a636fb4fe57558e9458423c1635a5929",
+      "size_bytes": 499
+    },
+    {
+      "artifact_id": "input-2",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "policy.json",
+      "schema_version": "0.3.0",
+      "sha256": "65b0a8d24e01db4e92206cb802cc8a31950f5645e51d695bc1e8f0b0805bbee2",
+      "size_bytes": 879
+    },
+    {
+      "artifact_id": "input-3",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "provenance.json",
+      "schema_version": "0.3.0",
+      "sha256": "ea487a73fc66ad7252883c8c36ffd846db3483b1f1addc34dd3c5b2c85fed76c",
+      "size_bytes": 953
+    },
+    {
+      "artifact_id": "input-4",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "state/initial.json",
+      "schema_version": "0.3.0",
+      "sha256": "e955e721254e2ab79e46e784ae06de607dfa873d50a25be9839d4f0a8bd8e40e",
+      "size_bytes": 571
+    },
+    {
+      "artifact_id": "input-5",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "task.json",
+      "schema_version": "0.3.0",
+      "sha256": "108957e8156125da28d1a6e7f60209b0f0d3b84bf3d60b87a8ae07c8f55f87d0",
+      "size_bytes": 627
+    },
+    {
+      "artifact_id": "input-6",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "workflow/after.json",
+      "schema_version": "0.3.0",
+      "sha256": "451130cac81f9df1431823932b3560dc8e6f0035d156c2d1ff5224027cd657ca",
+      "size_bytes": 2518
+    },
+    {
+      "artifact_id": "input-7",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "workflow/before.json",
+      "schema_version": "0.3.0",
+      "sha256": "a8f9e7bc9535823e5bda7aa6cfad848d6d82def30cf30878026a90618204d350",
+      "size_bytes": 2468
+    },
+    {
+      "artifact_id": "generated-0",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "after.normalized.json",
+      "schema_version": "0.3.0",
+      "sha256": "5765232a7a940c180897bcaa423a0c28288f64dfb1a200d84de4f9e81c2eead1",
+      "size_bytes": 5029
+    },
+    {
+      "artifact_id": "generated-1",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "before.normalized.json",
+      "schema_version": "0.3.0",
+      "sha256": "33d33f6afaafa05bb8960e445af79dc755390506849add936bb65fcde15348be",
+      "size_bytes": 4979
+    },
+    {
+      "artifact_id": "generated-6",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "semantics.json",
+      "schema_version": "0.3.0",
+      "sha256": "12cad1fe954c4defeae5b97ac9fbba6a0958c657ccd9d29f71848d4875af26b7",
+      "size_bytes": 10261
+    },
+    {
+      "artifact_id": "generated-7",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "snapshots.json",
+      "schema_version": "0.3.0",
+      "sha256": "a22269fa419d2e015107fc3ee36264030e75bb34b862b6216d5ccf9c4bab2992",
+      "size_bytes": 6105
+    },
+    {
+      "artifact_id": "generated-8",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "source-manifest.json",
+      "schema_version": "0.3.0",
+      "sha256": "7904c336a55884edf47606d40fa001a2ed6ffd8e29d296cc2f4620959fe66c23",
+      "size_bytes": 2528
+    }
+  ],
+  "extensions": {},
+  "schema_version": "0.3.0"
+}

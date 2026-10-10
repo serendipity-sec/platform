@@ -1,0 +1,54 @@
+{
+  "after_snapshot_id": "snapshot-11dbcea2486007d99b73c1df7d960afdfa3bdff5b14c1783438ca3456a2dcd2e",
+  "analysis_id": "analysis-order-lookup-example",
+  "attempts_per_side": 1,
+  "authorship": {
+    "extensions": {},
+    "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.3.0"
+  },
+  "before_snapshot_id": "snapshot-8219839251e765122f49126b1ced7b0e5c8dee4dc26ec2f25576e834f30e01ef",
+  "case_id": "order-lookup-demo-001",
+  "catalog_id": "catalog-order-lookup-v1",
+  "extensions": {},
+  "initial_state_ref": {
+    "artifact_id": "input-4",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/state/initial.json",
+    "schema_version": "0.3.0",
+    "sha256": "e955e721254e2ab79e46e784ae06de607dfa873d50a25be9839d4f0a8bd8e40e",
+    "size_bytes": 571
+  },
+  "normal_input": {
+    "order_id": "ORD-1001"
+  },
+  "obligation_bindings": [
+    {
+      "extensions": {},
+      "obligation_id": "normal-order-response",
+      "required_artifact_kinds": [
+        "response"
+      ],
+      "schema_version": "0.3.0"
+    },
+    {
+      "extensions": {},
+      "obligation_id": "unchanged-order-state",
+      "required_artifact_kinds": [
+        "initial-state",
+        "final-state"
+      ],
+      "schema_version": "0.3.0"
+    }
+  ],
+  "plan_id": "plan-order-lookup-example",
+  "schema_version": "0.3.0",
+  "template_id": "normal-order-lookup",
+  "template_version": "1.0.0",
+  "timeout_seconds": 30,
+  "uncovered_obligation_ids": []
+}

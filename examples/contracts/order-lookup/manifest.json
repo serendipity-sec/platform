@@ -1,0 +1,216 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "example-0",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "analysis.json",
+      "schema_version": "0.3.0",
+      "sha256": "6915ed3acb98366454c2434831cdd506c0ab99df6869d44f9c505a222a91e714",
+      "size_bytes": 5587
+    },
+    {
+      "artifact_id": "example-1",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "cards/normal-order-response.json",
+      "schema_version": "0.3.0",
+      "sha256": "801f4f60fe2576a3ca111a0b1c1641af13d3fa04c22051706f867e3ccb7ab6cc",
+      "size_bytes": 951
+    },
+    {
+      "artifact_id": "example-2",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "cards/read-only-order-state.json",
+      "schema_version": "0.3.0",
+      "sha256": "deb8537e634d5508c6f4edbcf6341a5a091a3db241451d30cc1b0409bad0eb26",
+      "size_bytes": 983
+    },
+    {
+      "artifact_id": "example-3",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "error-examples.json",
+      "schema_version": "0.3.0",
+      "sha256": "c9e3c8b5b9581a9e3ffdca5dde076d6c442573309584024c83cc640984a4c211",
+      "size_bytes": 689
+    },
+    {
+      "artifact_id": "example-4",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/after.normalized.json",
+      "schema_version": "0.3.0",
+      "sha256": "5765232a7a940c180897bcaa423a0c28288f64dfb1a200d84de4f9e81c2eead1",
+      "size_bytes": 5029
+    },
+    {
+      "artifact_id": "example-5",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/before.normalized.json",
+      "schema_version": "0.3.0",
+      "sha256": "33d33f6afaafa05bb8960e445af79dc755390506849add936bb65fcde15348be",
+      "size_bytes": 4979
+    },
+    {
+      "artifact_id": "example-6",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/case.json",
+      "schema_version": "0.3.0",
+      "sha256": "16d1bd0daf37281bbaef048581845056c9d7b94064a4091af16114b31cbe08a0",
+      "size_bytes": 964
+    },
+    {
+      "artifact_id": "example-7",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/environment.json",
+      "schema_version": "0.3.0",
+      "sha256": "e66d66cfcef03832f03e01cb4fe7fc90a636fb4fe57558e9458423c1635a5929",
+      "size_bytes": 499
+    },
+    {
+      "artifact_id": "example-8",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/manifest.json",
+      "schema_version": "0.3.0",
+      "sha256": "3d841e5edb6839dcfda53e02c189b04447204f359e6caf9161c68e0346fb0a40",
+      "size_bytes": 4120
+    },
+    {
+      "artifact_id": "example-9",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/policy.json",
+      "schema_version": "0.3.0",
+      "sha256": "65b0a8d24e01db4e92206cb802cc8a31950f5645e51d695bc1e8f0b0805bbee2",
+      "size_bytes": 879
+    },
+    {
+      "artifact_id": "example-10",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/provenance.json",
+      "schema_version": "0.3.0",
+      "sha256": "ea487a73fc66ad7252883c8c36ffd846db3483b1f1addc34dd3c5b2c85fed76c",
+      "size_bytes": 953
+    },
+    {
+      "artifact_id": "example-11",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/semantics.json",
+      "schema_version": "0.3.0",
+      "sha256": "12cad1fe954c4defeae5b97ac9fbba6a0958c657ccd9d29f71848d4875af26b7",
+      "size_bytes": 10261
+    },
+    {
+      "artifact_id": "example-12",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/snapshots.json",
+      "schema_version": "0.3.0",
+      "sha256": "a22269fa419d2e015107fc3ee36264030e75bb34b862b6216d5ccf9c4bab2992",
+      "size_bytes": 6105
+    },
+    {
+      "artifact_id": "example-13",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/source-manifest.json",
+      "schema_version": "0.3.0",
+      "sha256": "7904c336a55884edf47606d40fa001a2ed6ffd8e29d296cc2f4620959fe66c23",
+      "size_bytes": 2528
+    },
+    {
+      "artifact_id": "example-14",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/state/initial.json",
+      "schema_version": "0.3.0",
+      "sha256": "e955e721254e2ab79e46e784ae06de607dfa873d50a25be9839d4f0a8bd8e40e",
+      "size_bytes": 571
+    },
+    {
+      "artifact_id": "example-15",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/task.json",
+      "schema_version": "0.3.0",
+      "sha256": "108957e8156125da28d1a6e7f60209b0f0d3b84bf3d60b87a8ae07c8f55f87d0",
+      "size_bytes": 627
+    },
+    {
+      "artifact_id": "example-16",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/workflow/after.json",
+      "schema_version": "0.3.0",
+      "sha256": "451130cac81f9df1431823932b3560dc8e6f0035d156c2d1ff5224027cd657ca",
+      "size_bytes": 2518
+    },
+    {
+      "artifact_id": "example-17",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "input/workflow/before.json",
+      "schema_version": "0.3.0",
+      "sha256": "a8f9e7bc9535823e5bda7aa6cfad848d6d82def30cf30878026a90618204d350",
+      "size_bytes": 2468
+    },
+    {
+      "artifact_id": "example-18",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "plan.json",
+      "schema_version": "0.3.0",
+      "sha256": "dd4254bf61bb2cd6ee26712bc15a1a6630b3b1b53659a01eeca4f73ce8b616ce",
+      "size_bytes": 1641
+    },
+    {
+      "artifact_id": "example-19",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "run.example.json",
+      "schema_version": "0.3.0",
+      "sha256": "308e714fc1aade92f05b74556324d24d3dc90cc01367918e642a178ddc6fc102",
+      "size_bytes": 1422
+    },
+    {
+      "artifact_id": "example-20",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "template-catalog.json",
+      "schema_version": "0.3.0",
+      "sha256": "31b65f5de20b8c0847cd12ae7ca16435334456f4c62561111d418ac1243ea0cb",
+      "size_bytes": 1273
+    }
+  ],
+  "extensions": {},
+  "schema_version": "0.3.0"
+}

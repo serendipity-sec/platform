@@ -1,0 +1,49 @@
+{
+  "actual_engine_version": null,
+  "actual_image_digest": null,
+  "artifacts": {
+    "artifact_kinds": {},
+    "artifacts": [],
+    "collection_status": "NOT_STARTED",
+    "extensions": {},
+    "missing_kinds": [
+      "response",
+      "initial-state",
+      "final-state",
+      "events"
+    ],
+    "observed_kinds": [],
+    "required_kinds": [
+      "response",
+      "initial-state",
+      "final-state",
+      "events"
+    ],
+    "run_id": "run-contract-example",
+    "schema_version": "0.3.0"
+  },
+  "authorship": {
+    "extensions": {},
+    "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.3.0"
+  },
+  "case_id": "order-lookup-demo-001",
+  "cleanup_status": "PENDING",
+  "comparison_run_id": "comparison-contract-example",
+  "error_code": null,
+  "execution_status": "NOT_RUN",
+  "extensions": {},
+  "finished_at": null,
+  "initial_state_sha256": "e955e721254e2ab79e46e784ae06de607dfa873d50a25be9839d4f0a8bd8e40e",
+  "outcome": null,
+  "phase": "QUEUED",
+  "plan_id": "plan-order-lookup-example",
+  "run_id": "run-contract-example",
+  "runtime_profile": "order-lookup-local-v1",
+  "schema_version": "0.3.0",
+  "side": "before",
+  "snapshot_id": "snapshot-8219839251e765122f49126b1ced7b0e5c8dee4dc26ec2f25576e834f30e01ef",
+  "started_at": null
+}

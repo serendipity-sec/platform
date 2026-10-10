@@ -1,0 +1,197 @@
+{
+  "connections": [
+    {
+      "extensions": {},
+      "opaque_fields": {},
+      "schema_version": "0.3.0",
+      "source": {
+        "artifact_id": "input-6",
+        "extensions": {},
+        "json_pointer": "/connections/Order request/main/0/0",
+        "schema_version": "0.3.0"
+      },
+      "source_node_id": "request",
+      "source_output_index": 0,
+      "source_output_type": "main",
+      "target_input_index": 0,
+      "target_input_type": "main",
+      "target_node_id": "read-order"
+    },
+    {
+      "extensions": {},
+      "opaque_fields": {},
+      "schema_version": "0.3.0",
+      "source": {
+        "artifact_id": "input-6",
+        "extensions": {},
+        "json_pointer": "/connections/Read sample order/main/0/0",
+        "schema_version": "0.3.0"
+      },
+      "source_node_id": "read-order",
+      "source_output_index": 0,
+      "source_output_type": "main",
+      "target_input_index": 0,
+      "target_input_type": "main",
+      "target_node_id": "response"
+    }
+  ],
+  "execution_status": "NOT_RUN",
+  "extensions": {},
+  "limitations": [
+    "Semantic adapter covers only the registered normal order-lookup profile.",
+    "Effects are static possibilities; observations live in ExecutionRun artifacts.",
+    "No dependency resolution or semantic equivalence hash is implemented."
+  ],
+  "nodes": [
+    {
+      "extensions": {},
+      "name": "Order request",
+      "node_id": "request",
+      "node_type": "n8n-nodes-base.webhook",
+      "opaque_fields": {
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "fd-client-auth",
+            "name": "FlowDelta local client"
+          }
+        },
+        "position": [
+          0,
+          0
+        ],
+        "webhookId": "flowdelta-order-lookup"
+      },
+      "parameters": {
+        "authentication": "headerAuth",
+        "httpMethod": "POST",
+        "options": {},
+        "path": "flowdelta-order-lookup",
+        "responseMode": "responseNode"
+      },
+      "schema_version": "0.3.0",
+      "semantic_support": "SUPPORTED",
+      "source": {
+        "artifact_id": "input-6",
+        "extensions": {},
+        "json_pointer": "/nodes/0",
+        "schema_version": "0.3.0"
+      },
+      "type_version": 2.2
+    },
+    {
+      "extensions": {},
+      "name": "Read sample order",
+      "node_id": "read-order",
+      "node_type": "n8n-nodes-base.httpRequest",
+      "opaque_fields": {
+        "credentials": {
+          "httpHeaderAuth": {
+            "id": "fd-service-auth",
+            "name": "FlowDelta order service"
+          }
+        },
+        "position": [
+          240,
+          0
+        ]
+      },
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "order_id",
+              "value": "={{ $json.body.order_id }}"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "url": "http://orders-api:8080/orders/lookup"
+      },
+      "schema_version": "0.3.0",
+      "semantic_support": "SUPPORTED",
+      "source": {
+        "artifact_id": "input-6",
+        "extensions": {},
+        "json_pointer": "/nodes/1",
+        "schema_version": "0.3.0"
+      },
+      "type_version": 4.5
+    },
+    {
+      "extensions": {},
+      "name": "Order response",
+      "node_id": "response",
+      "node_type": "n8n-nodes-base.respondToWebhook",
+      "opaque_fields": {
+        "position": [
+          480,
+          0
+        ]
+      },
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        },
+        "respondWith": "json",
+        "responseBody": "={{ { order_id: $json.order_id, status: $json.status, display_status: '주문 상태: ' + $json.status } }}"
+      },
+      "schema_version": "0.3.0",
+      "semantic_support": "SUPPORTED",
+      "source": {
+        "artifact_id": "input-6",
+        "extensions": {},
+        "json_pointer": "/nodes/2",
+        "schema_version": "0.3.0"
+      },
+      "type_version": 1.5
+    }
+  ],
+  "normalizer_version": "structure-v1",
+  "opaque_fields": {
+    "active": false,
+    "name": "FlowDelta local order lookup baseline",
+    "settings": {
+      "executionOrder": "v1"
+    }
+  },
+  "original_connections": {
+    "Order request": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Read sample order",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Read sample order": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Order response",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "processing_status": "STRUCTURE_PARSED",
+  "schema_version": "0.3.0",
+  "semantic_support": "SUPPORTED",
+  "source_artifact_id": "input-6",
+  "workflow_id": null
+}

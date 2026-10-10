@@ -29,7 +29,7 @@ def test_cli_round_trip_handoff(bundle: Path, tmp_path: Path) -> None:
         if ref["kind"] == "source":
             assert data == (bundle / ref["path"]).read_bytes()
     before = json.loads((output / "before.normalized.json").read_bytes())
-    assert before["semantic_support"] == "UNKNOWN"
+    assert before["semantic_support"] == "SUPPORTED"
     snapshots = json.loads((output / "snapshots.json").read_bytes())["snapshots"]
     assert len(snapshots) == 2
     assert all(item["semantic_sha256"] is None for item in snapshots)

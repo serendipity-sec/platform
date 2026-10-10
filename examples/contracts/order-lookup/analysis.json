@@ -1,0 +1,192 @@
+{
+  "after_graph": {
+    "edges": [
+      {
+        "basis": "STATIC_POSSIBILITY",
+        "edge_id": "control-request-lookup",
+        "evidence": [
+          {
+            "artifact_id": "input-6",
+            "extensions": {},
+            "json_pointer": "/connections/Order request/main/0/0",
+            "schema_version": "0.3.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "output_port": 0,
+        "relation": "CONTROL",
+        "schema_version": "0.3.0",
+        "source_node_id": "request",
+        "target_node_id": "read-order"
+      },
+      {
+        "basis": "STATIC_POSSIBILITY",
+        "edge_id": "control-lookup-response",
+        "evidence": [
+          {
+            "artifact_id": "input-6",
+            "extensions": {},
+            "json_pointer": "/connections/Read sample order/main/0/0",
+            "schema_version": "0.3.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "output_port": 0,
+        "relation": "CONTROL",
+        "schema_version": "0.3.0",
+        "source_node_id": "read-order",
+        "target_node_id": "response"
+      }
+    ],
+    "extensions": {},
+    "limitations": [
+      "첫 그래프 예시는 control 관계만 담는다. 실제 실행 경로를 관측한 자료가 아니다."
+    ],
+    "node_ids": [
+      "request",
+      "read-order",
+      "response"
+    ],
+    "schema_version": "0.3.0"
+  },
+  "after_snapshot_id": "snapshot-11dbcea2486007d99b73c1df7d960afdfa3bdff5b14c1783438ca3456a2dcd2e",
+  "analysis_id": "analysis-order-lookup-example",
+  "authorship": {
+    "extensions": {},
+    "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.3.0"
+  },
+  "before_graph": {
+    "edges": [
+      {
+        "basis": "STATIC_POSSIBILITY",
+        "edge_id": "control-request-lookup",
+        "evidence": [
+          {
+            "artifact_id": "input-7",
+            "extensions": {},
+            "json_pointer": "/connections/Order request/main/0/0",
+            "schema_version": "0.3.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "output_port": 0,
+        "relation": "CONTROL",
+        "schema_version": "0.3.0",
+        "source_node_id": "request",
+        "target_node_id": "read-order"
+      },
+      {
+        "basis": "STATIC_POSSIBILITY",
+        "edge_id": "control-lookup-response",
+        "evidence": [
+          {
+            "artifact_id": "input-7",
+            "extensions": {},
+            "json_pointer": "/connections/Read sample order/main/0/0",
+            "schema_version": "0.3.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "output_port": 0,
+        "relation": "CONTROL",
+        "schema_version": "0.3.0",
+        "source_node_id": "read-order",
+        "target_node_id": "response"
+      }
+    ],
+    "extensions": {},
+    "limitations": [
+      "첫 그래프 예시는 control 관계만 담는다. 실제 실행 경로를 관측한 자료가 아니다."
+    ],
+    "node_ids": [
+      "request",
+      "read-order",
+      "response"
+    ],
+    "schema_version": "0.3.0"
+  },
+  "before_snapshot_id": "snapshot-8219839251e765122f49126b1ced7b0e5c8dee4dc26ec2f25576e834f30e01ef",
+  "case_id": "order-lookup-demo-001",
+  "changes": [
+    {
+      "after_source": {
+        "artifact_id": "input-6",
+        "extensions": {},
+        "json_pointer": "/nodes/2/parameters/responseBody",
+        "schema_version": "0.3.0"
+      },
+      "after_value": "={{ { order_id: $json.order_id, status: $json.status, display_status: '주문 상태: ' + $json.status } }}",
+      "before_source": {
+        "artifact_id": "input-7",
+        "extensions": {},
+        "json_pointer": "/nodes/2/parameters/responseBody",
+        "schema_version": "0.3.0"
+      },
+      "before_value": "={{ { order_id: $json.order_id, status: $json.status } }}",
+      "change_id": "change-response-body",
+      "extensions": {},
+      "kind": "PARAMETER_CHANGED",
+      "node_id": "response",
+      "schema_version": "0.3.0"
+    }
+  ],
+  "extensions": {},
+  "limitations": [
+    "수작업으로 적은 계약 예시이며 보안 변화 판정은 포함하지 않는다."
+  ],
+  "node_matches": [
+    {
+      "after_node_id": "request",
+      "before_node_id": "request",
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.3.0"
+    },
+    {
+      "after_node_id": "read-order",
+      "before_node_id": "read-order",
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.3.0"
+    },
+    {
+      "after_node_id": "response",
+      "before_node_id": "response",
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.3.0"
+    }
+  ],
+  "obligation_ids": [
+    "normal-order-response",
+    "unchanged-order-state"
+  ],
+  "policy_ref": {
+    "artifact_id": "input-2",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/policy.json",
+    "schema_version": "0.3.0",
+    "sha256": "65b0a8d24e01db4e92206cb802cc8a31950f5645e51d695bc1e8f0b0805bbee2",
+    "size_bytes": 879
+  },
+  "schema_version": "0.3.0",
+  "task_ref": {
+    "artifact_id": "input-5",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/task.json",
+    "schema_version": "0.3.0",
+    "sha256": "108957e8156125da28d1a6e7f60209b0f0d3b84bf3d60b87a8ae07c8f55f87d0",
+    "size_bytes": 627
+  }
+}

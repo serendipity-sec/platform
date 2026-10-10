@@ -27,7 +27,9 @@ def test_connections_and_unknown_fields_are_preserved(bundle: Path) -> None:
     assert edge.opaque_fields == {"futureEdgeFlag": 9}
     assert edge.source.json_pointer == "/connections/Order request/main/1/0"
     assert all(
-        item.support == "UNKNOWN" and item.effects is None for item in handoff.semantics.semantics
+        item.support == "UNSUPPORTED" and item.effects is None
+        for item in handoff.semantics.semantics
+        if item.side == "before"
     )
 
 

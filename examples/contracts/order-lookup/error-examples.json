@@ -1,0 +1,25 @@
+{
+  "authorship": "CONTRACT_EXAMPLE",
+  "examples": [
+    {
+      "edit": "plan.template_version = 99",
+      "expected_error": "TEMPLATE_NOT_FOUND"
+    },
+    {
+      "edit": "plan.before_snapshot_id = snapshot-other",
+      "expected_error": "SNAPSHOT_ID_MISMATCH"
+    },
+    {
+      "edit": "Remove a required obligation from bound and uncovered lists",
+      "expected_error": "REQUIRED_OBLIGATION_MISSING"
+    },
+    {
+      "edit": "Remove final-state from unchanged-order-state binding",
+      "expected_error": "OBLIGATION_ARTIFACT_MISSING"
+    },
+    {
+      "edit": "Change one byte without refreshing manifest",
+      "expected_error": "ARTIFACT_INTEGRITY_MISMATCH"
+    }
+  ]
+}
