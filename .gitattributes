@@ -12,4 +12,7 @@ package-lock.json  linguist-generated=true -diff
 pnpm-lock.yaml     linguist-generated=true -diff
 yarn.lock          linguist-generated=true -diff
 uv.lock            linguist-generated=true -diff
+schemas/*.json     linguist-generated=true
+examples/**/*.json text eol=lf
+schemas/*.json     text eol=lf
 poetry.lock        linguist-generated=true -diff

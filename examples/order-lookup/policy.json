@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.3.0",
+  "policy_id": "order-lookup-local-policy",
+  "policy_version": "1",
+  "interpretation": "DECLARED_ONLY",
+  "rules": [
+    {
+      "rule_id": "own-order",
+      "subject": "customer-demo / tenant-demo",
+      "resource": "ORD-1001",
+      "condition": "요청 주체가 소유한 주문의 order_id와 status만 조회한다.",
+      "exceptions": [],
+      "rationale": "첫 정상 업무의 읽기 범위를 명시한다. 실제 인증·권한 강제는 아직 연결하지 않았다."
+    },
+    {
+      "rule_id": "read-only",
+      "subject": "workflow",
+      "resource": "orders",
+      "condition": "주문 데이터를 생성·수정·삭제하지 않는다.",
+      "exceptions": [],
+      "rationale": "조회 업무의 허용 부수 효과와 상태를 분리한다."
+    }
+  ],
+  "provenance_ref": "provenance.json"
+}

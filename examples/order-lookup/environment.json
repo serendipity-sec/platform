@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.3.0",
+  "environment_id": "local-order-lookup-proposed",
+  "engine": "n8n",
+  "target_version": "2.42.6",
+  "runtime_status": "NOT_VALIDATED",
+  "service_bindings": {
+    "orders": {
+      "base_url": "http://orders-api:8080",
+      "kind": "planned-local-synthetic-service",
+      "implementation_status": "NOT_IMPLEMENTED",
+      "principal_binding": "NOT_IMPLEMENTED"
+    }
+  }
+}

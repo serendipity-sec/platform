@@ -1,0 +1,9 @@
+{
+  "schema_version": "0.3.0",
+  "provenance_id": "team-demo-20261011",
+  "source_kind": "TEAM_SYNTHETIC",
+  "source": "FlowDelta L-START 구현을 위해 작성한 정상 주문 조회 예시. 운영 업무·외부 workflow를 복사하지 않았다.",
+  "reuse_status": "팀 작성 예제. 프로젝트 공개 라이선스는 별도 결정한다.",
+  "transformations": ["after workflow에는 정상 응답의 표시용 display_status 필드만 추가했다."],
+  "production_equivalence": "NOT_CLAIMED"
+}

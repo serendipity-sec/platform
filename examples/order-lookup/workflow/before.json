@@ -1,0 +1,35 @@
+{
+  "name": "FlowDelta local order lookup prototype",
+  "active": false,
+  "nodes": [
+    {
+      "id": "request",
+      "name": "Order request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "parameters": {"httpMethod": "POST", "path": "flowdelta-order-lookup", "responseMode": "responseNode"}
+    },
+    {
+      "id": "read-order",
+      "name": "Read sample order",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [240, 0],
+      "parameters": {"method": "GET", "url": "http://orders-api:8080/orders/ORD-1001", "options": {}}
+    },
+    {
+      "id": "response",
+      "name": "Order response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [480, 0],
+      "parameters": {"respondWith": "json", "responseBody": "={{ { order_id: $json.order_id, status: $json.status } }}", "options": {}}
+    }
+  ],
+  "connections": {
+    "Order request": {"main": [[{"node": "Read sample order", "type": "main", "index": 0}]]},
+    "Read sample order": {"main": [[{"node": "Order response", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1"}
+}

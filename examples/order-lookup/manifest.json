@@ -1,0 +1,86 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "input-0",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "case.json",
+      "schema_version": "0.3.0",
+      "sha256": "16d1bd0daf37281bbaef048581845056c9d7b94064a4091af16114b31cbe08a0",
+      "size_bytes": 964
+    },
+    {
+      "artifact_id": "input-1",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "environment.json",
+      "schema_version": "0.3.0",
+      "sha256": "ff3aea6efb3575e3057ccfae47980823480f2cabb914ee252d1e8d9e15801d11",
+      "size_bytes": 408
+    },
+    {
+      "artifact_id": "input-2",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "policy.json",
+      "schema_version": "0.3.0",
+      "sha256": "c0c5b5d0ac9158324570c4e1f9b063a69d84c6a195415eb6380b020c63bc6c05",
+      "size_bytes": 862
+    },
+    {
+      "artifact_id": "input-3",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "provenance.json",
+      "schema_version": "0.3.0",
+      "sha256": "c5d458c833761b2f4f15497677477513a93074e12500975b80404f84ef445c1c",
+      "size_bytes": 508
+    },
+    {
+      "artifact_id": "input-4",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "state/initial.json",
+      "schema_version": "0.3.0",
+      "sha256": "44b1f0fcc1f7628f66082fbf91b2ede8810d09cd24fbb8070ac7755fe460dfb8",
+      "size_bytes": 243
+    },
+    {
+      "artifact_id": "input-5",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "task.json",
+      "schema_version": "0.3.0",
+      "sha256": "108957e8156125da28d1a6e7f60209b0f0d3b84bf3d60b87a8ae07c8f55f87d0",
+      "size_bytes": 627
+    },
+    {
+      "artifact_id": "input-6",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "workflow/after.json",
+      "schema_version": "0.3.0",
+      "sha256": "ac296264b6f606b39053c81a697707426cc6de5a490a676eb34a94a1358cb0d3",
+      "size_bytes": 1241
+    },
+    {
+      "artifact_id": "input-7",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "workflow/before.json",
+      "schema_version": "0.3.0",
+      "sha256": "9f3e25e8e58b758b20998a15187d75e0723c2888abb28f58fdfaadcc5abffe38",
+      "size_bytes": 1191
+    }
+  ],
+  "extensions": {},
+  "schema_version": "0.3.0"
+}
