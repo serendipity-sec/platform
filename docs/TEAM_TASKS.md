@@ -10,9 +10,9 @@
 | 담당 | 소유할 구현 | 처음 사용할 입력 | 첫 PR의 결과 |
 |---|---|---|---|
 | 팀장 | 입력·정규화·의미 어댑터 확장 | source bundle, engine/node metadata | 추가 지원 조합과 지원 범위의 근거 |
-| A | 그래프·노드 대응·변경/영향 | 완성된 input handoff | 실제 생성한 analysis.json |
-| B | 지식 카드·로더·검색·template 선택 | 수작업 analysis, cards, catalog | 실제 생성한 plan.json |
-| C | 계획 실행·상태 분리·초기화·기록 | 수작업 plan, catalog, 동작하는 baseline | plan을 읽어 만든 before/after 실행 파일 |
+| [A · #12](https://github.com/serendipity-sec/platform/issues/12) | 그래프·노드 대응·변경/영향 | 완성된 input handoff | 실제 생성한 analysis.json |
+| [B · #13](https://github.com/serendipity-sec/platform/issues/13) | 지식 카드·로더·검색·template 선택 | 수작업 analysis, cards, catalog | 실제 생성한 plan.json |
+| [C · #14](https://github.com/serendipity-sec/platform/issues/14) | 계획 실행·상태 분리·초기화·기록 | 수작업 plan, catalog, 동작하는 baseline | plan을 읽어 만든 before/after 실행 파일 |
 
 공통 서명은 [interfaces.py](../src/flowdelta/interfaces.py)에 있다. Protocol은 구현 약속이며
 아직 동작하는 A/B/C 구현 클래스가 아니다. 각 구현자는 자기 코드의 테스트도 작성한다.
@@ -155,7 +155,7 @@
 
 1. A/B/C에 팀원 실명을 붙인다.
 2. 각자 가용 시간을 확인하고 **첫 PR 제출일**을 합의한다.
-3. 이 문서의 해당 카드를 팀원에게 전달한다. 각 구현 이슈를 만들고 브랜치를 이슈 번호와 연결한다.
+3. 이 문서의 해당 카드를 팀원에게 전달한다. 구현 이슈 #12/#13/#14는 만들어 두었으며 실명·첫 PR 제출일을 채우고 브랜치를 해당 번호와 연결한다.
 4. 공통 입력 PR과 기준 환경 PR을 다른 팀원이 읽고 승인하도록 담당자를 정한다.
 5. 첫 회의에서 `case → analysis → plan → run` 파일을 함께 열고 각자의 시작 입력을 확인한다.
 
