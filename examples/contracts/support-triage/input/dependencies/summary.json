@@ -1,0 +1,67 @@
+{
+  "active": false,
+  "connections": {
+    "Sub-workflow input": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Public summary",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "id": "fdSupportSummary",
+  "name": "FlowDelta local support summary",
+  "nodes": [
+    {
+      "id": "child-entry",
+      "name": "Sub-workflow input",
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2
+    },
+    {
+      "id": "child-public",
+      "name": "Public summary",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "child-public-0",
+              "name": "ticket_id",
+              "type": "string",
+              "value": "={{ $json.ticket_id }}"
+            },
+            {
+              "id": "child-public-1",
+              "name": "queue",
+              "type": "string",
+              "value": "={{ $json.queue }}"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

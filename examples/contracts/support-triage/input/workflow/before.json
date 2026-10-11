@@ -1,0 +1,337 @@
+{
+  "active": false,
+  "connections": {
+    "Manual request": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Normal ticket batch",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Merge queues": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Summarize batch",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Normal ticket batch": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Split tickets",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Priority gate": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Urgent queue",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Standard queue",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Split tickets": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Priority gate",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Standard queue": {
+      "main": [
+        [
+          {
+            "index": 1,
+            "node": "Merge queues",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Summarize batch": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Triage result",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Urgent queue": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Merge queues",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "id": "fdSupportTriage",
+  "name": "FlowDelta local ticket triage",
+  "nodes": [
+    {
+      "id": "start",
+      "name": "Manual request",
+      "parameters": {},
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "id": "seed",
+      "name": "Normal ticket batch",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "seed-0",
+              "name": "tickets",
+              "type": "array",
+              "value": [
+                {
+                  "priority": 3,
+                  "ticket_id": "T-1001"
+                },
+                {
+                  "priority": 1,
+                  "ticket_id": "T-1002"
+                },
+                {
+                  "priority": 5,
+                  "ticket_id": "T-1003"
+                }
+              ]
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5
+    },
+    {
+      "id": "split",
+      "name": "Split tickets",
+      "parameters": {
+        "fieldToSplitOut": "tickets",
+        "include": "noOtherFields",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1
+    },
+    {
+      "id": "priority",
+      "name": "Priority gate",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "priority-condition",
+              "leftValue": "={{ $json.priority }}",
+              "operator": {
+                "operation": "gte",
+                "type": "number"
+              },
+              "rightValue": 3
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "looseTypeValidation": false,
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "urgent",
+      "name": "Urgent queue",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "urgent-0",
+              "name": "ticket_id",
+              "type": "string",
+              "value": "={{ $('Split tickets').item.json.ticket_id }}"
+            },
+            {
+              "id": "urgent-1",
+              "name": "queue",
+              "type": "string",
+              "value": "urgent"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5
+    },
+    {
+      "id": "standard",
+      "name": "Standard queue",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "standard-0",
+              "name": "ticket_id",
+              "type": "string",
+              "value": "={{ $('Split tickets').item.json.ticket_id }}"
+            },
+            {
+              "id": "standard-1",
+              "name": "queue",
+              "type": "string",
+              "value": "standard"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5
+    },
+    {
+      "id": "merge",
+      "name": "Merge queues",
+      "parameters": {
+        "mode": "append",
+        "numberInputs": 2
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2
+    },
+    {
+      "id": "summary",
+      "name": "Summarize batch",
+      "parameters": {
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        },
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "fdSupportSummary"
+        },
+        "workflowInputs": {
+          "mappingMode": "passThrough"
+        }
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4
+    },
+    {
+      "id": "result",
+      "name": "Triage result",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "result-0",
+              "name": "ticket_id",
+              "type": "string",
+              "value": "={{ $json.ticket_id }}"
+            },
+            {
+              "id": "result-1",
+              "name": "queue",
+              "type": "string",
+              "value": "={{ $json.queue }}"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

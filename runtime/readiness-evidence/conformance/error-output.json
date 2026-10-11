@@ -1,0 +1,502 @@
+{
+  "records": {
+    "comparison.json": {
+      "all_observed_checks_match": true,
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "error-output",
+      "checks": [
+        {
+          "check": "execution-status",
+          "expected": "SUCCEEDED",
+          "observed": "SUCCEEDED",
+          "status": "MATCH"
+        },
+        {
+          "check": "cleanup",
+          "expected": "COMPLETE",
+          "observed": "COMPLETE",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-status",
+          "expected": "success",
+          "observed": "success",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-observations-present",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "last-node-observed",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:connections",
+          "execution_id": "1",
+          "expected_sha256": "27ef90d31737280197163154271505459ec0f7401f40db416f85f96360090c8e",
+          "observed_sha256": "27ef90d31737280197163154271505459ec0f7401f40db416f85f96360090c8e",
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:nodes",
+          "execution_id": "1",
+          "expected_sha256": "b5bf510cf23e2e729ebf7113940f1e63afba197bb5b57bb14fb3a01cb7f43b8d",
+          "observed_sha256": "b5bf510cf23e2e729ebf7113940f1e63afba197bb5b57bb14fb3a01cb7f43b8d",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {}
+            ]
+          ],
+          "node_id": "start",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {}
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformanceErroroutput"
+        },
+        {
+          "check": "expected-error-output-port",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "convert",
+          "node_run_index": 0,
+          "observed": true,
+          "status": "MATCH",
+          "workflow_id": "fdConformanceErroroutput"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "status": "needs-correction"
+              }
+            ]
+          ],
+          "node_id": "handled",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "status": "needs-correction"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformanceErroroutput"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "handled",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformanceErroroutput"
+        }
+      ],
+      "not_observed_nodes": [],
+      "run_id": "run-2bffe967d7714942abd3ab676b32b80e",
+      "schema_version": "0.4.0",
+      "scope": "Normal node outputs, ports, source binding and item links; no security verdict."
+    },
+    "run.json": {
+      "actual_engine_version": "2.42.6",
+      "actual_image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "error-output",
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "expect_success": true,
+      "expected_execution_observed": true,
+      "finished_at": "2026-10-11T00:48:51.096049+00:00",
+      "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "network": "none",
+      "observed_executions": 1,
+      "observed_node_ports": 4,
+      "outcome": null,
+      "return_code": 0,
+      "run_id": "run-2bffe967d7714942abd3ab676b32b80e",
+      "source_sha256": "1f2b4030bf55e6dd2324750a31c7e68610d9c65a0c87311399789aa1a3a1cf0c",
+      "started_at": "2026-10-11T00:47:27.053678+00:00"
+    },
+    "runtime-executions.json": {
+      "authorship": "RUNTIME_OBSERVATION",
+      "executions": [
+        {
+          "data": {
+            "resultData": {
+              "lastNodeExecuted": "Handled input error",
+              "runData": {
+                "Handled input error": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "status": "needs-correction"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 2,
+                    "executionStatus": "success",
+                    "executionTime": 2,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Read numeric priority",
+                        "previousNodeOutput": 1,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679729555
+                  }
+                ],
+                "Manual request": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {},
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 2,
+                    "hints": [],
+                    "source": [],
+                    "startTime": 1791679729529
+                  }
+                ],
+                "Read numeric priority": [
+                  {
+                    "data": {
+                      "main": [
+                        [],
+                        [
+                          {
+                            "json": {
+                              "error": "'priority' expects a number but we got 'not-a-number' [item 0]"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "success",
+                    "executionTime": 22,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Manual request",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679729532
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "1",
+          "status": "success",
+          "workflow": {
+            "connections": {
+              "Manual request": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Read numeric priority",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Read numeric priority": {
+                "main": [
+                  [],
+                  [
+                    {
+                      "index": 0,
+                      "node": "Handled input error",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdConformanceErroroutput",
+            "name": "Normal conversion error output",
+            "nodes": [
+              {
+                "id": "start",
+                "name": "Manual request",
+                "parameters": {
+                  "notice": ""
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.manualTrigger",
+                "typeVersion": 1
+              },
+              {
+                "id": "convert",
+                "name": "Read numeric priority",
+                "onError": "continueErrorOutput",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "convert-0",
+                        "name": "priority",
+                        "type": "number",
+                        "value": "not-a-number"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "handled",
+                "name": "Handled input error",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "handled-0",
+                        "name": "status",
+                        "type": "string",
+                        "value": "needs-correction"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdConformanceErroroutput"
+        }
+      ],
+      "observations": [
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {},
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "start",
+          "node_name": "Manual request",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Manual request/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceErroroutput"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [],
+          "node_id": "convert",
+          "node_name": "Read numeric priority",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Read numeric priority/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceErroroutput"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "error": "'priority' expects a number but we got 'not-a-number' [item 0]"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "convert",
+          "node_name": "Read numeric priority",
+          "node_run_index": 0,
+          "output_index": 1,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Read numeric priority/0/data/main/1",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceErroroutput"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "status": "needs-correction"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "handled",
+          "node_name": "Handled input error",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Handled input error/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceErroroutput"
+        }
+      ],
+      "schema_version": "0.4.0",
+      "source_database_sha256": "865f58fc4e9b2c250cc1fba5d9d86fa311df62df22788d1c835de748b49b8aba",
+      "transformation": "Selected execution fields; authentication header values redacted; no resume tokens."
+    }
+  },
+  "schema_version": "0.4.0",
+  "selection": "Selected JSON observations only",
+  "source_files": {
+    "comparison.json": "740c33c7c0646880d7dead7587adaa8cfabddab774a8fe7bb46001424e12391c",
+    "run.json": "32160980edd659a66573f77ff8cb358bc8044c34713b42ad44ce2ec2e169485b",
+    "runtime-executions.json": "e6af147d68b8920f4b0f5461119b8c06dbca3df74242d90006c49fb837272c2e"
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "authorship": {
+    "extensions": {},
+    "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.4.0"
+  },
+  "catalog_id": "catalog-order-lookup-v1",
+  "extensions": {},
+  "schema_version": "0.4.0",
+  "templates": [
+    {
+      "allowed_effects": [
+        "read:own-order",
+        "respond:normal-order",
+        "fixture:append-order-read-event"
+      ],
+      "extensions": {},
+      "input_fields": [
+        {
+          "extensions": {},
+          "items": null,
+          "max_items": 1000,
+          "name": "order_id",
+          "pattern": "^ORD-[0-9]{4}$",
+          "properties": [],
+          "required": true,
+          "schema_version": "0.4.0",
+          "value_type": "string"
+        }
+      ],
+      "materialized_input_bindings": [],
+      "method": "POST",
+      "mode": "NORMAL_BUSINESS_REQUEST",
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "runtime_profile": "order-lookup-local-v1",
+      "schema_version": "0.4.0",
+      "task_id": "order-lookup",
+      "template_id": "normal-order-lookup",
+      "timeout_seconds": 30,
+      "version": "1.0.0",
+      "webhook_path": "/webhook/flowdelta-order-lookup"
+    }
+  ]
+}

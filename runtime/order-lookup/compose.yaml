@@ -1,0 +1,54 @@
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a
+    environment:
+      N8N_HOST: 127.0.0.1
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      N8N_SECURE_COOKIE: "false"
+      N8N_ENCRYPTION_KEY: ${FD_ENCRYPTION_KEY:?baseline preparation required}
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
+      GENERIC_TIMEZONE: UTC
+      TZ: UTC
+      EXECUTIONS_DATA_SAVE_ON_SUCCESS: all
+      EXECUTIONS_DATA_SAVE_ON_ERROR: all
+    volumes:
+      - ${FD_RUN_DIR:?baseline preparation required}/n8n:/home/node/.n8n
+      - ${FD_RUN_DIR:?baseline preparation required}/import:/import:ro
+    networks: [lab]
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 256
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+  orders-api:
+    build:
+      context: ../..
+      dockerfile: runtime/order-lookup/fixture.Dockerfile
+    image: flowdelta-order-fixture:0.2.0
+    environment:
+      FD_STATE_DIR: /state
+      FD_INITIAL_STATE: /fixtures/initial.json
+      FD_RUN_ID: ${FD_RUN_ID:?baseline preparation required}
+      FD_SERVICE_TOKEN: ${FD_SERVICE_TOKEN:?baseline preparation required}
+      FD_CONTROL_TOKEN: ${FD_CONTROL_TOKEN:?baseline preparation required}
+    volumes:
+      - ${FD_RUN_DIR:?baseline preparation required}/fixture:/state
+      - ${FD_RUN_DIR:?baseline preparation required}/import/initial.json:/fixtures/initial.json:ro
+    networks: [lab]
+    read_only: true
+    tmpfs: [/tmp]
+    mem_limit: 256m
+    cpus: 1
+    pids_limit: 64
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+
+networks:
+  lab:
+    internal: true

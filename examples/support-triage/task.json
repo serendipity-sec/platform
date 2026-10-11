@@ -1,0 +1,31 @@
+{
+  "actor": "team-local-support-operator",
+  "allowed_side_effects": [],
+  "normal_input": {
+    "tickets": [
+      {
+        "priority": 3,
+        "ticket_id": "T-1001"
+      },
+      {
+        "priority": 1,
+        "ticket_id": "T-1002"
+      },
+      {
+        "priority": 5,
+        "ticket_id": "T-1003"
+      }
+    ]
+  },
+  "protected_resources": [
+    "local ticket batch"
+  ],
+  "provenance_ref": "provenance.json",
+  "purpose": "고객 문의 배치를 우선순위별 큐로 분류한다.",
+  "schema_version": "0.4.0",
+  "success_conditions": [
+    "priority >= 3이면 urgent, 그 외는 standard",
+    "모든 ticket_id가 한 번씩 결과에 존재"
+  ],
+  "task_id": "support-triage"
+}

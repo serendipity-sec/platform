@@ -1,15 +1,22 @@
 {
-  "schema_version": "0.3.0",
-  "task_id": "order-lookup",
-  "purpose": "합성 고객의 합성 주문 1건을 조회하고 주문 상태를 응답한다.",
   "actor": "customer-demo / tenant-demo",
-  "normal_input": {"order_id": "ORD-1001"},
+  "allowed_side_effects": [
+    "정상 응답",
+    "합성 서비스의 요청 이벤트 기록"
+  ],
+  "normal_input": {
+    "order_id": "ORD-1001"
+  },
+  "protected_resources": [
+    "합성 orders 데이터"
+  ],
+  "provenance_ref": "provenance.json",
+  "purpose": "합성 고객의 합성 주문 1건을 조회하고 주문 상태를 응답한다.",
+  "schema_version": "0.4.0",
   "success_conditions": [
     "응답 order_id는 ORD-1001이다.",
     "응답 status는 준비중이다.",
     "display_status 필드의 추가는 정상 표시 변경으로 허용한다."
   ],
-  "protected_resources": ["합성 orders 데이터"],
-  "allowed_side_effects": ["정상 응답", "합성 서비스의 요청 이벤트 기록"],
-  "provenance_ref": "provenance.json"
+  "task_id": "order-lookup"
 }

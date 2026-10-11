@@ -1,0 +1,2613 @@
+{
+  "$defs": {
+    "AnalysisBundle": {
+      "additionalProperties": false,
+      "properties": {
+        "after_graph": {
+          "$ref": "#/$defs/SemanticGraph"
+        },
+        "after_snapshot_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "After Snapshot Id",
+          "type": "string"
+        },
+        "analysis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Analysis Id",
+          "type": "string"
+        },
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "before_graph": {
+          "$ref": "#/$defs/SemanticGraph"
+        },
+        "before_snapshot_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Before Snapshot Id",
+          "type": "string"
+        },
+        "case_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "changes": {
+          "items": {
+            "$ref": "#/$defs/Change"
+          },
+          "title": "Changes",
+          "type": "array"
+        },
+        "dependency_graphs": {
+          "additionalProperties": {
+            "$ref": "#/$defs/SemanticGraph"
+          },
+          "title": "Dependency Graphs",
+          "type": "object"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "impact_paths": {
+          "items": {
+            "$ref": "#/$defs/ImpactPath"
+          },
+          "title": "Impact Paths",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "node_matches": {
+          "items": {
+            "$ref": "#/$defs/NodeMatch"
+          },
+          "title": "Node Matches",
+          "type": "array"
+        },
+        "obligation_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Obligation Ids",
+          "type": "array"
+        },
+        "policy_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "task_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        }
+      },
+      "required": [
+        "analysis_id",
+        "case_id",
+        "before_snapshot_id",
+        "after_snapshot_id",
+        "authorship",
+        "node_matches",
+        "before_graph",
+        "after_graph",
+        "changes",
+        "task_ref",
+        "policy_ref",
+        "obligation_ids",
+        "limitations"
+      ],
+      "title": "AnalysisBundle",
+      "type": "object"
+    },
+    "ArtifactCollection": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_kinds": {
+          "additionalProperties": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Artifact Kinds",
+          "type": "object"
+        },
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "collection_status": {
+          "enum": [
+            "COMPLETE",
+            "PARTIAL",
+            "NOT_STARTED"
+          ],
+          "title": "Collection Status",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "missing_kinds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Missing Kinds",
+          "type": "array"
+        },
+        "observed_kinds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Observed Kinds",
+          "type": "array"
+        },
+        "required_kinds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Required Kinds",
+          "type": "array"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "artifacts",
+        "artifact_kinds",
+        "required_kinds",
+        "observed_kinds",
+        "missing_kinds",
+        "collection_status"
+      ],
+      "title": "ArtifactCollection",
+      "type": "object"
+    },
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "source",
+            "generated"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "media_type": {
+          "default": "application/json",
+          "enum": [
+            "application/json",
+            "text/plain"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 8388608,
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "path",
+        "sha256",
+        "size_bytes",
+        "kind"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "Authorship": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "note": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Note",
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "CONTRACT_EXAMPLE",
+            "MODULE_OUTPUT",
+            "RUNTIME_OBSERVATION"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "producer": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Producer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "origin",
+        "producer",
+        "note"
+      ],
+      "title": "Authorship",
+      "type": "object"
+    },
+    "BranchCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "output_index": {
+          "minimum": 0,
+          "title": "Output Index",
+          "type": "integer"
+        },
+        "output_type": {
+          "default": "main",
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Output Type",
+          "type": "string"
+        },
+        "predicate": {
+          "$ref": "#/$defs/ValueExpression"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "when": {
+          "title": "When",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "output_index",
+        "predicate",
+        "when",
+        "source"
+      ],
+      "title": "BranchCondition",
+      "type": "object"
+    },
+    "Change": {
+      "additionalProperties": false,
+      "properties": {
+        "after_source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "after_value": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "before_source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "before_value": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "change_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Change Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "ADDED",
+            "REMOVED",
+            "PARAMETER_CHANGED",
+            "DISPLAY_CHANGED",
+            "CONNECTION_CHANGED",
+            "UNKNOWN",
+            "SETTINGS_CHANGED",
+            "TYPE_VERSION_CHANGED",
+            "CREDENTIAL_CHANGED",
+            "DEPENDENCY_CHANGED"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "node_id": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Node Id"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "change_id",
+        "node_id",
+        "kind",
+        "before_value",
+        "after_value",
+        "before_source",
+        "after_source"
+      ],
+      "title": "Change",
+      "type": "object"
+    },
+    "EvidenceEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_number": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Attempt Number",
+          "type": "integer"
+        },
+        "attributes": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Attributes",
+          "type": "object"
+        },
+        "event_type": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Event Type",
+          "type": "string"
+        },
+        "execution_id": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Execution Id"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "item_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Item Index"
+        },
+        "method": {
+          "anyOf": [
+            {
+              "enum": [
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Method"
+        },
+        "node_id": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Id"
+        },
+        "node_run_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Run Index"
+        },
+        "observed_at": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Observed At",
+          "type": "string"
+        },
+        "outcome": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Outcome",
+          "type": "string"
+        },
+        "principal": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Principal",
+          "type": "string"
+        },
+        "producer": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Producer",
+          "type": "string"
+        },
+        "resource_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Resource Id",
+          "type": "string"
+        },
+        "response_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Response Sha256",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sequence": {
+          "exclusiveMinimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "tenant": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Tenant",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "producer",
+        "sequence",
+        "observed_at",
+        "event_type",
+        "principal",
+        "tenant",
+        "resource_id",
+        "method",
+        "outcome",
+        "response_sha256"
+      ],
+      "title": "EvidenceEvent",
+      "type": "object"
+    },
+    "ExecutionRun": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_engine_version": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Actual Engine Version"
+        },
+        "actual_image_digest": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Actual Image Digest"
+        },
+        "artifacts": {
+          "$ref": "#/$defs/ArtifactCollection"
+        },
+        "attempt_number": {
+          "default": 1,
+          "minimum": 1,
+          "title": "Attempt Number",
+          "type": "integer"
+        },
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "case_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "cleanup_status": {
+          "enum": [
+            "PENDING",
+            "COMPLETE",
+            "FAILED"
+          ],
+          "title": "Cleanup Status",
+          "type": "string"
+        },
+        "comparison_run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Comparison Run Id",
+          "type": "string"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error Code"
+        },
+        "execution_status": {
+          "enum": [
+            "NOT_RUN",
+            "SUCCEEDED",
+            "FAILED",
+            "TIMED_OUT",
+            "CANCELLED",
+            "INTERRUPTED"
+          ],
+          "title": "Execution Status",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        },
+        "initial_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Initial State Sha256",
+          "type": "string"
+        },
+        "outcome": {
+          "default": null,
+          "title": "Outcome",
+          "type": "null"
+        },
+        "phase": {
+          "enum": [
+            "QUEUED",
+            "PREPARING",
+            "READY",
+            "RUNNING",
+            "COLLECTING",
+            "FINALIZING",
+            "FINISHED"
+          ],
+          "title": "Phase",
+          "type": "string"
+        },
+        "plan_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "runtime_profile": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Runtime Profile",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        }
+      },
+      "required": [
+        "run_id",
+        "comparison_run_id",
+        "case_id",
+        "plan_id",
+        "side",
+        "snapshot_id",
+        "authorship",
+        "runtime_profile",
+        "actual_engine_version",
+        "actual_image_digest",
+        "initial_state_sha256",
+        "phase",
+        "execution_status",
+        "cleanup_status",
+        "started_at",
+        "finished_at",
+        "error_code",
+        "artifacts"
+      ],
+      "title": "ExecutionRun",
+      "type": "object"
+    },
+    "GraphEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_version": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Adapter Version"
+        },
+        "basis": {
+          "const": "STATIC_POSSIBILITY",
+          "title": "Basis",
+          "type": "string"
+        },
+        "condition": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BranchCondition"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "edge_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/SourceLocation"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "input_port": {
+          "minimum": 0,
+          "title": "Input Port",
+          "type": "integer"
+        },
+        "input_type": {
+          "default": "main",
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Input Type",
+          "type": "string"
+        },
+        "output_port": {
+          "minimum": 0,
+          "title": "Output Port",
+          "type": "integer"
+        },
+        "output_type": {
+          "default": "main",
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Output Type",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "CONTROL",
+            "DATA",
+            "INSTRUCTION_INFLUENCE",
+            "CAPABILITY",
+            "DEPENDENCY_PROTECTION"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_fields": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Source Fields",
+          "type": "array"
+        },
+        "source_node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Source Node Id",
+          "type": "string"
+        },
+        "target_fields": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Target Fields",
+          "type": "array"
+        },
+        "target_node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Target Node Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "edge_id",
+        "source_node_id",
+        "target_node_id",
+        "relation",
+        "output_port",
+        "input_port",
+        "evidence",
+        "basis"
+      ],
+      "title": "GraphEdge",
+      "type": "object"
+    },
+    "GraphNode": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "WORKFLOW_NODE",
+            "RESOURCE",
+            "PRINCIPAL",
+            "CAPABILITY",
+            "DEPENDENCY"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "workflow_node_id": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Workflow Node Id"
+        }
+      },
+      "required": [
+        "node_id",
+        "kind"
+      ],
+      "title": "GraphNode",
+      "type": "object"
+    },
+    "ImpactPath": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "const": "STATIC_POSSIBILITY",
+          "default": "STATIC_POSSIBILITY",
+          "title": "Basis",
+          "type": "string"
+        },
+        "change_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Change Ids",
+          "type": "array"
+        },
+        "edge_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Edge Ids",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "limitations": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "path_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Path Id",
+          "type": "string"
+        },
+        "policy_rule_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Policy Rule Ids",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "support": {
+          "enum": [
+            "SUPPORTED",
+            "PARTIAL",
+            "UNKNOWN"
+          ],
+          "title": "Support",
+          "type": "string"
+        },
+        "task_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Task Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "path_id",
+        "side",
+        "change_ids",
+        "edge_ids",
+        "task_ids",
+        "policy_rule_ids",
+        "support",
+        "limitations"
+      ],
+      "title": "ImpactPath",
+      "type": "object"
+    },
+    "InputField": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "items": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InputValueSchema"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "max_items": {
+          "default": 1000,
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Max Items",
+          "type": "integer"
+        },
+        "name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "pattern": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pattern"
+        },
+        "properties": {
+          "items": {
+            "$ref": "#/$defs/InputField"
+          },
+          "title": "Properties",
+          "type": "array"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "value_type": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ],
+          "title": "Value Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value_type",
+        "name",
+        "required"
+      ],
+      "title": "InputField",
+      "type": "object"
+    },
+    "InputValueSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "items": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/InputValueSchema"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "max_items": {
+          "default": 1000,
+          "maximum": 1000,
+          "minimum": 0,
+          "title": "Max Items",
+          "type": "integer"
+        },
+        "pattern": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pattern"
+        },
+        "properties": {
+          "items": {
+            "$ref": "#/$defs/InputField"
+          },
+          "title": "Properties",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "value_type": {
+          "enum": [
+            "string",
+            "integer",
+            "number",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ],
+          "title": "Value Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "value_type"
+      ],
+      "title": "InputValueSchema",
+      "type": "object"
+    },
+    "ItemLink": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "input_index": {
+          "minimum": 0,
+          "title": "Input Index",
+          "type": "integer"
+        },
+        "item_index": {
+          "minimum": 0,
+          "title": "Item Index",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_index",
+        "item_index"
+      ],
+      "title": "ItemLink",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "MaterializedInputBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "input_name": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Input Name",
+          "type": "string"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "parameter_pointer": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Parameter Pointer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_name",
+        "node_id",
+        "parameter_pointer"
+      ],
+      "title": "MaterializedInputBinding",
+      "type": "object"
+    },
+    "NodeMatch": {
+      "additionalProperties": false,
+      "properties": {
+        "after_node_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "After Node Id"
+        },
+        "before_node_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Before Node Id"
+        },
+        "evidence": {
+          "items": {
+            "$ref": "#/$defs/SourceLocation"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "method": {
+          "enum": [
+            "EXACT_ID",
+            "STRUCTURAL",
+            "ADDED",
+            "REMOVED",
+            "AMBIGUOUS"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "before_node_id",
+        "after_node_id",
+        "method"
+      ],
+      "title": "NodeMatch",
+      "type": "object"
+    },
+    "NodeObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "execution_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "execution_status": {
+          "enum": [
+            "SUCCESS",
+            "ERROR",
+            "UNKNOWN"
+          ],
+          "title": "Execution Status",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/ObservedItem"
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_name": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Name",
+          "type": "string"
+        },
+        "node_run_index": {
+          "minimum": 0,
+          "title": "Node Run Index",
+          "type": "integer"
+        },
+        "output_index": {
+          "minimum": 0,
+          "title": "Output Index",
+          "type": "integer"
+        },
+        "output_type": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Output Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "workflow_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Workflow Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "execution_id",
+        "workflow_id",
+        "node_id",
+        "node_name",
+        "node_run_index",
+        "output_type",
+        "output_index",
+        "items",
+        "execution_status",
+        "source"
+      ],
+      "title": "NodeObservation",
+      "type": "object"
+    },
+    "ObligationBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "obligation_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Obligation Id",
+          "type": "string"
+        },
+        "required_artifact_kinds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Required Artifact Kinds",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "obligation_id",
+        "required_artifact_kinds"
+      ],
+      "title": "ObligationBinding",
+      "type": "object"
+    },
+    "ObservedItem": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "item_index": {
+          "minimum": 0,
+          "title": "Item Index",
+          "type": "integer"
+        },
+        "json_data": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Json Data",
+          "type": "object"
+        },
+        "linkage_status": {
+          "enum": [
+            "OBSERVED",
+            "ABSENT",
+            "UNSUPPORTED"
+          ],
+          "title": "Linkage Status",
+          "type": "string"
+        },
+        "paired_items": {
+          "items": {
+            "$ref": "#/$defs/ItemLink"
+          },
+          "title": "Paired Items",
+          "type": "array"
+        },
+        "raw_metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Raw Metadata",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item_index",
+        "json_data",
+        "paired_items",
+        "linkage_status"
+      ],
+      "title": "ObservedItem",
+      "type": "object"
+    },
+    "RetrievalHit": {
+      "additionalProperties": false,
+      "properties": {
+        "applicability": {
+          "enum": [
+            "MATCH",
+            "PARTIAL",
+            "NO_MATCH"
+          ],
+          "title": "Applicability",
+          "type": "string"
+        },
+        "card_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Card Id",
+          "type": "string"
+        },
+        "card_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Card Version",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "rank": {
+          "minimum": 1,
+          "title": "Rank",
+          "type": "integer"
+        },
+        "reason": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "score": {
+          "title": "Score",
+          "type": "number"
+        }
+      },
+      "required": [
+        "card_id",
+        "card_version",
+        "rank",
+        "score",
+        "applicability",
+        "reason"
+      ],
+      "title": "RetrievalHit",
+      "type": "object"
+    },
+    "RetrievalResult": {
+      "additionalProperties": false,
+      "properties": {
+        "analysis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Analysis Id",
+          "type": "string"
+        },
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "excluded_reasons": {
+          "additionalProperties": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Excluded Reasons",
+          "type": "object"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "hits": {
+          "items": {
+            "$ref": "#/$defs/RetrievalHit"
+          },
+          "title": "Hits",
+          "type": "array"
+        },
+        "kb_snapshot_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "method": {
+          "enum": [
+            "KEYWORD",
+            "VECTOR",
+            "HYBRID"
+          ],
+          "title": "Method",
+          "type": "string"
+        },
+        "model_version": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Version"
+        },
+        "query": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Query",
+          "type": "object"
+        },
+        "retrieval_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Retrieval Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "retrieval_id",
+        "analysis_id",
+        "authorship",
+        "kb_snapshot_ref",
+        "method",
+        "model_version",
+        "query",
+        "hits",
+        "excluded_reasons"
+      ],
+      "title": "RetrievalResult",
+      "type": "object"
+    },
+    "ScenarioCard": {
+      "additionalProperties": false,
+      "properties": {
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "card_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Card Id",
+          "type": "string"
+        },
+        "claim_basis": {
+          "default": "TEAM_HYPOTHESIS",
+          "enum": [
+            "TEAM_HYPOTHESIS",
+            "AUTHOR_DESCRIPTION",
+            "EXPERIMENTALLY_OBSERVED"
+          ],
+          "title": "Claim Basis",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "license_identifier": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "License Identifier"
+        },
+        "node_types": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Node Types",
+          "type": "array"
+        },
+        "required_artifact_kinds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Required Artifact Kinds",
+          "type": "array"
+        },
+        "reuse_status": {
+          "enum": [
+            "TEAM_AUTHORED",
+            "LICENSED_PUBLIC",
+            "CONSENTED"
+          ],
+          "title": "Reuse Status",
+          "type": "string"
+        },
+        "runtime_profile": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Runtime Profile",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "source_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_revision": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Revision"
+        },
+        "summary": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "template_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Template Id",
+          "type": "string"
+        },
+        "template_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Template Version",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "card_id",
+        "version",
+        "title",
+        "summary",
+        "source",
+        "reuse_status",
+        "authorship",
+        "runtime_profile",
+        "node_types",
+        "template_id",
+        "template_version",
+        "required_artifact_kinds"
+      ],
+      "title": "ScenarioCard",
+      "type": "object"
+    },
+    "SemanticGraph": {
+      "additionalProperties": false,
+      "properties": {
+        "edges": {
+          "items": {
+            "$ref": "#/$defs/GraphEdge"
+          },
+          "title": "Edges",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "limitations": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "node_ids": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Node Ids",
+          "type": "array"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/GraphNode"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_ids",
+        "edges",
+        "limitations"
+      ],
+      "title": "SemanticGraph",
+      "type": "object"
+    },
+    "SourceLocation": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "json_pointer": {
+          "title": "Json Pointer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "json_pointer"
+      ],
+      "title": "SourceLocation",
+      "type": "object"
+    },
+    "Template": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_effects": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Effects",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "input_fields": {
+          "items": {
+            "$ref": "#/$defs/InputField"
+          },
+          "title": "Input Fields",
+          "type": "array"
+        },
+        "materialized_input_bindings": {
+          "items": {
+            "$ref": "#/$defs/MaterializedInputBinding"
+          },
+          "title": "Materialized Input Bindings",
+          "type": "array"
+        },
+        "method": {
+          "anyOf": [
+            {
+              "enum": [
+                "GET",
+                "POST"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Method"
+        },
+        "mode": {
+          "enum": [
+            "NORMAL_BUSINESS_REQUEST",
+            "NORMAL_MANUAL_WORKFLOW"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "required_artifact_kinds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Required Artifact Kinds",
+          "type": "array"
+        },
+        "runtime_profile": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Runtime Profile",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "task_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "template_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Template Id",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 300,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "webhook_path": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Webhook Path"
+        }
+      },
+      "required": [
+        "template_id",
+        "version",
+        "task_id",
+        "runtime_profile",
+        "mode",
+        "method",
+        "webhook_path",
+        "input_fields",
+        "required_artifact_kinds",
+        "allowed_effects",
+        "timeout_seconds"
+      ],
+      "title": "Template",
+      "type": "object"
+    },
+    "TemplateCatalog": {
+      "additionalProperties": false,
+      "properties": {
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "catalog_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Catalog Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "templates": {
+          "items": {
+            "$ref": "#/$defs/Template"
+          },
+          "minItems": 1,
+          "title": "Templates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "catalog_id",
+        "authorship",
+        "templates"
+      ],
+      "title": "TemplateCatalog",
+      "type": "object"
+    },
+    "TestPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "after_snapshot_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "After Snapshot Id",
+          "type": "string"
+        },
+        "analysis_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Analysis Id",
+          "type": "string"
+        },
+        "attempts_per_side": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Attempts Per Side",
+          "type": "integer"
+        },
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "before_snapshot_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Before Snapshot Id",
+          "type": "string"
+        },
+        "case_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "catalog_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Catalog Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "initial_state_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "normal_input": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Normal Input",
+          "type": "object"
+        },
+        "obligation_bindings": {
+          "items": {
+            "$ref": "#/$defs/ObligationBinding"
+          },
+          "title": "Obligation Bindings",
+          "type": "array"
+        },
+        "plan_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "planner_metadata": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Planner Metadata",
+          "type": "object"
+        },
+        "retrieval_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "template_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Template Id",
+          "type": "string"
+        },
+        "template_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Template Version",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 300,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "uncovered_obligation_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Uncovered Obligation Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "plan_id",
+        "case_id",
+        "analysis_id",
+        "authorship",
+        "before_snapshot_id",
+        "after_snapshot_id",
+        "catalog_id",
+        "template_id",
+        "template_version",
+        "normal_input",
+        "initial_state_ref",
+        "obligation_bindings",
+        "uncovered_obligation_ids",
+        "attempts_per_side",
+        "timeout_seconds"
+      ],
+      "title": "TestPlan",
+      "type": "object"
+    },
+    "ValueExpression": {
+      "additionalProperties": false,
+      "description": "Restricted syntax tree. It is data and is never passed to eval().",
+      "properties": {
+        "comparison_type": {
+          "anyOf": [
+            {
+              "enum": [
+                "string",
+                "number",
+                "boolean"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comparison Type"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "field_path": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Field Path",
+          "type": "array"
+        },
+        "item_selection": {
+          "default": "CURRENT",
+          "enum": [
+            "CURRENT",
+            "LINKED",
+            "FIRST"
+          ],
+          "title": "Item Selection",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "constant",
+            "current_field",
+            "named_field",
+            "object",
+            "concat",
+            "compare"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "members": {
+          "additionalProperties": {
+            "$ref": "#/$defs/ValueExpression"
+          },
+          "title": "Members",
+          "type": "object"
+        },
+        "node_name": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Name"
+        },
+        "operator": {
+          "anyOf": [
+            {
+              "enum": [
+                "eq",
+                "neq",
+                "gt",
+                "gte",
+                "lt",
+                "lte"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operator"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "terms": {
+          "items": {
+            "$ref": "#/$defs/ValueExpression"
+          },
+          "title": "Terms",
+          "type": "array"
+        },
+        "value": {
+          "$ref": "#/$defs/JsonValue",
+          "default": null
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "ValueExpression",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "analysis": {
+      "$ref": "#/$defs/AnalysisBundle"
+    },
+    "cards": {
+      "items": {
+        "$ref": "#/$defs/ScenarioCard"
+      },
+      "title": "Cards",
+      "type": "array"
+    },
+    "catalog": {
+      "$ref": "#/$defs/TemplateCatalog"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/EvidenceEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "observations": {
+      "items": {
+        "$ref": "#/$defs/NodeObservation"
+      },
+      "title": "Observations",
+      "type": "array"
+    },
+    "plan": {
+      "$ref": "#/$defs/TestPlan"
+    },
+    "retrieval": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RetrievalResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "run": {
+      "$ref": "#/$defs/ExecutionRun"
+    },
+    "schema_version": {
+      "const": "0.4.0",
+      "default": "0.4.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "analysis",
+    "catalog",
+    "plan",
+    "run",
+    "cards"
+  ],
+  "title": "PipelineExamples",
+  "type": "object"
+}

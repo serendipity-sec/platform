@@ -1,0 +1,28 @@
+{
+  "after_roots": [
+    "summary",
+    "runtime"
+  ],
+  "before_roots": [
+    "summary",
+    "runtime"
+  ],
+  "dependencies": [
+    {
+      "dependency_id": "summary",
+      "kind": "WORKFLOW",
+      "path": "dependencies/summary.json",
+      "requires": [],
+      "version": "1.0.0",
+      "workflow_id": "fdSupportSummary"
+    },
+    {
+      "dependency_id": "runtime",
+      "kind": "RUNTIME_CONFIG",
+      "path": "dependencies/runtime.json",
+      "requires": [],
+      "version": "2.42.6"
+    }
+  ],
+  "schema_version": "0.4.0"
+}

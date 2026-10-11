@@ -16,7 +16,7 @@ def test_normal_bundle_preserves_fixed_context_and_obligations(bundle: Path) -> 
     assert loaded.policy.interpretation == "DECLARED_ONLY"
     assert loaded.provenance.source_kind == "TEAM_SYNTHETIC"
     assert loaded.environment.runtime_status == "NOT_VALIDATED"
-    assert len(loaded.raw) == 8
+    assert len(loaded.raw) == 10
 
 
 def test_modified_source_cannot_pass_original_manifest(bundle: Path) -> None:

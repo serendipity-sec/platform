@@ -1,0 +1,176 @@
+{
+  "artifacts": [
+    {
+      "artifact_id": "support-source-0",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "case.json",
+      "schema_version": "0.4.0",
+      "sha256": "62509b60013f0ad72889429514fa48b493620d5a98a76fea9f78e33e87caf4bb",
+      "size_bytes": 796
+    },
+    {
+      "artifact_id": "support-source-1",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "dependencies.json",
+      "schema_version": "0.4.0",
+      "sha256": "80e92cab6603f8f2f102b79700de592b139645fdd853f358f3375bb00955cf31",
+      "size_bytes": 537
+    },
+    {
+      "artifact_id": "support-source-2",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "dependencies/runtime.json",
+      "schema_version": "0.4.0",
+      "sha256": "b7d9ac2402f6dabd8f9871a65e9950efd6b79dcc3f7b63500f426a1da69525fd",
+      "size_bytes": 200
+    },
+    {
+      "artifact_id": "support-source-3",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "dependencies/summary.json",
+      "schema_version": "0.4.0",
+      "sha256": "13043911b64f1049e4bc4d52cb1a55b64bd61ac0908559e7fbd918568d8071f5",
+      "size_bytes": 1379
+    },
+    {
+      "artifact_id": "support-source-4",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "environment.json",
+      "schema_version": "0.4.0",
+      "sha256": "b313248133e70a4cc9cf937b6831cd9c55407a6f9c845aef9428d57d3511ff40",
+      "size_bytes": 261
+    },
+    {
+      "artifact_id": "support-source-5",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "policy.json",
+      "schema_version": "0.4.0",
+      "sha256": "c946bb5c15e81788d89f850e12c8335be33bf00d75e6201c02856596c917716e",
+      "size_bytes": 590
+    },
+    {
+      "artifact_id": "support-source-6",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "provenance.json",
+      "schema_version": "0.4.0",
+      "sha256": "cdb9289abbca777ec0c3691bace5569b62c7a92f26854b0641f28f410ba48aba",
+      "size_bytes": 588
+    },
+    {
+      "artifact_id": "support-source-7",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "state/initial.json",
+      "schema_version": "0.4.0",
+      "sha256": "2d133225a44da58d24c5f0eed14d14a5545624804d14146862065399e593d9e0",
+      "size_bytes": 84
+    },
+    {
+      "artifact_id": "support-source-8",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "task.json",
+      "schema_version": "0.4.0",
+      "sha256": "2b8296765ae08671c76f835977dab5654376d8edea836c91c52c6eeb3c902fa2",
+      "size_bytes": 705
+    },
+    {
+      "artifact_id": "support-source-9",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "workflow/after.json",
+      "schema_version": "0.4.0",
+      "sha256": "bf0925afa65601c5c132ce338529cda8a07af5d7d315a217c3219182efc6bb8a",
+      "size_bytes": 7159
+    },
+    {
+      "artifact_id": "support-source-10",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "workflow/before.json",
+      "schema_version": "0.4.0",
+      "sha256": "aa7c428d1e19d5e29c3b0e4c07195eb5a01391bdcd67379342b6b68068a77406",
+      "size_bytes": 6965
+    },
+    {
+      "artifact_id": "generated-0",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "after.normalized.json",
+      "schema_version": "0.4.0",
+      "sha256": "e21d77bd81f0aed02a98d97dca7ca81ecd41f5e7dddd75b2776a112b9e29fa9e",
+      "size_bytes": 15042
+    },
+    {
+      "artifact_id": "generated-1",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "before.normalized.json",
+      "schema_version": "0.4.0",
+      "sha256": "41e3370e65ced546ae6312a5aea07e1a1b0a61e77ccc4c790aff3493c9451062",
+      "size_bytes": 14867
+    },
+    {
+      "artifact_id": "generated-4",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "dependencies.normalized.json",
+      "schema_version": "0.4.0",
+      "sha256": "ebcf14fb2142abd8c28234200f18482ddaf9edfa9a99519ecc9656752826d0bd",
+      "size_bytes": 18185
+    },
+    {
+      "artifact_id": "generated-10",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "semantics.json",
+      "schema_version": "0.4.0",
+      "sha256": "e82b4b0d7875f8ab34f5ccbc98964f03c8a4f3fdcfabcaa814f03cd18e4c7da4",
+      "size_bytes": 65333
+    },
+    {
+      "artifact_id": "generated-11",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "snapshots.json",
+      "schema_version": "0.4.0",
+      "sha256": "ebc61e02648495909d4e51d3da2dec0d32ba7e32e9a2b6bade0ee1a9fe157b37",
+      "size_bytes": 10232
+    },
+    {
+      "artifact_id": "generated-12",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "source-manifest.json",
+      "schema_version": "0.4.0",
+      "sha256": "caebc3f9fac5e1cbc12430bb41b6dbc8d0e273f48f93858dc500efa1ff5422d7",
+      "size_bytes": 3571
+    }
+  ],
+  "extensions": {},
+  "schema_version": "0.4.0"
+}

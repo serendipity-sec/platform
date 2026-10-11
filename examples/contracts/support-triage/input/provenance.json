@@ -1,0 +1,13 @@
+{
+  "production_equivalence": "NOT_CLAIMED",
+  "provenance_id": "support-triage-team",
+  "reuse_status": "TEAM_AUTHORED; public source files and MIT notice are separately preserved",
+  "schema_version": "0.4.0",
+  "source": "공개 고객지원 프로젝트의 분기·하위 호출 구조를 검토한 뒤 팀이 별도로 작성한 정상 업무",
+  "source_kind": "TEAM_SYNTHETIC",
+  "transformations": [
+    "외부 PostgreSQL·AI·메시지 채널을 제외한 로컬 문의 분류",
+    "우선순위 3 기준은 팀 가정",
+    "실제 고객 기록을 사용하지 않음"
+  ]
+}

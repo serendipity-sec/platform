@@ -1,25 +1,27 @@
 {
-  "schema_version": "0.3.0",
+  "interpretation": "DECLARED_ONLY",
   "policy_id": "order-lookup-local-policy",
   "policy_version": "1",
-  "interpretation": "DECLARED_ONLY",
+  "provenance_ref": "provenance.json",
   "rules": [
     {
-      "rule_id": "own-order",
-      "subject": "customer-demo / tenant-demo",
-      "resource": "ORD-1001",
       "condition": "요청 주체가 소유한 주문의 order_id와 status만 조회한다.",
       "exceptions": [],
-      "rationale": "첫 정상 업무의 읽기 범위를 명시한다. 실제 인증·권한 강제는 아직 연결하지 않았다."
+      "rationale": "합성 서비스는 서버 자격으로 customer-demo / tenant-demo를 연결하고 소유 주문의 공개 필드만 반환한다.",
+      "resource": "ORD-1001",
+      "rule_id": "own-order",
+      "schema_version": "0.4.0",
+      "subject": "customer-demo / tenant-demo"
     },
     {
-      "rule_id": "read-only",
-      "subject": "workflow",
-      "resource": "orders",
       "condition": "주문 데이터를 생성·수정·삭제하지 않는다.",
       "exceptions": [],
-      "rationale": "조회 업무의 허용 부수 효과와 상태를 분리한다."
+      "rationale": "조회 업무의 허용 부수 효과와 상태를 분리한다.",
+      "resource": "orders",
+      "rule_id": "read-only",
+      "schema_version": "0.4.0",
+      "subject": "workflow"
     }
   ],
-  "provenance_ref": "provenance.json"
+  "schema_version": "0.4.0"
 }
