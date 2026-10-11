@@ -1,0 +1,2240 @@
+{
+  "extensions": {},
+  "schema_version": "0.4.0",
+  "semantics": [
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {},
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 0,
+        "lineage": "SOURCE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "SINGLE_REQUEST",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "start",
+      "node_type": "n8n-nodes-base.manualTrigger",
+      "operation": null,
+      "parameter_sources": [],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "notice": ""
+      },
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/0",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 1,
+      "unsupported_locations": [],
+      "writes": []
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "tickets",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/1/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "constant",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ]
+          },
+          "value_type": "array"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "constant",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": [
+            {
+              "priority": 3,
+              "ticket_id": "T-1001"
+            },
+            {
+              "priority": 1,
+              "ticket_id": "T-1002"
+            },
+            {
+              "priority": 5,
+              "ticket_id": "T-1003"
+            }
+          ]
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "seed",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/1/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/1",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.tickets"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/fieldToSplitOut": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "tickets"
+          ],
+          "item_selection": "CURRENT",
+          "kind": "current_field",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "VARIABLE",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "SPLIT_ARRAY",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "split",
+      "node_type": "n8n-nodes-base.splitOut",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/2/parameters/fieldToSplitOut",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$json.tickets"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/2",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 1,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.*:array-element"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [
+        {
+          "extensions": {},
+          "output_index": 0,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": true
+        },
+        {
+          "extensions": {},
+          "output_index": 1,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": false
+        }
+      ],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/conditions/conditions/0": {
+          "comparison_type": "number",
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "compare",
+          "members": {},
+          "node_name": null,
+          "operator": "gte",
+          "schema_version": "0.4.0",
+          "terms": [
+            {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [
+                "priority"
+              ],
+              "item_selection": "CURRENT",
+              "kind": "current_field",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": null
+            },
+            {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [],
+              "item_selection": "CURRENT",
+              "kind": "constant",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": 3
+            }
+          ],
+          "value": null
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "SUBSET",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 2,
+        "processing": "FILTER",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "priority",
+      "node_type": "n8n-nodes-base.if",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$json.priority"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/3",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 2.3,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.*:unchanged-item"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "ticket_id",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/4/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "ticket_id"
+            ],
+            "item_selection": "LINKED",
+            "kind": "named_field",
+            "members": {},
+            "node_name": "Split tickets",
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        },
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "queue",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/4/parameters/assignments/assignments/1",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "constant",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": "urgent"
+          },
+          "value_type": "string"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "ticket_id"
+          ],
+          "item_selection": "LINKED",
+          "kind": "named_field",
+          "members": {},
+          "node_name": "Split tickets",
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        },
+        "/assignments/assignments/1/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "constant",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": "urgent"
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "urgent",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/4/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        },
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/4/parameters/assignments/assignments/1/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$('Split tickets').item.json.ticket_id"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/4",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.ticket_id",
+        "$json.queue"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "ticket_id",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/5/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "ticket_id"
+            ],
+            "item_selection": "LINKED",
+            "kind": "named_field",
+            "members": {},
+            "node_name": "Split tickets",
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        },
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "queue",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/5/parameters/assignments/assignments/1",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "constant",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": "standard"
+          },
+          "value_type": "string"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "ticket_id"
+          ],
+          "item_selection": "LINKED",
+          "kind": "named_field",
+          "members": {},
+          "node_name": "Split tickets",
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        },
+        "/assignments/assignments/1/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "constant",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": "standard"
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "standard",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/5/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        },
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/5/parameters/assignments/assignments/1/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$('Split tickets').item.json.ticket_id"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/5",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.ticket_id",
+        "$json.queue"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {},
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "SUM_INPUTS",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 2,
+        "lineage": "INPUT_INDEX",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "APPEND",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "merge",
+      "node_type": "n8n-nodes-base.merge",
+      "operation": null,
+      "parameter_sources": [],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/6",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.2,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.*:unchanged-item"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [
+        "summary"
+      ],
+      "effects": [
+        "call:workflow:fdSupportSummary"
+      ],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {},
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "VARIABLE",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "CALLER",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "SUBWORKFLOW",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "summary",
+      "node_type": "n8n-nodes-base.executeWorkflow",
+      "operation": "call_workflow",
+      "parameter_sources": [],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "operation": "call_workflow"
+      },
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/7",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 1.4,
+      "unsupported_locations": [],
+      "writes": []
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "ticket_id",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/8/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "ticket_id"
+            ],
+            "item_selection": "CURRENT",
+            "kind": "current_field",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        },
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "queue",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/8/parameters/assignments/assignments/1",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "queue"
+            ],
+            "item_selection": "CURRENT",
+            "kind": "current_field",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "ticket_id"
+          ],
+          "item_selection": "CURRENT",
+          "kind": "current_field",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        },
+        "/assignments/assignments/1/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "queue"
+          ],
+          "item_selection": "CURRENT",
+          "kind": "current_field",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "result",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/8/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        },
+        {
+          "artifact_id": "support-source-10",
+          "extensions": {},
+          "json_pointer": "/nodes/8/parameters/assignments/assignments/1/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$json.queue",
+        "$json.ticket_id"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "before",
+      "source": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "json_pointer": "/nodes/8",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.ticket_id",
+        "$json.queue"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {},
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 0,
+        "lineage": "SOURCE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "SINGLE_REQUEST",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "start",
+      "node_type": "n8n-nodes-base.manualTrigger",
+      "operation": null,
+      "parameter_sources": [],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "notice": ""
+      },
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/0",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 1,
+      "unsupported_locations": [],
+      "writes": []
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "tickets",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/1/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "constant",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ]
+          },
+          "value_type": "array"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "constant",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": [
+            {
+              "priority": 3,
+              "ticket_id": "T-1001"
+            },
+            {
+              "priority": 1,
+              "ticket_id": "T-1002"
+            },
+            {
+              "priority": 5,
+              "ticket_id": "T-1003"
+            }
+          ]
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "seed",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/1/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/1",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.tickets"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/fieldToSplitOut": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "tickets"
+          ],
+          "item_selection": "CURRENT",
+          "kind": "current_field",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "VARIABLE",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "SPLIT_ARRAY",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "split",
+      "node_type": "n8n-nodes-base.splitOut",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/2/parameters/fieldToSplitOut",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$json.tickets"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/2",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 1,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.*:array-element"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [
+        {
+          "extensions": {},
+          "output_index": 0,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": true
+        },
+        {
+          "extensions": {},
+          "output_index": 1,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": false
+        }
+      ],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/conditions/conditions/0": {
+          "comparison_type": "number",
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "compare",
+          "members": {},
+          "node_name": null,
+          "operator": "gte",
+          "schema_version": "0.4.0",
+          "terms": [
+            {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [
+                "priority"
+              ],
+              "item_selection": "CURRENT",
+              "kind": "current_field",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": null
+            },
+            {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [],
+              "item_selection": "CURRENT",
+              "kind": "constant",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": 3
+            }
+          ],
+          "value": null
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "SUBSET",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 2,
+        "processing": "FILTER",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "priority",
+      "node_type": "n8n-nodes-base.if",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$json.priority"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/3",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 2.3,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.*:unchanged-item"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "ticket_id",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/4/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "ticket_id"
+            ],
+            "item_selection": "LINKED",
+            "kind": "named_field",
+            "members": {},
+            "node_name": "Split tickets",
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        },
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "queue",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/4/parameters/assignments/assignments/1",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "constant",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": "urgent"
+          },
+          "value_type": "string"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "ticket_id"
+          ],
+          "item_selection": "LINKED",
+          "kind": "named_field",
+          "members": {},
+          "node_name": "Split tickets",
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        },
+        "/assignments/assignments/1/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "constant",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": "urgent"
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "urgent",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/4/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        },
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/4/parameters/assignments/assignments/1/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$('Split tickets').item.json.ticket_id"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/4",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.ticket_id",
+        "$json.queue"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "ticket_id",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/5/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "ticket_id"
+            ],
+            "item_selection": "LINKED",
+            "kind": "named_field",
+            "members": {},
+            "node_name": "Split tickets",
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        },
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "queue",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/5/parameters/assignments/assignments/1",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "constant",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": "standard"
+          },
+          "value_type": "string"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "ticket_id"
+          ],
+          "item_selection": "LINKED",
+          "kind": "named_field",
+          "members": {},
+          "node_name": "Split tickets",
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        },
+        "/assignments/assignments/1/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "constant",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": "standard"
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "standard",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/5/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        },
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/5/parameters/assignments/assignments/1/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$('Split tickets').item.json.ticket_id"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/5",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.ticket_id",
+        "$json.queue"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {},
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "SUM_INPUTS",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 2,
+        "lineage": "INPUT_INDEX",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "APPEND",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "merge",
+      "node_type": "n8n-nodes-base.merge",
+      "operation": null,
+      "parameter_sources": [],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/6",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.2,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.*:unchanged-item"
+      ]
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [
+        "summary"
+      ],
+      "effects": [
+        "call:workflow:fdSupportSummary"
+      ],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {},
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "VARIABLE",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "CALLER",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "SUBWORKFLOW",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "summary",
+      "node_type": "n8n-nodes-base.executeWorkflow",
+      "operation": "call_workflow",
+      "parameter_sources": [],
+      "reads": [],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "operation": "call_workflow"
+      },
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/7",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 1.4,
+      "unsupported_locations": [],
+      "writes": []
+    },
+    {
+      "adapter_version": "core-adapters-v1",
+      "assignments": [
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "ticket_id",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/8/parameters/assignments/assignments/0",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "ticket_id"
+            ],
+            "item_selection": "CURRENT",
+            "kind": "current_field",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        },
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "queue",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/8/parameters/assignments/assignments/1",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [
+              "queue"
+            ],
+            "item_selection": "CURRENT",
+            "kind": "current_field",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [],
+            "value": null
+          },
+          "value_type": "string"
+        },
+        {
+          "conversion": "N8N_STANDARD",
+          "extensions": {},
+          "field_name": "display_queue",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/8/parameters/assignments/assignments/2",
+            "schema_version": "0.4.0"
+          },
+          "value": {
+            "comparison_type": null,
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "concat",
+            "members": {},
+            "node_name": null,
+            "operator": null,
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": "Queue: "
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "queue"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              }
+            ],
+            "value": null
+          },
+          "value_type": "string"
+        }
+      ],
+      "branches": [],
+      "capabilities": [],
+      "dependency_ids": [],
+      "effects": [],
+      "engine_version": "2.42.6",
+      "error_behavior": {
+        "always_output_data": false,
+        "error_output_index": null,
+        "execute_once": false,
+        "extensions": {},
+        "max_tries": 1,
+        "on_error": "stopWorkflow",
+        "retry_on_fail": false,
+        "schema_version": "0.4.0",
+        "wait_between_tries_ms": 0
+      },
+      "expressions": {
+        "/assignments/assignments/0/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "ticket_id"
+          ],
+          "item_selection": "CURRENT",
+          "kind": "current_field",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        },
+        "/assignments/assignments/1/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [
+            "queue"
+          ],
+          "item_selection": "CURRENT",
+          "kind": "current_field",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [],
+          "value": null
+        },
+        "/assignments/assignments/2/value": {
+          "comparison_type": null,
+          "extensions": {},
+          "field_path": [],
+          "item_selection": "CURRENT",
+          "kind": "concat",
+          "members": {},
+          "node_name": null,
+          "operator": null,
+          "schema_version": "0.4.0",
+          "terms": [
+            {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [],
+              "item_selection": "CURRENT",
+              "kind": "constant",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": "Queue: "
+            },
+            {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [
+                "queue"
+              ],
+              "item_selection": "CURRENT",
+              "kind": "current_field",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": null
+            }
+          ],
+          "value": null
+        }
+      },
+      "extensions": {},
+      "item_behavior": {
+        "cardinality": "ONE_PER_INPUT",
+        "expression_item_scope": "CURRENT",
+        "extensions": {},
+        "input_ports": 1,
+        "lineage": "PRESERVE",
+        "note": "JSON items only; field existence and runtime item links require observations.",
+        "output_ports": 1,
+        "processing": "PER_ITEM",
+        "schema_version": "0.4.0"
+      },
+      "node_id": "result",
+      "node_type": "n8n-nodes-base.set",
+      "operation": null,
+      "parameter_sources": [
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/8/parameters/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        },
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/8/parameters/assignments/assignments/1/value",
+          "schema_version": "0.4.0"
+        },
+        {
+          "artifact_id": "support-source-9",
+          "extensions": {},
+          "json_pointer": "/nodes/8/parameters/assignments/assignments/2/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "reads": [
+        "$json.queue",
+        "$json.ticket_id"
+      ],
+      "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "schema_version": "0.4.0",
+      "side": "after",
+      "source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/8",
+        "schema_version": "0.4.0"
+      },
+      "support": "SUPPORTED",
+      "type_version": 3.5,
+      "unsupported_locations": [],
+      "writes": [
+        "$json.ticket_id",
+        "$json.queue",
+        "$json.display_queue"
+      ]
+    }
+  ]
+}

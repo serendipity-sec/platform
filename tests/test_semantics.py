@@ -21,7 +21,7 @@ def test_normal_profile_has_bounded_read_write_and_source_locations(bundle: Path
     ]
     assert before.parameter_sources[1].json_pointer == "/nodes/2/parameters/responseBody"
     assert handoff.before.execution_status == "NOT_RUN"
-    assert all(item.semantic_sha256 is None for item in handoff.snapshots.snapshots)
+    assert all(item.semantic_sha256 is not None for item in handoff.snapshots.snapshots)
 
 
 @pytest.mark.parametrize(

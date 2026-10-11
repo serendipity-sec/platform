@@ -6,6 +6,7 @@ from pydantic import Field, JsonValue, model_validator
 
 from flowdelta.contracts import (
     ArtifactRef,
+    BranchCondition,
     Contract,
     Identifier,
     NonEmpty,
@@ -23,7 +24,15 @@ class Authorship(Contract):
 class NodeMatch(Contract):
     before_node_id: str | None
     after_node_id: str | None
-    method: Literal["EXACT_ID", "ADDED", "REMOVED", "AMBIGUOUS"]
+    method: Literal["EXACT_ID", "STRUCTURAL", "ADDED", "REMOVED", "AMBIGUOUS"]
+    evidence: list[SourceLocation] = Field(default_factory=list)
+
+
+class GraphNode(Contract):
+    node_id: NonEmpty
+    kind: Literal["WORKFLOW_NODE", "RESOURCE", "PRINCIPAL", "CAPABILITY", "DEPENDENCY"]
+    workflow_node_id: NonEmpty | None = None
+    source: SourceLocation | None = None
 
 
 class GraphEdge(Contract):
@@ -35,6 +44,12 @@ class GraphEdge(Contract):
     ]
     output_port: Annotated[int, Field(ge=0)]
     input_port: Annotated[int, Field(ge=0)]
+    output_type: NonEmpty = "main"
+    input_type: NonEmpty = "main"
+    condition: BranchCondition | None = None
+    source_fields: list[NonEmpty] = Field(default_factory=list)
+    target_fields: list[NonEmpty] = Field(default_factory=list)
+    adapter_version: NonEmpty | None = None
     evidence: list[SourceLocation]
     basis: Literal["STATIC_POSSIBILITY"]
 
@@ -43,11 +58,17 @@ class SemanticGraph(Contract):
     node_ids: list[NonEmpty]
     edges: list[GraphEdge]
     limitations: list[NonEmpty]
+    nodes: list[GraphNode] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def valid_edges(self) -> Self:
         if len(set(self.node_ids)) != len(self.node_ids):
             raise ValueError("duplicate graph node")
+        if self.nodes and (
+            len(self.nodes) != len(self.node_ids)
+            or {item.node_id for item in self.nodes} != set(self.node_ids)
+        ):
+            raise ValueError("typed graph nodes must account for every node id")
         edge_ids = [edge.edge_id for edge in self.edges]
         if len(edge_ids) != len(set(edge_ids)):
             raise ValueError("duplicate graph edge")
@@ -61,14 +82,35 @@ class SemanticGraph(Contract):
 
 class Change(Contract):
     change_id: Identifier
-    node_id: NonEmpty
+    node_id: NonEmpty | None
     kind: Literal[
-        "ADDED", "REMOVED", "PARAMETER_CHANGED", "DISPLAY_CHANGED", "CONNECTION_CHANGED", "UNKNOWN"
+        "ADDED",
+        "REMOVED",
+        "PARAMETER_CHANGED",
+        "DISPLAY_CHANGED",
+        "CONNECTION_CHANGED",
+        "UNKNOWN",
+        "SETTINGS_CHANGED",
+        "TYPE_VERSION_CHANGED",
+        "CREDENTIAL_CHANGED",
+        "DEPENDENCY_CHANGED",
     ]
     before_value: JsonValue
     after_value: JsonValue
     before_source: SourceLocation | None
     after_source: SourceLocation | None
+
+
+class ImpactPath(Contract):
+    path_id: Identifier
+    side: Literal["before", "after"]
+    change_ids: list[Identifier]
+    edge_ids: list[Identifier]
+    task_ids: list[Identifier]
+    policy_rule_ids: list[Identifier]
+    support: Literal["SUPPORTED", "PARTIAL", "UNKNOWN"]
+    basis: Literal["STATIC_POSSIBILITY"] = "STATIC_POSSIBILITY"
+    limitations: list[NonEmpty]
 
 
 class AnalysisBundle(Contract):
@@ -85,13 +127,40 @@ class AnalysisBundle(Contract):
     policy_ref: ArtifactRef
     obligation_ids: list[Identifier]
     limitations: list[NonEmpty]
+    impact_paths: list[ImpactPath] = Field(default_factory=list)
+    dependency_graphs: dict[str, SemanticGraph] = Field(default_factory=dict)
 
 
-class InputField(Contract):
+class InputValueSchema(Contract):
+    value_type: Literal["string", "integer", "number", "boolean", "object", "array", "null"]
+    pattern: NonEmpty | None = None
+    properties: list["InputField"] = Field(default_factory=list)
+    items: "InputValueSchema | None" = None
+    max_items: Annotated[int, Field(ge=0, le=1000)] = 1000
+
+    @model_validator(mode="after")
+    def applicable_constraints(self) -> Self:
+        if self.pattern is not None and self.value_type != "string":
+            raise ValueError("pattern applies only to string")
+        if self.properties and self.value_type != "object":
+            raise ValueError("properties apply only to object")
+        if (self.value_type == "array") != (self.items is not None):
+            raise ValueError("array requires an item schema")
+        names = [item.name for item in self.properties]
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate object property")
+        return self
+
+
+class InputField(InputValueSchema):
     name: Identifier
-    value_type: Literal["string"]
     required: bool
-    pattern: NonEmpty
+
+
+class MaterializedInputBinding(Contract):
+    input_name: Identifier
+    node_id: NonEmpty
+    parameter_pointer: NonEmpty
 
 
 class Template(Contract):
@@ -99,13 +168,29 @@ class Template(Contract):
     version: NonEmpty
     task_id: Identifier
     runtime_profile: Identifier
-    mode: Literal["NORMAL_BUSINESS_REQUEST"]
-    method: Literal["POST"]
-    webhook_path: NonEmpty
+    mode: Literal["NORMAL_BUSINESS_REQUEST", "NORMAL_MANUAL_WORKFLOW"]
+    method: Literal["GET", "POST"] | None
+    webhook_path: NonEmpty | None
+    materialized_input_bindings: list[MaterializedInputBinding] = Field(default_factory=list)
     input_fields: list[InputField]
     required_artifact_kinds: list[Identifier]
     allowed_effects: list[NonEmpty]
     timeout_seconds: Annotated[int, Field(gt=0, le=300)]
+
+    @model_validator(mode="after")
+    def unique_fields(self) -> Self:
+        names = [item.name for item in self.input_fields]
+        if len(names) != len(set(names)):
+            raise ValueError("duplicate template field")
+        if self.mode == "NORMAL_MANUAL_WORKFLOW":
+            if self.method is not None or self.webhook_path is not None:
+                raise ValueError("manual workflow has no HTTP method or path")
+            bound = [binding.input_name for binding in self.materialized_input_bindings]
+            if len(bound) != len(set(bound)) or set(bound) != set(names):
+                raise ValueError("manual workflow requires one binding per input")
+        elif self.method is None or self.webhook_path is None or self.materialized_input_bindings:
+            raise ValueError("HTTP request requires method and path without manual bindings")
+        return self
 
 
 class TemplateCatalog(Contract):
@@ -131,6 +216,8 @@ class TestPlan(Contract):
     case_id: Identifier
     analysis_id: Identifier
     authorship: Authorship
+    retrieval_ref: ArtifactRef | None = None
+    planner_metadata: dict[str, JsonValue] = Field(default_factory=dict)
     before_snapshot_id: NonEmpty
     after_snapshot_id: NonEmpty
     catalog_id: Identifier
@@ -161,9 +248,41 @@ class EvidenceEvent(Contract):
     principal: NonEmpty
     tenant: NonEmpty
     resource_id: NonEmpty
-    method: Literal["GET"]
+    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"] | None
     outcome: NonEmpty
     response_sha256: Sha256
+    attempt_number: Annotated[int, Field(ge=1)] = 1
+    execution_id: NonEmpty | None = None
+    node_id: NonEmpty | None = None
+    node_run_index: Annotated[int, Field(ge=0)] | None = None
+    item_index: Annotated[int, Field(ge=0)] | None = None
+    attributes: dict[str, JsonValue] = Field(default_factory=dict)
+
+
+class ItemLink(Contract):
+    input_index: Annotated[int, Field(ge=0)]
+    item_index: Annotated[int, Field(ge=0)]
+
+
+class ObservedItem(Contract):
+    item_index: Annotated[int, Field(ge=0)]
+    json_data: dict[str, JsonValue]
+    paired_items: list[ItemLink]
+    linkage_status: Literal["OBSERVED", "ABSENT", "UNSUPPORTED"]
+    raw_metadata: dict[str, JsonValue] = Field(default_factory=dict)
+
+
+class NodeObservation(Contract):
+    execution_id: NonEmpty
+    workflow_id: NonEmpty
+    node_id: NonEmpty
+    node_name: NonEmpty
+    node_run_index: Annotated[int, Field(ge=0)]
+    output_type: NonEmpty
+    output_index: Annotated[int, Field(ge=0)]
+    items: list[ObservedItem]
+    execution_status: Literal["SUCCESS", "ERROR", "UNKNOWN"]
+    source: SourceLocation
 
 
 class ArtifactCollection(Contract):
@@ -199,13 +318,48 @@ class ScenarioCard(Contract):
     title: NonEmpty
     summary: NonEmpty
     source: NonEmpty
-    reuse_status: Literal["TEAM_AUTHORED"]
+    reuse_status: Literal["TEAM_AUTHORED", "LICENSED_PUBLIC", "CONSENTED"]
+    source_ref: ArtifactRef | None = None
+    source_revision: NonEmpty | None = None
+    license_identifier: NonEmpty | None = None
+    claim_basis: Literal["TEAM_HYPOTHESIS", "AUTHOR_DESCRIPTION", "EXPERIMENTALLY_OBSERVED"] = (
+        "TEAM_HYPOTHESIS"
+    )
     authorship: Authorship
     runtime_profile: Identifier
     node_types: list[NonEmpty]
     template_id: Identifier
     template_version: NonEmpty
     required_artifact_kinds: list[Identifier]
+
+    @model_validator(mode="after")
+    def reusable_source(self) -> Self:
+        if self.reuse_status != "TEAM_AUTHORED" and (
+            not self.source_ref or not self.source_revision or not self.license_identifier
+        ):
+            raise ValueError("external card requires source bytes, revision and reuse basis")
+        return self
+
+
+class RetrievalHit(Contract):
+    card_id: Identifier
+    card_version: NonEmpty
+    rank: Annotated[int, Field(ge=1)]
+    score: float
+    applicability: Literal["MATCH", "PARTIAL", "NO_MATCH"]
+    reason: NonEmpty
+
+
+class RetrievalResult(Contract):
+    retrieval_id: Identifier
+    analysis_id: Identifier
+    authorship: Authorship
+    kb_snapshot_ref: ArtifactRef
+    method: Literal["KEYWORD", "VECTOR", "HYBRID"]
+    model_version: NonEmpty | None
+    query: dict[str, JsonValue]
+    hits: list[RetrievalHit]
+    excluded_reasons: dict[str, NonEmpty]
 
 
 class ExecutionRun(Contract):
@@ -214,6 +368,7 @@ class ExecutionRun(Contract):
     case_id: Identifier
     plan_id: Identifier
     side: Literal["before", "after"]
+    attempt_number: Annotated[int, Field(ge=1)] = 1
     snapshot_id: NonEmpty
     authorship: Authorship
     runtime_profile: Identifier
@@ -256,3 +411,5 @@ class PipelineExamples(Contract):
     run: ExecutionRun
     cards: list[ScenarioCard]
     events: list[EvidenceEvent] = Field(default_factory=list)
+    observations: list[NodeObservation] = Field(default_factory=list)
+    retrieval: RetrievalResult | None = None

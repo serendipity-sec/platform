@@ -12,6 +12,7 @@ from pydantic import JsonValue, ValidationError
 from flowdelta.contracts import (
     ComparisonCase,
     Contract,
+    DependencyManifest,
     Environment,
     InitialState,
     Manifest,
@@ -29,9 +30,13 @@ MAX_DEPTH = 64
 class InputError(Exception):
     """Stable diagnostic codes, never input values or filesystem exception messages."""
 
-    def __init__(self, code: str) -> None:
+    def __init__(self, code: str, *, location: str | None = None) -> None:
         self.code = code
+        self.location = location
         super().__init__(code)
+
+    def diagnostic(self) -> dict[str, str | None]:
+        return {"error": self.code, "location": self.location}
 
 
 def digest(data: bytes) -> str:
@@ -91,7 +96,17 @@ def parse_model[T: Contract](model: type[T], value: dict[str, JsonValue]) -> T:
         return model.model_validate(value)
     except ValidationError as exc:
         # Pydantic error strings can contain raw credentials from the input.
-        raise InputError("CONTRACT_INVALID") from exc
+        error = exc.errors(include_input=False, include_context=False)[0]
+        pointer = "/" + "/".join(
+            str(part).replace("~", "~0").replace("/", "~1") for part in error["loc"]
+        )
+        raise InputError("CONTRACT_INVALID", location=pointer) from exc
+
+
+def parse_file_model[T: Contract](model: type[T], value: dict[str, JsonValue]) -> T:
+    if value.get("schema_version") != "0.4.0":
+        raise InputError("CONTRACT_INVALID", location="/schema_version")
+    return parse_model(model, value)
 
 
 def _read_local(root: Path, relative: str) -> bytes:
@@ -130,6 +145,7 @@ class LoadedCase:
     provenance: Provenance
     raw: dict[str, bytes]
     documents: dict[str, dict[str, JsonValue]]
+    dependency_manifest: DependencyManifest | None = None
 
 
 def load_case(bundle_dir: Path) -> LoadedCase:
@@ -162,8 +178,19 @@ def load_case(bundle_dir: Path) -> LoadedCase:
         raise InputError("CASE_NOT_IN_MANIFEST")
     case = parse_model(ComparisonCase, documents["case.json"])
     expected = {"case.json", *case.references()}
+    dependencies = None
+    if case.dependency_manifest_ref is not None:
+        from flowdelta.dependencies import validate_manifest
+
+        if case.dependency_manifest_ref not in documents:
+            raise InputError("MANIFEST_REFERENCE_MISMATCH")
+        dependencies = parse_model(DependencyManifest, documents[case.dependency_manifest_ref])
+        validate_manifest(dependencies)
+        dependency_paths = {item.path for item in dependencies.dependencies}
+        if expected & dependency_paths:
+            raise InputError("DEPENDENCY_ROLE_COLLISION")
+        expected.update(dependency_paths)
     if expected != documents.keys():
-        # Dependencies need an explicit later contract, never an implicit file scan.
         raise InputError("MANIFEST_REFERENCE_MISMATCH")
     task = parse_model(TaskContract, documents[case.task_ref])
     policy = parse_model(Policy, documents[case.evaluation_policy_ref])
@@ -173,7 +200,17 @@ def load_case(bundle_dir: Path) -> LoadedCase:
     if task.provenance_ref != case.provenance_ref or policy.provenance_ref != case.provenance_ref:
         raise InputError("PROVENANCE_REFERENCE_MISMATCH")
     return LoadedCase(
-        root, case, manifest, task, policy, environment, state, provenance, raw, documents
+        root,
+        case,
+        manifest,
+        task,
+        policy,
+        environment,
+        state,
+        provenance,
+        raw,
+        documents,
+        dependencies,
     )
 
 

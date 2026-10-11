@@ -10,6 +10,7 @@
       "rationale": "합성 서비스는 서버 자격으로 customer-demo / tenant-demo를 연결하고 소유 주문의 공개 필드만 반환한다.",
       "resource": "ORD-1001",
       "rule_id": "own-order",
+      "schema_version": "0.4.0",
       "subject": "customer-demo / tenant-demo"
     },
     {
@@ -18,8 +19,9 @@
       "rationale": "조회 업무의 허용 부수 효과와 상태를 분리한다.",
       "resource": "orders",
       "rule_id": "read-only",
+      "schema_version": "0.4.0",
       "subject": "workflow"
     }
   ],
-  "schema_version": "0.3.0"
+  "schema_version": "0.4.0"
 }

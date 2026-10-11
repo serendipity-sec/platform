@@ -63,7 +63,7 @@ def test_invalid_port_index_is_not_coerced(bundle: Path, index) -> None:
         build_handoff(load_case(bundle))
 
 
-def test_snapshot_pins_policy_bytes_and_keeps_semantic_hash_unknown(bundle: Path) -> None:
+def test_snapshot_pins_policy_bytes_and_declared_configuration(bundle: Path) -> None:
     first = build_handoff(load_case(bundle))
     repeated = build_handoff(load_case(bundle))
     assert first == repeated
@@ -74,12 +74,13 @@ def test_snapshot_pins_policy_bytes_and_keeps_semantic_hash_unknown(bundle: Path
     ):
         assert original.snapshot_id != changed.snapshot_id
         assert original.raw_sha256 == changed.raw_sha256
-        assert changed.semantic_sha256 is None
+        assert changed.semantic_sha256 is not None
+        assert changed.semantic_sha256 != original.semantic_sha256
         assert changed.execution_status == "NOT_RUN"
-        assert changed.dependency_status == "UNRESOLVED"
+        assert changed.dependency_status == "DECLARED_RESOLVED"
 
 
-def test_coordinates_are_retained_until_semantic_adapter_exists(bundle: Path) -> None:
+def test_coordinates_are_retained_outside_declared_configuration_hash(bundle: Path) -> None:
     original = build_handoff(load_case(bundle))
 
     def update(value):
@@ -92,4 +93,7 @@ def test_coordinates_are_retained_until_semantic_adapter_exists(bundle: Path) ->
         changed.snapshots.snapshots[0].structural_sha256
         != original.snapshots.snapshots[0].structural_sha256
     )
-    assert changed.snapshots.snapshots[0].semantic_sha256 is None
+    assert (
+        changed.snapshots.snapshots[0].semantic_sha256
+        == original.snapshots.snapshots[0].semantic_sha256
+    )

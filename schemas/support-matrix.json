@@ -1,0 +1,102 @@
+{
+  "adapter_version": "core-adapters-v1",
+  "engine_version": "2.42.6",
+  "evidence_scope": "Static subset; runtime coverage is recorded separately",
+  "nodes": [
+    {
+      "node_type": "n8n-nodes-base.manualTrigger",
+      "parameter_subset": "no input parameters other than the engine notice default",
+      "resolved_defaults": {
+        "notice": ""
+      },
+      "type_version": 1
+    },
+    {
+      "node_type": "n8n-nodes-base.webhook",
+      "parameter_subset": "fixed GET/POST path; responseNode; none or declared header credential",
+      "resolved_defaults": {
+        "multipleMethods": false,
+        "webhookNotice": ""
+      },
+      "type_version": 2.2
+    },
+    {
+      "node_type": "n8n-nodes-base.respondToWebhook",
+      "parameter_subset": "JSON response, status 200, expression evaluated against first item",
+      "resolved_defaults": {
+        "enableResponseOutput": false,
+        "generalNotice": "",
+        "webhookNotice": ""
+      },
+      "type_version": 1.5
+    },
+    {
+      "node_type": "n8n-nodes-base.httpRequest",
+      "parameter_subset": "literal declared GET endpoint; JSON response; explicit query mappings; no retry/batching",
+      "resolved_defaults": {
+        "curlImport": "",
+        "infoMessage": "",
+        "provideSslCertificates": false,
+        "sendBody": false,
+        "sendHeaders": false,
+        "specifyQuery": "keypair"
+      },
+      "type_version": 4.5
+    },
+    {
+      "node_type": "n8n-nodes-base.set",
+      "parameter_subset": "manual assignments; flat output names; explicit constants/current or named fields; optional input preservation",
+      "resolved_defaults": {
+        "duplicateItem": false
+      },
+      "type_version": 3.5
+    },
+    {
+      "node_type": "n8n-nodes-base.if",
+      "parameter_subset": "one strict case-sensitive string/number/boolean comparison; true port 0 and false port 1",
+      "resolved_defaults": {},
+      "type_version": 2.3
+    },
+    {
+      "node_type": "n8n-nodes-base.merge",
+      "parameter_subset": "append; exactly two inputs; preserves ordered items and input index",
+      "resolved_defaults": {},
+      "type_version": 3.2
+    },
+    {
+      "node_type": "n8n-nodes-base.splitOut",
+      "parameter_subset": "one explicit object-array field; noOtherFields",
+      "resolved_defaults": {},
+      "type_version": 1
+    },
+    {
+      "node_type": "n8n-nodes-base.executeWorkflow",
+      "parameter_subset": "fixed database id in manifest; once with all items; wait for child; passThrough inputs",
+      "resolved_defaults": {
+        "operation": "call_workflow"
+      },
+      "type_version": 1.4
+    },
+    {
+      "node_type": "n8n-nodes-base.executeWorkflowTrigger",
+      "parameter_subset": "passthrough; JSON items",
+      "resolved_defaults": {
+        "events": "worklfow_call"
+      },
+      "type_version": 1.2
+    }
+  ],
+  "profile_id": "core-local-v1",
+  "schema_version": "0.4.0",
+  "unsupported": [
+    "Code",
+    "dynamic subworkflow references",
+    "binary data",
+    "AI subnodes",
+    "retryOnFail",
+    "alwaysOutputData",
+    "executeOnce",
+    "non-append Merge",
+    "legacy execution order"
+  ]
+}

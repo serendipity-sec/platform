@@ -1,0 +1,571 @@
+{
+  "extensions": {},
+  "schema_version": "0.4.0",
+  "semantics": {
+    "summary": {
+      "extensions": {},
+      "schema_version": "0.4.0",
+      "semantics": [
+        {
+          "adapter_version": "core-adapters-v1",
+          "assignments": [],
+          "branches": [],
+          "capabilities": [],
+          "dependency_ids": [],
+          "effects": [],
+          "engine_version": "2.42.6",
+          "error_behavior": {
+            "always_output_data": false,
+            "error_output_index": null,
+            "execute_once": false,
+            "extensions": {},
+            "max_tries": 1,
+            "on_error": "stopWorkflow",
+            "retry_on_fail": false,
+            "schema_version": "0.4.0",
+            "wait_between_tries_ms": 0
+          },
+          "expressions": {},
+          "extensions": {},
+          "item_behavior": {
+            "cardinality": "ONE_PER_INPUT",
+            "expression_item_scope": "CURRENT",
+            "extensions": {},
+            "input_ports": 0,
+            "lineage": "CALLER",
+            "note": "JSON items only; field existence and runtime item links require observations.",
+            "output_ports": 1,
+            "processing": "SUBWORKFLOW",
+            "schema_version": "0.4.0"
+          },
+          "node_id": "child-entry",
+          "node_type": "n8n-nodes-base.executeWorkflowTrigger",
+          "operation": null,
+          "parameter_sources": [],
+          "reads": [],
+          "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+          "resolved_defaults": {
+            "events": "worklfow_call"
+          },
+          "schema_version": "0.4.0",
+          "side": "before",
+          "source": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "json_pointer": "/nodes/0",
+            "schema_version": "0.4.0"
+          },
+          "support": "SUPPORTED",
+          "type_version": 1.2,
+          "unsupported_locations": [],
+          "writes": [
+            "$json.*:caller-input"
+          ]
+        },
+        {
+          "adapter_version": "core-adapters-v1",
+          "assignments": [
+            {
+              "conversion": "N8N_STANDARD",
+              "extensions": {},
+              "field_name": "ticket_id",
+              "schema_version": "0.4.0",
+              "source": {
+                "artifact_id": "support-source-3",
+                "extensions": {},
+                "json_pointer": "/nodes/1/parameters/assignments/assignments/0",
+                "schema_version": "0.4.0"
+              },
+              "value": {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "ticket_id"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              "value_type": "string"
+            },
+            {
+              "conversion": "N8N_STANDARD",
+              "extensions": {},
+              "field_name": "queue",
+              "schema_version": "0.4.0",
+              "source": {
+                "artifact_id": "support-source-3",
+                "extensions": {},
+                "json_pointer": "/nodes/1/parameters/assignments/assignments/1",
+                "schema_version": "0.4.0"
+              },
+              "value": {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "queue"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              "value_type": "string"
+            }
+          ],
+          "branches": [],
+          "capabilities": [],
+          "dependency_ids": [],
+          "effects": [],
+          "engine_version": "2.42.6",
+          "error_behavior": {
+            "always_output_data": false,
+            "error_output_index": null,
+            "execute_once": false,
+            "extensions": {},
+            "max_tries": 1,
+            "on_error": "stopWorkflow",
+            "retry_on_fail": false,
+            "schema_version": "0.4.0",
+            "wait_between_tries_ms": 0
+          },
+          "expressions": {
+            "/assignments/assignments/0/value": {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [
+                "ticket_id"
+              ],
+              "item_selection": "CURRENT",
+              "kind": "current_field",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": null
+            },
+            "/assignments/assignments/1/value": {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [
+                "queue"
+              ],
+              "item_selection": "CURRENT",
+              "kind": "current_field",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": null
+            }
+          },
+          "extensions": {},
+          "item_behavior": {
+            "cardinality": "ONE_PER_INPUT",
+            "expression_item_scope": "CURRENT",
+            "extensions": {},
+            "input_ports": 1,
+            "lineage": "PRESERVE",
+            "note": "JSON items only; field existence and runtime item links require observations.",
+            "output_ports": 1,
+            "processing": "PER_ITEM",
+            "schema_version": "0.4.0"
+          },
+          "node_id": "child-public",
+          "node_type": "n8n-nodes-base.set",
+          "operation": null,
+          "parameter_sources": [
+            {
+              "artifact_id": "support-source-3",
+              "extensions": {},
+              "json_pointer": "/nodes/1/parameters/assignments/assignments/0/value",
+              "schema_version": "0.4.0"
+            },
+            {
+              "artifact_id": "support-source-3",
+              "extensions": {},
+              "json_pointer": "/nodes/1/parameters/assignments/assignments/1/value",
+              "schema_version": "0.4.0"
+            }
+          ],
+          "reads": [
+            "$json.queue",
+            "$json.ticket_id"
+          ],
+          "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+          "resolved_defaults": {
+            "duplicateItem": false
+          },
+          "schema_version": "0.4.0",
+          "side": "before",
+          "source": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "json_pointer": "/nodes/1",
+            "schema_version": "0.4.0"
+          },
+          "support": "SUPPORTED",
+          "type_version": 3.5,
+          "unsupported_locations": [],
+          "writes": [
+            "$json.ticket_id",
+            "$json.queue"
+          ]
+        },
+        {
+          "adapter_version": "core-adapters-v1",
+          "assignments": [],
+          "branches": [],
+          "capabilities": [],
+          "dependency_ids": [],
+          "effects": [],
+          "engine_version": "2.42.6",
+          "error_behavior": {
+            "always_output_data": false,
+            "error_output_index": null,
+            "execute_once": false,
+            "extensions": {},
+            "max_tries": 1,
+            "on_error": "stopWorkflow",
+            "retry_on_fail": false,
+            "schema_version": "0.4.0",
+            "wait_between_tries_ms": 0
+          },
+          "expressions": {},
+          "extensions": {},
+          "item_behavior": {
+            "cardinality": "ONE_PER_INPUT",
+            "expression_item_scope": "CURRENT",
+            "extensions": {},
+            "input_ports": 0,
+            "lineage": "CALLER",
+            "note": "JSON items only; field existence and runtime item links require observations.",
+            "output_ports": 1,
+            "processing": "SUBWORKFLOW",
+            "schema_version": "0.4.0"
+          },
+          "node_id": "child-entry",
+          "node_type": "n8n-nodes-base.executeWorkflowTrigger",
+          "operation": null,
+          "parameter_sources": [],
+          "reads": [],
+          "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+          "resolved_defaults": {
+            "events": "worklfow_call"
+          },
+          "schema_version": "0.4.0",
+          "side": "after",
+          "source": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "json_pointer": "/nodes/0",
+            "schema_version": "0.4.0"
+          },
+          "support": "SUPPORTED",
+          "type_version": 1.2,
+          "unsupported_locations": [],
+          "writes": [
+            "$json.*:caller-input"
+          ]
+        },
+        {
+          "adapter_version": "core-adapters-v1",
+          "assignments": [
+            {
+              "conversion": "N8N_STANDARD",
+              "extensions": {},
+              "field_name": "ticket_id",
+              "schema_version": "0.4.0",
+              "source": {
+                "artifact_id": "support-source-3",
+                "extensions": {},
+                "json_pointer": "/nodes/1/parameters/assignments/assignments/0",
+                "schema_version": "0.4.0"
+              },
+              "value": {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "ticket_id"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              "value_type": "string"
+            },
+            {
+              "conversion": "N8N_STANDARD",
+              "extensions": {},
+              "field_name": "queue",
+              "schema_version": "0.4.0",
+              "source": {
+                "artifact_id": "support-source-3",
+                "extensions": {},
+                "json_pointer": "/nodes/1/parameters/assignments/assignments/1",
+                "schema_version": "0.4.0"
+              },
+              "value": {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "queue"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              "value_type": "string"
+            }
+          ],
+          "branches": [],
+          "capabilities": [],
+          "dependency_ids": [],
+          "effects": [],
+          "engine_version": "2.42.6",
+          "error_behavior": {
+            "always_output_data": false,
+            "error_output_index": null,
+            "execute_once": false,
+            "extensions": {},
+            "max_tries": 1,
+            "on_error": "stopWorkflow",
+            "retry_on_fail": false,
+            "schema_version": "0.4.0",
+            "wait_between_tries_ms": 0
+          },
+          "expressions": {
+            "/assignments/assignments/0/value": {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [
+                "ticket_id"
+              ],
+              "item_selection": "CURRENT",
+              "kind": "current_field",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": null
+            },
+            "/assignments/assignments/1/value": {
+              "comparison_type": null,
+              "extensions": {},
+              "field_path": [
+                "queue"
+              ],
+              "item_selection": "CURRENT",
+              "kind": "current_field",
+              "members": {},
+              "node_name": null,
+              "operator": null,
+              "schema_version": "0.4.0",
+              "terms": [],
+              "value": null
+            }
+          },
+          "extensions": {},
+          "item_behavior": {
+            "cardinality": "ONE_PER_INPUT",
+            "expression_item_scope": "CURRENT",
+            "extensions": {},
+            "input_ports": 1,
+            "lineage": "PRESERVE",
+            "note": "JSON items only; field existence and runtime item links require observations.",
+            "output_ports": 1,
+            "processing": "PER_ITEM",
+            "schema_version": "0.4.0"
+          },
+          "node_id": "child-public",
+          "node_type": "n8n-nodes-base.set",
+          "operation": null,
+          "parameter_sources": [
+            {
+              "artifact_id": "support-source-3",
+              "extensions": {},
+              "json_pointer": "/nodes/1/parameters/assignments/assignments/0/value",
+              "schema_version": "0.4.0"
+            },
+            {
+              "artifact_id": "support-source-3",
+              "extensions": {},
+              "json_pointer": "/nodes/1/parameters/assignments/assignments/1/value",
+              "schema_version": "0.4.0"
+            }
+          ],
+          "reads": [
+            "$json.queue",
+            "$json.ticket_id"
+          ],
+          "reason": "SUPPORTED_DECLARED_CORE_SUBSET",
+          "resolved_defaults": {
+            "duplicateItem": false
+          },
+          "schema_version": "0.4.0",
+          "side": "after",
+          "source": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "json_pointer": "/nodes/1",
+            "schema_version": "0.4.0"
+          },
+          "support": "SUPPORTED",
+          "type_version": 3.5,
+          "unsupported_locations": [],
+          "writes": [
+            "$json.ticket_id",
+            "$json.queue"
+          ]
+        }
+      ]
+    }
+  },
+  "workflows": {
+    "summary": {
+      "connections": [
+        {
+          "extensions": {},
+          "opaque_fields": {},
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "json_pointer": "/connections/Sub-workflow input/main/0/0",
+            "schema_version": "0.4.0"
+          },
+          "source_node_id": "child-entry",
+          "source_output_index": 0,
+          "source_output_type": "main",
+          "target_input_index": 0,
+          "target_input_type": "main",
+          "target_node_id": "child-public"
+        }
+      ],
+      "execution_status": "NOT_RUN",
+      "extensions": {},
+      "limitations": [
+        "Node behavior and expressions have not been interpreted or executed.",
+        "Dependency references are preserved as opaque input, not resolved.",
+        "Port structure is preserved; compatibility with n8n requires L-03/C-01."
+      ],
+      "nodes": [
+        {
+          "extensions": {},
+          "name": "Sub-workflow input",
+          "node_id": "child-entry",
+          "node_type": "n8n-nodes-base.executeWorkflowTrigger",
+          "opaque_fields": {
+            "position": [
+              0,
+              0
+            ]
+          },
+          "parameters": {
+            "inputSource": "passthrough"
+          },
+          "schema_version": "0.4.0",
+          "semantic_support": "SUPPORTED",
+          "source": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "json_pointer": "/nodes/0",
+            "schema_version": "0.4.0"
+          },
+          "type_version": 1.2
+        },
+        {
+          "extensions": {},
+          "name": "Public summary",
+          "node_id": "child-public",
+          "node_type": "n8n-nodes-base.set",
+          "opaque_fields": {
+            "position": [
+              0,
+              0
+            ]
+          },
+          "parameters": {
+            "assignments": {
+              "assignments": [
+                {
+                  "id": "child-public-0",
+                  "name": "ticket_id",
+                  "type": "string",
+                  "value": "={{ $json.ticket_id }}"
+                },
+                {
+                  "id": "child-public-1",
+                  "name": "queue",
+                  "type": "string",
+                  "value": "={{ $json.queue }}"
+                }
+              ]
+            },
+            "includeOtherFields": false,
+            "mode": "manual",
+            "options": {}
+          },
+          "schema_version": "0.4.0",
+          "semantic_support": "SUPPORTED",
+          "source": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "json_pointer": "/nodes/1",
+            "schema_version": "0.4.0"
+          },
+          "type_version": 3.5
+        }
+      ],
+      "normalizer_version": "structure-v1",
+      "opaque_fields": {
+        "active": false,
+        "id": "fdSupportSummary",
+        "name": "FlowDelta local support summary",
+        "settings": {
+          "executionOrder": "v1"
+        }
+      },
+      "original_connections": {
+        "Sub-workflow input": {
+          "main": [
+            [
+              {
+                "index": 0,
+                "node": "Public summary",
+                "type": "main"
+              }
+            ]
+          ]
+        }
+      },
+      "processing_status": "STRUCTURE_PARSED",
+      "schema_version": "0.4.0",
+      "semantic_support": "SUPPORTED",
+      "source_artifact_id": "support-source-3",
+      "workflow_id": "fdSupportSummary"
+    }
+  }
+}

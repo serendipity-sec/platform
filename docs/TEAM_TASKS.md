@@ -1,6 +1,6 @@
 # 4인 구현 착수 카드
 
-2026-10-11 · [팀장 기준 환경](LEADER_BASELINE.md)에서 이어지는 **별도 역할·상세 작업 문서**
+2026-10-11 · **계약 0.4.0** · [입력 계약](INPUT_CONTRACT_04.md)과 함께 읽는 **별도 역할·상세 작업 문서**
 
 네 명 모두 구현을 맡는다. A/B/C는 역할 표기이며 실명·개인 마감은 팀장이 정한다.
 기존 전체 설계·평가 계획을 대체하지 않는다. 날짜를 임의의 D1로 지정하지 않는다.
@@ -39,7 +39,7 @@
 
 1. normalized node/connection에서 포트와 방향을 보존해 control graph를 생성한다.
 2. 동일 ID를 우선 대응한다. 한쪽에만 있으면 ADDED/REMOVED. 중복·모호한 대응을 추측하지 않는다.
-3. parameter·표시 필드·연결 변경을 구분한다. 원본 값과 위치를 남긴다.
+3. parameter·표시 필드·연결·노드 버전·설정·credential 참조·선언 의존성 변경을 구분한다. 원본 값과 위치를 남긴다.
 4. case의 필수 obligation ID와 task/policy 참조를 그대로 전달한다.
 5. 다음 PR에서 의미 어댑터의 reads/writes/effects를 이용한 관계·영향 범위를 추가한다.
 
@@ -52,6 +52,11 @@
 - schema를 하드코딩한 JSON 복사로 결과를 만들지 않는다. 최소 다른 ID·parameter의 작은 입력에서도 생성되는지 확인한다.
 
 **A가 지금 기다릴 팀원 산출물: 없음.** input과 의미 파일은 준비됐다.
+
+첫 주문 연결 뒤 같은 코드로 `examples/contracts/support-triage/input/`를 읽는다.
+If의 조건과 true/false 포트, Merge의 두 입력, 고정 하위 workflow를 보존한다.
+`semantics.json`의 branches와 `dependencies.normalized.json`을 사용한다.
+첫 PR에는 기본 control graph와 변경 추출, 다음 PR에는 의미 관계·영향 경로를 넣는다.
 
 ## 3. B — B-START: 카드와 정상 계획
 
@@ -77,7 +82,8 @@
 2. profile·node type·업무·변경 필드로 검색하고, 동점 처리와 검색 근거를 일정하게 유지한다.
 3. 검색한 card의 template ID/버전을 catalog와 대조한다.
 4. `TestPlan`을 생성하고 `validate_pipeline()`을 통과시킨다.
-5. 다음 PR에서 검색 점수/근거·미지원 처리·선택 비교를 확장한다. 이후 RAG 실험을 연결한다.
+5. `RetrievalResult`에 검색 방법·KB snapshot 해시·rank·점수·선택/제외 이유를 남긴다.
+6. 문의 분류의 중첩 배열 입력과 NORMAL_MANUAL_WORKFLOW를 같은 계획 코어로 처리한다. 이후 RAG 실험을 연결한다.
 
 ### 오류와 완료 조건
 
@@ -114,7 +120,9 @@
 3. 준비 → 실제 요청 → 수집 → 종료 단계를 `ExecutionRun.phase`로 기록한다.
 4. 정상 종료와 요청/수집 실패에서 자원 정리를 실행하고, 정리 실패도 보존한다.
 5. 새 실행을 기존 실행 DB에서 시작하지 않는 초기화 경로를 만든다.
-6. 다음 PR에서 등록된 정상 template를 늘리고, 중단/재시도/동시 실행의 상태 분리를 추가한다.
+6. 다음 PR에서 문의 분류 template를 추가한다. `conformance/lab.py`의 등록 workflow 실행과
+   `conformance/observations.py`의 포트·item/pairedItem 수집을 재사용할 수 있다.
+7. `attempt_number`를 포함하고 before/after별 새 상태를 쓴다. 재시도·동시 실행은 그다음 확장이다.
 
 ### 오류와 완료 조건
 
@@ -127,16 +135,22 @@
 
 **C가 지금 기다릴 팀원 산출물: 없음.** 기준 환경·plan·catalog·실제 정상 결과가 준비됐다.
 
+0.4.0 actual bundle은 `runs/before-1.run.json`, `runs/after-1.run.json` 형식을 사용한다.
+자료의 ArtifactRef.path는 전체 묶음 루트 기준으로 적는다. baseline의 side별 경로를 그대로 복사하지 않는다.
+노드 관측은 `NodeObservation`의 execution/node/run/port/item 좌표와 paired_items를 보존한다.
+
 ## 5. 팀장 — L-NEXT: 의미 범위를 넓히고 공통 형식을 관리
 
-- 소유: `contracts.py`, `normalize.py`, `semantics.py`, `expressions.py`, input 예제·Schema.
-- 첫 세 노드는 등록된 parameter 조합만 지원한다. 추가 조합은 읽기·쓰기·효과와 원본 위치를 먼저 정의한다.
+- 소유: `contracts.py`, `pipeline_contracts.py`, `normalize.py`, `semantics.py`, `core_adapters.py`,
+  `http_adapters.py`, `expressions.py`, `dependencies.py`, `snapshots.py`, input 예제·Schema.
+- 첫 업무의 세 노드와 문의 분류의 추가 노드까지 제한된 설정을 준비했다. 정확한 조합은 support-matrix를 따른다.
 - node metadata와 해당 정상 실행을 함께 확인한 뒤 지원 범위를 넓힌다.
-- 두 번째 업무 후보의 원본·이용 조건·입출력·실제 환경과의 차이를 정리한다.
+- 두 번째 업무는 팀 작성 문의 분류다. 이후에는 팀원이 필요로 하는 추가 설정·업무를 작은 정상 예제부터 확장한다.
 - 공통 계약을 바꾸면 소비하는 A/B/C 파일, 예시, 테스트, Schema를 같은 PR에 반영한다.
 - 실제 구현 이슈의 크기를 조정하고, 서로의 PR을 소비자 관점에서 읽도록 연결한다.
 
-의미 해시·하위 workflow·복잡한 분기/반복 등은 첫 연결이 동작한 뒤 순서를 정한다.
+선언 설정 해시·고정 하위 workflow·단일 If·Merge append는 준비됐다.
+동적 하위 workflow·반복·AI 노드 등 미지원 범위의 확장은 첫 실제 모듈 연결 뒤 우선순위를 정한다.
 
 ## 6. 합치는 순서와 완료 기준
 
@@ -150,6 +164,8 @@
 
 첫 연결에서는 수작업 analysis 대신 A의 출력, 수작업 plan 대신 B의 출력을 순서대로 바꾼다.
 실패 시 마지막으로 통과한 파일과 오류 코드를 남겨 어느 경계에서 끊겼는지 찾는다.
+실제 출력 묶음은 `flowdelta check-pipeline <bundle>`로 확인한다. 계약 예시는 이 명령에서 거부된다.
+현재 A/B/C의 실제 구현 연결은 아직 완료되지 않았다. 기준 환경 실행과 구분한다.
 
 ## 7. 팀장이 오늘 직접 할 결정
 

@@ -3,12 +3,12 @@
     {
       "extensions": {},
       "opaque_fields": {},
-      "schema_version": "0.3.0",
+      "schema_version": "0.4.0",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/connections/Order request/main/0/0",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "source_node_id": "request",
       "source_output_index": 0,
@@ -20,12 +20,12 @@
     {
       "extensions": {},
       "opaque_fields": {},
-      "schema_version": "0.3.0",
+      "schema_version": "0.4.0",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/connections/Read sample order/main/0/0",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "source_node_id": "read-order",
       "source_output_index": 0,
@@ -40,7 +40,7 @@
   "limitations": [
     "Semantic adapter covers only the registered normal order-lookup profile.",
     "Effects are static possibilities; observations live in ExecutionRun artifacts.",
-    "No dependency resolution or semantic equivalence hash is implemented."
+    "Configuration hashes cover declared local dependencies, not behavior equivalence."
   ],
   "nodes": [
     {
@@ -68,13 +68,13 @@
         "path": "flowdelta-order-lookup",
         "responseMode": "responseNode"
       },
-      "schema_version": "0.3.0",
+      "schema_version": "0.4.0",
       "semantic_support": "SUPPORTED",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/nodes/0",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "type_version": 2.2
     },
@@ -118,13 +118,13 @@
         "sendQuery": true,
         "url": "http://orders-api:8080/orders/lookup"
       },
-      "schema_version": "0.3.0",
+      "schema_version": "0.4.0",
       "semantic_support": "SUPPORTED",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/nodes/1",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "type_version": 4.5
     },
@@ -146,13 +146,13 @@
         "respondWith": "json",
         "responseBody": "={{ { order_id: $json.order_id, status: $json.status } }}"
       },
-      "schema_version": "0.3.0",
+      "schema_version": "0.4.0",
       "semantic_support": "SUPPORTED",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/nodes/2",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "type_version": 1.5
     }
@@ -190,7 +190,7 @@
     }
   },
   "processing_status": "STRUCTURE_PARSED",
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "semantic_support": "SUPPORTED",
   "source_artifact_id": "input-7",
   "workflow_id": null

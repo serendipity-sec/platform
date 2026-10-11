@@ -65,7 +65,7 @@ class OrderStore:
                 else {"error": "not_found"}
             )
             event = {
-                "schema_version": "0.3.0",
+                "schema_version": "0.4.0",
                 "run_id": self.run_id,
                 "producer": "orders-api",
                 "observed_at": datetime.now(UTC).isoformat(),
@@ -93,7 +93,7 @@ class OrderStore:
                 for row in db.execute("SELECT seq,data FROM events ORDER BY seq")
             ]
         return {
-            "schema_version": "0.3.0",
+            "schema_version": "0.4.0",
             "run_id": self.run_id,
             "metadata": metadata,
             "orders": orders,

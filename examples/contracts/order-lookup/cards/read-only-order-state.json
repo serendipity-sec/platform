@@ -4,10 +4,12 @@
     "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
     "origin": "CONTRACT_EXAMPLE",
     "producer": "team-lead-reference",
-    "schema_version": "0.3.0"
+    "schema_version": "0.4.0"
   },
   "card_id": "read-only-order-state",
+  "claim_basis": "TEAM_HYPOTHESIS",
   "extensions": {},
+  "license_identifier": null,
   "node_types": [
     "n8n-nodes-base.webhook",
     "n8n-nodes-base.httpRequest",
@@ -20,8 +22,10 @@
   ],
   "reuse_status": "TEAM_AUTHORED",
   "runtime_profile": "order-lookup-local-v1",
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "source": "team-authored:examples/order-lookup/task.json",
+  "source_ref": null,
+  "source_revision": null,
   "summary": "조회는 주문 데이터를 바꾸지 않는다. 전후 상태와 서비스 이벤트를 수집한다.",
   "template_id": "normal-order-lookup",
   "template_version": "1.0.0",
