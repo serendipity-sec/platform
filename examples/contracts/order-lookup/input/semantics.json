@@ -1,17 +1,23 @@
 {
   "extensions": {},
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "semantics": [
     {
       "adapter_version": "order-lookup-v1",
+      "assignments": [],
+      "branches": [],
       "capabilities": [
         "authenticate:local-client-header"
       ],
+      "dependency_ids": [],
       "effects": [
         "receive:POST /webhook/flowdelta-order-lookup"
       ],
       "engine_version": "2.42.6",
+      "error_behavior": null,
+      "expressions": {},
       "extensions": {},
+      "item_behavior": null,
       "node_id": "request",
       "node_type": "n8n-nodes-base.webhook",
       "operation": null,
@@ -20,25 +26,25 @@
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/httpMethod",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/path",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/authentication",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/responseMode",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         }
       ],
       "reads": [
@@ -46,16 +52,18 @@
         "http.request.headers.x-flowdelta-client"
       ],
       "reason": "SUPPORTED_NORMAL_ORDER_PROFILE",
-      "schema_version": "0.3.0",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
       "side": "before",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/nodes/0",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "support": "SUPPORTED",
       "type_version": 2.2,
+      "unsupported_locations": [],
       "writes": [
         "$json.body",
         "$json.headers",
@@ -67,16 +75,22 @@
     },
     {
       "adapter_version": "order-lookup-v1",
+      "assignments": [],
+      "branches": [],
       "capabilities": [
         "read:own-order:customer-demo:tenant-demo",
         "credential:fd-service-auth"
       ],
+      "dependency_ids": [],
       "effects": [
         "request:GET http://orders-api:8080/orders/lookup",
         "fixture:append-order-read-event"
       ],
       "engine_version": "2.42.6",
+      "error_behavior": null,
+      "expressions": {},
       "extensions": {},
+      "item_behavior": null,
       "node_id": "read-order",
       "node_type": "n8n-nodes-base.httpRequest",
       "operation": null,
@@ -85,47 +99,49 @@
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/method",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/url",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/queryParameters/parameters/0/value",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/genericAuthType",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/options",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         }
       ],
       "reads": [
         "$json.body.order_id"
       ],
       "reason": "SUPPORTED_NORMAL_ORDER_PROFILE",
-      "schema_version": "0.3.0",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
       "side": "before",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/nodes/1",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "support": "SUPPORTED",
       "type_version": 4.5,
+      "unsupported_locations": [],
       "writes": [
         "$json.order_id",
         "$json.status"
@@ -133,14 +149,20 @@
     },
     {
       "adapter_version": "order-lookup-v1",
+      "assignments": [],
+      "branches": [],
       "capabilities": [
         "return:public-order-fields"
       ],
+      "dependency_ids": [],
       "effects": [
         "respond:HTTP 200 application/json"
       ],
       "engine_version": "2.42.6",
+      "error_behavior": null,
+      "expressions": {},
       "extensions": {},
+      "item_behavior": null,
       "node_id": "response",
       "node_type": "n8n-nodes-base.respondToWebhook",
       "operation": null,
@@ -149,19 +171,19 @@
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/2/parameters/respondWith",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/2/parameters/responseBody",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-7",
           "extensions": {},
           "json_pointer": "/nodes/2/parameters/options/responseCode",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         }
       ],
       "reads": [
@@ -169,16 +191,18 @@
         "$json.status"
       ],
       "reason": "SUPPORTED_NORMAL_ORDER_PROFILE",
-      "schema_version": "0.3.0",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
       "side": "before",
       "source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/nodes/2",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "support": "SUPPORTED",
       "type_version": 1.5,
+      "unsupported_locations": [],
       "writes": [
         "http.response.body.order_id",
         "http.response.body.status"
@@ -186,14 +210,20 @@
     },
     {
       "adapter_version": "order-lookup-v1",
+      "assignments": [],
+      "branches": [],
       "capabilities": [
         "authenticate:local-client-header"
       ],
+      "dependency_ids": [],
       "effects": [
         "receive:POST /webhook/flowdelta-order-lookup"
       ],
       "engine_version": "2.42.6",
+      "error_behavior": null,
+      "expressions": {},
       "extensions": {},
+      "item_behavior": null,
       "node_id": "request",
       "node_type": "n8n-nodes-base.webhook",
       "operation": null,
@@ -202,25 +232,25 @@
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/httpMethod",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/path",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/authentication",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/0/parameters/responseMode",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         }
       ],
       "reads": [
@@ -228,16 +258,18 @@
         "http.request.headers.x-flowdelta-client"
       ],
       "reason": "SUPPORTED_NORMAL_ORDER_PROFILE",
-      "schema_version": "0.3.0",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
       "side": "after",
       "source": {
         "artifact_id": "input-6",
         "extensions": {},
         "json_pointer": "/nodes/0",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "support": "SUPPORTED",
       "type_version": 2.2,
+      "unsupported_locations": [],
       "writes": [
         "$json.body",
         "$json.headers",
@@ -249,16 +281,22 @@
     },
     {
       "adapter_version": "order-lookup-v1",
+      "assignments": [],
+      "branches": [],
       "capabilities": [
         "read:own-order:customer-demo:tenant-demo",
         "credential:fd-service-auth"
       ],
+      "dependency_ids": [],
       "effects": [
         "request:GET http://orders-api:8080/orders/lookup",
         "fixture:append-order-read-event"
       ],
       "engine_version": "2.42.6",
+      "error_behavior": null,
+      "expressions": {},
       "extensions": {},
+      "item_behavior": null,
       "node_id": "read-order",
       "node_type": "n8n-nodes-base.httpRequest",
       "operation": null,
@@ -267,47 +305,49 @@
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/method",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/url",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/queryParameters/parameters/0/value",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/genericAuthType",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/1/parameters/options",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         }
       ],
       "reads": [
         "$json.body.order_id"
       ],
       "reason": "SUPPORTED_NORMAL_ORDER_PROFILE",
-      "schema_version": "0.3.0",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
       "side": "after",
       "source": {
         "artifact_id": "input-6",
         "extensions": {},
         "json_pointer": "/nodes/1",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "support": "SUPPORTED",
       "type_version": 4.5,
+      "unsupported_locations": [],
       "writes": [
         "$json.order_id",
         "$json.status"
@@ -315,14 +355,20 @@
     },
     {
       "adapter_version": "order-lookup-v1",
+      "assignments": [],
+      "branches": [],
       "capabilities": [
         "return:public-order-fields"
       ],
+      "dependency_ids": [],
       "effects": [
         "respond:HTTP 200 application/json"
       ],
       "engine_version": "2.42.6",
+      "error_behavior": null,
+      "expressions": {},
       "extensions": {},
+      "item_behavior": null,
       "node_id": "response",
       "node_type": "n8n-nodes-base.respondToWebhook",
       "operation": null,
@@ -331,19 +377,19 @@
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/2/parameters/respondWith",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/2/parameters/responseBody",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         },
         {
           "artifact_id": "input-6",
           "extensions": {},
           "json_pointer": "/nodes/2/parameters/options/responseCode",
-          "schema_version": "0.3.0"
+          "schema_version": "0.4.0"
         }
       ],
       "reads": [
@@ -351,16 +397,18 @@
         "$json.status"
       ],
       "reason": "SUPPORTED_NORMAL_ORDER_PROFILE",
-      "schema_version": "0.3.0",
+      "resolved_defaults": {},
+      "schema_version": "0.4.0",
       "side": "after",
       "source": {
         "artifact_id": "input-6",
         "extensions": {},
         "json_pointer": "/nodes/2",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "support": "SUPPORTED",
       "type_version": 1.5,
+      "unsupported_locations": [],
       "writes": [
         "http.response.body.order_id",
         "http.response.body.status",

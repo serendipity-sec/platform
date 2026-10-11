@@ -1,0 +1,61 @@
+{
+  "after_snapshot_id": "snapshot-c183fc3e8b23b89df4a50c007c5f2022b7098bf44bd6882068dba3b8a5a6b67d",
+  "analysis_id": "analysis-support-triage-example",
+  "attempts_per_side": 1,
+  "authorship": {
+    "extensions": {},
+    "note": "고정된 정상 문의 분류의 기대 입출력. A/B/C의 실제 구현 출력이 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.4.0"
+  },
+  "before_snapshot_id": "snapshot-55c0bfc64c7c7d6a0b0cf475bd1b2d4b6368ffcc7e04c72ee2364a43aa2d8646",
+  "case_id": "support-triage-normal-001",
+  "catalog_id": "catalog-support-triage-v1",
+  "extensions": {},
+  "initial_state_ref": {
+    "artifact_id": "support-source-7",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/state/initial.json",
+    "schema_version": "0.4.0",
+    "sha256": "2d133225a44da58d24c5f0eed14d14a5545624804d14146862065399e593d9e0",
+    "size_bytes": 84
+  },
+  "normal_input": {
+    "tickets": [
+      {
+        "priority": 3,
+        "ticket_id": "T-1001"
+      },
+      {
+        "priority": 1,
+        "ticket_id": "T-1002"
+      },
+      {
+        "priority": 5,
+        "ticket_id": "T-1003"
+      }
+    ]
+  },
+  "obligation_bindings": [
+    {
+      "extensions": {},
+      "obligation_id": "normal-triage",
+      "required_artifact_kinds": [
+        "response",
+        "node-observations"
+      ],
+      "schema_version": "0.4.0"
+    }
+  ],
+  "plan_id": "plan-support-triage-example",
+  "planner_metadata": {},
+  "retrieval_ref": null,
+  "schema_version": "0.4.0",
+  "template_id": "normal-support-triage",
+  "template_version": "1.0.0",
+  "timeout_seconds": 30,
+  "uncovered_obligation_ids": []
+}

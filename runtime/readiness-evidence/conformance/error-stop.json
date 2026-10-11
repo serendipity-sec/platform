@@ -1,0 +1,410 @@
+{
+  "records": {
+    "comparison.json": {
+      "all_observed_checks_match": true,
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "error-stop",
+      "checks": [
+        {
+          "check": "execution-status",
+          "expected": "FAILED",
+          "observed": "FAILED",
+          "status": "MATCH"
+        },
+        {
+          "check": "cleanup",
+          "expected": "COMPLETE",
+          "observed": "COMPLETE",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-status",
+          "expected": "error",
+          "observed": "error",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-observations-present",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "last-node-observed",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:connections",
+          "execution_id": "1",
+          "expected_sha256": "fbef5a46cfef97f11e9a7e4291866db27c1a16c5b689354e6d644d2f36d0ce19",
+          "observed_sha256": "fbef5a46cfef97f11e9a7e4291866db27c1a16c5b689354e6d644d2f36d0ce19",
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:nodes",
+          "execution_id": "1",
+          "expected_sha256": "d849b15f51fbc2b9c3ffd13d4827602803b1aa6b849fd2e8e0b4f946b6e4c4c3",
+          "observed_sha256": "d849b15f51fbc2b9c3ffd13d4827602803b1aa6b849fd2e8e0b4f946b6e4c4c3",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {}
+            ]
+          ],
+          "node_id": "start",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {}
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformanceErrorstop"
+        },
+        {
+          "check": "expected-node-error",
+          "execution_id": "1",
+          "expected": "error",
+          "node_id": "convert",
+          "node_run_index": 0,
+          "observed": "error",
+          "status": "MATCH",
+          "workflow_id": "fdConformanceErrorstop"
+        }
+      ],
+      "not_observed_nodes": [
+        {
+          "execution_id": "1",
+          "node_id": "handled",
+          "workflow_id": "fdConformanceErrorstop"
+        }
+      ],
+      "run_id": "run-308134cb90384a0a8e32ec8f943a3da1",
+      "schema_version": "0.4.0",
+      "scope": "Normal node outputs, ports, source binding and item links; no security verdict."
+    },
+    "run.json": {
+      "actual_engine_version": "2.42.6",
+      "actual_image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "error-stop",
+      "cleanup_status": "COMPLETE",
+      "execution_status": "FAILED",
+      "expect_success": false,
+      "expected_execution_observed": true,
+      "finished_at": "2026-10-11T00:46:06.916991+00:00",
+      "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "network": "none",
+      "observed_executions": 1,
+      "observed_node_ports": 1,
+      "outcome": null,
+      "return_code": 1,
+      "run_id": "run-308134cb90384a0a8e32ec8f943a3da1",
+      "source_sha256": "ea73cce0a1e6c8749a114f22baf95c16c777782298023fcba8f34e127f7da14f",
+      "started_at": "2026-10-11T00:44:46.850282+00:00"
+    },
+    "runtime-executions.json": {
+      "authorship": "RUNTIME_OBSERVATION",
+      "executions": [
+        {
+          "data": {
+            "resultData": {
+              "error": {
+                "context": {
+                  "itemIndex": 0
+                },
+                "description": "To fix the error try to change the type for the field \"priority\" or activate the option “Ignore Type Conversion Errors” to apply a less strict type validation",
+                "functionality": "regular",
+                "level": "warning",
+                "message": "'priority' expects a number but we got 'not-a-number' [item 0]",
+                "messages": [],
+                "name": "NodeOperationError",
+                "node": {
+                  "id": "convert",
+                  "name": "Read numeric priority",
+                  "onError": "stopWorkflow",
+                  "parameters": {
+                    "assignments": {
+                      "assignments": [
+                        {
+                          "id": "convert-0",
+                          "name": "priority",
+                          "type": "number",
+                          "value": "not-a-number"
+                        }
+                      ]
+                    },
+                    "duplicateItem": false,
+                    "includeOtherFields": false,
+                    "mode": "manual",
+                    "options": {}
+                  },
+                  "position": [
+                    0,
+                    0
+                  ],
+                  "type": "n8n-nodes-base.set",
+                  "typeVersion": 3.5
+                },
+                "shouldReport": true,
+                "stack": "NodeOperationError: 'priority' expects a number but we got 'not-a-number' [item 0]\n    at validateEntry (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/helpers/utils.ts:201:10)\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/helpers/utils.ts:266:41\n    at Array.map (<anonymous>)\n    at prepareReturnItem (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/helpers/utils.ts:265:14)\n    at ExecuteContext.execute (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/manual.mode.ts:238:27)\n    at ExecuteContext.execute (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/SetV2.node.ts:352:48)\n    at WorkflowExecute.executeNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1129:31)\n    at WorkflowExecute.runNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1431:22)\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:2333:38\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:2814:11",
+                "tags": {},
+                "timestamp": 1791679565789
+              },
+              "lastNodeExecuted": "Read numeric priority",
+              "runData": {
+                "Manual request": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {},
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 2,
+                    "hints": [],
+                    "source": [],
+                    "startTime": 1791679565778
+                  }
+                ],
+                "Read numeric priority": [
+                  {
+                    "error": {
+                      "context": {
+                        "itemIndex": 0
+                      },
+                      "description": "To fix the error try to change the type for the field \"priority\" or activate the option “Ignore Type Conversion Errors” to apply a less strict type validation",
+                      "functionality": "regular",
+                      "level": "warning",
+                      "message": "'priority' expects a number but we got 'not-a-number' [item 0]",
+                      "messages": [],
+                      "name": "NodeOperationError",
+                      "node": {
+                        "id": "convert",
+                        "name": "Read numeric priority",
+                        "onError": "stopWorkflow",
+                        "parameters": {
+                          "assignments": {
+                            "assignments": [
+                              {
+                                "id": "convert-0",
+                                "name": "priority",
+                                "type": "number",
+                                "value": "not-a-number"
+                              }
+                            ]
+                          },
+                          "duplicateItem": false,
+                          "includeOtherFields": false,
+                          "mode": "manual",
+                          "options": {}
+                        },
+                        "position": [
+                          0,
+                          0
+                        ],
+                        "type": "n8n-nodes-base.set",
+                        "typeVersion": 3.5
+                      },
+                      "shouldReport": true,
+                      "stack": "NodeOperationError: 'priority' expects a number but we got 'not-a-number' [item 0]\n    at validateEntry (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/helpers/utils.ts:201:10)\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/helpers/utils.ts:266:41\n    at Array.map (<anonymous>)\n    at prepareReturnItem (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/helpers/utils.ts:265:14)\n    at ExecuteContext.execute (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/manual.mode.ts:238:27)\n    at ExecuteContext.execute (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file++++home+runner+_work+n8n+n8n+packages+nodes-base/node_modules/n8n-nodes-base/nodes/Set/v2/SetV2.node.ts:352:48)\n    at WorkflowExecute.executeNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1129:31)\n    at WorkflowExecute.runNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1431:22)\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:2333:38\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file++++home+runner+_work+n8n+n8n+packages+core/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:2814:11",
+                      "tags": {},
+                      "timestamp": 1791679565789
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "error",
+                    "executionTime": 34,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Manual request",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679565781
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "1",
+          "status": "error",
+          "workflow": {
+            "connections": {
+              "Manual request": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Read numeric priority",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Read numeric priority": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Handled input error",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdConformanceErrorstop",
+            "name": "Normal conversion error stop",
+            "nodes": [
+              {
+                "id": "start",
+                "name": "Manual request",
+                "parameters": {
+                  "notice": ""
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.manualTrigger",
+                "typeVersion": 1
+              },
+              {
+                "id": "convert",
+                "name": "Read numeric priority",
+                "onError": "stopWorkflow",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "convert-0",
+                        "name": "priority",
+                        "type": "number",
+                        "value": "not-a-number"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "handled",
+                "name": "Handled input error",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "handled-0",
+                        "name": "status",
+                        "type": "string",
+                        "value": "needs-correction"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdConformanceErrorstop"
+        }
+      ],
+      "observations": [
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {},
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "start",
+          "node_name": "Manual request",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Manual request/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceErrorstop"
+        }
+      ],
+      "schema_version": "0.4.0",
+      "source_database_sha256": "92e8e0d3b317b39ea4ae2a348509a014eea9f354edb203ec1124a3ca1ae76eab",
+      "transformation": "Selected execution fields; authentication header values redacted; no resume tokens."
+    }
+  },
+  "schema_version": "0.4.0",
+  "selection": "Selected JSON observations only",
+  "source_files": {
+    "comparison.json": "1650bfb8e995386c8b673afcab66fecffda3c7794c98562057615aac1c145b27",
+    "run.json": "d6d14c5ac5b64dadaf48c1383372da5979acc69fed4617cbf7f14936331112e4",
+    "runtime-executions.json": "0c6b4756ad1d0b682644b0abf6ac92cf7dd31e7f6f6d20dd496a172c61636512"
+  }
+}

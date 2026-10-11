@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Literal
 from uuid import uuid4
 
+from flowdelta.conformance.order import compare_order
 from flowdelta.contracts import ArtifactRef
 from flowdelta.handoff import build_handoff, write_handoff
 from flowdelta.ingestion import InputError, LoadedCase, digest, json_bytes, load_case
@@ -143,7 +144,7 @@ def run_side(
     save(
         artifacts / "allocation.json",
         {
-            "schema_version": "0.3.0",
+            "schema_version": "0.4.0",
             "run_id": run_id,
             "project": project,
             "created_at": now(),
@@ -176,7 +177,7 @@ def run_side(
     save(
         artifacts / "binding.json",
         {
-            "schema_version": "0.3.0",
+            "schema_version": "0.4.0",
             "run_id": run_id,
             "source_workflow_sha256": digest(loaded.raw[source_path]),
             "runtime_workflow_sha256": digest((private / "import/workflow.json").read_bytes()),
@@ -269,7 +270,7 @@ def run_side(
         save(
             artifacts / "runtime.json",
             {
-                "schema_version": "0.3.0",
+                "schema_version": "0.4.0",
                 "run_id": run_id,
                 "project": project,
                 "engine_version": actual_version,
@@ -318,7 +319,7 @@ def run_side(
         save(
             artifacts / "events.json",
             {
-                "schema_version": "0.3.0",
+                "schema_version": "0.4.0",
                 "run_id": run_id,
                 "events": final_state["events"],
                 "collection_status": "COMPLETE",
@@ -377,7 +378,7 @@ def run_side(
             save(
                 artifacts / "cleanup.json",
                 {
-                    "schema_version": "0.3.0",
+                    "schema_version": "0.4.0",
                     "run_id": run_id,
                     "project": project,
                     "status": cleanup_status,
@@ -391,11 +392,23 @@ def run_side(
             save(
                 artifacts / "cleanup.json",
                 {
-                    "schema_version": "0.3.0",
+                    "schema_version": "0.4.0",
                     "run_id": run_id,
                     "project": project,
                     "status": "FAILED",
                 },
+            )
+    if started_at and cleanup_status == "COMPLETE":
+        try:
+            comparison = compare_order(loaded, side, private, artifacts)
+            observed.extend(["node-observations", "node-comparison"])
+            if not comparison["all_observed_checks_match"]:
+                error_code = "NODE_CONFORMANCE_MISMATCH"
+        except (InputError, OSError, ValueError, KeyError, IndexError, TypeError) as exc:
+            error_code = "NODE_OBSERVATION_FAILED"
+            save(
+                artifacts / "node-observation-error.json",
+                {"error_code": error_code, "exception_type": type(exc).__name__},
             )
     refs = []
     for index, path in enumerate(sorted(artifacts.iterdir())):
@@ -410,7 +423,14 @@ def run_side(
                 media_type="application/json" if path.suffix == ".json" else "text/plain",
             )
         )
-    required = ["response", "initial-state", "final-state", "events"]
+    required = [
+        "response",
+        "initial-state",
+        "final-state",
+        "events",
+        "node-observations",
+        "node-comparison",
+    ]
     missing = sorted(set(required) - set(observed))
     artifact_kinds = {
         kind: next(ref.artifact_id for ref in refs if ref.path == f"{kind}.json")
@@ -474,13 +494,21 @@ def run_baseline(repo: Path, output: Path) -> dict[str, Any]:
             f"baseline {snapshot.side}: {run.execution_status}; cleanup {run.cleanup_status}",
             flush=True,
         )
-        if run.execution_status != "SUCCEEDED" or run.cleanup_status != "COMPLETE":
+        if (
+            run.execution_status != "SUCCEEDED"
+            or run.cleanup_status != "COMPLETE"
+            or run.error_code
+        ):
             break
     complete = len(runs) == 2 and all(
-        item.execution_status == "SUCCEEDED" and item.cleanup_status == "COMPLETE" for item in runs
+        item.execution_status == "SUCCEEDED"
+        and item.cleanup_status == "COMPLETE"
+        and item.error_code is None
+        and item.artifacts.collection_status == "COMPLETE"
+        for item in runs
     )
     result = {
-        "schema_version": "0.3.0",
+        "schema_version": "0.4.0",
         "comparison_run_id": comparison_id,
         "authorship": "RUNTIME_OBSERVATION",
         "normal_baseline_complete": complete,
@@ -491,6 +519,8 @@ def run_baseline(repo: Path, output: Path) -> dict[str, Any]:
                 "side": item.side,
                 "status": item.execution_status,
                 "cleanup": item.cleanup_status,
+                "error_code": item.error_code,
+                "collection_status": item.artifacts.collection_status,
             }
             for item in runs
         ],

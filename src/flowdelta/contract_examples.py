@@ -266,7 +266,7 @@ def write_contract_examples(repo: Path, output: Path) -> Path:
         )
     (output / "manifest.json").write_bytes(
         json_bytes(
-            Manifest(schema_version="0.3.0", artifacts=artifact_refs).model_dump(mode="json")
+            Manifest(schema_version="0.4.0", artifacts=artifact_refs).model_dump(mode="json")
         )
     )
     read_pipeline_examples(output)

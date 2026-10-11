@@ -4,8 +4,21 @@
   "extensions": {
     "flowdelta.semantic_profile": "order-lookup-local-v1"
   },
+  "http_endpoints": [
+    {
+      "description_basis": "DECLARED_ONLY",
+      "endpoint_id": "order-lookup",
+      "method": "GET",
+      "response_fields": [
+        "order_id",
+        "status"
+      ],
+      "response_shape": "SINGLE_JSON_OBJECT",
+      "url": "http://orders-api:8080/orders/lookup"
+    }
+  ],
   "runtime_status": "NOT_VALIDATED",
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "service_bindings": {
     "orders": {
       "base_url": "http://orders-api:8080",

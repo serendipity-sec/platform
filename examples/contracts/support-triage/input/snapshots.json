@@ -1,0 +1,286 @@
+{
+  "extensions": {},
+  "schema_version": "0.4.0",
+  "snapshots": [
+    {
+      "case_id": "support-triage-normal-001",
+      "context_refs": [
+        {
+          "artifact_id": "support-source-0",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "case.json",
+          "schema_version": "0.4.0",
+          "sha256": "62509b60013f0ad72889429514fa48b493620d5a98a76fea9f78e33e87caf4bb",
+          "size_bytes": 796
+        },
+        {
+          "artifact_id": "support-source-8",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "task.json",
+          "schema_version": "0.4.0",
+          "sha256": "2b8296765ae08671c76f835977dab5654376d8edea836c91c52c6eeb3c902fa2",
+          "size_bytes": 705
+        },
+        {
+          "artifact_id": "support-source-5",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "policy.json",
+          "schema_version": "0.4.0",
+          "sha256": "c946bb5c15e81788d89f850e12c8335be33bf00d75e6201c02856596c917716e",
+          "size_bytes": 590
+        },
+        {
+          "artifact_id": "support-source-4",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "environment.json",
+          "schema_version": "0.4.0",
+          "sha256": "b313248133e70a4cc9cf937b6831cd9c55407a6f9c845aef9428d57d3511ff40",
+          "size_bytes": 261
+        },
+        {
+          "artifact_id": "support-source-7",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "state/initial.json",
+          "schema_version": "0.4.0",
+          "sha256": "2d133225a44da58d24c5f0eed14d14a5545624804d14146862065399e593d9e0",
+          "size_bytes": 84
+        },
+        {
+          "artifact_id": "support-source-6",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "provenance.json",
+          "schema_version": "0.4.0",
+          "sha256": "cdb9289abbca777ec0c3691bace5569b62c7a92f26854b0641f28f410ba48aba",
+          "size_bytes": 588
+        },
+        {
+          "artifact_id": "support-source-1",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "dependencies.json",
+          "schema_version": "0.4.0",
+          "sha256": "80e92cab6603f8f2f102b79700de592b139645fdd853f358f3375bb00955cf31",
+          "size_bytes": 537
+        }
+      ],
+      "dependencies": [
+        {
+          "artifact_ref": {
+            "artifact_id": "support-source-2",
+            "extensions": {},
+            "kind": "source",
+            "media_type": "application/json",
+            "path": "dependencies/runtime.json",
+            "schema_version": "0.4.0",
+            "sha256": "b7d9ac2402f6dabd8f9871a65e9950efd6b79dcc3f7b63500f426a1da69525fd",
+            "size_bytes": 200
+          },
+          "dependency_id": "runtime",
+          "extensions": {},
+          "interpretation": "DECLARED_LOCAL_FILE",
+          "kind": "RUNTIME_CONFIG",
+          "requires": [],
+          "schema_version": "0.4.0",
+          "version": "2.42.6",
+          "workflow_id": null
+        },
+        {
+          "artifact_ref": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "kind": "source",
+            "media_type": "application/json",
+            "path": "dependencies/summary.json",
+            "schema_version": "0.4.0",
+            "sha256": "13043911b64f1049e4bc4d52cb1a55b64bd61ac0908559e7fbd918568d8071f5",
+            "size_bytes": 1379
+          },
+          "dependency_id": "summary",
+          "extensions": {},
+          "interpretation": "DECLARED_LOCAL_FILE",
+          "kind": "WORKFLOW",
+          "requires": [],
+          "schema_version": "0.4.0",
+          "version": "1.0.0",
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "dependency_limits": [],
+      "dependency_status": "DECLARED_RESOLVED",
+      "execution_status": "NOT_RUN",
+      "extensions": {},
+      "raw_sha256": "aa7c428d1e19d5e29c3b0e4c07195eb5a01391bdcd67379342b6b68068a77406",
+      "runtime_status": "NOT_VALIDATED",
+      "schema_version": "0.4.0",
+      "semantic_hash_scope": "DECLARED_CONFIGURATION",
+      "semantic_hash_version": "config-v1",
+      "semantic_sha256": "b6cdfe4bfb0eeabe8c114c73727d10e1c08c5d9a1bec814a9f613255c2de8626",
+      "side": "before",
+      "snapshot_id": "snapshot-55c0bfc64c7c7d6a0b0cf475bd1b2d4b6368ffcc7e04c72ee2364a43aa2d8646",
+      "structural_sha256": "f6f3b8652eedf799a393c93fd4de3cb3b3e04a29f9ec5dfb7260afc596146acb",
+      "workflow_ref": {
+        "artifact_id": "support-source-10",
+        "extensions": {},
+        "kind": "source",
+        "media_type": "application/json",
+        "path": "workflow/before.json",
+        "schema_version": "0.4.0",
+        "sha256": "aa7c428d1e19d5e29c3b0e4c07195eb5a01391bdcd67379342b6b68068a77406",
+        "size_bytes": 6965
+      }
+    },
+    {
+      "case_id": "support-triage-normal-001",
+      "context_refs": [
+        {
+          "artifact_id": "support-source-0",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "case.json",
+          "schema_version": "0.4.0",
+          "sha256": "62509b60013f0ad72889429514fa48b493620d5a98a76fea9f78e33e87caf4bb",
+          "size_bytes": 796
+        },
+        {
+          "artifact_id": "support-source-8",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "task.json",
+          "schema_version": "0.4.0",
+          "sha256": "2b8296765ae08671c76f835977dab5654376d8edea836c91c52c6eeb3c902fa2",
+          "size_bytes": 705
+        },
+        {
+          "artifact_id": "support-source-5",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "policy.json",
+          "schema_version": "0.4.0",
+          "sha256": "c946bb5c15e81788d89f850e12c8335be33bf00d75e6201c02856596c917716e",
+          "size_bytes": 590
+        },
+        {
+          "artifact_id": "support-source-4",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "environment.json",
+          "schema_version": "0.4.0",
+          "sha256": "b313248133e70a4cc9cf937b6831cd9c55407a6f9c845aef9428d57d3511ff40",
+          "size_bytes": 261
+        },
+        {
+          "artifact_id": "support-source-7",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "state/initial.json",
+          "schema_version": "0.4.0",
+          "sha256": "2d133225a44da58d24c5f0eed14d14a5545624804d14146862065399e593d9e0",
+          "size_bytes": 84
+        },
+        {
+          "artifact_id": "support-source-6",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "provenance.json",
+          "schema_version": "0.4.0",
+          "sha256": "cdb9289abbca777ec0c3691bace5569b62c7a92f26854b0641f28f410ba48aba",
+          "size_bytes": 588
+        },
+        {
+          "artifact_id": "support-source-1",
+          "extensions": {},
+          "kind": "source",
+          "media_type": "application/json",
+          "path": "dependencies.json",
+          "schema_version": "0.4.0",
+          "sha256": "80e92cab6603f8f2f102b79700de592b139645fdd853f358f3375bb00955cf31",
+          "size_bytes": 537
+        }
+      ],
+      "dependencies": [
+        {
+          "artifact_ref": {
+            "artifact_id": "support-source-2",
+            "extensions": {},
+            "kind": "source",
+            "media_type": "application/json",
+            "path": "dependencies/runtime.json",
+            "schema_version": "0.4.0",
+            "sha256": "b7d9ac2402f6dabd8f9871a65e9950efd6b79dcc3f7b63500f426a1da69525fd",
+            "size_bytes": 200
+          },
+          "dependency_id": "runtime",
+          "extensions": {},
+          "interpretation": "DECLARED_LOCAL_FILE",
+          "kind": "RUNTIME_CONFIG",
+          "requires": [],
+          "schema_version": "0.4.0",
+          "version": "2.42.6",
+          "workflow_id": null
+        },
+        {
+          "artifact_ref": {
+            "artifact_id": "support-source-3",
+            "extensions": {},
+            "kind": "source",
+            "media_type": "application/json",
+            "path": "dependencies/summary.json",
+            "schema_version": "0.4.0",
+            "sha256": "13043911b64f1049e4bc4d52cb1a55b64bd61ac0908559e7fbd918568d8071f5",
+            "size_bytes": 1379
+          },
+          "dependency_id": "summary",
+          "extensions": {},
+          "interpretation": "DECLARED_LOCAL_FILE",
+          "kind": "WORKFLOW",
+          "requires": [],
+          "schema_version": "0.4.0",
+          "version": "1.0.0",
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "dependency_limits": [],
+      "dependency_status": "DECLARED_RESOLVED",
+      "execution_status": "NOT_RUN",
+      "extensions": {},
+      "raw_sha256": "bf0925afa65601c5c132ce338529cda8a07af5d7d315a217c3219182efc6bb8a",
+      "runtime_status": "NOT_VALIDATED",
+      "schema_version": "0.4.0",
+      "semantic_hash_scope": "DECLARED_CONFIGURATION",
+      "semantic_hash_version": "config-v1",
+      "semantic_sha256": "6ba7399220fef6a3aec478be7b909ced4c9f9fc56ecc50ae80dfd4151cd2aa51",
+      "side": "after",
+      "snapshot_id": "snapshot-c183fc3e8b23b89df4a50c007c5f2022b7098bf44bd6882068dba3b8a5a6b67d",
+      "structural_sha256": "89d0ac7ad56fea976e6d6256f1f936f0565cad9b14161ca6b5508658a29549ad",
+      "workflow_ref": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "kind": "source",
+        "media_type": "application/json",
+        "path": "workflow/after.json",
+        "schema_version": "0.4.0",
+        "sha256": "bf0925afa65601c5c132ce338529cda8a07af5d7d315a217c3219182efc6bb8a",
+        "size_bytes": 7159
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 """Read typed handoffs and check references between separately implemented modules."""
 
 import re
+from collections import Counter
 from pathlib import Path
 
 from pydantic import JsonValue
@@ -8,6 +9,8 @@ from pydantic import JsonValue
 from flowdelta.contracts import (
     ArtifactRef,
     ComparisonCase,
+    DependencyManifest,
+    DependencyWorkflowsIndex,
     Environment,
     Handoff,
     InitialState,
@@ -25,9 +28,18 @@ from flowdelta.ingestion import (
     _read_local,
     digest,
     parse_json,
-    parse_model,
 )
-from flowdelta.pipeline_contracts import AnalysisBundle, PipelineExamples, TemplateCatalog, TestPlan
+from flowdelta.ingestion import (
+    parse_file_model as parse_model,
+)
+from flowdelta.pipeline_contracts import (
+    AnalysisBundle,
+    InputField,
+    InputValueSchema,
+    PipelineExamples,
+    TemplateCatalog,
+    TestPlan,
+)
 
 
 def read_manifest(root: Path) -> tuple[Manifest, dict[str, dict[str, JsonValue]]]:
@@ -62,7 +74,15 @@ def read_handoff(bundle: Path) -> Handoff:
             "before.normalized.json",
             "after.normalized.json",
             "semantics.json",
+            "dependencies.normalized.json",
         }
+        dependencies = None
+        if case.dependency_manifest_ref:
+            from flowdelta.dependencies import validate_manifest
+
+            dependencies = parse_model(DependencyManifest, docs[case.dependency_manifest_ref])
+            validate_manifest(dependencies)
+            expected.update(item.path for item in dependencies.dependencies)
         if set(docs) != expected:
             raise InputError("HANDOFF_FILE_SET_MISMATCH")
         source_refs = [ref for ref in manifest.artifacts if ref.kind == "source"]
@@ -80,6 +100,13 @@ def read_handoff(bundle: Path) -> Handoff:
             before=parse_model(NormalizedWorkflow, docs["before.normalized.json"]),
             after=parse_model(NormalizedWorkflow, docs["after.normalized.json"]),
             semantics=parse_model(SemanticsIndex, docs["semantics.json"]),
+            dependency_manifest=dependencies,
+            dependency_workflows=parse_model(
+                DependencyWorkflowsIndex, docs["dependencies.normalized.json"]
+            ).workflows,
+            dependency_semantics=parse_model(
+                DependencyWorkflowsIndex, docs["dependencies.normalized.json"]
+            ).semantics,
         )
     except KeyError as exc:
         raise InputError("HANDOFF_FILE_MISSING") from exc
@@ -90,6 +117,9 @@ def read_handoff(bundle: Path) -> Handoff:
     for snapshot, path in zip(snapshots, [case.before_ref, case.after_ref], strict=True):
         if snapshot.case_id != case.case_id or snapshot.workflow_ref != refs[path]:
             raise InputError("SNAPSHOT_SOURCE_MISMATCH")
+        for dependency in snapshot.dependencies:
+            if refs.get(dependency.artifact_ref.path) != dependency.artifact_ref:
+                raise InputError("DEPENDENCY_SOURCE_MISMATCH")
     return result
 
 
@@ -102,6 +132,50 @@ def verify_ref(root: Path, ref: ArtifactRef) -> None:
 def _same(actual: object, expected: object, code: str) -> None:
     if actual != expected:
         raise InputError(code)
+
+
+def validate_input_value(value: JsonValue, schema: InputValueSchema, depth: int = 0) -> None:
+    if depth > 16:
+        raise InputError("TEMPLATE_INPUT_DEPTH_LIMIT")
+    expected_types = {
+        "string": (str,),
+        "integer": (int,),
+        "number": (int, float),
+        "boolean": (bool,),
+        "object": (dict,),
+        "array": (list,),
+        "null": (type(None),),
+    }
+    if type(value) not in expected_types[schema.value_type]:
+        raise InputError("TEMPLATE_INPUT_INVALID")
+    if isinstance(value, str) and schema.pattern is not None:
+        try:
+            matched = re.fullmatch(schema.pattern, value)
+        except re.error as exc:
+            raise InputError("TEMPLATE_PATTERN_INVALID") from exc
+        if matched is None:
+            raise InputError("TEMPLATE_INPUT_INVALID")
+    elif isinstance(value, list):
+        if schema.items is None or len(value) > schema.max_items:
+            raise InputError("TEMPLATE_INPUT_INVALID")
+        for item in value:
+            validate_input_value(item, schema.items, depth + 1)
+    elif isinstance(value, dict):
+        validate_input_fields(value, schema.properties, depth + 1)
+
+
+def validate_input_fields(
+    value: dict[str, JsonValue], fields: list[InputField], depth: int = 0
+) -> None:
+    by_name = {item.name: item for item in fields}
+    if (
+        len(by_name) != len(fields)
+        or set(value) - set(by_name)
+        or any(item.required and item.name not in value for item in fields)
+    ):
+        raise InputError("TEMPLATE_INPUT_FIELDS_MISMATCH")
+    for name, item in value.items():
+        validate_input_value(item, by_name[name], depth)
 
 
 def validate_pipeline(
@@ -143,15 +217,21 @@ def validate_pipeline(
     )
     if plan.timeout_seconds > template.timeout_seconds:
         raise InputError("TEMPLATE_TIMEOUT_EXCEEDED")
-    fields = {item.name: item for item in template.input_fields}
-    if set(plan.normal_input) - set(fields) or any(
-        item.required and item.name not in plan.normal_input for item in fields.values()
-    ):
-        raise InputError("TEMPLATE_INPUT_FIELDS_MISMATCH")
-    for name, value in plan.normal_input.items():
-        if not isinstance(value, str) or re.fullmatch(fields[name].pattern, value) is None:
-            raise InputError("TEMPLATE_INPUT_INVALID")
+    validate_input_fields(plan.normal_input, template.input_fields)
     _same(plan.normal_input, handoff.task.normal_input, "NORMAL_INPUT_MISMATCH")
+    if template.mode == "NORMAL_MANUAL_WORKFLOW":
+        for workflow in [handoff.before, handoff.after]:
+            nodes = {node.node_id: node for node in workflow.nodes}
+            for input_binding in template.materialized_input_bindings:
+                if input_binding.node_id not in nodes:
+                    raise InputError("MANUAL_INPUT_NODE_NOT_FOUND")
+                _same(
+                    resolve_pointer(
+                        nodes[input_binding.node_id].parameters, input_binding.parameter_pointer
+                    ),
+                    plan.normal_input[input_binding.input_name],
+                    "MANUAL_INPUT_BINDING_MISMATCH",
+                )
     by_path = {ref.path: ref for ref in handoff.source_manifest.artifacts}
     for actual, path in [
         (analysis.task_ref, case.task_ref),
@@ -160,7 +240,7 @@ def validate_pipeline(
     ]:
         expected = by_path[path].model_copy(update={"path": f"input/{path}"})
         _same(actual, expected, "CONTEXT_REF_MISMATCH")
-    required = {item.obligation_id: item for item in case.obligations if item.required}
+    required = {item.obligation_id: item for item in case.obligations}
     _same(set(analysis.obligation_ids), set(required), "ANALYSIS_OBLIGATION_MISMATCH")
     bound = {item.obligation_id: item for item in plan.obligation_bindings}
     covered = set(bound) | set(plan.uncovered_obligation_ids)
@@ -172,16 +252,92 @@ def validate_pipeline(
             raise InputError("OBLIGATION_ARTIFACT_MISSING")
         if not set(binding.required_artifact_kinds).issubset(template.required_artifact_kinds):
             raise InputError("TEMPLATE_ARTIFACT_MISSING")
-    _same(
-        set(analysis.before_graph.node_ids),
-        {node.node_id for node in handoff.before.nodes},
-        "GRAPH_NODE_MISMATCH",
-    )
-    _same(
-        set(analysis.after_graph.node_ids),
-        {node.node_id for node in handoff.after.nodes},
-        "GRAPH_NODE_MISMATCH",
-    )
+    for side, graph, workflow in [
+        ("before", analysis.before_graph, handoff.before),
+        ("after", analysis.after_graph, handoff.after),
+    ]:
+        workflow_ids = (
+            {item.workflow_node_id for item in graph.nodes if item.kind == "WORKFLOW_NODE"}
+            if graph.nodes
+            else set(graph.node_ids)
+        )
+        _same(workflow_ids, {node.node_id for node in workflow.nodes}, "GRAPH_NODE_MISMATCH")
+        logical_ids = (
+            {item.node_id: item.workflow_node_id for item in graph.nodes}
+            if graph.nodes
+            else {key: key for key in graph.node_ids}
+        )
+        connections = {
+            (
+                edge.source_node_id,
+                edge.target_node_id,
+                edge.source_output_type,
+                edge.source_output_index,
+                edge.target_input_type,
+                edge.target_input_index,
+            )
+            for edge in workflow.connections
+        }
+        facts = {item.node_id: item for item in handoff.semantics.semantics if item.side == side}
+        for edge in graph.edges:
+            if edge.relation != "CONTROL":
+                continue
+            source_id, target_id = (
+                logical_ids[edge.source_node_id],
+                logical_ids[edge.target_node_id],
+            )
+            if (
+                source_id,
+                target_id,
+                edge.output_type,
+                edge.output_port,
+                edge.input_type,
+                edge.input_port,
+            ) not in connections:
+                raise InputError("GRAPH_CONTROL_PORT_MISMATCH")
+            source_facts = facts.get(source_id) if source_id is not None else None
+            if source_facts and source_facts.branches:
+                matches = [
+                    branch
+                    for branch in source_facts.branches
+                    if (branch.output_type, branch.output_index)
+                    == (edge.output_type, edge.output_port)
+                ]
+                if matches and edge.condition != matches[0]:
+                    raise InputError("GRAPH_BRANCH_CONDITION_MISMATCH")
+        actual_controls = Counter(
+            (
+                logical_ids[edge.source_node_id],
+                logical_ids[edge.target_node_id],
+                edge.output_type,
+                edge.output_port,
+                edge.input_type,
+                edge.input_port,
+            )
+            for edge in graph.edges
+            if edge.relation == "CONTROL"
+        )
+        expected_controls = Counter(
+            (
+                edge.source_node_id,
+                edge.target_node_id,
+                edge.source_output_type,
+                edge.source_output_index,
+                edge.target_input_type,
+                edge.target_input_index,
+            )
+            for edge in workflow.connections
+        )
+        if actual_controls != expected_controls:
+            raise InputError("GRAPH_CONTROL_COVERAGE_MISMATCH")
+        for impact_path in analysis.impact_paths:
+            if impact_path.side == side and (
+                not set(impact_path.edge_ids).issubset({edge.edge_id for edge in graph.edges})
+                or not set(impact_path.change_ids).issubset(
+                    {change.change_id for change in analysis.changes}
+                )
+            ):
+                raise InputError("IMPACT_PATH_REFERENCE_MISMATCH")
 
 
 def read_pipeline_examples(root: Path) -> PipelineExamples:

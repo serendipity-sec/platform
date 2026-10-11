@@ -27,7 +27,7 @@ def validate_relative_path(value: str) -> str:
 
 class Contract(BaseModel):
     model_config = ConfigDict(strict=True, extra="forbid", allow_inf_nan=False)
-    schema_version: Literal["0.3.0"] = "0.3.0"
+    schema_version: Literal["0.4.0"] = "0.4.0"
     extensions: dict[str, JsonValue] = Field(default_factory=dict)
 
     @field_validator("extensions")
@@ -50,7 +50,7 @@ class ArtifactRef(Contract):
 
 
 class InputContract(Contract):
-    schema_version: Literal["0.3.0"]
+    schema_version: Literal["0.4.0"]
 
 
 class Manifest(InputContract):
@@ -86,7 +86,10 @@ class ComparisonCase(InputContract):
     environment_ref: str
     initial_state_ref: str
     provenance_ref: str
-    changed_axes: Annotated[list[Literal["workflow"]], Field(min_length=1, max_length=1)]
+    dependency_manifest_ref: str | None = None
+    changed_axes: Annotated[
+        list[Literal["workflow", "dependencies"]], Field(min_length=1, max_length=2)
+    ]
     baseline_security_status: Literal["UNKNOWN"]
     obligations: list[VerificationObligation]
 
@@ -108,10 +111,12 @@ class ComparisonCase(InputContract):
         ids = [item.obligation_id for item in self.obligations]
         if len(ids) != len(set(ids)):
             raise ValueError("duplicate obligation id")
+        if len(set(self.changed_axes)) != len(self.changed_axes):
+            raise ValueError("duplicate changed axis")
         return self
 
     def references(self) -> list[str]:
-        return [
+        refs = [
             self.before_ref,
             self.after_ref,
             self.task_ref,
@@ -120,6 +125,54 @@ class ComparisonCase(InputContract):
             self.initial_state_ref,
             self.provenance_ref,
         ]
+        if self.dependency_manifest_ref is not None:
+            refs.append(validate_relative_path(self.dependency_manifest_ref))
+        return refs
+
+
+class DependencySpec(Contract):
+    dependency_id: Identifier
+    kind: Literal["WORKFLOW", "MCP_DESCRIPTOR", "SKILL_DESCRIPTOR", "RUNTIME_CONFIG"]
+    version: NonEmpty
+    path: str
+    workflow_id: NonEmpty | None = None
+    requires: list[Identifier] = Field(default_factory=list)
+    _path = field_validator("path")(validate_relative_path)
+
+    @model_validator(mode="after")
+    def consistent(self) -> Self:
+        if (self.kind == "WORKFLOW") != (self.workflow_id is not None):
+            raise ValueError("workflow dependency requires exactly one fixed workflow id")
+        if len(set(self.requires)) != len(self.requires):
+            raise ValueError("duplicate dependency reference")
+        return self
+
+
+class DependencyManifest(InputContract):
+    dependencies: Annotated[list[DependencySpec], Field(max_length=32)]
+    before_roots: list[Identifier]
+    after_roots: list[Identifier]
+
+    @model_validator(mode="after")
+    def unique_dependencies(self) -> Self:
+        ids = [item.dependency_id for item in self.dependencies]
+        paths = [item.path.casefold() for item in self.dependencies]
+        if any(len(set(values)) != len(values) for values in [ids, paths]):
+            raise ValueError("duplicate dependency identity")
+        for roots in [self.before_roots, self.after_roots]:
+            if len(set(roots)) != len(roots):
+                raise ValueError("duplicate dependency root")
+        return self
+
+
+class ResolvedDependency(Contract):
+    dependency_id: Identifier
+    kind: Literal["WORKFLOW", "MCP_DESCRIPTOR", "SKILL_DESCRIPTOR", "RUNTIME_CONFIG"]
+    version: NonEmpty
+    artifact_ref: ArtifactRef
+    workflow_id: NonEmpty | None = None
+    requires: list[Identifier]
+    interpretation: Literal["DECLARED_LOCAL_FILE"] = "DECLARED_LOCAL_FILE"
 
 
 class TaskContract(InputContract):
@@ -159,12 +212,22 @@ class Policy(InputContract):
         return self
 
 
+class HttpEndpoint(Contract):
+    endpoint_id: Identifier
+    method: Literal["GET", "POST"]
+    url: NonEmpty
+    response_fields: list[NonEmpty]
+    response_shape: Literal["SINGLE_JSON_OBJECT", "JSON_ITEM_ARRAY"]
+    description_basis: Literal["DECLARED_ONLY"] = "DECLARED_ONLY"
+
+
 class Environment(InputContract):
     environment_id: Identifier
     engine: Literal["n8n"]
     target_version: NonEmpty
     runtime_status: Literal["NOT_VALIDATED"]
     service_bindings: dict[str, JsonValue]
+    http_endpoints: list[HttpEndpoint] = Field(default_factory=list)
 
 
 class InitialState(InputContract):
@@ -184,6 +247,78 @@ class Provenance(InputContract):
 class SourceLocation(Contract):
     artifact_id: Identifier
     json_pointer: str
+
+
+class ValueExpression(Contract):
+    """Restricted syntax tree. It is data and is never passed to eval()."""
+
+    kind: Literal["constant", "current_field", "named_field", "object", "concat", "compare"]
+    value: JsonValue = None
+    field_path: list[NonEmpty] = Field(default_factory=list)
+    node_name: NonEmpty | None = None
+    item_selection: Literal["CURRENT", "LINKED", "FIRST"] = "CURRENT"
+    operator: Literal["eq", "neq", "gt", "gte", "lt", "lte"] | None = None
+    terms: list["ValueExpression"] = Field(default_factory=list)
+    members: dict[str, "ValueExpression"] = Field(default_factory=dict)
+    comparison_type: Literal["string", "number", "boolean"] | None = None
+
+    @model_validator(mode="after")
+    def expression_shape(self) -> Self:
+        if self.kind == "named_field" and (not self.node_name or self.item_selection == "CURRENT"):
+            raise ValueError("named reference requires explicit node and selection")
+        if self.kind != "named_field" and self.node_name is not None:
+            raise ValueError("node name applies only to named reference")
+        if self.kind == "compare" and (len(self.terms) != 2 or self.operator is None):
+            raise ValueError("comparison requires two operands and an operator")
+        if self.kind != "compare" and (
+            self.operator is not None or self.comparison_type is not None
+        ):
+            raise ValueError("comparison metadata on non-comparison")
+        if self.kind == "concat" and len(self.terms) != 2:
+            raise ValueError("concatenation requires two operands")
+        if self.kind not in {"compare", "concat"} and self.terms:
+            raise ValueError("unexpected expression operands")
+        if self.kind != "object" and self.members:
+            raise ValueError("members apply only to object expression")
+        return self
+
+
+class FieldAssignment(Contract):
+    field_name: NonEmpty
+    value_type: Literal["string", "number", "boolean", "object", "array"]
+    value: ValueExpression
+    source: SourceLocation
+    conversion: Literal["N8N_STANDARD"] = "N8N_STANDARD"
+
+
+class BranchCondition(Contract):
+    output_type: NonEmpty = "main"
+    output_index: Annotated[int, Field(ge=0)]
+    predicate: ValueExpression
+    when: bool
+    source: SourceLocation
+
+
+class ItemBehavior(Contract):
+    processing: Literal[
+        "SINGLE_REQUEST", "PER_ITEM", "FILTER", "APPEND", "SPLIT_ARRAY", "SUBWORKFLOW", "UNKNOWN"
+    ]
+    cardinality: Literal["ONE", "ONE_PER_INPUT", "SUBSET", "SUM_INPUTS", "VARIABLE", "UNKNOWN"]
+    lineage: Literal["SOURCE", "PRESERVE", "INPUT_INDEX", "CALLER", "UNKNOWN"]
+    input_ports: Annotated[int, Field(ge=0)]
+    output_ports: Annotated[int, Field(ge=0)]
+    note: NonEmpty
+    expression_item_scope: Literal["CURRENT", "FIRST", "ALL", "CONTEXT_DEPENDENT"] = "CURRENT"
+
+
+class ErrorBehavior(Contract):
+    on_error: Literal["stopWorkflow", "continueRegularOutput", "continueErrorOutput"]
+    retry_on_fail: bool = False
+    max_tries: Annotated[int, Field(ge=1, le=5)] = 1
+    wait_between_tries_ms: Annotated[int, Field(ge=0, le=5000)] = 0
+    always_output_data: bool = False
+    execute_once: bool = False
+    error_output_index: Annotated[int, Field(ge=0)] | None = None
 
 
 class NormalizedNode(Contract):
@@ -239,6 +374,14 @@ class NodeSemantics(Contract):
     engine_version: str | None = None
     capabilities: list[str] | None = None
     parameter_sources: list[SourceLocation] = Field(default_factory=list)
+    expressions: dict[str, ValueExpression] = Field(default_factory=dict)
+    assignments: list[FieldAssignment] = Field(default_factory=list)
+    branches: list[BranchCondition] = Field(default_factory=list)
+    item_behavior: ItemBehavior | None = None
+    error_behavior: ErrorBehavior | None = None
+    dependency_ids: list[Identifier] = Field(default_factory=list)
+    unsupported_locations: list[SourceLocation] = Field(default_factory=list)
+    resolved_defaults: dict[str, JsonValue] = Field(default_factory=dict)
     source: SourceLocation
 
 
@@ -251,9 +394,29 @@ class Snapshot(Contract):
     raw_sha256: Sha256
     structural_sha256: Sha256
     semantic_sha256: Sha256 | None = None
-    dependency_status: Literal["UNRESOLVED"] = "UNRESOLVED"
+    semantic_hash_version: Literal["config-v1"] | None = None
+    semantic_hash_scope: Literal["DECLARED_CONFIGURATION"] | None = None
+    dependency_status: Literal["UNRESOLVED", "DECLARED_RESOLVED"] = "UNRESOLVED"
+    dependencies: list[ResolvedDependency] = Field(default_factory=list)
+    dependency_limits: list[NonEmpty] = Field(default_factory=list)
     runtime_status: Literal["NOT_VALIDATED"] = "NOT_VALIDATED"
     execution_status: Literal["NOT_RUN"] = "NOT_RUN"
+
+    @model_validator(mode="after")
+    def hash_scope_is_explicit(self) -> Self:
+        if self.raw_sha256 != self.workflow_ref.sha256:
+            raise ValueError("raw workflow hash mismatch")
+        if self.semantic_sha256 is not None:
+            if (
+                self.semantic_hash_version is None
+                or self.semantic_hash_scope is None
+                or self.dependency_status != "DECLARED_RESOLVED"
+                or self.dependency_limits
+            ):
+                raise ValueError("configuration hash requires resolved declared scope")
+        elif self.semantic_hash_version is not None or self.semantic_hash_scope is not None:
+            raise ValueError("hash metadata requires a hash")
+        return self
 
 
 class SnapshotIndex(Contract):
@@ -262,6 +425,11 @@ class SnapshotIndex(Contract):
 
 class SemanticsIndex(Contract):
     semantics: list[NodeSemantics]
+
+
+class DependencyWorkflowsIndex(Contract):
+    workflows: dict[str, NormalizedWorkflow]
+    semantics: dict[str, SemanticsIndex] = Field(default_factory=dict)
 
 
 class Handoff(Contract):
@@ -278,3 +446,6 @@ class Handoff(Contract):
     before: NormalizedWorkflow
     after: NormalizedWorkflow
     semantics: SemanticsIndex
+    dependency_manifest: DependencyManifest | None = None
+    dependency_workflows: dict[str, NormalizedWorkflow] = Field(default_factory=dict)
+    dependency_semantics: dict[str, SemanticsIndex] = Field(default_factory=dict)

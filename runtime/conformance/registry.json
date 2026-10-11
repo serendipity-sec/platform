@@ -1,0 +1,71 @@
+{
+  "authorship": "TEAM_AUTHORED_NORMAL_FIXTURES",
+  "cases": [
+    {
+      "case_id": "support-before",
+      "expect_success": true,
+      "workflow": "examples/support-triage/workflow/before.json",
+      "workflow_id": "fdSupportTriage"
+    },
+    {
+      "case_id": "support-after",
+      "expect_success": true,
+      "workflow": "examples/support-triage/workflow/after.json",
+      "workflow_id": "fdSupportTriage"
+    },
+    {
+      "case_id": "all-true",
+      "expect_success": true,
+      "workflow": "runtime/conformance/workflows/all-true.json",
+      "workflow_id": "fdConformancealltrue"
+    },
+    {
+      "case_id": "empty-batch",
+      "expect_success": true,
+      "workflow": "runtime/conformance/workflows/empty-batch.json",
+      "workflow_id": "fdConformanceemptybatch"
+    },
+    {
+      "case_id": "error-stop",
+      "expect_success": false,
+      "workflow": "runtime/conformance/workflows/error-stop.json",
+      "workflow_id": "fdConformanceErrorstop"
+    },
+    {
+      "case_id": "error-regular",
+      "expect_success": true,
+      "workflow": "runtime/conformance/workflows/error-regular.json",
+      "workflow_id": "fdConformanceErrorregular"
+    },
+    {
+      "case_id": "error-output",
+      "expect_success": true,
+      "workflow": "runtime/conformance/workflows/error-output.json",
+      "workflow_id": "fdConformanceErroroutput"
+    },
+    {
+      "case_id": "named-references",
+      "expect_success": true,
+      "workflow": "runtime/conformance/workflows/named-references.json",
+      "workflow_id": "fdNamedFirst"
+    }
+  ],
+  "dependencies": [
+    "examples/support-triage/dependencies/summary.json"
+  ],
+  "engine_version": "2.42.6",
+  "files": {
+    "examples/support-triage/dependencies/summary.json": "13043911b64f1049e4bc4d52cb1a55b64bd61ac0908559e7fbd918568d8071f5",
+    "examples/support-triage/workflow/after.json": "bf0925afa65601c5c132ce338529cda8a07af5d7d315a217c3219182efc6bb8a",
+    "examples/support-triage/workflow/before.json": "aa7c428d1e19d5e29c3b0e4c07195eb5a01391bdcd67379342b6b68068a77406",
+    "runtime/conformance/workflows/all-true.json": "ce38620af1c15d3803a0dabd1678386741e34322b3a68e9de45919104e4d9b95",
+    "runtime/conformance/workflows/empty-batch.json": "1f9dfd4682d28ddf22c4214a9786d766f4c0e69a2311be8578c75a74fff1780d",
+    "runtime/conformance/workflows/error-output.json": "1f2b4030bf55e6dd2324750a31c7e68610d9c65a0c87311399789aa1a3a1cf0c",
+    "runtime/conformance/workflows/error-regular.json": "c36dfca3d4a485003da98d692aee70d15723b835c88f3af0b8eab4d4683a5a21",
+    "runtime/conformance/workflows/error-stop.json": "ea73cce0a1e6c8749a114f22baf95c16c777782298023fcba8f34e127f7da14f",
+    "runtime/conformance/workflows/named-references.json": "ca1fd77d4af5f7af6c7e8cf445dbf31f71f70855c974adb4ed1e0ed76528a961"
+  },
+  "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+  "network": "none",
+  "schema_version": "0.4.0"
+}

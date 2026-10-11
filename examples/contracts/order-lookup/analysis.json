@@ -2,41 +2,53 @@
   "after_graph": {
     "edges": [
       {
+        "adapter_version": null,
         "basis": "STATIC_POSSIBILITY",
+        "condition": null,
         "edge_id": "control-request-lookup",
         "evidence": [
           {
             "artifact_id": "input-6",
             "extensions": {},
             "json_pointer": "/connections/Order request/main/0/0",
-            "schema_version": "0.3.0"
+            "schema_version": "0.4.0"
           }
         ],
         "extensions": {},
         "input_port": 0,
+        "input_type": "main",
         "output_port": 0,
+        "output_type": "main",
         "relation": "CONTROL",
-        "schema_version": "0.3.0",
+        "schema_version": "0.4.0",
+        "source_fields": [],
         "source_node_id": "request",
+        "target_fields": [],
         "target_node_id": "read-order"
       },
       {
+        "adapter_version": null,
         "basis": "STATIC_POSSIBILITY",
+        "condition": null,
         "edge_id": "control-lookup-response",
         "evidence": [
           {
             "artifact_id": "input-6",
             "extensions": {},
             "json_pointer": "/connections/Read sample order/main/0/0",
-            "schema_version": "0.3.0"
+            "schema_version": "0.4.0"
           }
         ],
         "extensions": {},
         "input_port": 0,
+        "input_type": "main",
         "output_port": 0,
+        "output_type": "main",
         "relation": "CONTROL",
-        "schema_version": "0.3.0",
+        "schema_version": "0.4.0",
+        "source_fields": [],
         "source_node_id": "read-order",
+        "target_fields": [],
         "target_node_id": "response"
       }
     ],
@@ -49,55 +61,68 @@
       "read-order",
       "response"
     ],
-    "schema_version": "0.3.0"
+    "nodes": [],
+    "schema_version": "0.4.0"
   },
-  "after_snapshot_id": "snapshot-11dbcea2486007d99b73c1df7d960afdfa3bdff5b14c1783438ca3456a2dcd2e",
+  "after_snapshot_id": "snapshot-645768b23fc1d649ee3289106d4de119570212b6703a52ebc359d7745eed7e81",
   "analysis_id": "analysis-order-lookup-example",
   "authorship": {
     "extensions": {},
     "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
     "origin": "CONTRACT_EXAMPLE",
     "producer": "team-lead-reference",
-    "schema_version": "0.3.0"
+    "schema_version": "0.4.0"
   },
   "before_graph": {
     "edges": [
       {
+        "adapter_version": null,
         "basis": "STATIC_POSSIBILITY",
+        "condition": null,
         "edge_id": "control-request-lookup",
         "evidence": [
           {
             "artifact_id": "input-7",
             "extensions": {},
             "json_pointer": "/connections/Order request/main/0/0",
-            "schema_version": "0.3.0"
+            "schema_version": "0.4.0"
           }
         ],
         "extensions": {},
         "input_port": 0,
+        "input_type": "main",
         "output_port": 0,
+        "output_type": "main",
         "relation": "CONTROL",
-        "schema_version": "0.3.0",
+        "schema_version": "0.4.0",
+        "source_fields": [],
         "source_node_id": "request",
+        "target_fields": [],
         "target_node_id": "read-order"
       },
       {
+        "adapter_version": null,
         "basis": "STATIC_POSSIBILITY",
+        "condition": null,
         "edge_id": "control-lookup-response",
         "evidence": [
           {
             "artifact_id": "input-7",
             "extensions": {},
             "json_pointer": "/connections/Read sample order/main/0/0",
-            "schema_version": "0.3.0"
+            "schema_version": "0.4.0"
           }
         ],
         "extensions": {},
         "input_port": 0,
+        "input_type": "main",
         "output_port": 0,
+        "output_type": "main",
         "relation": "CONTROL",
-        "schema_version": "0.3.0",
+        "schema_version": "0.4.0",
+        "source_fields": [],
         "source_node_id": "read-order",
+        "target_fields": [],
         "target_node_id": "response"
       }
     ],
@@ -110,9 +135,10 @@
       "read-order",
       "response"
     ],
-    "schema_version": "0.3.0"
+    "nodes": [],
+    "schema_version": "0.4.0"
   },
-  "before_snapshot_id": "snapshot-8219839251e765122f49126b1ced7b0e5c8dee4dc26ec2f25576e834f30e01ef",
+  "before_snapshot_id": "snapshot-6c2c5c4df1dc8d596b13028ad0c2163ea848b58fbfd5f0f76b7e27b6ac2873c4",
   "case_id": "order-lookup-demo-001",
   "changes": [
     {
@@ -120,24 +146,26 @@
         "artifact_id": "input-6",
         "extensions": {},
         "json_pointer": "/nodes/2/parameters/responseBody",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "after_value": "={{ { order_id: $json.order_id, status: $json.status, display_status: '주문 상태: ' + $json.status } }}",
       "before_source": {
         "artifact_id": "input-7",
         "extensions": {},
         "json_pointer": "/nodes/2/parameters/responseBody",
-        "schema_version": "0.3.0"
+        "schema_version": "0.4.0"
       },
       "before_value": "={{ { order_id: $json.order_id, status: $json.status } }}",
       "change_id": "change-response-body",
       "extensions": {},
       "kind": "PARAMETER_CHANGED",
       "node_id": "response",
-      "schema_version": "0.3.0"
+      "schema_version": "0.4.0"
     }
   ],
+  "dependency_graphs": {},
   "extensions": {},
+  "impact_paths": [],
   "limitations": [
     "수작업으로 적은 계약 예시이며 보안 변화 판정은 포함하지 않는다."
   ],
@@ -145,23 +173,26 @@
     {
       "after_node_id": "request",
       "before_node_id": "request",
+      "evidence": [],
       "extensions": {},
       "method": "EXACT_ID",
-      "schema_version": "0.3.0"
+      "schema_version": "0.4.0"
     },
     {
       "after_node_id": "read-order",
       "before_node_id": "read-order",
+      "evidence": [],
       "extensions": {},
       "method": "EXACT_ID",
-      "schema_version": "0.3.0"
+      "schema_version": "0.4.0"
     },
     {
       "after_node_id": "response",
       "before_node_id": "response",
+      "evidence": [],
       "extensions": {},
       "method": "EXACT_ID",
-      "schema_version": "0.3.0"
+      "schema_version": "0.4.0"
     }
   ],
   "obligation_ids": [
@@ -174,19 +205,19 @@
     "kind": "source",
     "media_type": "application/json",
     "path": "input/policy.json",
-    "schema_version": "0.3.0",
-    "sha256": "65b0a8d24e01db4e92206cb802cc8a31950f5645e51d695bc1e8f0b0805bbee2",
-    "size_bytes": 879
+    "schema_version": "0.4.0",
+    "sha256": "88a50037ff2c27e48e196521c618b6622892ddb7b1e5d0d67c5906f0a59e844d",
+    "size_bytes": 945
   },
-  "schema_version": "0.3.0",
+  "schema_version": "0.4.0",
   "task_ref": {
     "artifact_id": "input-5",
     "extensions": {},
     "kind": "source",
     "media_type": "application/json",
     "path": "input/task.json",
-    "schema_version": "0.3.0",
-    "sha256": "108957e8156125da28d1a6e7f60209b0f0d3b84bf3d60b87a8ae07c8f55f87d0",
-    "size_bytes": 627
+    "schema_version": "0.4.0",
+    "sha256": "c3ad8069ab61f153571cf73267dfbcd4d1c58fe59ec8950435beabf0daf626b7",
+    "size_bytes": 655
   }
 }

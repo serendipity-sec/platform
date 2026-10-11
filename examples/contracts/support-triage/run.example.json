@@ -1,0 +1,46 @@
+{
+  "actual_engine_version": null,
+  "actual_image_digest": null,
+  "artifacts": {
+    "artifact_kinds": {},
+    "artifacts": [],
+    "collection_status": "NOT_STARTED",
+    "extensions": {},
+    "missing_kinds": [
+      "response",
+      "node-observations"
+    ],
+    "observed_kinds": [],
+    "required_kinds": [
+      "response",
+      "node-observations"
+    ],
+    "run_id": "run-support-contract-example",
+    "schema_version": "0.4.0"
+  },
+  "attempt_number": 1,
+  "authorship": {
+    "extensions": {},
+    "note": "고정된 정상 문의 분류의 기대 입출력. A/B/C의 실제 구현 출력이 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.4.0"
+  },
+  "case_id": "support-triage-normal-001",
+  "cleanup_status": "PENDING",
+  "comparison_run_id": "comparison-support-example",
+  "error_code": null,
+  "execution_status": "NOT_RUN",
+  "extensions": {},
+  "finished_at": null,
+  "initial_state_sha256": "2d133225a44da58d24c5f0eed14d14a5545624804d14146862065399e593d9e0",
+  "outcome": null,
+  "phase": "QUEUED",
+  "plan_id": "plan-support-triage-example",
+  "run_id": "run-support-contract-example",
+  "runtime_profile": "core-local-v1",
+  "schema_version": "0.4.0",
+  "side": "before",
+  "snapshot_id": "snapshot-55c0bfc64c7c7d6a0b0cf475bd1b2d4b6368ffcc7e04c72ee2364a43aa2d8646",
+  "started_at": null
+}

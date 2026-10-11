@@ -99,6 +99,22 @@ def baseline(
         raise typer.Exit(code=2) from None
 
 
+@app.command("migrate-case")
+def migrate_case(
+    bundle: Path,
+    out: Annotated[Path, typer.Option(help="Fresh directory for the converted 0.4.0 bundle.")],
+) -> None:
+    """Explicitly migrate source metadata to 0.4.0; preserve raw workflow bytes."""
+    from flowdelta.migration import migrate_case_03
+
+    try:
+        migrate_case_03(bundle, out)
+        typer.echo("CASE_MIGRATED; execution_status=NOT_RUN")
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode("utf-8"), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("pipeline-schema")
 def pipeline_schema() -> None:
     """Print the common A/B/C contracts and scenario card schema."""
@@ -107,15 +123,67 @@ def pipeline_schema() -> None:
     typer.echo(json_bytes(PipelineExamples.model_json_schema()).decode("utf-8"), nl=False)
 
 
+@app.command("check-pipeline")
+def check_pipeline(bundle: Path) -> None:
+    """Check real module output files and, when supplied, C's runtime artifact references."""
+    from flowdelta.module_outputs import read_module_outputs
+
+    try:
+        typer.echo(json_bytes(read_module_outputs(bundle)).decode("utf-8"), nl=False)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode("utf-8"), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("conformance")
+def conformance(
+    out: Annotated[Path, typer.Option(help="Fresh directory below repository var/.")],
+) -> None:
+    """Run the registered normal node fixtures and compare extracted facts with n8n."""
+    from flowdelta.conformance.compare import compare_case
+    from flowdelta.conformance.lab import run_conformance
+
+    try:
+        repo = Path.cwd()
+        result = run_conformance(repo, out)
+        reports = [
+            compare_case(repo, folder) for folder in sorted(out.iterdir()) if folder.is_dir()
+        ]
+        summary = {
+            "schema_version": SCHEMA_VERSION,
+            "cases": len(reports),
+            "all_observed_checks_match": all(
+                report["all_observed_checks_match"] for report in reports
+            ),
+            "checks": sum(len(report["checks"]) for report in reports),
+            "outcome": None,
+        }
+        (out / "summary.json").write_bytes(json_bytes(summary))
+        typer.echo(json_bytes(summary).decode("utf-8"), nl=False)
+        if not summary["all_observed_checks_match"] or not result["runs"]:
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode("utf-8"), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("contract-examples")
 def contract_examples(
     out: Annotated[Path, typer.Option(help="Fresh reference example directory.")],
+    case: Annotated[str, typer.Option(help="order-lookup or support-triage")] = "order-lookup",
 ) -> None:
     """Write team-authored reference files; does not run analysis, planning or Docker."""
     from flowdelta.contract_examples import write_contract_examples
 
     try:
-        write_contract_examples(Path.cwd(), out)
+        if case == "order-lookup":
+            write_contract_examples(Path.cwd(), out)
+        elif case == "support-triage":
+            from flowdelta.additional_examples import write_support_examples
+
+            write_support_examples(Path.cwd(), out)
+        else:
+            raise InputError("REFERENCE_CASE_NOT_REGISTERED")
         typer.echo("CONTRACT_EXAMPLES_WRITTEN; execution_status=NOT_RUN")
     except InputError as exc:
         typer.echo(json_bytes({"error": exc.code}).decode("utf-8"), err=True, nl=False)

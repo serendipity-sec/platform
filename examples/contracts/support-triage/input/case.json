@@ -1,0 +1,28 @@
+{
+  "after_ref": "workflow/after.json",
+  "baseline_security_status": "UNKNOWN",
+  "before_ref": "workflow/before.json",
+  "case_id": "support-triage-normal-001",
+  "changed_axes": [
+    "workflow"
+  ],
+  "dependency_manifest_ref": "dependencies.json",
+  "environment_ref": "environment.json",
+  "evaluation_policy_ref": "policy.json",
+  "family_id": "support-triage",
+  "initial_state_ref": "state/initial.json",
+  "obligations": [
+    {
+      "description": "정상 입력의 모든 문의를 정해진 큐로 한 번씩 배정한다.",
+      "obligation_id": "normal-triage",
+      "required": true,
+      "required_artifacts": [
+        "response",
+        "node-observations"
+      ]
+    }
+  ],
+  "provenance_ref": "provenance.json",
+  "schema_version": "0.4.0",
+  "task_ref": "task.json"
+}

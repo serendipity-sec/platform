@@ -24,8 +24,7 @@ packages = ["src/flowdelta"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/src", "/tests", "/schemas", "/examples", "/runtime", "/docs/LEADER_START.md",
-    "/docs/LEADER_BASELINE.md", "/docs/TEAM_TASKS.md", "/.dockerignore",
+    "/src", "/tests", "/schemas", "/examples", "/runtime", "/docs", "/tools", "/.dockerignore",
     "/README.md", "/THIRD_PARTY.md", "/pyproject.toml", "/uv.lock", "/.python-version",
 ]
 

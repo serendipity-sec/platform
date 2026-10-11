@@ -6,9 +6,9 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "case.json",
-      "schema_version": "0.3.0",
-      "sha256": "16d1bd0daf37281bbaef048581845056c9d7b94064a4091af16114b31cbe08a0",
-      "size_bytes": 964
+      "schema_version": "0.4.0",
+      "sha256": "0c5d9c51f56aab56395fc1b9ec1afdbe71397a49f0f128dc9ce478a903b9a44c",
+      "size_bytes": 1128
     },
     {
       "artifact_id": "input-1",
@@ -16,9 +16,9 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "environment.json",
-      "schema_version": "0.3.0",
-      "sha256": "e66d66cfcef03832f03e01cb4fe7fc90a636fb4fe57558e9458423c1635a5929",
-      "size_bytes": 499
+      "schema_version": "0.4.0",
+      "sha256": "1bc8e9a1a7b08b84933fea42a8cd8dce64a9ec191fd325f54c9acf6cce360d1f",
+      "size_bytes": 813
     },
     {
       "artifact_id": "input-2",
@@ -26,9 +26,9 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "policy.json",
-      "schema_version": "0.3.0",
-      "sha256": "65b0a8d24e01db4e92206cb802cc8a31950f5645e51d695bc1e8f0b0805bbee2",
-      "size_bytes": 879
+      "schema_version": "0.4.0",
+      "sha256": "88a50037ff2c27e48e196521c618b6622892ddb7b1e5d0d67c5906f0a59e844d",
+      "size_bytes": 945
     },
     {
       "artifact_id": "input-3",
@@ -36,8 +36,8 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "provenance.json",
-      "schema_version": "0.3.0",
-      "sha256": "ea487a73fc66ad7252883c8c36ffd846db3483b1f1addc34dd3c5b2c85fed76c",
+      "schema_version": "0.4.0",
+      "sha256": "3c8fef4e972e9cb24685db1b688259ca6ef420fb0edf1308accb7b9705d95c35",
       "size_bytes": 953
     },
     {
@@ -46,8 +46,8 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "state/initial.json",
-      "schema_version": "0.3.0",
-      "sha256": "e955e721254e2ab79e46e784ae06de607dfa873d50a25be9839d4f0a8bd8e40e",
+      "schema_version": "0.4.0",
+      "sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
       "size_bytes": 571
     },
     {
@@ -56,9 +56,9 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "task.json",
-      "schema_version": "0.3.0",
-      "sha256": "108957e8156125da28d1a6e7f60209b0f0d3b84bf3d60b87a8ae07c8f55f87d0",
-      "size_bytes": 627
+      "schema_version": "0.4.0",
+      "sha256": "c3ad8069ab61f153571cf73267dfbcd4d1c58fe59ec8950435beabf0daf626b7",
+      "size_bytes": 655
     },
     {
       "artifact_id": "input-6",
@@ -66,7 +66,7 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "workflow/after.json",
-      "schema_version": "0.3.0",
+      "schema_version": "0.4.0",
       "sha256": "451130cac81f9df1431823932b3560dc8e6f0035d156c2d1ff5224027cd657ca",
       "size_bytes": 2518
     },
@@ -76,9 +76,29 @@
       "kind": "source",
       "media_type": "application/json",
       "path": "workflow/before.json",
-      "schema_version": "0.3.0",
+      "schema_version": "0.4.0",
       "sha256": "a8f9e7bc9535823e5bda7aa6cfad848d6d82def30cf30878026a90618204d350",
       "size_bytes": 2468
+    },
+    {
+      "artifact_id": "dependency-8",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "dependencies.json",
+      "schema_version": "0.4.0",
+      "sha256": "db646d50ba2e394112b43d75ad9300b89e761fd62b541d49da323fbe36e71828",
+      "size_bytes": 302
+    },
+    {
+      "artifact_id": "dependency-9",
+      "extensions": {},
+      "kind": "source",
+      "media_type": "application/json",
+      "path": "dependencies/runtime.json",
+      "schema_version": "0.4.0",
+      "sha256": "a5465fdb5e07fbb78d3952532c266f22af304a16edf0c2c3892a24d1c4e4d97e",
+      "size_bytes": 553
     },
     {
       "artifact_id": "generated-0",
@@ -86,9 +106,9 @@
       "kind": "generated",
       "media_type": "application/json",
       "path": "after.normalized.json",
-      "schema_version": "0.3.0",
-      "sha256": "5765232a7a940c180897bcaa423a0c28288f64dfb1a200d84de4f9e81c2eead1",
-      "size_bytes": 5029
+      "schema_version": "0.4.0",
+      "sha256": "76d3bc6fe066ae8068cb94e36a602327d521902b22cd1f056798280142597f7e",
+      "size_bytes": 5041
     },
     {
       "artifact_id": "generated-1",
@@ -96,41 +116,51 @@
       "kind": "generated",
       "media_type": "application/json",
       "path": "before.normalized.json",
-      "schema_version": "0.3.0",
-      "sha256": "33d33f6afaafa05bb8960e445af79dc755390506849add936bb65fcde15348be",
-      "size_bytes": 4979
+      "schema_version": "0.4.0",
+      "sha256": "283a26fb3bfa57aeaa90b4f296e484d231707dd7daae8fb750fd2984f5ee8d1a",
+      "size_bytes": 4991
     },
     {
-      "artifact_id": "generated-6",
+      "artifact_id": "generated-4",
+      "extensions": {},
+      "kind": "generated",
+      "media_type": "application/json",
+      "path": "dependencies.normalized.json",
+      "schema_version": "0.4.0",
+      "sha256": "7709cc02bd85902127f2c52fbe1d0d1c589ea3ecf01ca693dcc913e720b2aeeb",
+      "size_bytes": 90
+    },
+    {
+      "artifact_id": "generated-9",
       "extensions": {},
       "kind": "generated",
       "media_type": "application/json",
       "path": "semantics.json",
-      "schema_version": "0.3.0",
-      "sha256": "12cad1fe954c4defeae5b97ac9fbba6a0958c657ccd9d29f71848d4875af26b7",
-      "size_bytes": 10261
+      "schema_version": "0.4.0",
+      "sha256": "5d6cabebb1fb5654992e6d3c3ac82a748ad251bd0bc56c0936265e0de0e02c28",
+      "size_bytes": 11611
     },
     {
-      "artifact_id": "generated-7",
+      "artifact_id": "generated-10",
       "extensions": {},
       "kind": "generated",
       "media_type": "application/json",
       "path": "snapshots.json",
-      "schema_version": "0.3.0",
-      "sha256": "a22269fa419d2e015107fc3ee36264030e75bb34b862b6216d5ccf9c4bab2992",
-      "size_bytes": 6105
+      "schema_version": "0.4.0",
+      "sha256": "211283d250828189d4957d4df218910b1e3d60b5800c6f5cd36748126da52e0c",
+      "size_bytes": 8667
     },
     {
-      "artifact_id": "generated-8",
+      "artifact_id": "generated-11",
       "extensions": {},
       "kind": "generated",
       "media_type": "application/json",
       "path": "source-manifest.json",
-      "schema_version": "0.3.0",
-      "sha256": "7904c336a55884edf47606d40fa001a2ed6ffd8e29d296cc2f4620959fe66c23",
-      "size_bytes": 2528
+      "schema_version": "0.4.0",
+      "sha256": "994329925aeed388d6bdf26cee9e67a279b601888195376f8b6373228635d444",
+      "size_bytes": 3165
     }
   ],
   "extensions": {},
-  "schema_version": "0.3.0"
+  "schema_version": "0.4.0"
 }

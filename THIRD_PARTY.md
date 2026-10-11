@@ -76,7 +76,16 @@
 실행했다거나 운영 데이터를 확보했다고 표시하지 않는다. 공식 template API의 원본 JSON 요청은
 403으로 실패했으며, 공개 설명만 확인했다. 상세 선택 근거와 대체 범위는 기준 환경 문서에 기록한다.
 
-## 공개 라이선스 결정 상태
+## 공개 입력 원본 — 2026-10-11
+
+아래 LICENSE 원문을 고정 커밋에서 먼저 확인한 뒤 선택 파일을 수집한다. 외부 workflow는
+정적 구조 검토에만 사용한다. 공개 원본 확보와 운영 중인 서비스의 사용 증거 확보는 별개다.
+
+| 구성요소 | 고정 커밋 | 출처·라이선스 | 처리 |
+|---|---|---|---|
+| ibam28/customer-support-ai-automation-n8n | `71fee7067364e9ac139a55bca3683c15b5ec2c16` | [원본](https://github.com/ibam28/customer-support-ai-automation-n8n/tree/71fee7067364e9ac139a55bca3683c15b5ec2c16), [MIT LICENSE](https://github.com/ibam28/customer-support-ai-automation-n8n/blob/71fee7067364e9ac139a55bca3683c15b5ec2c16/LICENSE) | 선택한 workflow JSON·정상 입력 예시·업무 설명을 무수정 보존. Copyright (c) 2026 Bambang Saputra Jaya와 허가문을 함께 배포. 파일별 SHA-256·획득 URL 기록. 실행·배포 실적은 독립 확인하지 않음 |
+
+## 우리 코드의 공개 라이선스 결정 상태
 
 ⬜ 미정. 재사용할 엔진들의 라이선스를 확인한 뒤 결정합니다.
 (Apache-2.0 계열 엔진을 링크할 경우 Apache-2.0이 무난하고, 특허 조항이 있어 팀에도 유리합니다.)

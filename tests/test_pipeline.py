@@ -101,10 +101,10 @@ def test_missing_artifacts_cannot_be_called_complete() -> None:
 
 
 def test_checked_in_schemas_match_models() -> None:
-    assert (ROOT / "schemas/input-0.3.0.schema.json").read_bytes() == json_bytes(
+    assert (ROOT / "schemas/input-0.4.0.schema.json").read_bytes() == json_bytes(
         Handoff.model_json_schema()
     )
     assert (
-        json.loads((ROOT / "schemas/pipeline-0.3.0.schema.json").read_bytes())
+        json.loads((ROOT / "schemas/pipeline-0.4.0.schema.json").read_bytes())
         == PipelineExamples.model_json_schema()
     )

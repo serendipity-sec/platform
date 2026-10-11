@@ -21,7 +21,7 @@ def test_cli_round_trip_handoff(bundle: Path, tmp_path: Path) -> None:
     created = runner.invoke(app, ["snapshot", str(bundle), "--out", str(output)])
     assert created.exit_code == 0, created.output
     manifest = json.loads((output / "manifest.json").read_bytes())
-    assert len(manifest["artifacts"]) == 13
+    assert len(manifest["artifacts"]) == 16
     for ref in manifest["artifacts"]:
         data = (output / ref["path"]).read_bytes()
         assert ref["sha256"] == digest(data)
@@ -32,7 +32,7 @@ def test_cli_round_trip_handoff(bundle: Path, tmp_path: Path) -> None:
     assert before["semantic_support"] == "SUPPORTED"
     snapshots = json.loads((output / "snapshots.json").read_bytes())["snapshots"]
     assert len(snapshots) == 2
-    assert all(item["semantic_sha256"] is None for item in snapshots)
+    assert all(item["semantic_sha256"] is not None for item in snapshots)
     assert not list(tmp_path.glob(".flowdelta-*"))
 
 
@@ -67,7 +67,7 @@ def test_diagnostics_do_not_echo_input(bundle: Path) -> None:
 
 
 def test_generated_schema_matches_checked_in_contract() -> None:
-    expected = Path(__file__).resolve().parents[1] / "schemas" / "input-0.3.0.schema.json"
+    expected = Path(__file__).resolve().parents[1] / "schemas" / "input-0.4.0.schema.json"
     assert json_bytes(Handoff.model_json_schema()) == expected.read_bytes()
     result = runner.invoke(app, ["schema"])
     assert result.exit_code == 0

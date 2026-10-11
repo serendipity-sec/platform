@@ -8,15 +8,15 @@ from typing import Literal
 
 from flowdelta.contracts import (
     ArtifactRef,
+    DependencyWorkflowsIndex,
     Handoff,
     Manifest,
     SemanticsIndex,
-    Snapshot,
-    SnapshotIndex,
 )
 from flowdelta.ingestion import MAX_FILE_BYTES, InputError, LoadedCase, digest, json_bytes
-from flowdelta.normalize import describe_nodes, normalize, structural_digest
+from flowdelta.normalize import describe_nodes, normalize
 from flowdelta.semantics import PROFILE, describe_profile
+from flowdelta.snapshots import build_snapshots
 
 GENERATED_PATHS = {
     "before.normalized.json",
@@ -24,6 +24,7 @@ GENERATED_PATHS = {
     "semantics.json",
     "snapshots.json",
     "source-manifest.json",
+    "dependencies.normalized.json",
     "manifest.json",
 }
 
@@ -57,37 +58,99 @@ def build_handoff(loaded: LoadedCase) -> Handoff:
             workflow.limitations = [
                 "Semantic adapter covers only the registered normal order-lookup profile.",
                 "Effects are static possibilities; observations live in ExecutionRun artifacts.",
-                "No dependency resolution or semantic equivalence hash is implemented.",
+                "Configuration hashes cover declared local dependencies, not behavior equivalence.",
             ]
-    contexts = [by_path[path] for path in ["case.json", *case.references()[2:]]]
-    snapshots = []
-    for side, path in [("before", case.before_ref), ("after", case.after_ref)]:
-        ref = by_path[path]
-        identity = digest(
-            json_bytes(
-                {
-                    "schema_version": "0.3.0",
-                    "normalizer_version": "structure-v1",
-                    "case_id": case.case_id,
-                    "side": side,
-                    "workflow": ref.model_dump(mode="json"),
-                    "context": [item.model_dump(mode="json") for item in contexts],
-                }
+    if loaded.environment.extensions.get("flowdelta.semantic_profile") == "core-local-v1":
+        from flowdelta.core_adapters import AdapterContext, describe_core
+
+        semantics = []
+        for typed_core_side, workflow in [("before", before), ("after", after)]:
+            core_side: Literal["before", "after"] = (
+                "before" if typed_core_side == "before" else "after"
             )
-        )
-        # Explicit branch keeps the two-sided contract typed without inferring runtime semantics.
-        typed_side: Literal["before", "after"] = "before" if side == "before" else "after"
-        snapshots.append(
-            Snapshot(
-                snapshot_id=f"snapshot-{identity}",
-                case_id=case.case_id,
-                side=typed_side,
-                workflow_ref=ref,
-                context_refs=contexts,
-                raw_sha256=ref.sha256,
-                structural_sha256=structural_digest(loaded.documents[path]),
+            descriptions = describe_core(
+                workflow,
+                AdapterContext(
+                    loaded.environment,
+                    workflow,
+                    core_side,
+                    loaded.dependency_manifest,
+                ),
             )
-        )
+            semantics.extend(descriptions)
+            for node, description in zip(workflow.nodes, descriptions, strict=True):
+                node.semantic_support = description.support
+            statuses = {item.support for item in descriptions}
+            workflow.semantic_support = (
+                "SUPPORTED"
+                if statuses == {"SUPPORTED"}
+                else "UNSUPPORTED"
+                if statuses == {"UNSUPPORTED"}
+                else "PARTIAL"
+            )
+            workflow.limitations = [
+                "JSON-item subset; arbitrary code and dynamic references are unsupported.",
+                "Semantic facts describe static possibilities; runtime observations are separate.",
+                "Endpoint and dependency descriptions are declarations, not enforcement evidence.",
+            ]
+    dependency_workflows = {}
+    dependency_semantics = {}
+    if loaded.dependency_manifest:
+        for item in loaded.dependency_manifest.dependencies:
+            if item.kind == "WORKFLOW":
+                dependency_workflows[item.dependency_id] = normalize(
+                    loaded.documents[item.path], by_path[item.path].artifact_id
+                )
+                if (
+                    loaded.environment.extensions.get("flowdelta.semantic_profile")
+                    == "core-local-v1"
+                ):
+                    from flowdelta.core_adapters import AdapterContext, describe_core
+                    from flowdelta.dependencies import dependency_closure
+
+                    child = dependency_workflows[item.dependency_id]
+                    facts = []
+                    for dependency_side in ("before", "after"):
+                        if item not in dependency_closure(
+                            loaded.dependency_manifest, dependency_side
+                        ):
+                            continue
+                        facts.extend(
+                            describe_core(
+                                child,
+                                AdapterContext(
+                                    loaded.environment,
+                                    child,
+                                    dependency_side,
+                                    loaded.dependency_manifest,
+                                ),
+                            )
+                        )
+                    dependency_semantics[item.dependency_id] = SemanticsIndex(semantics=facts)
+                    for node in child.nodes:
+                        node_states = {
+                            fact.support for fact in facts if fact.node_id == node.node_id
+                        }
+                        node.semantic_support = (
+                            "SUPPORTED" if node_states == {"SUPPORTED"} else "UNSUPPORTED"
+                        )
+                    child.semantic_support = (
+                        "SUPPORTED"
+                        if all(fact.support == "SUPPORTED" for fact in facts)
+                        else "PARTIAL"
+                    )
+        for side, workflow in [("before", before), ("after", after)]:
+            incomplete = any(
+                fact.side == side and fact.support != "SUPPORTED"
+                for index in dependency_semantics.values()
+                for fact in index.semantics
+            )
+            if incomplete:
+                if workflow.semantic_support == "SUPPORTED":
+                    workflow.semantic_support = "PARTIAL"
+                workflow.limitations.append(
+                    "A declared child workflow has unsupported node semantics."
+                )
     return Handoff(
         case=case,
         task=loaded.task,
@@ -96,10 +159,13 @@ def build_handoff(loaded: LoadedCase) -> Handoff:
         initial_state=loaded.initial_state,
         provenance=loaded.provenance,
         source_manifest=loaded.manifest,
-        snapshots=SnapshotIndex(snapshots=snapshots),
+        snapshots=build_snapshots(loaded),
         before=before,
         after=after,
         semantics=SemanticsIndex(semantics=semantics),
+        dependency_manifest=loaded.dependency_manifest,
+        dependency_workflows=dependency_workflows,
+        dependency_semantics=dependency_semantics,
     )
 
 
@@ -127,6 +193,12 @@ def write_handoff(loaded: LoadedCase, handoff: Handoff, output_dir: Path) -> Pat
                     "source-manifest.json": json_bytes(
                         handoff.source_manifest.model_dump(mode="json")
                     ),
+                    "dependencies.normalized.json": json_bytes(
+                        DependencyWorkflowsIndex(
+                            workflows=handoff.dependency_workflows,
+                            semantics=handoff.dependency_semantics,
+                        ).model_dump(mode="json")
+                    ),
                 }
             )
             refs = list(loaded.manifest.artifacts)
@@ -153,7 +225,7 @@ def write_handoff(loaded: LoadedCase, handoff: Handoff, output_dir: Path) -> Pat
                             kind="generated",
                         )
                     )
-            manifest = Manifest(schema_version="0.3.0", artifacts=refs)
+            manifest = Manifest(schema_version="0.4.0", artifacts=refs)
             (stage / "manifest.json").write_bytes(json_bytes(manifest.model_dump(mode="json")))
             # Reserve destination, then move files into that reservation without replacing it.
             # A COMPLETE marker is unnecessary: manifest is transferred last as the commit marker.

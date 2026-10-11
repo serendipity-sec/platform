@@ -1,0 +1,11 @@
+{
+  "engine": "n8n",
+  "environment_id": "local-support-triage",
+  "extensions": {
+    "flowdelta.semantic_profile": "core-local-v1"
+  },
+  "runtime_status": "NOT_VALIDATED",
+  "schema_version": "0.4.0",
+  "service_bindings": {},
+  "target_version": "2.42.6"
+}
