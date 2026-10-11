@@ -1,0 +1,67 @@
+{
+  "families": 1,
+  "history_scope": "customer-support.json had only its initial file commit in the queried history",
+  "production_use_evidence": "AUTHOR_DESCRIPTION_ONLY",
+  "real_change_pair_available": false,
+  "schema_version": "0.4.0",
+  "source_commit": "71fee7067364e9ac139a55bca3683c15b5ec2c16",
+  "total_connections": 58,
+  "total_nodes": 51,
+  "workflows": [
+    {
+      "connections": 35,
+      "execution_status": "NOT_RUN",
+      "node_types": [
+        "n8n-nodes-base.code",
+        "n8n-nodes-base.executeWorkflow",
+        "n8n-nodes-base.if",
+        "n8n-nodes-base.postgres",
+        "n8n-nodes-base.respondToWebhook",
+        "n8n-nodes-base.switch",
+        "n8n-nodes-base.webhook"
+      ],
+      "nodes": 31,
+      "path": "workflows/customer-support.json",
+      "semantic_status": "NOT_EVALUATED"
+    },
+    {
+      "connections": 19,
+      "execution_status": "NOT_RUN",
+      "node_types": [
+        "n8n-nodes-base.code",
+        "n8n-nodes-base.if",
+        "n8n-nodes-base.postgres",
+        "n8n-nodes-base.respondToWebhook",
+        "n8n-nodes-base.switch",
+        "n8n-nodes-base.webhook"
+      ],
+      "nodes": 14,
+      "path": "workflows/ticket-management.json",
+      "semantic_status": "NOT_EVALUATED"
+    },
+    {
+      "connections": 2,
+      "execution_status": "NOT_RUN",
+      "node_types": [
+        "n8n-nodes-base.code",
+        "n8n-nodes-base.errorTrigger",
+        "n8n-nodes-base.postgres"
+      ],
+      "nodes": 3,
+      "path": "workflows/error-handler.json",
+      "semantic_status": "NOT_EVALUATED"
+    },
+    {
+      "connections": 2,
+      "execution_status": "NOT_RUN",
+      "node_types": [
+        "n8n-nodes-base.code",
+        "n8n-nodes-base.executeWorkflowTrigger",
+        "n8n-nodes-base.postgres"
+      ],
+      "nodes": 3,
+      "path": "workflows/subflows/customer-lookup.json",
+      "semantic_status": "NOT_EVALUATED"
+    }
+  ]
+}

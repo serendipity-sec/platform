@@ -22,3 +22,6 @@ src/**/*.py text eol=lf
 tests/**/*.py text eol=lf
 schemas/*.json     text eol=lf
 poetry.lock        linguist-generated=true -diff
+
+# Acquired originals retain the exact bytes recorded in acquisition.json on every OS.
+examples/public-sources/** -text

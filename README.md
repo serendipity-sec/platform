@@ -4,8 +4,10 @@ n8n 변경 전후를 같은 업무·정책·환경·초기 상태에 놓고 분�
 현재 입력·정규화·제한된 노드 의미·공통 파일 계약과 두 정상 업무의 기준 환경을 구현했습니다.
 A의 분석기, B의 검색·계획 생성기, C의 일반 실행 엔진은 팀원이 구현합니다.
 
-**현재 계약: 0.4.0** · [입력 계약과 이전 방법](docs/INPUT_CONTRACT_04.md) ·
-[4인 구현 착수 카드](docs/TEAM_TASKS.md)
+**현재 계약: 0.4.0** · [입력 계약과 이전 방법](docs/INPUT_CONTRACT_04.md)
+
+설계·개발 계획·준비 현황은 [팀 문서 저장소](https://github.com/serendipity-sec/docs)에서 관리합니다.
+이 저장소는 코드·Schema·예제·실행 환경과 해당 버전의 사용 설명을 함께 제공합니다.
 
 ## 첫 실행
 
@@ -45,14 +47,11 @@ uv run --frozen --extra baseline python -m flowdelta.cli conformance --out var/n
 - `var/*/private/`에는 실행별 DB·자격이 남습니다. 공유 자료는 선택한 JSON 증거로 한정합니다.
 - 두 명령은 팀 작성 고정 정상 사례용입니다. C가 만들 plan 기반 실행 엔진은 후속 구현입니다.
 
-## 팀원의 시작점
+## 모듈 개발
 
-| 담당 | 입력 | 만들 결과 |
-|---|---|---|
-| 팀장 | 원본·노드 metadata·업무 정의 | 정규화·의미·의존성·snapshot, 공통 계약 관리 |
-| A | `examples/contracts/*/input/` | 그래프·대응·변경·영향을 담은 analysis.json |
-| B | 분석 예시·카드·카탈로그 | 검색 기록과 plan.json |
-| C | 계획 예시·카탈로그·실행 기준 | 계획을 읽고 만든 전후 실행 기록과 실제 자료 |
+- [팀 구현 계획과 현재 착수 명세](https://github.com/serendipity-sec/docs/blob/main/plans/team-implementation.md#current-start)
+- [준비된 코드·실행 근거·남은 한계](https://github.com/serendipity-sec/docs/blob/main/plans/current-readiness.md)
+- 함수 계약: [interfaces.py](src/flowdelta/interfaces.py), 데이터 계약: [입력 계약](docs/INPUT_CONTRACT_04.md)
 
 `examples/contracts/`의 분석·계획은 **CONTRACT_EXAMPLE**입니다. 실제 모듈 출력이 아닙니다.
 실제 출력은 `flowdelta check-pipeline <bundle>`로 파일 연결을 확인합니다.
@@ -81,12 +80,11 @@ CI는 Windows/Ubuntu의 정적 검사·계약 검사를 수행하고 Linux에서
 - 코드·AI 하위 노드·동적 하위 workflow·binary·반복/재시도·Merge의 다른 모드는 미지원입니다.
 - 업무 성공, 자료 수집, 정리 상태를 분리합니다. 현재 보안 판정 outcome은 null입니다.
 
-## 문서와 이력
+## 개발 규칙과 참고
 
-- [기존 전체 설계](https://github.com/serendipity-sec/docs/blob/main/final/README.md)
-- [기존 4인 구현 계획](https://github.com/serendipity-sec/docs/blob/main/plans/team-implementation.md)
-- [첫 주문 기준 환경 이력](docs/LEADER_BASELINE.md), [초기 입력 인계 이력](docs/LEADER_START.md)
 - [기여 방법](CONTRIBUTING.md), [외부 구성요소](THIRD_PARTY.md)
+- [전체 설계](https://github.com/serendipity-sec/docs/blob/main/final/README.md)
+- [이전 준비·조사 기록](https://github.com/serendipity-sec/docs/blob/main/archive/README.md)
 
 현재 예제는 팀 작성 합성 자료입니다. 운영 환경의 대표성을 입증한 최종 평가 데이터셋은 아닙니다.
 프로젝트의 공개 라이선스·패키지 배포는 별도 결정 항목으로 남아 있습니다.

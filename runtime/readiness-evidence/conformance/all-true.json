@@ -1,0 +1,2497 @@
+{
+  "records": {
+    "comparison.json": {
+      "all_observed_checks_match": true,
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "all-true",
+      "checks": [
+        {
+          "check": "execution-status",
+          "expected": "SUCCEEDED",
+          "observed": "SUCCEEDED",
+          "status": "MATCH"
+        },
+        {
+          "check": "cleanup",
+          "expected": "COMPLETE",
+          "observed": "COMPLETE",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-status",
+          "expected": "success",
+          "observed": "success",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-observations-present",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "last-node-observed",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:connections",
+          "execution_id": "1",
+          "expected_sha256": "adb3374327f4170c1b06f31bead5c429e99f085f661c0dbc63baf47f26ca9d13",
+          "observed_sha256": "adb3374327f4170c1b06f31bead5c429e99f085f661c0dbc63baf47f26ca9d13",
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:nodes",
+          "execution_id": "1",
+          "expected_sha256": "9227e488a0085f4a10d6a88f0893712c9c642fe804e9eb13037f2da4a846e79b",
+          "observed_sha256": "9227e488a0085f4a10d6a88f0893712c9c642fe804e9eb13037f2da4a846e79b",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {}
+            ]
+          ],
+          "node_id": "start",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {}
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "tickets": [
+                  {
+                    "priority": 3,
+                    "ticket_id": "T-1001"
+                  },
+                  {
+                    "priority": 4,
+                    "ticket_id": "T-1002"
+                  },
+                  {
+                    "priority": 5,
+                    "ticket_id": "T-1003"
+                  }
+                ]
+              }
+            ]
+          ],
+          "node_id": "seed",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "tickets": [
+                  {
+                    "priority": 3,
+                    "ticket_id": "T-1001"
+                  },
+                  {
+                    "priority": 4,
+                    "ticket_id": "T-1002"
+                  },
+                  {
+                    "priority": 5,
+                    "ticket_id": "T-1003"
+                  }
+                ]
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "seed",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 4,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 4,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 4,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ],
+            []
+          ],
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 4,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ],
+            []
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "urgent",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "urgent",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "urgent",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "urgent",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "check": "runtime-source-binding:connections",
+          "execution_id": "2",
+          "expected_sha256": "baf28a654803fb6589ce76fd4126e2e1c88285362a68c6be98287b541698d414",
+          "observed_sha256": "baf28a654803fb6589ce76fd4126e2e1c88285362a68c6be98287b541698d414",
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:nodes",
+          "execution_id": "2",
+          "expected_sha256": "11c54025fda64a879843e1552e1ec51413358e5489d1b0f37d8ac2f5e4619c14",
+          "observed_sha256": "11c54025fda64a879843e1552e1ec51413358e5489d1b0f37d8ac2f5e4619c14",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "2",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "child-entry",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "2",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "2",
+          "expected": true,
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "2",
+          "expected": true,
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "2",
+          "expected": true,
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "not_observed_nodes": [
+        {
+          "execution_id": "1",
+          "node_id": "standard",
+          "workflow_id": "fdConformancealltrue"
+        }
+      ],
+      "run_id": "run-d7ef12585c164e65894ad6abd5f90a7f",
+      "schema_version": "0.4.0",
+      "scope": "Normal node outputs, ports, source binding and item links; no security verdict."
+    },
+    "run.json": {
+      "actual_engine_version": "2.42.6",
+      "actual_image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "all-true",
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "expect_success": true,
+      "expected_execution_observed": true,
+      "finished_at": "2026-10-11T00:43:23.382601+00:00",
+      "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "network": "none",
+      "observed_executions": 2,
+      "observed_node_ports": 11,
+      "outcome": null,
+      "return_code": 0,
+      "run_id": "run-d7ef12585c164e65894ad6abd5f90a7f",
+      "source_sha256": "ce38620af1c15d3803a0dabd1678386741e34322b3a68e9de45919104e4d9b95",
+      "started_at": "2026-10-11T00:41:58.368988+00:00"
+    },
+    "runtime-executions.json": {
+      "authorship": "RUNTIME_OBSERVATION",
+      "executions": [
+        {
+          "data": {
+            "resultData": {
+              "lastNodeExecuted": "Triage result",
+              "runData": {
+                "Manual request": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {},
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 2,
+                    "hints": [],
+                    "source": [],
+                    "startTime": 1791679401491
+                  }
+                ],
+                "Merge queues": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 5,
+                    "executionStatus": "success",
+                    "executionTime": 30,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Urgent queue",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      },
+                      null
+                    ],
+                    "startTime": 1791679401686
+                  }
+                ],
+                "Normal ticket batch": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "tickets": [
+                                {
+                                  "priority": 3,
+                                  "ticket_id": "T-1001"
+                                },
+                                {
+                                  "priority": 4,
+                                  "ticket_id": "T-1002"
+                                },
+                                {
+                                  "priority": 5,
+                                  "ticket_id": "T-1003"
+                                }
+                              ]
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "success",
+                    "executionTime": 12,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Manual request",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679401494
+                  }
+                ],
+                "Priority gate": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "priority": 3,
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "priority": 4,
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "priority": 5,
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ],
+                        []
+                      ]
+                    },
+                    "executionIndex": 3,
+                    "executionStatus": "success",
+                    "executionTime": 101,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Split tickets",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679401512
+                  }
+                ],
+                "Split tickets": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "priority": 3,
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "priority": 4,
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "priority": 5,
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 2,
+                    "executionStatus": "success",
+                    "executionTime": 5,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Normal ticket batch",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679401507
+                  }
+                ],
+                "Summarize batch": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 6,
+                    "executionStatus": "success",
+                    "executionTime": 444,
+                    "hints": [],
+                    "metadata": {
+                      "subExecution": {
+                        "executionId": "2",
+                        "workflowId": "fdSupportSummary"
+                      },
+                      "subExecutionsCount": 1
+                    },
+                    "source": [
+                      {
+                        "previousNode": "Merge queues",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679401717
+                  }
+                ],
+                "Triage result": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 7,
+                    "executionStatus": "success",
+                    "executionTime": 16,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Summarize batch",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679402162
+                  }
+                ],
+                "Urgent queue": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 4,
+                    "executionStatus": "success",
+                    "executionTime": 46,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Priority gate",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679401613
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "1",
+          "status": "success",
+          "workflow": {
+            "connections": {
+              "Manual request": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Normal ticket batch",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Merge queues": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Summarize batch",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Normal ticket batch": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Split tickets",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Priority gate": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Urgent queue",
+                      "type": "main"
+                    }
+                  ],
+                  [
+                    {
+                      "index": 0,
+                      "node": "Standard queue",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Split tickets": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Priority gate",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Standard queue": {
+                "main": [
+                  [
+                    {
+                      "index": 1,
+                      "node": "Merge queues",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Summarize batch": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Triage result",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Urgent queue": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Merge queues",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdConformancealltrue",
+            "name": "FlowDelta local ticket triage",
+            "nodes": [
+              {
+                "id": "start",
+                "name": "Manual request",
+                "parameters": {
+                  "notice": ""
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.manualTrigger",
+                "typeVersion": 1
+              },
+              {
+                "id": "seed",
+                "name": "Normal ticket batch",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "seed-0",
+                        "name": "tickets",
+                        "type": "array",
+                        "value": [
+                          {
+                            "priority": 3,
+                            "ticket_id": "T-1001"
+                          },
+                          {
+                            "priority": 4,
+                            "ticket_id": "T-1002"
+                          },
+                          {
+                            "priority": 5,
+                            "ticket_id": "T-1003"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "split",
+                "name": "Split tickets",
+                "parameters": {
+                  "fieldToSplitOut": "tickets",
+                  "include": "noOtherFields",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.splitOut",
+                "typeVersion": 1
+              },
+              {
+                "id": "priority",
+                "name": "Priority gate",
+                "parameters": {
+                  "conditions": {
+                    "combinator": "and",
+                    "conditions": [
+                      {
+                        "id": "priority-condition",
+                        "leftValue": "={{ $json.priority }}",
+                        "operator": {
+                          "operation": "gte",
+                          "type": "number"
+                        },
+                        "rightValue": 3
+                      }
+                    ],
+                    "options": {
+                      "caseSensitive": true,
+                      "leftValue": "",
+                      "typeValidation": "strict",
+                      "version": 2
+                    }
+                  },
+                  "looseTypeValidation": false,
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.if",
+                "typeVersion": 2.3
+              },
+              {
+                "id": "urgent",
+                "name": "Urgent queue",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "urgent-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $('Split tickets').item.json.ticket_id }}"
+                      },
+                      {
+                        "id": "urgent-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "urgent"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "standard",
+                "name": "Standard queue",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "standard-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $('Split tickets').item.json.ticket_id }}"
+                      },
+                      {
+                        "id": "standard-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "standard"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "merge",
+                "name": "Merge queues",
+                "parameters": {
+                  "mode": "append",
+                  "numberInputs": 2
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.merge",
+                "typeVersion": 3.2
+              },
+              {
+                "id": "summary",
+                "name": "Summarize batch",
+                "parameters": {
+                  "mode": "once",
+                  "operation": "call_workflow",
+                  "options": {
+                    "waitForSubWorkflow": true
+                  },
+                  "source": "database",
+                  "workflowId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "fdSupportSummary"
+                  },
+                  "workflowInputs": {
+                    "mappingMode": "passThrough"
+                  }
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.executeWorkflow",
+                "typeVersion": 1.4
+              },
+              {
+                "id": "result",
+                "name": "Triage result",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "result-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $json.ticket_id }}"
+                      },
+                      {
+                        "id": "result-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "={{ $json.queue }}"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "data": {
+            "resultData": {
+              "lastNodeExecuted": "Public summary",
+              "runData": {
+                "Public summary": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "success",
+                    "executionTime": 46,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Sub-workflow input",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679402054
+                  }
+                ],
+                "Sub-workflow input": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "index": 0,
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "index": 1,
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "index": 2,
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 1,
+                    "hints": [],
+                    "metadata": {
+                      "parentExecution": {
+                        "executionContext": {
+                          "establishedAt": 1791679401489,
+                          "source": "cli",
+                          "triggerNode": {
+                            "name": "Manual request",
+                            "type": "n8n-nodes-base.manualTrigger"
+                          },
+                          "version": 1
+                        },
+                        "executionId": "1",
+                        "shouldResume": true,
+                        "workflowId": "fdConformancealltrue"
+                      }
+                    },
+                    "source": [],
+                    "startTime": 1791679402053
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "2",
+          "status": "success",
+          "workflow": {
+            "connections": {
+              "Sub-workflow input": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Public summary",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdSupportSummary",
+            "name": "FlowDelta local support summary",
+            "nodes": [
+              {
+                "id": "child-entry",
+                "name": "Sub-workflow input",
+                "parameters": {
+                  "events": "worklfow_call",
+                  "inputSource": "passthrough"
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.executeWorkflowTrigger",
+                "typeVersion": 1.2
+              },
+              {
+                "id": "child-public",
+                "name": "Public summary",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "child-public-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $json.ticket_id }}"
+                      },
+                      {
+                        "id": "child-public-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "={{ $json.queue }}"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "observations": [
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {},
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "start",
+          "node_name": "Manual request",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Manual request/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "tickets": [
+                  {
+                    "priority": 3,
+                    "ticket_id": "T-1001"
+                  },
+                  {
+                    "priority": 4,
+                    "ticket_id": "T-1002"
+                  },
+                  {
+                    "priority": 5,
+                    "ticket_id": "T-1003"
+                  }
+                ]
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "seed",
+          "node_name": "Normal ticket batch",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Normal ticket batch/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "priority": 4,
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "split",
+          "node_name": "Split tickets",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Split tickets/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "priority": 4,
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "priority",
+          "node_name": "Priority gate",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Priority gate/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [],
+          "node_id": "priority",
+          "node_name": "Priority gate",
+          "node_run_index": 0,
+          "output_index": 1,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Priority gate/0/data/main/1",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "urgent",
+          "node_name": "Urgent queue",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Urgent queue/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "merge",
+          "node_name": "Merge queues",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Merge queues/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "summary",
+          "node_name": "Summarize batch",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Summarize batch/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "result",
+          "node_name": "Triage result",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Triage result/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformancealltrue"
+        },
+        {
+          "execution_id": "2",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "index": 0,
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "index": 1,
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "index": 2,
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "child-entry",
+          "node_name": "Sub-workflow input",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/1/data/resultData/runData/Sub-workflow input/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "execution_id": "2",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "child-public",
+          "node_name": "Public summary",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/1/data/resultData/runData/Public summary/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "schema_version": "0.4.0",
+      "source_database_sha256": "3dee3a56c0b33d4f277c6a6a7f0e5e0a3214ea1b482b1c8090cfcdcb2290543b",
+      "transformation": "Selected execution fields; authentication header values redacted; no resume tokens."
+    }
+  },
+  "schema_version": "0.4.0",
+  "selection": "Selected JSON observations only",
+  "source_files": {
+    "comparison.json": "d528bef36803a55fa93d5812049425a430762f37e36477ea136cdeafbb742b5c",
+    "run.json": "b49c131d1ceb0972b8e80df2c2157753513897822d2448e5cde14b82ffaba05d",
+    "runtime-executions.json": "0cd50f43086d6ca461ddee06b7afa3aa603748fb54d136645e5fa19b318593cf"
+  }
+}
