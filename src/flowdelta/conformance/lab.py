@@ -54,6 +54,7 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
     if actual_version != registry["engine_version"]:
         raise InputError("ENGINE_VERSION_MISMATCH")
     for case in cases:
+        print(f"conformance {case['case_id']}: preparing isolated runtime", flush=True)
         run_id = "run-" + uuid4().hex
         folder = output / case["case_id"]
         folder.mkdir()
@@ -89,8 +90,6 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
             "docker",
             "run",
             "--rm",
-            "--name",
-            container,
             "--label",
             f"flowdelta.run={run_id}",
             "--network",
@@ -144,7 +143,7 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
                     raise InputError("CONFORMANCE_PUBLISH_FAILED")
             # The selected 2.42.6 image finalizes publication state during server startup.
             started = subprocess.run(
-                [*base[:-1], "--detach", image, "start"],
+                [*base[:-1], "--name", container, "--detach", image, "start"],
                 capture_output=True,
                 timeout=30,
                 check=False,
@@ -190,14 +189,30 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
         except (OSError, subprocess.SubprocessError, InputError) as exc:
             record["error_code"] = exc.code if isinstance(exc, InputError) else type(exc).__name__
         finally:
-            remaining = subprocess.check_output(
-                ["docker", "ps", "--all", "--quiet", "--filter", f"label=flowdelta.run={run_id}"],
-                text=True,
-            ).split()
-            if remaining:
+            # --rm may already be deleting a stopped container. Judge the final inventory,
+            # not a racing rm command's exit code. One-shot containers have unique names.
+            for _ in range(30):
+                remaining = subprocess.check_output(
+                    [
+                        "docker",
+                        "ps",
+                        "--all",
+                        "--quiet",
+                        "--filter",
+                        f"label=flowdelta.run={run_id}",
+                    ],
+                    text=True,
+                    timeout=20,
+                ).split()
+                if not remaining:
+                    break
                 subprocess.run(
-                    ["docker", "rm", "--force", *remaining], check=True, capture_output=True
+                    ["docker", "rm", "--force", *remaining],
+                    check=False,
+                    capture_output=True,
+                    timeout=20,
                 )
+                time.sleep(0.5)
             remaining = subprocess.check_output(
                 ["docker", "ps", "--all", "--quiet", "--filter", f"label=flowdelta.run={run_id}"],
                 text=True,
@@ -217,6 +232,11 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
         )
         (folder / "run.json").write_bytes(json_bytes(record))
         runs.append(record)
+        print(
+            f"conformance {case['case_id']}: {record['execution_status']}; "
+            f"cleanup {record['cleanup_status']}; error {record.get('error_code')}",
+            flush=True,
+        )
     summary: dict[str, object] = {"scope": "registered-normal-node-conformance", "runs": runs}
     (output / "runs.json").write_bytes(json_bytes(summary))
     return summary
