@@ -1,0 +1,106 @@
+{
+  "all_observed_checks_match": true,
+  "authorship": "RUNTIME_OBSERVATION",
+  "business_families": 2,
+  "cases": [
+    {
+      "all_match": true,
+      "case_id": "all-true",
+      "checks": 42,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-d7ef12585c164e65894ad6abd5f90a7f",
+      "unobserved_nodes": 1
+    },
+    {
+      "all_match": true,
+      "case_id": "empty-batch",
+      "checks": 12,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-79e45544e2ff4563b752e7d40361d2bc",
+      "unobserved_nodes": 6
+    },
+    {
+      "all_match": true,
+      "case_id": "error-output",
+      "checks": 12,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-2bffe967d7714942abd3ab676b32b80e",
+      "unobserved_nodes": 0
+    },
+    {
+      "all_match": true,
+      "case_id": "error-regular",
+      "checks": 12,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-550d261768ae4e088cd2a5afbecbcaac",
+      "unobserved_nodes": 0
+    },
+    {
+      "all_match": true,
+      "case_id": "error-stop",
+      "checks": 10,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "FAILED",
+      "run_id": "run-308134cb90384a0a8e32ec8f943a3da1",
+      "unobserved_nodes": 1
+    },
+    {
+      "all_match": true,
+      "case_id": "named-references",
+      "checks": 19,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-1296ba739b8445b5b6dcb3ca88f3a838",
+      "unobserved_nodes": 0
+    },
+    {
+      "all_match": true,
+      "case_id": "support-after",
+      "checks": 43,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-f560a47c5777462692f92e4308ba7721",
+      "unobserved_nodes": 0
+    },
+    {
+      "all_match": true,
+      "case_id": "support-before",
+      "checks": 43,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-a861c662bf854d7c91a8602dc2287928",
+      "unobserved_nodes": 0
+    },
+    {
+      "all_match": true,
+      "case_id": "order-before",
+      "checks": 21,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-1694e2cfbf1a4b058bb6ecd07ac396fb",
+      "unobserved_nodes": 0
+    },
+    {
+      "all_match": true,
+      "case_id": "order-after",
+      "checks": 21,
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-057f3de119c04a269f6d85b686d237da",
+      "unobserved_nodes": 0
+    }
+  ],
+  "engine_version": "2.42.6",
+  "limits": [
+    "10 registrations/runs are not 10 independent businesses",
+    "No real A/B/C module integration",
+    "No security detection evaluation"
+  ],
+  "schema_version": "0.4.0",
+  "security_outcome": null,
+  "total_checks": 235
+}

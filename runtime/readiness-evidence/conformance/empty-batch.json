@@ -1,0 +1,715 @@
+{
+  "records": {
+    "comparison.json": {
+      "all_observed_checks_match": true,
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "empty-batch",
+      "checks": [
+        {
+          "check": "execution-status",
+          "expected": "SUCCEEDED",
+          "observed": "SUCCEEDED",
+          "status": "MATCH"
+        },
+        {
+          "check": "cleanup",
+          "expected": "COMPLETE",
+          "observed": "COMPLETE",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-status",
+          "expected": "success",
+          "observed": "success",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-observations-present",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "last-node-observed",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:connections",
+          "execution_id": "1",
+          "expected_sha256": "adb3374327f4170c1b06f31bead5c429e99f085f661c0dbc63baf47f26ca9d13",
+          "observed_sha256": "adb3374327f4170c1b06f31bead5c429e99f085f661c0dbc63baf47f26ca9d13",
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:nodes",
+          "execution_id": "1",
+          "expected_sha256": "be88b92023e44310b73a771cc5870d7088a48a9679cdde382720d7aa3f826c15",
+          "observed_sha256": "be88b92023e44310b73a771cc5870d7088a48a9679cdde382720d7aa3f826c15",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {}
+            ]
+          ],
+          "node_id": "start",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {}
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "tickets": []
+              }
+            ]
+          ],
+          "node_id": "seed",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "tickets": []
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "seed",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            []
+          ],
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": [
+            []
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdConformanceemptybatch"
+        }
+      ],
+      "not_observed_nodes": [
+        {
+          "execution_id": "1",
+          "node_id": "priority",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "execution_id": "1",
+          "node_id": "urgent",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "execution_id": "1",
+          "node_id": "standard",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "execution_id": "1",
+          "node_id": "merge",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "execution_id": "1",
+          "node_id": "summary",
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "execution_id": "1",
+          "node_id": "result",
+          "workflow_id": "fdConformanceemptybatch"
+        }
+      ],
+      "run_id": "run-79e45544e2ff4563b752e7d40361d2bc",
+      "schema_version": "0.4.0",
+      "scope": "Normal node outputs, ports, source binding and item links; no security verdict."
+    },
+    "run.json": {
+      "actual_engine_version": "2.42.6",
+      "actual_image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "empty-batch",
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "expect_success": true,
+      "expected_execution_observed": true,
+      "finished_at": "2026-10-11T00:44:46.830217+00:00",
+      "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "network": "none",
+      "observed_executions": 1,
+      "observed_node_ports": 3,
+      "outcome": null,
+      "return_code": 0,
+      "run_id": "run-79e45544e2ff4563b752e7d40361d2bc",
+      "source_sha256": "1f9dfd4682d28ddf22c4214a9786d766f4c0e69a2311be8578c75a74fff1780d",
+      "started_at": "2026-10-11T00:43:23.410956+00:00"
+    },
+    "runtime-executions.json": {
+      "authorship": "RUNTIME_OBSERVATION",
+      "executions": [
+        {
+          "data": {
+            "resultData": {
+              "lastNodeExecuted": "Split tickets",
+              "runData": {
+                "Manual request": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {},
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 2,
+                    "hints": [],
+                    "source": [],
+                    "startTime": 1791679485458
+                  }
+                ],
+                "Normal ticket batch": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "tickets": []
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "success",
+                    "executionTime": 8,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Manual request",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679485461
+                  }
+                ],
+                "Split tickets": [
+                  {
+                    "data": {
+                      "main": [
+                        []
+                      ]
+                    },
+                    "executionIndex": 2,
+                    "executionStatus": "success",
+                    "executionTime": 4,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Normal ticket batch",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679485469
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "1",
+          "status": "success",
+          "workflow": {
+            "connections": {
+              "Manual request": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Normal ticket batch",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Merge queues": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Summarize batch",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Normal ticket batch": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Split tickets",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Priority gate": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Urgent queue",
+                      "type": "main"
+                    }
+                  ],
+                  [
+                    {
+                      "index": 0,
+                      "node": "Standard queue",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Split tickets": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Priority gate",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Standard queue": {
+                "main": [
+                  [
+                    {
+                      "index": 1,
+                      "node": "Merge queues",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Summarize batch": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Triage result",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Urgent queue": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Merge queues",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdConformanceemptybatch",
+            "name": "FlowDelta local ticket triage",
+            "nodes": [
+              {
+                "id": "start",
+                "name": "Manual request",
+                "parameters": {
+                  "notice": ""
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.manualTrigger",
+                "typeVersion": 1
+              },
+              {
+                "id": "seed",
+                "name": "Normal ticket batch",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "seed-0",
+                        "name": "tickets",
+                        "type": "array",
+                        "value": []
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "split",
+                "name": "Split tickets",
+                "parameters": {
+                  "fieldToSplitOut": "tickets",
+                  "include": "noOtherFields",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.splitOut",
+                "typeVersion": 1
+              },
+              {
+                "id": "priority",
+                "name": "Priority gate",
+                "parameters": {
+                  "conditions": {
+                    "combinator": "and",
+                    "conditions": [
+                      {
+                        "id": "priority-condition",
+                        "leftValue": "={{ $json.priority }}",
+                        "operator": {
+                          "operation": "gte",
+                          "type": "number"
+                        },
+                        "rightValue": 3
+                      }
+                    ],
+                    "options": {
+                      "caseSensitive": true,
+                      "leftValue": "",
+                      "typeValidation": "strict",
+                      "version": 2
+                    }
+                  },
+                  "looseTypeValidation": false,
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.if",
+                "typeVersion": 2.3
+              },
+              {
+                "id": "urgent",
+                "name": "Urgent queue",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "urgent-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $('Split tickets').item.json.ticket_id }}"
+                      },
+                      {
+                        "id": "urgent-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "urgent"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "standard",
+                "name": "Standard queue",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "standard-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $('Split tickets').item.json.ticket_id }}"
+                      },
+                      {
+                        "id": "standard-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "standard"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "merge",
+                "name": "Merge queues",
+                "parameters": {
+                  "mode": "append",
+                  "numberInputs": 2
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.merge",
+                "typeVersion": 3.2
+              },
+              {
+                "id": "summary",
+                "name": "Summarize batch",
+                "parameters": {
+                  "mode": "once",
+                  "operation": "call_workflow",
+                  "options": {
+                    "waitForSubWorkflow": true
+                  },
+                  "source": "database",
+                  "workflowId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "fdSupportSummary"
+                  },
+                  "workflowInputs": {
+                    "mappingMode": "passThrough"
+                  }
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.executeWorkflow",
+                "typeVersion": 1.4
+              },
+              {
+                "id": "result",
+                "name": "Triage result",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "result-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $json.ticket_id }}"
+                      },
+                      {
+                        "id": "result-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "={{ $json.queue }}"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdConformanceemptybatch"
+        }
+      ],
+      "observations": [
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {},
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "start",
+          "node_name": "Manual request",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Manual request/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "tickets": []
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "seed",
+          "node_name": "Normal ticket batch",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Normal ticket batch/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceemptybatch"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [],
+          "node_id": "split",
+          "node_name": "Split tickets",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Split tickets/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdConformanceemptybatch"
+        }
+      ],
+      "schema_version": "0.4.0",
+      "source_database_sha256": "0b2fff746dfc5fff2c40c7cc7f375cac58348251392530c66f672ab18cb26af8",
+      "transformation": "Selected execution fields; authentication header values redacted; no resume tokens."
+    }
+  },
+  "schema_version": "0.4.0",
+  "selection": "Selected JSON observations only",
+  "source_files": {
+    "comparison.json": "b87f70621a45e336abec5779e7df63a54f19435680a53a640a3250b6af9afe7e",
+    "run.json": "87de1f33e6b3da163744bcef5a13f7b07b1ec5084ff5dd6bb1006e309ec5adbb",
+    "runtime-executions.json": "f4308419b0b2c969a05524958cafc8b592900d3ae74d4f6a24bf2a3fdb463e2e"
+  }
+}

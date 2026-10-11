@@ -1,0 +1,69 @@
+{
+  "artifacts": [
+    {
+      "path": "conformance/all-true.json",
+      "sha256": "404b0524fd31d8fb0241438ab360ac30cd5e96df76d14b76607107d325ce2736",
+      "size_bytes": 76305
+    },
+    {
+      "path": "conformance/empty-batch.json",
+      "sha256": "7dec36cf5502e89e13a90d6fbfd3ebb2b03e4a9384c9c8ad3991390ca2fdbc18",
+      "size_bytes": 22062
+    },
+    {
+      "path": "conformance/error-output.json",
+      "sha256": "6b83912c1a33208d8f7b55821213f22a48b8c1c687776ce42c1dd6f8142fc9c3",
+      "size_bytes": 15957
+    },
+    {
+      "path": "conformance/error-regular.json",
+      "sha256": "62e7d3e5420fe698e24859df338e9c5f68647d0546bac31875800079fc4961ce",
+      "size_bytes": 15258
+    },
+    {
+      "path": "conformance/error-stop.json",
+      "sha256": "fa015584a80646479b0ba2b92c4ec3ee57fab7dd3f1300977c20c946bfb72e8a",
+      "size_bytes": 17784
+    },
+    {
+      "path": "conformance/named-references.json",
+      "sha256": "99acfe50ade8185e7309d8656f1ff81bf0b5a1a115c12faacf4272853c77538e",
+      "size_bytes": 28049
+    },
+    {
+      "path": "conformance/support-after.json",
+      "sha256": "378267a9b7d545b762746faec9cdf0ad1e56e77674ac4bd2dfce07b53d8b18ea",
+      "size_bytes": 78975
+    },
+    {
+      "path": "conformance/support-before.json",
+      "sha256": "6b629547989d9860d3a2c80d71449a2a3e40c8ddca1f0967f1d4841fe252402d",
+      "size_bytes": 78074
+    },
+    {
+      "path": "order/after.json",
+      "sha256": "96b8f25846136bbed683d29e98c270f40f5b5e2dfdb0657c69239dc20ced7c87",
+      "size_bytes": 25556
+    },
+    {
+      "path": "order/before.json",
+      "sha256": "e886ce74d525d4a7e74b165c4c5e4e66a0395e7ac9bc72297cb92f9d51304cb6",
+      "size_bytes": 25337
+    },
+    {
+      "path": "summary.json",
+      "sha256": "971b2551d3c8120a80831a9a1554217a355f85ec0630d6c36f42359139bc1edd",
+      "size_bytes": 2890
+    }
+  ],
+  "omitted": [
+    "private/",
+    "SQLite databases",
+    "credentials",
+    "stdout.log",
+    "stderr.log",
+    "bootstrap.log"
+  ],
+  "schema_version": "0.4.0",
+  "scope": "Evidence archive; not an A/B/C pipeline manifest"
+}
