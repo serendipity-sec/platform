@@ -1,0 +1,33 @@
+{
+  "authorship": {
+    "extensions": {},
+    "note": "고정된 정상 문의 분류의 기대 입출력. A/B/C의 실제 구현 출력이 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.4.0"
+  },
+  "card_id": "normal-ticket-routing",
+  "claim_basis": "TEAM_HYPOTHESIS",
+  "extensions": {},
+  "license_identifier": null,
+  "node_types": [
+    "n8n-nodes-base.set",
+    "n8n-nodes-base.if",
+    "n8n-nodes-base.merge"
+  ],
+  "required_artifact_kinds": [
+    "response",
+    "node-observations"
+  ],
+  "reuse_status": "TEAM_AUTHORED",
+  "runtime_profile": "core-local-v1",
+  "schema_version": "0.4.0",
+  "source": "team-authored:examples/support-triage/task.json",
+  "source_ref": null,
+  "source_revision": null,
+  "summary": "표시 필드 추가 후에도 ticket_id와 큐 분류가 유지되는지 관측할 자료를 수집한다.",
+  "template_id": "normal-support-triage",
+  "template_version": "1.0.0",
+  "title": "문의 분류 결과 보존",
+  "version": "1.0.0"
+}

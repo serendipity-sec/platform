@@ -1,0 +1,375 @@
+[
+  {
+    "name": "Set",
+    "type": "set",
+    "version": 3.5,
+    "versions": [
+      1,
+      2,
+      3,
+      3.1,
+      3.2,
+      3.3,
+      3.4,
+      3.5
+    ],
+    "properties": [
+      {
+        "name": "mode",
+        "default": "manual"
+      },
+      {
+        "name": "duplicateItem",
+        "default": false
+      },
+      {
+        "name": "duplicateCount",
+        "default": 0
+      },
+      {
+        "name": "duplicateWarning",
+        "default": ""
+      },
+      {
+        "name": "jsonOutput",
+        "default": "{\n  \"my_field_1\": \"value\",\n  \"my_field_2\": 1\n}\n"
+      },
+      {
+        "name": "fields",
+        "default": {}
+      },
+      {
+        "name": "assignments",
+        "default": {}
+      },
+      {
+        "name": "include",
+        "default": "all"
+      },
+      {
+        "name": "includeOtherFields",
+        "default": false
+      },
+      {
+        "name": "include",
+        "default": "all"
+      },
+      {
+        "name": "includeFields",
+        "default": ""
+      },
+      {
+        "name": "excludeFields",
+        "default": ""
+      },
+      {
+        "name": "includeFields",
+        "default": ""
+      },
+      {
+        "name": "excludeFields",
+        "default": ""
+      },
+      {
+        "name": "options",
+        "default": {}
+      }
+    ]
+  },
+  {
+    "name": "If",
+    "type": "if",
+    "version": 2.3,
+    "versions": [
+      1,
+      2,
+      2.1,
+      2.2,
+      2.3
+    ],
+    "properties": [
+      {
+        "name": "conditions",
+        "default": {}
+      },
+      {
+        "name": "looseTypeValidation",
+        "default": false
+      },
+      {
+        "name": "options",
+        "default": {}
+      }
+    ]
+  },
+  {
+    "name": "Merge",
+    "type": "merge",
+    "version": 3.2,
+    "versions": [
+      1,
+      2,
+      3,
+      2.1,
+      3.1,
+      3.2
+    ],
+    "properties": [
+      {
+        "name": "mode",
+        "default": "append"
+      },
+      {
+        "name": "combineBy",
+        "default": "combineByFields"
+      },
+      {
+        "name": "numberInputs",
+        "default": 2
+      },
+      {
+        "name": "options",
+        "default": {}
+      },
+      {
+        "name": "advanced",
+        "default": false
+      },
+      {
+        "name": "fieldsToMatchString",
+        "default": ""
+      },
+      {
+        "name": "mergeByFields",
+        "default": {
+          "values": [
+            {
+              "field1": "",
+              "field2": ""
+            }
+          ]
+        }
+      },
+      {
+        "name": "joinMode",
+        "default": "keepMatches"
+      },
+      {
+        "name": "outputDataFrom",
+        "default": "both"
+      },
+      {
+        "name": "outputDataFrom",
+        "default": "both"
+      },
+      {
+        "name": "options",
+        "default": {}
+      },
+      {
+        "name": "numberInputs",
+        "default": 2
+      },
+      {
+        "name": "query",
+        "default": "SELECT * FROM input1 LEFT JOIN input2 ON input1.name = input2.id"
+      },
+      {
+        "name": "queryParametersNotice",
+        "default": ""
+      },
+      {
+        "name": "options",
+        "default": {}
+      },
+      {
+        "name": "numberInputs",
+        "default": 2
+      },
+      {
+        "name": "options",
+        "default": {}
+      },
+      {
+        "name": "numberInputs",
+        "default": 2
+      },
+      {
+        "name": "chooseBranchMode",
+        "default": "waitForAll"
+      },
+      {
+        "name": "output",
+        "default": "specifiedInput"
+      },
+      {
+        "name": "useDataOfInput",
+        "default": 1
+      }
+    ]
+  },
+  {
+    "name": "ExecuteWorkflow",
+    "type": "executeWorkflow",
+    "version": 1.4,
+    "versions": [
+      1,
+      1.1,
+      1.2,
+      1.3,
+      1.4
+    ],
+    "properties": [
+      {
+        "name": "operation",
+        "default": "call_workflow"
+      },
+      {
+        "name": "outdatedVersionWarning",
+        "default": ""
+      },
+      {
+        "name": "source",
+        "default": "database"
+      },
+      {
+        "name": "sourceDeprecationNotice",
+        "default": ""
+      },
+      {
+        "name": "source",
+        "default": "database"
+      },
+      {
+        "name": "workflowId",
+        "default": ""
+      },
+      {
+        "name": "workflowId",
+        "default": ""
+      },
+      {
+        "name": "workflowPath",
+        "default": ""
+      },
+      {
+        "name": "workflowJson",
+        "default": "\n\n\n"
+      },
+      {
+        "name": "workflowUrl",
+        "default": ""
+      },
+      {
+        "name": "executeWorkflowNotice",
+        "default": ""
+      },
+      {
+        "name": "workflowInputs",
+        "default": {
+          "mappingMode": "defineBelow",
+          "value": null
+        }
+      },
+      {
+        "name": "workflowInputs",
+        "default": {
+          "mappingMode": "defineBelow",
+          "value": null
+        }
+      },
+      {
+        "name": "mode",
+        "default": "once"
+      },
+      {
+        "name": "eachModeDeprecationNotice",
+        "default": ""
+      },
+      {
+        "name": "options",
+        "default": {}
+      }
+    ]
+  },
+  {
+    "name": "ExecuteWorkflowTrigger",
+    "type": "executeWorkflowTrigger",
+    "version": 1.2,
+    "versions": [
+      1,
+      1.1,
+      1.2
+    ],
+    "properties": [
+      {
+        "name": "events",
+        "default": "worklfow_call"
+      },
+      {
+        "name": "notice",
+        "default": ""
+      },
+      {
+        "name": "outdatedVersionWarning",
+        "default": ""
+      },
+      {
+        "name": "inputSource",
+        "default": "workflowInputs"
+      },
+      {
+        "name": "jsonExample_notice",
+        "default": ""
+      },
+      {
+        "name": "jsonExample",
+        "default": "{\n  \"aField\": \"a string\",\n  \"aNumber\": 123,\n  \"thisFieldAcceptsAnyType\": null,\n  \"anArray\": []\n}"
+      },
+      {
+        "name": "workflowInputs",
+        "default": {}
+      },
+      {
+        "name": "returnOutput",
+        "default": "lastRunOnly"
+      }
+    ]
+  },
+  {
+    "name": "SplitOut",
+    "type": "splitOut",
+    "version": 1,
+    "versions": 1,
+    "properties": [
+      {
+        "name": "fieldToSplitOut",
+        "default": ""
+      },
+      {
+        "name": "include",
+        "default": "noOtherFields"
+      },
+      {
+        "name": "fieldsToInclude",
+        "default": ""
+      },
+      {
+        "name": "options",
+        "default": {}
+      }
+    ]
+  },
+  {
+    "name": "ManualTrigger",
+    "type": "manualTrigger",
+    "version": 1,
+    "versions": 1,
+    "properties": [
+      {
+        "name": "notice",
+        "default": ""
+      }
+    ]
+  }
+]

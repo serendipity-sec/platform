@@ -1,0 +1,2577 @@
+{
+  "records": {
+    "comparison.json": {
+      "all_observed_checks_match": true,
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "support-after",
+      "checks": [
+        {
+          "check": "execution-status",
+          "expected": "SUCCEEDED",
+          "observed": "SUCCEEDED",
+          "status": "MATCH"
+        },
+        {
+          "check": "cleanup",
+          "expected": "COMPLETE",
+          "observed": "COMPLETE",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-execution-status",
+          "expected": "success",
+          "observed": "success",
+          "status": "MATCH"
+        },
+        {
+          "check": "parent-observations-present",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "last-node-observed",
+          "expected": true,
+          "observed": true,
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:connections",
+          "execution_id": "1",
+          "expected_sha256": "adb3374327f4170c1b06f31bead5c429e99f085f661c0dbc63baf47f26ca9d13",
+          "observed_sha256": "adb3374327f4170c1b06f31bead5c429e99f085f661c0dbc63baf47f26ca9d13",
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:nodes",
+          "execution_id": "1",
+          "expected_sha256": "536c11ca9b42fc4e5f8f4d7968de2863dcfec128636f3a930ed6fccbb823f0cc",
+          "observed_sha256": "536c11ca9b42fc4e5f8f4d7968de2863dcfec128636f3a930ed6fccbb823f0cc",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {}
+            ]
+          ],
+          "node_id": "start",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {}
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "tickets": [
+                  {
+                    "priority": 3,
+                    "ticket_id": "T-1001"
+                  },
+                  {
+                    "priority": 1,
+                    "ticket_id": "T-1002"
+                  },
+                  {
+                    "priority": 5,
+                    "ticket_id": "T-1003"
+                  }
+                ]
+              }
+            ]
+          ],
+          "node_id": "seed",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "tickets": [
+                  {
+                    "priority": 3,
+                    "ticket_id": "T-1001"
+                  },
+                  {
+                    "priority": 1,
+                    "ticket_id": "T-1002"
+                  },
+                  {
+                    "priority": 5,
+                    "ticket_id": "T-1003"
+                  }
+                ]
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "seed",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "split",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ],
+            [
+              {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              }
+            ],
+            [
+              {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "priority",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 1,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "node_id": "urgent",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "urgent",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "urgent",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "node_id": "standard",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "standard",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "merge",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "summary",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "1",
+          "expected": [
+            [
+              {
+                "display_queue": "Queue: urgent",
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "display_queue": "Queue: urgent",
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "display_queue": "Queue: standard",
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "display_queue": "Queue: urgent",
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "display_queue": "Queue: urgent",
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "display_queue": "Queue: standard",
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "1",
+          "expected": true,
+          "node_id": "result",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "check": "runtime-source-binding:connections",
+          "execution_id": "2",
+          "expected_sha256": "baf28a654803fb6589ce76fd4126e2e1c88285362a68c6be98287b541698d414",
+          "observed_sha256": "baf28a654803fb6589ce76fd4126e2e1c88285362a68c6be98287b541698d414",
+          "status": "MATCH"
+        },
+        {
+          "check": "runtime-source-binding:nodes",
+          "execution_id": "2",
+          "expected_sha256": "11c54025fda64a879843e1552e1ec51413358e5489d1b0f37d8ac2f5e4619c14",
+          "observed_sha256": "11c54025fda64a879843e1552e1ec51413358e5489d1b0f37d8ac2f5e4619c14",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "2",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "node_id": "child-entry",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "node-output-values-and-ports",
+          "execution_id": "2",
+          "expected": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": [
+            [
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              }
+            ]
+          ],
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "2",
+          "expected": true,
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "2",
+          "expected": true,
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "check": "item-link-in-input-range",
+          "execution_id": "2",
+          "expected": true,
+          "node_id": "child-public",
+          "node_run_index": 0,
+          "observed": true,
+          "output_index": 0,
+          "status": "MATCH",
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "not_observed_nodes": [],
+      "run_id": "run-f560a47c5777462692f92e4308ba7721",
+      "schema_version": "0.4.0",
+      "scope": "Normal node outputs, ports, source binding and item links; no security verdict."
+    },
+    "run.json": {
+      "actual_engine_version": "2.42.6",
+      "actual_image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "authorship": "RUNTIME_OBSERVATION",
+      "case_id": "support-after",
+      "cleanup_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "expect_success": true,
+      "expected_execution_observed": true,
+      "finished_at": "2026-10-11T00:41:58.347190+00:00",
+      "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "network": "none",
+      "observed_executions": 2,
+      "observed_node_ports": 12,
+      "outcome": null,
+      "return_code": 0,
+      "run_id": "run-f560a47c5777462692f92e4308ba7721",
+      "source_sha256": "bf0925afa65601c5c132ce338529cda8a07af5d7d315a217c3219182efc6bb8a",
+      "started_at": "2026-10-11T00:40:33.939705+00:00"
+    },
+    "runtime-executions.json": {
+      "authorship": "RUNTIME_OBSERVATION",
+      "executions": [
+        {
+          "data": {
+            "resultData": {
+              "lastNodeExecuted": "Triage result",
+              "runData": {
+                "Manual request": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {},
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 2,
+                    "hints": [],
+                    "source": [],
+                    "startTime": 1791679316447
+                  }
+                ],
+                "Merge queues": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "standard",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "input": 1,
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 6,
+                    "executionStatus": "success",
+                    "executionTime": 72,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Urgent queue",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      },
+                      {
+                        "previousNode": "Standard queue",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316606
+                  }
+                ],
+                "Normal ticket batch": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "tickets": [
+                                {
+                                  "priority": 3,
+                                  "ticket_id": "T-1001"
+                                },
+                                {
+                                  "priority": 1,
+                                  "ticket_id": "T-1002"
+                                },
+                                {
+                                  "priority": 5,
+                                  "ticket_id": "T-1003"
+                                }
+                              ]
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "success",
+                    "executionTime": 23,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Manual request",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316450
+                  }
+                ],
+                "Priority gate": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "priority": 3,
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "priority": 5,
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ],
+                        [
+                          {
+                            "json": {
+                              "priority": 1,
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 3,
+                    "executionStatus": "success",
+                    "executionTime": 98,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Split tickets",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316476
+                  }
+                ],
+                "Split tickets": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "priority": 3,
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "priority": 1,
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "priority": 5,
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 2,
+                    "executionStatus": "success",
+                    "executionTime": 3,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Normal ticket batch",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316473
+                  }
+                ],
+                "Standard queue": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "standard",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 4,
+                    "executionStatus": "success",
+                    "executionTime": 24,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Priority gate",
+                        "previousNodeOutput": 1,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316574
+                  }
+                ],
+                "Summarize batch": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "standard",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 7,
+                    "executionStatus": "success",
+                    "executionTime": 309,
+                    "hints": [],
+                    "metadata": {
+                      "subExecution": {
+                        "executionId": "2",
+                        "workflowId": "fdSupportSummary"
+                      },
+                      "subExecutionsCount": 1
+                    },
+                    "source": [
+                      {
+                        "previousNode": "Merge queues",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316679
+                  }
+                ],
+                "Triage result": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "display_queue": "Queue: urgent",
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "display_queue": "Queue: urgent",
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "display_queue": "Queue: standard",
+                              "queue": "standard",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 8,
+                    "executionStatus": "success",
+                    "executionTime": 28,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Summarize batch",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316988
+                  }
+                ],
+                "Urgent queue": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 5,
+                    "executionStatus": "success",
+                    "executionTime": 7,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Priority gate",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316599
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "1",
+          "status": "success",
+          "workflow": {
+            "connections": {
+              "Manual request": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Normal ticket batch",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Merge queues": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Summarize batch",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Normal ticket batch": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Split tickets",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Priority gate": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Urgent queue",
+                      "type": "main"
+                    }
+                  ],
+                  [
+                    {
+                      "index": 0,
+                      "node": "Standard queue",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Split tickets": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Priority gate",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Standard queue": {
+                "main": [
+                  [
+                    {
+                      "index": 1,
+                      "node": "Merge queues",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Summarize batch": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Triage result",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Urgent queue": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Merge queues",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdSupportTriage",
+            "name": "FlowDelta local ticket triage",
+            "nodes": [
+              {
+                "id": "start",
+                "name": "Manual request",
+                "parameters": {
+                  "notice": ""
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.manualTrigger",
+                "typeVersion": 1
+              },
+              {
+                "id": "seed",
+                "name": "Normal ticket batch",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "seed-0",
+                        "name": "tickets",
+                        "type": "array",
+                        "value": [
+                          {
+                            "priority": 3,
+                            "ticket_id": "T-1001"
+                          },
+                          {
+                            "priority": 1,
+                            "ticket_id": "T-1002"
+                          },
+                          {
+                            "priority": 5,
+                            "ticket_id": "T-1003"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "split",
+                "name": "Split tickets",
+                "parameters": {
+                  "fieldToSplitOut": "tickets",
+                  "include": "noOtherFields",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.splitOut",
+                "typeVersion": 1
+              },
+              {
+                "id": "priority",
+                "name": "Priority gate",
+                "parameters": {
+                  "conditions": {
+                    "combinator": "and",
+                    "conditions": [
+                      {
+                        "id": "priority-condition",
+                        "leftValue": "={{ $json.priority }}",
+                        "operator": {
+                          "operation": "gte",
+                          "type": "number"
+                        },
+                        "rightValue": 3
+                      }
+                    ],
+                    "options": {
+                      "caseSensitive": true,
+                      "leftValue": "",
+                      "typeValidation": "strict",
+                      "version": 2
+                    }
+                  },
+                  "looseTypeValidation": false,
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.if",
+                "typeVersion": 2.3
+              },
+              {
+                "id": "urgent",
+                "name": "Urgent queue",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "urgent-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $('Split tickets').item.json.ticket_id }}"
+                      },
+                      {
+                        "id": "urgent-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "urgent"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "standard",
+                "name": "Standard queue",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "standard-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $('Split tickets').item.json.ticket_id }}"
+                      },
+                      {
+                        "id": "standard-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "standard"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              },
+              {
+                "id": "merge",
+                "name": "Merge queues",
+                "parameters": {
+                  "mode": "append",
+                  "numberInputs": 2
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.merge",
+                "typeVersion": 3.2
+              },
+              {
+                "id": "summary",
+                "name": "Summarize batch",
+                "parameters": {
+                  "mode": "once",
+                  "operation": "call_workflow",
+                  "options": {
+                    "waitForSubWorkflow": true
+                  },
+                  "source": "database",
+                  "workflowId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "fdSupportSummary"
+                  },
+                  "workflowInputs": {
+                    "mappingMode": "passThrough"
+                  }
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.executeWorkflow",
+                "typeVersion": 1.4
+              },
+              {
+                "id": "result",
+                "name": "Triage result",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "result-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $json.ticket_id }}"
+                      },
+                      {
+                        "id": "result-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "={{ $json.queue }}"
+                      },
+                      {
+                        "id": "result-display",
+                        "name": "display_queue",
+                        "type": "string",
+                        "value": "={{ 'Queue: ' + $json.queue }}"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "data": {
+            "resultData": {
+              "lastNodeExecuted": "Public summary",
+              "runData": {
+                "Public summary": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "json": {
+                              "queue": "standard",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "success",
+                    "executionTime": 82,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Sub-workflow input",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791679316820
+                  }
+                ],
+                "Sub-workflow input": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "index": 0,
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1001"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          },
+                          {
+                            "index": 1,
+                            "json": {
+                              "queue": "urgent",
+                              "ticket_id": "T-1003"
+                            },
+                            "pairedItem": {
+                              "item": 1
+                            }
+                          },
+                          {
+                            "index": 2,
+                            "json": {
+                              "queue": "standard",
+                              "ticket_id": "T-1002"
+                            },
+                            "pairedItem": {
+                              "item": 2
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 0,
+                    "hints": [],
+                    "metadata": {
+                      "parentExecution": {
+                        "executionContext": {
+                          "establishedAt": 1791679316445,
+                          "source": "cli",
+                          "triggerNode": {
+                            "name": "Manual request",
+                            "type": "n8n-nodes-base.manualTrigger"
+                          },
+                          "version": 1
+                        },
+                        "executionId": "1",
+                        "shouldResume": true,
+                        "workflowId": "fdSupportTriage"
+                      }
+                    },
+                    "source": [],
+                    "startTime": 1791679316819
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "2",
+          "status": "success",
+          "workflow": {
+            "connections": {
+              "Sub-workflow input": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Public summary",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdSupportSummary",
+            "name": "FlowDelta local support summary",
+            "nodes": [
+              {
+                "id": "child-entry",
+                "name": "Sub-workflow input",
+                "parameters": {
+                  "events": "worklfow_call",
+                  "inputSource": "passthrough"
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.executeWorkflowTrigger",
+                "typeVersion": 1.2
+              },
+              {
+                "id": "child-public",
+                "name": "Public summary",
+                "parameters": {
+                  "assignments": {
+                    "assignments": [
+                      {
+                        "id": "child-public-0",
+                        "name": "ticket_id",
+                        "type": "string",
+                        "value": "={{ $json.ticket_id }}"
+                      },
+                      {
+                        "id": "child-public-1",
+                        "name": "queue",
+                        "type": "string",
+                        "value": "={{ $json.queue }}"
+                      }
+                    ]
+                  },
+                  "duplicateItem": false,
+                  "includeOtherFields": false,
+                  "mode": "manual",
+                  "options": {}
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.set",
+                "typeVersion": 3.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "observations": [
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {},
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "start",
+          "node_name": "Manual request",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Manual request/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "tickets": [
+                  {
+                    "priority": 3,
+                    "ticket_id": "T-1001"
+                  },
+                  {
+                    "priority": 1,
+                    "ticket_id": "T-1002"
+                  },
+                  {
+                    "priority": 5,
+                    "ticket_id": "T-1003"
+                  }
+                ]
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "seed",
+          "node_name": "Normal ticket batch",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Normal ticket batch/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "split",
+          "node_name": "Split tickets",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Split tickets/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "priority": 3,
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "priority": 5,
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "priority",
+          "node_name": "Priority gate",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Priority gate/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "priority": 1,
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "priority",
+          "node_name": "Priority gate",
+          "node_run_index": 0,
+          "output_index": 1,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Priority gate/0/data/main/1",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "standard",
+          "node_name": "Standard queue",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Standard queue/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "urgent",
+          "node_name": "Urgent queue",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Urgent queue/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 1,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "input": 1,
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "merge",
+          "node_name": "Merge queues",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Merge queues/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "summary",
+          "node_name": "Summarize batch",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Summarize batch/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "display_queue": "Queue: urgent",
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "display_queue": "Queue: urgent",
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "display_queue": "Queue: standard",
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "result",
+          "node_name": "Triage result",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Triage result/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportTriage"
+        },
+        {
+          "execution_id": "2",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "index": 0,
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "index": 1,
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "index": 2,
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "child-entry",
+          "node_name": "Sub-workflow input",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/1/data/resultData/runData/Sub-workflow input/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportSummary"
+        },
+        {
+          "execution_id": "2",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1001"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 1,
+              "json_data": {
+                "queue": "urgent",
+                "ticket_id": "T-1003"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 1,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 1
+                }
+              },
+              "schema_version": "0.4.0"
+            },
+            {
+              "extensions": {},
+              "item_index": 2,
+              "json_data": {
+                "queue": "standard",
+                "ticket_id": "T-1002"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 2,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 2
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "child-public",
+          "node_name": "Public summary",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/1/data/resultData/runData/Public summary/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdSupportSummary"
+        }
+      ],
+      "schema_version": "0.4.0",
+      "source_database_sha256": "3773dc3137d69fe13d76f556521a6f057d3dd18aa02d00cc606f72838db7c0cb",
+      "transformation": "Selected execution fields; authentication header values redacted; no resume tokens."
+    }
+  },
+  "schema_version": "0.4.0",
+  "selection": "Selected JSON observations only",
+  "source_files": {
+    "comparison.json": "1659f5498ba350179ff75076d250dfa904398773ef618c6a86ded1cd2900dd13",
+    "run.json": "71215686e1f722ff1910caf770e39915c1b971d2e7bcd8bce7b3237b6df50fe3",
+    "runtime-executions.json": "6281c738d02e4de39659094e0f89cf95fe6831459d8d3e242bbd13c8f3709f99"
+  }
+}

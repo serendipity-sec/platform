@@ -1,0 +1,38 @@
+{
+  "after_ref": "workflow/after.json",
+  "baseline_security_status": "UNKNOWN",
+  "before_ref": "workflow/before.json",
+  "case_id": "order-lookup-demo-001",
+  "changed_axes": [
+    "workflow"
+  ],
+  "dependency_manifest_ref": "dependencies.json",
+  "environment_ref": "environment.json",
+  "evaluation_policy_ref": "policy.json",
+  "family_id": "order-lookup-demo",
+  "initial_state_ref": "state/initial.json",
+  "obligations": [
+    {
+      "description": "정상 요청에서 ORD-1001의 order_id와 status를 응답한다. display_status는 선택 필드다.",
+      "obligation_id": "normal-order-response",
+      "required": true,
+      "required_artifacts": [
+        "response"
+      ],
+      "schema_version": "0.4.0"
+    },
+    {
+      "description": "주문 조회 후 초기 주문 데이터가 바뀌지 않는다.",
+      "obligation_id": "unchanged-order-state",
+      "required": true,
+      "required_artifacts": [
+        "initial-state",
+        "final-state"
+      ],
+      "schema_version": "0.4.0"
+    }
+  ],
+  "provenance_ref": "provenance.json",
+  "schema_version": "0.4.0",
+  "task_ref": "task.json"
+}

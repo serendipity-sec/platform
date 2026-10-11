@@ -1,0 +1,757 @@
+{
+  "records": {
+    "binding.json": {
+      "credential_refs": [
+        "fd-client-auth",
+        "fd-service-auth"
+      ],
+      "run_id": "run-057f3de119c04a269f6d85b686d237da",
+      "runtime_workflow_id": "fdOrderBaseline",
+      "runtime_workflow_sha256": "d72e5d33498a609f18d3f23b66d52cb4bb95fbf1cc43f13395de3083723ecb41",
+      "schema_version": "0.4.0",
+      "secret_values_in_artifacts": false,
+      "source_snapshot_id": "snapshot-645768b23fc1d649ee3289106d4de119570212b6703a52ebc359d7745eed7e81",
+      "source_workflow_sha256": "451130cac81f9df1431823932b3560dc8e6f0035d156c2d1ff5224027cd657ca",
+      "transformations": [
+        "Added fixed workflow ID for this isolated runtime."
+      ]
+    },
+    "cleanup.json": {
+      "private_local_files_retained": true,
+      "project": "fdbl-675e01e591ae4c24",
+      "remaining_container_ids": [],
+      "remaining_network_ids": [],
+      "run_id": "run-057f3de119c04a269f6d85b686d237da",
+      "schema_version": "0.4.0",
+      "status": "COMPLETE"
+    },
+    "events.json": {
+      "collection_status": "COMPLETE",
+      "events": [
+        {
+          "event_type": "ORDER_READ",
+          "method": "GET",
+          "observed_at": "2026-10-11T01:10:38.380511+00:00",
+          "outcome": "RETURNED",
+          "principal": "customer-demo",
+          "producer": "orders-api",
+          "resource_id": "ORD-1001",
+          "response_sha256": "b8275608c200102936ab87006d88b1afc49760f379beb539a12a7b0d71526e61",
+          "run_id": "run-057f3de119c04a269f6d85b686d237da",
+          "schema_version": "0.4.0",
+          "sequence": 1,
+          "tenant": "tenant-demo"
+        }
+      ],
+      "run_id": "run-057f3de119c04a269f6d85b686d237da",
+      "schema_version": "0.4.0"
+    },
+    "final-state.json": {
+      "events": [
+        {
+          "event_type": "ORDER_READ",
+          "method": "GET",
+          "observed_at": "2026-10-11T01:10:38.380511+00:00",
+          "outcome": "RETURNED",
+          "principal": "customer-demo",
+          "producer": "orders-api",
+          "resource_id": "ORD-1001",
+          "response_sha256": "b8275608c200102936ab87006d88b1afc49760f379beb539a12a7b0d71526e61",
+          "run_id": "run-057f3de119c04a269f6d85b686d237da",
+          "schema_version": "0.4.0",
+          "sequence": 1,
+          "tenant": "tenant-demo"
+        }
+      ],
+      "metadata": {
+        "initial_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+        "run_id": "run-057f3de119c04a269f6d85b686d237da"
+      },
+      "orders": [
+        {
+          "customer_id": "customer-demo",
+          "internal_note": "synthetic internal field excluded from public response",
+          "order_id": "ORD-1001",
+          "status": "준비중",
+          "tenant_id": "tenant-demo"
+        },
+        {
+          "customer_id": "other-demo",
+          "internal_note": "synthetic second tenant",
+          "order_id": "ORD-2001",
+          "status": "배송중",
+          "tenant_id": "other-tenant"
+        }
+      ],
+      "orders_sha256": "c77dac14cabe172afa25a8e98eda7ec3647811786bea62422e29955895530df2",
+      "run_id": "run-057f3de119c04a269f6d85b686d237da",
+      "schema_version": "0.4.0"
+    },
+    "initial-state.json": {
+      "events": [],
+      "metadata": {
+        "initial_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+        "run_id": "run-057f3de119c04a269f6d85b686d237da"
+      },
+      "orders": [
+        {
+          "customer_id": "customer-demo",
+          "internal_note": "synthetic internal field excluded from public response",
+          "order_id": "ORD-1001",
+          "status": "준비중",
+          "tenant_id": "tenant-demo"
+        },
+        {
+          "customer_id": "other-demo",
+          "internal_note": "synthetic second tenant",
+          "order_id": "ORD-2001",
+          "status": "배송중",
+          "tenant_id": "other-tenant"
+        }
+      ],
+      "orders_sha256": "c77dac14cabe172afa25a8e98eda7ec3647811786bea62422e29955895530df2",
+      "run_id": "run-057f3de119c04a269f6d85b686d237da",
+      "schema_version": "0.4.0"
+    },
+    "node-comparison.json": {
+      "all_observed_checks_match": true,
+      "authorship": "RUNTIME_OBSERVATION",
+      "checks": [
+        {
+          "check": "execution-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "execution-status",
+          "expected": "success",
+          "observed": "success",
+          "status": "MATCH"
+        },
+        {
+          "check": "source-binding:nodes",
+          "expected": "b3508d0c6aceb3b4bd031ef5e5561b3f168be5c63995ad22734d90e3fa41385b",
+          "observed": "b3508d0c6aceb3b4bd031ef5e5561b3f168be5c63995ad22734d90e3fa41385b",
+          "status": "MATCH"
+        },
+        {
+          "check": "source-binding:connections",
+          "expected": "4fe05746bf0bca39d945c01dd4265b636996ed843a1d8890a4b20f288c699afe",
+          "observed": "4fe05746bf0bca39d945c01dd4265b636996ed843a1d8890a4b20f288c699afe",
+          "status": "MATCH"
+        },
+        {
+          "check": "all-three-nodes-observed",
+          "expected": [
+            "Order request",
+            "Order response",
+            "Read sample order"
+          ],
+          "observed": [
+            "Order request",
+            "Order response",
+            "Read sample order"
+          ],
+          "status": "MATCH"
+        },
+        {
+          "check": "supported:request",
+          "expected": "SUPPORTED",
+          "observed": "SUPPORTED",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-run-count:request",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "supported:read-order",
+          "expected": "SUPPORTED",
+          "observed": "SUPPORTED",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-run-count:read-order",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "supported:response",
+          "expected": "SUPPORTED",
+          "observed": "SUPPORTED",
+          "status": "MATCH"
+        },
+        {
+          "check": "node-run-count:response",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "webhook-item-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "http-item-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "webhook-body",
+          "expected": {
+            "order_id": "ORD-1001"
+          },
+          "observed": {
+            "order_id": "ORD-1001"
+          },
+          "status": "MATCH"
+        },
+        {
+          "check": "independent-event-count",
+          "expected": 1,
+          "observed": 1,
+          "status": "MATCH"
+        },
+        {
+          "check": "http-query-binding",
+          "expected": "ORD-1001",
+          "observed": "ORD-1001",
+          "status": "MATCH"
+        },
+        {
+          "check": "http-method",
+          "expected": "GET",
+          "observed": "GET",
+          "status": "MATCH"
+        },
+        {
+          "check": "http-response-bytes",
+          "expected": "b8275608c200102936ab87006d88b1afc49760f379beb539a12a7b0d71526e61",
+          "observed": "b8275608c200102936ab87006d88b1afc49760f379beb539a12a7b0d71526e61",
+          "status": "MATCH"
+        },
+        {
+          "check": "response-expression",
+          "expected": {
+            "display_status": "주문 상태: 준비중",
+            "order_id": "ORD-1001",
+            "status": "준비중"
+          },
+          "observed": {
+            "display_status": "주문 상태: 준비중",
+            "order_id": "ORD-1001",
+            "status": "준비중"
+          },
+          "status": "MATCH"
+        },
+        {
+          "check": "response-code",
+          "expected": 200,
+          "observed": 200,
+          "status": "MATCH"
+        },
+        {
+          "check": "response-node-passthrough",
+          "expected": [
+            {
+              "order_id": "ORD-1001",
+              "status": "준비중"
+            }
+          ],
+          "observed": [
+            {
+              "order_id": "ORD-1001",
+              "status": "준비중"
+            }
+          ],
+          "status": "MATCH"
+        }
+      ],
+      "schema_version": "0.4.0",
+      "scope": "Normal request; node outputs joined to independent service events and response.",
+      "side": "after"
+    },
+    "node-observations.json": {
+      "authorship": "RUNTIME_OBSERVATION",
+      "executions": [
+        {
+          "data": {
+            "resultData": {
+              "lastNodeExecuted": "Order response",
+              "runData": {
+                "Order request": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "body": {
+                                "order_id": "ORD-1001"
+                              },
+                              "executionMode": "production",
+                              "headers": {
+                                "accept-encoding": "identity",
+                                "connection": "close",
+                                "content-length": "29",
+                                "content-type": "application/json",
+                                "host": "n8n:5678",
+                                "user-agent": "Python-urllib/3.13",
+                                "x-flowdelta-client": "[REDACTED]"
+                              },
+                              "params": {},
+                              "query": {},
+                              "webhookUrl": "http://127.0.0.1:5678/webhook/flowdelta-order-lookup"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 0,
+                    "executionStatus": "success",
+                    "executionTime": 61,
+                    "hints": [],
+                    "source": [],
+                    "startTime": 1791681037986
+                  }
+                ],
+                "Order response": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "order_id": "ORD-1001",
+                              "status": "준비중"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 2,
+                    "executionStatus": "success",
+                    "executionTime": 31,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Read sample order",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791681038450
+                  }
+                ],
+                "Read sample order": [
+                  {
+                    "data": {
+                      "main": [
+                        [
+                          {
+                            "json": {
+                              "order_id": "ORD-1001",
+                              "status": "준비중"
+                            },
+                            "pairedItem": {
+                              "item": 0
+                            }
+                          }
+                        ]
+                      ]
+                    },
+                    "executionIndex": 1,
+                    "executionStatus": "success",
+                    "executionTime": 398,
+                    "hints": [],
+                    "source": [
+                      {
+                        "previousNode": "Order request",
+                        "previousNodeOutput": 0,
+                        "previousNodeRun": 0
+                      }
+                    ],
+                    "startTime": 1791681038050
+                  }
+                ]
+              }
+            },
+            "startData": {}
+          },
+          "execution_id": "1",
+          "status": "success",
+          "workflow": {
+            "connections": {
+              "Order request": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Read sample order",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              },
+              "Read sample order": {
+                "main": [
+                  [
+                    {
+                      "index": 0,
+                      "node": "Order response",
+                      "type": "main"
+                    }
+                  ]
+                ]
+              }
+            },
+            "id": "fdOrderBaseline",
+            "name": "FlowDelta local order lookup baseline",
+            "nodes": [
+              {
+                "credentials": {
+                  "httpHeaderAuth": {
+                    "id": "fd-client-auth",
+                    "name": "FlowDelta local client"
+                  }
+                },
+                "id": "request",
+                "name": "Order request",
+                "parameters": {
+                  "authentication": "headerAuth",
+                  "httpMethod": "POST",
+                  "multipleMethods": false,
+                  "options": {},
+                  "path": "flowdelta-order-lookup",
+                  "responseMode": "responseNode",
+                  "webhookNotice": ""
+                },
+                "position": [
+                  0,
+                  0
+                ],
+                "type": "n8n-nodes-base.webhook",
+                "typeVersion": 2.2,
+                "webhookId": "flowdelta-order-lookup"
+              },
+              {
+                "credentials": {
+                  "httpHeaderAuth": {
+                    "id": "fd-service-auth",
+                    "name": "FlowDelta order service"
+                  }
+                },
+                "id": "read-order",
+                "name": "Read sample order",
+                "parameters": {
+                  "authentication": "genericCredentialType",
+                  "curlImport": "",
+                  "genericAuthType": "httpHeaderAuth",
+                  "infoMessage": "",
+                  "method": "GET",
+                  "options": {
+                    "response": {
+                      "response": {
+                        "fullResponse": false,
+                        "neverError": false,
+                        "responseFormat": "json"
+                      }
+                    },
+                    "timeout": 10000
+                  },
+                  "provideSslCertificates": false,
+                  "queryParameters": {
+                    "parameters": [
+                      {
+                        "name": "order_id",
+                        "value": "={{ $json.body.order_id }}"
+                      }
+                    ]
+                  },
+                  "sendBody": false,
+                  "sendHeaders": false,
+                  "sendQuery": true,
+                  "specifyQuery": "keypair",
+                  "url": "http://orders-api:8080/orders/lookup"
+                },
+                "position": [
+                  240,
+                  0
+                ],
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.5
+              },
+              {
+                "id": "response",
+                "name": "Order response",
+                "parameters": {
+                  "enableResponseOutput": false,
+                  "generalNotice": "",
+                  "options": {
+                    "responseCode": 200
+                  },
+                  "respondWith": "json",
+                  "responseBody": "={{ { order_id: $json.order_id, status: $json.status, display_status: '주문 상태: ' + $json.status } }}",
+                  "webhookNotice": ""
+                },
+                "position": [
+                  480,
+                  0
+                ],
+                "type": "n8n-nodes-base.respondToWebhook",
+                "typeVersion": 1.5
+              }
+            ],
+            "settings": {
+              "executionOrder": "v1"
+            }
+          },
+          "workflow_id": "fdOrderBaseline"
+        }
+      ],
+      "observations": [
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "body": {
+                  "order_id": "ORD-1001"
+                },
+                "executionMode": "production",
+                "headers": {
+                  "accept-encoding": "identity",
+                  "connection": "close",
+                  "content-length": "29",
+                  "content-type": "application/json",
+                  "host": "n8n:5678",
+                  "user-agent": "Python-urllib/3.13",
+                  "x-flowdelta-client": "[REDACTED]"
+                },
+                "params": {},
+                "query": {},
+                "webhookUrl": "http://127.0.0.1:5678/webhook/flowdelta-order-lookup"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "request",
+          "node_name": "Order request",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Order request/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdOrderBaseline"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "order_id": "ORD-1001",
+                "status": "준비중"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "read-order",
+          "node_name": "Read sample order",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Read sample order/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdOrderBaseline"
+        },
+        {
+          "execution_id": "1",
+          "execution_status": "SUCCESS",
+          "extensions": {},
+          "items": [
+            {
+              "extensions": {},
+              "item_index": 0,
+              "json_data": {
+                "order_id": "ORD-1001",
+                "status": "준비중"
+              },
+              "linkage_status": "OBSERVED",
+              "paired_items": [
+                {
+                  "extensions": {},
+                  "input_index": 0,
+                  "item_index": 0,
+                  "schema_version": "0.4.0"
+                }
+              ],
+              "raw_metadata": {
+                "pairedItem": {
+                  "item": 0
+                }
+              },
+              "schema_version": "0.4.0"
+            }
+          ],
+          "node_id": "response",
+          "node_name": "Order response",
+          "node_run_index": 0,
+          "output_index": 0,
+          "output_type": "main",
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "runtime-executions",
+            "extensions": {},
+            "json_pointer": "/executions/0/data/resultData/runData/Order response/0/data/main/0",
+            "schema_version": "0.4.0"
+          },
+          "workflow_id": "fdOrderBaseline"
+        }
+      ],
+      "schema_version": "0.4.0",
+      "source_database_sha256": "5c1da1a0605883c4a01d655ee402f032c7871f874a8e434a91cae75f9cab08a9",
+      "transformation": "Selected fields; authentication headers redacted; no resume tokens."
+    },
+    "request.json": {
+      "authentication": "local-credential-reference",
+      "body": {
+        "order_id": "ORD-1001"
+      },
+      "method": "POST",
+      "path": "/webhook/flowdelta-order-lookup"
+    },
+    "response.json": {
+      "body": {
+        "display_status": "주문 상태: 준비중",
+        "order_id": "ORD-1001",
+        "status": "준비중"
+      },
+      "status_code": 200
+    },
+    "runtime.json": {
+      "engine_version": "2.42.6",
+      "fixture_metadata": {
+        "fastapi": "0.141.1",
+        "python": "3.13.15",
+        "source_sha256": {
+          "fixture.py": "2c617e668da723ac4eccd6c31be6e4ea8ecf5f3815b6d8f7476105efa143236f",
+          "probe.py": "158c2f39cc2a417e2efa2c602fe0acb440dd102127befa4014ec4c149c9892b2"
+        },
+        "uvicorn": "0.53.0"
+      },
+      "image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "image_reference": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+      "network": "internal",
+      "observation_transport": "docker-exec-fixed-probe",
+      "project": "fdbl-675e01e591ae4c24",
+      "published_ports": {
+        "5678/tcp": null
+      },
+      "run_id": "run-057f3de119c04a269f6d85b686d237da",
+      "schema_version": "0.4.0"
+    }
+  },
+  "run_summary": {
+    "actual_engine_version": "2.42.6",
+    "actual_image_digest": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+    "attempt_number": 1,
+    "authorship": {
+      "extensions": {},
+      "note": "Fixed normal baseline; no general plan executor or security verdict.",
+      "origin": "RUNTIME_OBSERVATION",
+      "producer": "flowdelta.baseline.manual",
+      "schema_version": "0.4.0"
+    },
+    "case_id": "order-lookup-demo-001",
+    "cleanup_status": "COMPLETE",
+    "comparison_run_id": "comparison-1f72237553d5459c8a620290f42f0a03",
+    "error_code": null,
+    "execution_status": "SUCCEEDED",
+    "extensions": {},
+    "finished_at": "2026-10-11T01:10:44.091497+00:00",
+    "initial_state_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+    "outcome": null,
+    "phase": "FINISHED",
+    "plan_id": "manual-normal-order-lookup",
+    "run_id": "run-057f3de119c04a269f6d85b686d237da",
+    "runtime_profile": "order-lookup-local-v1",
+    "schema_version": "0.4.0",
+    "side": "after",
+    "snapshot_id": "snapshot-645768b23fc1d649ee3289106d4de119570212b6703a52ebc359d7745eed7e81",
+    "started_at": "2026-10-11T01:10:36.429242+00:00"
+  },
+  "schema_version": "0.4.0",
+  "selection": "Selected JSON; run artifact paths omitted because logs are not exported",
+  "source_files": {
+    "binding.json": "f8087809e21918996b2194ee7e8d052eb5aa81558254ee2a962b9b45ac61e61d",
+    "cleanup.json": "71110264a0b2344b82b5d907873e99fb47f114f4d1b3458f92d70ac98feb2f01",
+    "events.json": "69ada9a1e40cad17d9e76b31ec88c2aefb676efa27bdc1094f2a19f2dbe62bbf",
+    "final-state.json": "c2e8bce0af916b189ed17170b93c572ea5aa0ec6256967bd32758b93c3a9a42a",
+    "initial-state.json": "f72b13065b2bc47a39815d234c6c3513c413b310178e5adf934773fa958ac99e",
+    "node-comparison.json": "b681af33cbacdbaf5e7f386b197ad46ce490c8152533712e9675811ff8a79fe1",
+    "node-observations.json": "3926679666b47b8ba7fafbaed12a319ccabbf3faa739d6ff1013d1af9b3920cb",
+    "request.json": "34418d999b68fd770b0305f28fc647b8e6736e557cf3f193ff3f0d66b24760e2",
+    "response.json": "be7a459ac069e3a465b72af7488d2d647f569263030969b033eccea80ef590a6",
+    "run.json": "15c016f0e5b51d2015355fb4c2f66f9dc35263dbaaf5fb784b7b71fb744d4f46",
+    "runtime.json": "dde24fee0b011c5b32dbb37c3482b5b0e57c0289e45f5329d2df9d1f22ae44b9"
+  }
+}

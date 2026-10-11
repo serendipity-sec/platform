@@ -1,0 +1,96 @@
+{
+  "active": false,
+  "connections": {
+    "Manual request": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Read numeric priority",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Read numeric priority": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Handled input error",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "id": "fdConformanceErrorstop",
+  "name": "Normal conversion error stop",
+  "nodes": [
+    {
+      "id": "start",
+      "name": "Manual request",
+      "parameters": {},
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1
+    },
+    {
+      "id": "convert",
+      "name": "Read numeric priority",
+      "onError": "stopWorkflow",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "convert-0",
+              "name": "priority",
+              "type": "number",
+              "value": "not-a-number"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5
+    },
+    {
+      "id": "handled",
+      "name": "Handled input error",
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "handled-0",
+              "name": "status",
+              "type": "string",
+              "value": "needs-correction"
+            }
+          ]
+        },
+        "includeOtherFields": false,
+        "mode": "manual",
+        "options": {}
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

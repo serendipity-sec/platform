@@ -1,0 +1,848 @@
+{
+  "after_graph": {
+    "edges": [
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-0",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Manual request/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "start",
+        "target_fields": [],
+        "target_node_id": "seed"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-1",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Normal ticket batch/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "seed",
+        "target_fields": [],
+        "target_node_id": "split"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-2",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Split tickets/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "split",
+        "target_fields": [],
+        "target_node_id": "priority"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": {
+          "extensions": {},
+          "output_index": 0,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": true
+        },
+        "edge_id": "control-3",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Priority gate/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "priority",
+        "target_fields": [],
+        "target_node_id": "urgent"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": {
+          "extensions": {},
+          "output_index": 1,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": false
+        },
+        "edge_id": "control-4",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Priority gate/main/1/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 1,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "priority",
+        "target_fields": [],
+        "target_node_id": "standard"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-5",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Urgent queue/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "urgent",
+        "target_fields": [],
+        "target_node_id": "merge"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-6",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Standard queue/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 1,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "standard",
+        "target_fields": [],
+        "target_node_id": "merge"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-7",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Merge queues/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "merge",
+        "target_fields": [],
+        "target_node_id": "summary"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-8",
+        "evidence": [
+          {
+            "artifact_id": "support-source-9",
+            "extensions": {},
+            "json_pointer": "/connections/Summarize batch/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "summary",
+        "target_fields": [],
+        "target_node_id": "result"
+      }
+    ],
+    "extensions": {},
+    "limitations": [
+      "계약 예시는 제어 연결만 제공한다. A가 데이터/권한/하위 호출 영향 관계를 구현한다."
+    ],
+    "node_ids": [
+      "start",
+      "seed",
+      "split",
+      "priority",
+      "urgent",
+      "standard",
+      "merge",
+      "summary",
+      "result"
+    ],
+    "nodes": [],
+    "schema_version": "0.4.0"
+  },
+  "after_snapshot_id": "snapshot-c183fc3e8b23b89df4a50c007c5f2022b7098bf44bd6882068dba3b8a5a6b67d",
+  "analysis_id": "analysis-support-triage-example",
+  "authorship": {
+    "extensions": {},
+    "note": "고정된 정상 문의 분류의 기대 입출력. A/B/C의 실제 구현 출력이 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.4.0"
+  },
+  "before_graph": {
+    "edges": [
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-0",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Manual request/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "start",
+        "target_fields": [],
+        "target_node_id": "seed"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-1",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Normal ticket batch/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "seed",
+        "target_fields": [],
+        "target_node_id": "split"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-2",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Split tickets/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "split",
+        "target_fields": [],
+        "target_node_id": "priority"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": {
+          "extensions": {},
+          "output_index": 0,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": true
+        },
+        "edge_id": "control-3",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Priority gate/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "priority",
+        "target_fields": [],
+        "target_node_id": "urgent"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": {
+          "extensions": {},
+          "output_index": 1,
+          "output_type": "main",
+          "predicate": {
+            "comparison_type": "number",
+            "extensions": {},
+            "field_path": [],
+            "item_selection": "CURRENT",
+            "kind": "compare",
+            "members": {},
+            "node_name": null,
+            "operator": "gte",
+            "schema_version": "0.4.0",
+            "terms": [
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [
+                  "priority"
+                ],
+                "item_selection": "CURRENT",
+                "kind": "current_field",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": null
+              },
+              {
+                "comparison_type": null,
+                "extensions": {},
+                "field_path": [],
+                "item_selection": "CURRENT",
+                "kind": "constant",
+                "members": {},
+                "node_name": null,
+                "operator": null,
+                "schema_version": "0.4.0",
+                "terms": [],
+                "value": 3
+              }
+            ],
+            "value": null
+          },
+          "schema_version": "0.4.0",
+          "source": {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/nodes/3/parameters/conditions/conditions/0",
+            "schema_version": "0.4.0"
+          },
+          "when": false
+        },
+        "edge_id": "control-4",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Priority gate/main/1/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 1,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "priority",
+        "target_fields": [],
+        "target_node_id": "standard"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-5",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Urgent queue/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "urgent",
+        "target_fields": [],
+        "target_node_id": "merge"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-6",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Standard queue/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 1,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "standard",
+        "target_fields": [],
+        "target_node_id": "merge"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-7",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Merge queues/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "merge",
+        "target_fields": [],
+        "target_node_id": "summary"
+      },
+      {
+        "adapter_version": "core-adapters-v1",
+        "basis": "STATIC_POSSIBILITY",
+        "condition": null,
+        "edge_id": "control-8",
+        "evidence": [
+          {
+            "artifact_id": "support-source-10",
+            "extensions": {},
+            "json_pointer": "/connections/Summarize batch/main/0/0",
+            "schema_version": "0.4.0"
+          }
+        ],
+        "extensions": {},
+        "input_port": 0,
+        "input_type": "main",
+        "output_port": 0,
+        "output_type": "main",
+        "relation": "CONTROL",
+        "schema_version": "0.4.0",
+        "source_fields": [],
+        "source_node_id": "summary",
+        "target_fields": [],
+        "target_node_id": "result"
+      }
+    ],
+    "extensions": {},
+    "limitations": [
+      "계약 예시는 제어 연결만 제공한다. A가 데이터/권한/하위 호출 영향 관계를 구현한다."
+    ],
+    "node_ids": [
+      "start",
+      "seed",
+      "split",
+      "priority",
+      "urgent",
+      "standard",
+      "merge",
+      "summary",
+      "result"
+    ],
+    "nodes": [],
+    "schema_version": "0.4.0"
+  },
+  "before_snapshot_id": "snapshot-55c0bfc64c7c7d6a0b0cf475bd1b2d4b6368ffcc7e04c72ee2364a43aa2d8646",
+  "case_id": "support-triage-normal-001",
+  "changes": [
+    {
+      "after_source": {
+        "artifact_id": "support-source-9",
+        "extensions": {},
+        "json_pointer": "/nodes/8/parameters/assignments/assignments/2",
+        "schema_version": "0.4.0"
+      },
+      "after_value": {
+        "id": "result-display",
+        "name": "display_queue",
+        "type": "string",
+        "value": "={{ 'Queue: ' + $json.queue }}"
+      },
+      "before_source": null,
+      "before_value": null,
+      "change_id": "add-display-queue",
+      "extensions": {},
+      "kind": "PARAMETER_CHANGED",
+      "node_id": "result",
+      "schema_version": "0.4.0"
+    }
+  ],
+  "dependency_graphs": {},
+  "extensions": {},
+  "impact_paths": [],
+  "limitations": [
+    "수작업 기대 결과; 실제 분석기 출력 및 보안 판정 없음."
+  ],
+  "node_matches": [
+    {
+      "after_node_id": "start",
+      "before_node_id": "start",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "seed",
+      "before_node_id": "seed",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "split",
+      "before_node_id": "split",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "priority",
+      "before_node_id": "priority",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "urgent",
+      "before_node_id": "urgent",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "standard",
+      "before_node_id": "standard",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "merge",
+      "before_node_id": "merge",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "summary",
+      "before_node_id": "summary",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    },
+    {
+      "after_node_id": "result",
+      "before_node_id": "result",
+      "evidence": [],
+      "extensions": {},
+      "method": "EXACT_ID",
+      "schema_version": "0.4.0"
+    }
+  ],
+  "obligation_ids": [
+    "normal-triage"
+  ],
+  "policy_ref": {
+    "artifact_id": "support-source-5",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/policy.json",
+    "schema_version": "0.4.0",
+    "sha256": "c946bb5c15e81788d89f850e12c8335be33bf00d75e6201c02856596c917716e",
+    "size_bytes": 590
+  },
+  "schema_version": "0.4.0",
+  "task_ref": {
+    "artifact_id": "support-source-8",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/task.json",
+    "schema_version": "0.4.0",
+    "sha256": "2b8296765ae08671c76f835977dab5654376d8edea836c91c52c6eeb3c902fa2",
+    "size_bytes": 705
+  }
+}

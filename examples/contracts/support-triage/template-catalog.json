@@ -1,0 +1,84 @@
+{
+  "authorship": {
+    "extensions": {},
+    "note": "고정된 정상 문의 분류의 기대 입출력. A/B/C의 실제 구현 출력이 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.4.0"
+  },
+  "catalog_id": "catalog-support-triage-v1",
+  "extensions": {},
+  "schema_version": "0.4.0",
+  "templates": [
+    {
+      "allowed_effects": [],
+      "extensions": {},
+      "input_fields": [
+        {
+          "extensions": {},
+          "items": {
+            "extensions": {},
+            "items": null,
+            "max_items": 1000,
+            "pattern": null,
+            "properties": [
+              {
+                "extensions": {},
+                "items": null,
+                "max_items": 1000,
+                "name": "ticket_id",
+                "pattern": "T-[0-9]{4}",
+                "properties": [],
+                "required": true,
+                "schema_version": "0.4.0",
+                "value_type": "string"
+              },
+              {
+                "extensions": {},
+                "items": null,
+                "max_items": 1000,
+                "name": "priority",
+                "pattern": null,
+                "properties": [],
+                "required": true,
+                "schema_version": "0.4.0",
+                "value_type": "integer"
+              }
+            ],
+            "schema_version": "0.4.0",
+            "value_type": "object"
+          },
+          "max_items": 10,
+          "name": "tickets",
+          "pattern": null,
+          "properties": [],
+          "required": true,
+          "schema_version": "0.4.0",
+          "value_type": "array"
+        }
+      ],
+      "materialized_input_bindings": [
+        {
+          "extensions": {},
+          "input_name": "tickets",
+          "node_id": "seed",
+          "parameter_pointer": "/assignments/assignments/0/value",
+          "schema_version": "0.4.0"
+        }
+      ],
+      "method": null,
+      "mode": "NORMAL_MANUAL_WORKFLOW",
+      "required_artifact_kinds": [
+        "response",
+        "node-observations"
+      ],
+      "runtime_profile": "core-local-v1",
+      "schema_version": "0.4.0",
+      "task_id": "support-triage",
+      "template_id": "normal-support-triage",
+      "timeout_seconds": 30,
+      "version": "1.0.0",
+      "webhook_path": null
+    }
+  ]
+}

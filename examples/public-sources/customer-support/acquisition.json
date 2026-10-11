@@ -1,0 +1,81 @@
+{
+  "repository": "ibam28/customer-support-ai-automation-n8n",
+  "commit": "71fee7067364e9ac139a55bca3683c15b5ec2c16",
+  "license": "MIT",
+  "retrieved_on": "2026-10-11",
+  "source_kind": "PUBLIC_ORIGINAL",
+  "production_use_evidence": "AUTHOR_DESCRIPTION_ONLY",
+  "executed": false,
+  "files": [
+    {
+      "path": "LICENSE",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/LICENSE",
+      "sha256": "18083f870a3ad8dfa25b8f17a7b2ffca96b4658a9583873934aa63a14b814cd7",
+      "size_bytes": 1077,
+      "transformation": "NONE"
+    },
+    {
+      "path": "README.md",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/README.md",
+      "sha256": "a9f6586cdd7add8ccb8a2c481748fb1c699aaf4ec749302261b2d5560159a1c3",
+      "size_bytes": 22210,
+      "transformation": "NONE"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/docs/ARCHITECTURE.md",
+      "sha256": "82e23fc29b74bc5c274b8e658b27c4053f89677d91c1d746c45fb66cef226d4a",
+      "size_bytes": 8683,
+      "transformation": "NONE"
+    },
+    {
+      "path": "docs/SECURITY.md",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/docs/SECURITY.md",
+      "sha256": "b4f36b6d59a7cc85aec1fdf43fc322d0a433342496e5b76b50d21cdc30db79fa",
+      "size_bytes": 3587,
+      "transformation": "NONE"
+    },
+    {
+      "path": "workflows/customer-support.json",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/workflows/customer-support.json",
+      "sha256": "37024d4da5232c85cdf49a23d3a75f0940a13c4211e04aa2faca9ff03ccd6398",
+      "size_bytes": 31931,
+      "transformation": "NONE"
+    },
+    {
+      "path": "workflows/ticket-management.json",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/workflows/ticket-management.json",
+      "sha256": "c75ab09045bf469607ee242bda8f7e4ccd890d3157a3f0e0d571c2c37a489122",
+      "size_bytes": 16085,
+      "transformation": "NONE"
+    },
+    {
+      "path": "workflows/error-handler.json",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/workflows/error-handler.json",
+      "sha256": "86a828a0034d5eff6845853248bc14bceb6319ca2a13eff5c2d3dc33bf411102",
+      "size_bytes": 2883,
+      "transformation": "NONE"
+    },
+    {
+      "path": "workflows/subflows/customer-lookup.json",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/workflows/subflows/customer-lookup.json",
+      "sha256": "497ec23dd26b3e16556a59c531ff0f0e235bfcf4d30d9abb575582c15249c975",
+      "size_bytes": 3403,
+      "transformation": "NONE"
+    },
+    {
+      "path": "examples/webhook.request.json",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/examples/webhook.request.json",
+      "sha256": "30ee4899e7e729c1130d7e82eb3c21d802577e4fc809931963a70be551274cba",
+      "size_bytes": 415,
+      "transformation": "NONE"
+    },
+    {
+      "path": "examples/tickets/get.json",
+      "url": "https://raw.githubusercontent.com/ibam28/customer-support-ai-automation-n8n/71fee7067364e9ac139a55bca3683c15b5ec2c16/examples/tickets/get.json",
+      "sha256": "6b9582266791faf469bac32af383969b59b260356f119d649845a3391ebad4c4",
+      "size_bytes": 52,
+      "transformation": "NONE"
+    }
+  ]
+}

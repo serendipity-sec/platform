@@ -1,0 +1,17 @@
+{
+  "interpretation": "DECLARED_ONLY",
+  "policy_id": "support-triage-policy",
+  "policy_version": "1.0.0",
+  "provenance_ref": "provenance.json",
+  "rules": [
+    {
+      "condition": "로컬 분류만 수행하고 외부 메시지 전송이나 데이터베이스 변경을 하지 않는다.",
+      "exceptions": [],
+      "rationale": "팀이 작성한 재현용 정책; 실제 운영 조직의 정책으로 주장하지 않는다.",
+      "resource": "ticket batch",
+      "rule_id": "local-only",
+      "subject": "team-local-support-operator"
+    }
+  ],
+  "schema_version": "0.4.0"
+}

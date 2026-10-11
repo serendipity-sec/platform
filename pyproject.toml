@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[project]
+name = "flowdelta"
+version = "0.1.0"
+description = "Versioned, local input handoff for n8n workflow change analysis"
+readme = "README.md"
+requires-python = ">=3.13,<3.14"
+dependencies = ["pydantic==2.14.0", "typer==0.27.3", "rich==15.0.0"]
+
+[project.optional-dependencies]
+baseline = ["fastapi==0.141.1", "uvicorn==0.53.0"]
+
+[project.scripts]
+flowdelta = "flowdelta.cli:app"
+
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff==0.17.0", "mypy==2.4.0"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/flowdelta"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src", "/tests", "/schemas", "/examples", "/runtime", "/docs", "/tools", "/.dockerignore",
+    "/README.md", "/THIRD_PARTY.md", "/pyproject.toml", "/uv.lock", "/.python-version",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+include = ["src/**/*.py", "tests/**/*.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+files = ["src/flowdelta"]

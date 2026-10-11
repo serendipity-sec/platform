@@ -1,0 +1,1321 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "source",
+            "generated"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "media_type": {
+          "default": "application/json",
+          "enum": [
+            "application/json",
+            "text/plain"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 8388608,
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "path",
+        "sha256",
+        "size_bytes",
+        "kind"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "ComparisonCase": {
+      "additionalProperties": false,
+      "properties": {
+        "after_ref": {
+          "title": "After Ref",
+          "type": "string"
+        },
+        "baseline_security_status": {
+          "const": "UNKNOWN",
+          "title": "Baseline Security Status",
+          "type": "string"
+        },
+        "before_ref": {
+          "title": "Before Ref",
+          "type": "string"
+        },
+        "case_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "changed_axes": {
+          "items": {
+            "const": "workflow",
+            "type": "string"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "title": "Changed Axes",
+          "type": "array"
+        },
+        "environment_ref": {
+          "title": "Environment Ref",
+          "type": "string"
+        },
+        "evaluation_policy_ref": {
+          "title": "Evaluation Policy Ref",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "family_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Family Id",
+          "type": "string"
+        },
+        "initial_state_ref": {
+          "title": "Initial State Ref",
+          "type": "string"
+        },
+        "obligations": {
+          "items": {
+            "$ref": "#/$defs/VerificationObligation"
+          },
+          "title": "Obligations",
+          "type": "array"
+        },
+        "provenance_ref": {
+          "title": "Provenance Ref",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "task_ref": {
+          "title": "Task Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "case_id",
+        "family_id",
+        "before_ref",
+        "after_ref",
+        "task_ref",
+        "evaluation_policy_ref",
+        "environment_ref",
+        "initial_state_ref",
+        "provenance_ref",
+        "changed_axes",
+        "baseline_security_status",
+        "obligations"
+      ],
+      "title": "ComparisonCase",
+      "type": "object"
+    },
+    "Connection": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "opaque_fields": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Opaque Fields",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "source_node_id": {
+          "title": "Source Node Id",
+          "type": "string"
+        },
+        "source_output_index": {
+          "minimum": 0,
+          "title": "Source Output Index",
+          "type": "integer"
+        },
+        "source_output_type": {
+          "title": "Source Output Type",
+          "type": "string"
+        },
+        "target_input_index": {
+          "minimum": 0,
+          "title": "Target Input Index",
+          "type": "integer"
+        },
+        "target_input_type": {
+          "title": "Target Input Type",
+          "type": "string"
+        },
+        "target_node_id": {
+          "title": "Target Node Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_node_id",
+        "source_output_type",
+        "source_output_index",
+        "target_node_id",
+        "target_input_type",
+        "target_input_index",
+        "opaque_fields",
+        "source"
+      ],
+      "title": "Connection",
+      "type": "object"
+    },
+    "Environment": {
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "const": "n8n",
+          "title": "Engine",
+          "type": "string"
+        },
+        "environment_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Environment Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "runtime_status": {
+          "const": "NOT_VALIDATED",
+          "title": "Runtime Status",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "service_bindings": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Service Bindings",
+          "type": "object"
+        },
+        "target_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Target Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "environment_id",
+        "engine",
+        "target_version",
+        "runtime_status",
+        "service_bindings"
+      ],
+      "title": "Environment",
+      "type": "object"
+    },
+    "InitialState": {
+      "additionalProperties": false,
+      "properties": {
+        "data": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Data",
+          "type": "object"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "state_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "State Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "state_id",
+        "data"
+      ],
+      "title": "InitialState",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Manifest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "artifacts"
+      ],
+      "title": "Manifest",
+      "type": "object"
+    },
+    "NodeSemantics": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Adapter Version"
+        },
+        "capabilities": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Capabilities"
+        },
+        "effects": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effects"
+        },
+        "engine_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Engine Version"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "node_id": {
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_type": {
+          "title": "Node Type",
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/JsonValue"
+        },
+        "parameter_sources": {
+          "items": {
+            "$ref": "#/$defs/SourceLocation"
+          },
+          "title": "Parameter Sources",
+          "type": "array"
+        },
+        "reads": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reads"
+        },
+        "reason": {
+          "default": "NO_PROFILE_SELECTED",
+          "title": "Reason",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "support": {
+          "default": "UNKNOWN",
+          "enum": [
+            "SUPPORTED",
+            "UNSUPPORTED",
+            "UNKNOWN"
+          ],
+          "title": "Support",
+          "type": "string"
+        },
+        "type_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Type Version"
+        },
+        "writes": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Writes"
+        }
+      },
+      "required": [
+        "node_id",
+        "side",
+        "node_type",
+        "type_version",
+        "operation",
+        "source"
+      ],
+      "title": "NodeSemantics",
+      "type": "object"
+    },
+    "NormalizedNode": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "name": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_type": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Type",
+          "type": "string"
+        },
+        "opaque_fields": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Opaque Fields",
+          "type": "object"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantic_support": {
+          "default": "UNKNOWN",
+          "enum": [
+            "SUPPORTED",
+            "UNSUPPORTED",
+            "UNKNOWN"
+          ],
+          "title": "Semantic Support",
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "type_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "gt": 0,
+          "title": "Type Version"
+        }
+      },
+      "required": [
+        "node_id",
+        "name",
+        "node_type",
+        "type_version",
+        "parameters",
+        "opaque_fields",
+        "source"
+      ],
+      "title": "NormalizedNode",
+      "type": "object"
+    },
+    "NormalizedWorkflow": {
+      "additionalProperties": false,
+      "properties": {
+        "connections": {
+          "items": {
+            "$ref": "#/$defs/Connection"
+          },
+          "title": "Connections",
+          "type": "array"
+        },
+        "execution_status": {
+          "const": "NOT_RUN",
+          "default": "NOT_RUN",
+          "title": "Execution Status",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "nodes": {
+          "items": {
+            "$ref": "#/$defs/NormalizedNode"
+          },
+          "title": "Nodes",
+          "type": "array"
+        },
+        "normalizer_version": {
+          "const": "structure-v1",
+          "default": "structure-v1",
+          "title": "Normalizer Version",
+          "type": "string"
+        },
+        "opaque_fields": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Opaque Fields",
+          "type": "object"
+        },
+        "original_connections": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Original Connections",
+          "type": "object"
+        },
+        "processing_status": {
+          "const": "STRUCTURE_PARSED",
+          "default": "STRUCTURE_PARSED",
+          "title": "Processing Status",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantic_support": {
+          "default": "UNKNOWN",
+          "enum": [
+            "SUPPORTED",
+            "PARTIAL",
+            "UNSUPPORTED",
+            "UNKNOWN"
+          ],
+          "title": "Semantic Support",
+          "type": "string"
+        },
+        "source_artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Source Artifact Id",
+          "type": "string"
+        },
+        "workflow_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Workflow Id"
+        }
+      },
+      "required": [
+        "source_artifact_id",
+        "workflow_id",
+        "nodes",
+        "connections",
+        "opaque_fields",
+        "original_connections",
+        "limitations"
+      ],
+      "title": "NormalizedWorkflow",
+      "type": "object"
+    },
+    "Policy": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "interpretation": {
+          "const": "DECLARED_ONLY",
+          "title": "Interpretation",
+          "type": "string"
+        },
+        "policy_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "policy_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Policy Version",
+          "type": "string"
+        },
+        "provenance_ref": {
+          "title": "Provenance Ref",
+          "type": "string"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/$defs/PolicyRule"
+          },
+          "minItems": 1,
+          "title": "Rules",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_id",
+        "policy_version",
+        "interpretation",
+        "rules",
+        "provenance_ref"
+      ],
+      "title": "Policy",
+      "type": "object"
+    },
+    "PolicyRule": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Condition",
+          "type": "string"
+        },
+        "exceptions": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Exceptions",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "rationale": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "resource": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Resource",
+          "type": "string"
+        },
+        "rule_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "subject": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Subject",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rule_id",
+        "subject",
+        "resource",
+        "condition",
+        "exceptions",
+        "rationale"
+      ],
+      "title": "PolicyRule",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "production_equivalence": {
+          "const": "NOT_CLAIMED",
+          "title": "Production Equivalence",
+          "type": "string"
+        },
+        "provenance_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Provenance Id",
+          "type": "string"
+        },
+        "reuse_status": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Reuse Status",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Source",
+          "type": "string"
+        },
+        "source_kind": {
+          "enum": [
+            "TEAM_SYNTHETIC",
+            "PUBLIC_ADAPTED",
+            "CONSENTED_SANITIZED"
+          ],
+          "title": "Source Kind",
+          "type": "string"
+        },
+        "transformations": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Transformations",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "provenance_id",
+        "source_kind",
+        "source",
+        "reuse_status",
+        "transformations",
+        "production_equivalence"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "SemanticsIndex": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantics": {
+          "items": {
+            "$ref": "#/$defs/NodeSemantics"
+          },
+          "title": "Semantics",
+          "type": "array"
+        }
+      },
+      "required": [
+        "semantics"
+      ],
+      "title": "SemanticsIndex",
+      "type": "object"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "context_refs": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "title": "Context Refs",
+          "type": "array"
+        },
+        "dependency_status": {
+          "const": "UNRESOLVED",
+          "default": "UNRESOLVED",
+          "title": "Dependency Status",
+          "type": "string"
+        },
+        "execution_status": {
+          "const": "NOT_RUN",
+          "default": "NOT_RUN",
+          "title": "Execution Status",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "raw_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Raw Sha256",
+          "type": "string"
+        },
+        "runtime_status": {
+          "const": "NOT_VALIDATED",
+          "default": "NOT_VALIDATED",
+          "title": "Runtime Status",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "semantic_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Semantic Sha256"
+        },
+        "side": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "structural_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Structural Sha256",
+          "type": "string"
+        },
+        "workflow_ref": {
+          "$ref": "#/$defs/ArtifactRef"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "case_id",
+        "side",
+        "workflow_ref",
+        "context_refs",
+        "raw_sha256",
+        "structural_sha256"
+      ],
+      "title": "Snapshot",
+      "type": "object"
+    },
+    "SnapshotIndex": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "snapshots": {
+          "items": {
+            "$ref": "#/$defs/Snapshot"
+          },
+          "title": "Snapshots",
+          "type": "array"
+        }
+      },
+      "required": [
+        "snapshots"
+      ],
+      "title": "SnapshotIndex",
+      "type": "object"
+    },
+    "SourceLocation": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "json_pointer": {
+          "title": "Json Pointer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "json_pointer"
+      ],
+      "title": "SourceLocation",
+      "type": "object"
+    },
+    "TaskContract": {
+      "additionalProperties": false,
+      "properties": {
+        "actor": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Actor",
+          "type": "string"
+        },
+        "allowed_side_effects": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Allowed Side Effects",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "normal_input": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Normal Input",
+          "type": "object"
+        },
+        "protected_resources": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Protected Resources",
+          "type": "array"
+        },
+        "provenance_ref": {
+          "title": "Provenance Ref",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "success_conditions": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Success Conditions",
+          "type": "array"
+        },
+        "task_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "task_id",
+        "purpose",
+        "actor",
+        "normal_input",
+        "success_conditions",
+        "protected_resources",
+        "allowed_side_effects",
+        "provenance_ref"
+      ],
+      "title": "TaskContract",
+      "type": "object"
+    },
+    "VerificationObligation": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "obligation_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Obligation Id",
+          "type": "string"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "required_artifacts": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Required Artifacts",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.3.0",
+          "default": "0.3.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "obligation_id",
+        "required",
+        "description",
+        "required_artifacts"
+      ],
+      "title": "VerificationObligation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Schema root; the CLI writes these members to documented individual files.",
+  "properties": {
+    "after": {
+      "$ref": "#/$defs/NormalizedWorkflow"
+    },
+    "before": {
+      "$ref": "#/$defs/NormalizedWorkflow"
+    },
+    "case": {
+      "$ref": "#/$defs/ComparisonCase"
+    },
+    "environment": {
+      "$ref": "#/$defs/Environment"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "initial_state": {
+      "$ref": "#/$defs/InitialState"
+    },
+    "policy": {
+      "$ref": "#/$defs/Policy"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "schema_version": {
+      "const": "0.3.0",
+      "default": "0.3.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "semantics": {
+      "$ref": "#/$defs/SemanticsIndex"
+    },
+    "snapshots": {
+      "$ref": "#/$defs/SnapshotIndex"
+    },
+    "source_manifest": {
+      "$ref": "#/$defs/Manifest"
+    },
+    "task": {
+      "$ref": "#/$defs/TaskContract"
+    }
+  },
+  "required": [
+    "case",
+    "task",
+    "policy",
+    "environment",
+    "initial_state",
+    "provenance",
+    "source_manifest",
+    "snapshots",
+    "before",
+    "after",
+    "semantics"
+  ],
+  "title": "Handoff",
+  "type": "object"
+}
