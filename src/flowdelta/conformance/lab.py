@@ -31,14 +31,26 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
     output.mkdir()
     runs = []
     image = registry["image"]
-    actual_image = subprocess.check_output(
-        ["docker", "image", "inspect", "--format", "{{.Id}}", image],
-        text=True,
-    ).strip()
-    actual_version = subprocess.check_output(
-        ["docker", "run", "--rm", "--network", "none", image, "--version"],
-        text=True,
-    ).strip()
+    try:
+        inspected = subprocess.run(
+            ["docker", "image", "inspect", "--format", "{{.Id}}", image],
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+        if inspected.returncode:
+            subprocess.run(["docker", "pull", image], check=True, capture_output=True, timeout=300)
+        actual_image = subprocess.check_output(
+            ["docker", "image", "inspect", "--format", "{{.Id}}", image], text=True, timeout=30
+        ).strip()
+        actual_version = subprocess.check_output(
+            ["docker", "run", "--rm", "--network", "none", image, "--version"],
+            text=True,
+            timeout=90,
+        ).strip()
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise InputError("CONFORMANCE_ENGINE_PREPARATION_FAILED") from exc
     if actual_version != registry["engine_version"]:
         raise InputError("ENGINE_VERSION_MISMATCH")
     for case in cases:
