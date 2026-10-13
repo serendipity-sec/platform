@@ -1,0 +1,61 @@
+{
+  "analysis_id": "analysis-order-lookup-example",
+  "authorship": {
+    "extensions": {},
+    "note": "Deterministic local planning; analysis origin=CONTRACT_EXAMPLE.",
+    "origin": "MODULE_OUTPUT",
+    "producer": "flowdelta.knowledge/1.0.0",
+    "schema_version": "0.4.0"
+  },
+  "excluded_reasons": {},
+  "extensions": {},
+  "hits": [
+    {
+      "applicability": "MATCH",
+      "card_id": "normal-order-response",
+      "card_version": "1.0.0",
+      "extensions": {},
+      "rank": 1,
+      "reason": "task/profile matched; node_types=['n8n-nodes-base.httpRequest', 'n8n-nodes-base.respondToWebhook', 'n8n-nodes-base.webhook']; field_keywords=[]",
+      "schema_version": "0.4.0",
+      "score": 3.0
+    },
+    {
+      "applicability": "MATCH",
+      "card_id": "read-only-order-state",
+      "card_version": "1.0.0",
+      "extensions": {},
+      "rank": 2,
+      "reason": "task/profile matched; node_types=['n8n-nodes-base.httpRequest', 'n8n-nodes-base.respondToWebhook', 'n8n-nodes-base.webhook']; field_keywords=[]",
+      "schema_version": "0.4.0",
+      "score": 3.0
+    }
+  ],
+  "kb_snapshot_ref": {
+    "artifact_id": "knowledge-snapshot",
+    "extensions": {},
+    "kind": "generated",
+    "media_type": "application/json",
+    "path": "kb-snapshot.json",
+    "schema_version": "0.4.0",
+    "sha256": "d0668162282dc7181e64f6c6e25314cf4753d044053fc078160504583607c2fb",
+    "size_bytes": 2856
+  },
+  "method": "KEYWORD",
+  "model_version": null,
+  "query": {
+    "changed_fields": [
+      "responseBody"
+    ],
+    "node_types": [
+      "n8n-nodes-base.httpRequest",
+      "n8n-nodes-base.respondToWebhook",
+      "n8n-nodes-base.webhook"
+    ],
+    "rules_version": "flowdelta.knowledge/1.0.0",
+    "runtime_profile": "order-lookup-local-v1",
+    "task_id": "order-lookup"
+  },
+  "retrieval_id": "retrieval-340e36aa2a4138a87b50e635",
+  "schema_version": "0.4.0"
+}

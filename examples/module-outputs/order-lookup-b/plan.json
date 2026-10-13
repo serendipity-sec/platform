@@ -1,0 +1,70 @@
+{
+  "after_snapshot_id": "snapshot-645768b23fc1d649ee3289106d4de119570212b6703a52ebc359d7745eed7e81",
+  "analysis_id": "analysis-order-lookup-example",
+  "attempts_per_side": 1,
+  "authorship": {
+    "extensions": {},
+    "note": "Deterministic local planning; analysis origin=CONTRACT_EXAMPLE.",
+    "origin": "MODULE_OUTPUT",
+    "producer": "flowdelta.knowledge/1.0.0",
+    "schema_version": "0.4.0"
+  },
+  "before_snapshot_id": "snapshot-6c2c5c4df1dc8d596b13028ad0c2163ea848b58fbfd5f0f76b7e27b6ac2873c4",
+  "case_id": "order-lookup-demo-001",
+  "catalog_id": "catalog-order-lookup-v1",
+  "extensions": {},
+  "initial_state_ref": {
+    "artifact_id": "input-4",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/state/initial.json",
+    "schema_version": "0.4.0",
+    "sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+    "size_bytes": 571
+  },
+  "normal_input": {
+    "order_id": "ORD-1001"
+  },
+  "obligation_bindings": [
+    {
+      "extensions": {},
+      "obligation_id": "normal-order-response",
+      "required_artifact_kinds": [
+        "response"
+      ],
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "obligation_id": "unchanged-order-state",
+      "required_artifact_kinds": [
+        "final-state",
+        "initial-state"
+      ],
+      "schema_version": "0.4.0"
+    }
+  ],
+  "plan_id": "plan-340e36aa2a4138a87b50e635",
+  "planner_metadata": {
+    "retrieval_empty": false,
+    "rules_version": "flowdelta.knowledge/1.0.0",
+    "security_outcome": null,
+    "selection": "ranked-card"
+  },
+  "retrieval_ref": {
+    "artifact_id": "retrieval-340e36aa2a4138a87b50e635",
+    "extensions": {},
+    "kind": "generated",
+    "media_type": "application/json",
+    "path": "retrieval.json",
+    "schema_version": "0.4.0",
+    "sha256": "1ea96a5a44108a39935a81073eaae4129e998a5222a5a911d64c2b403821fd5e",
+    "size_bytes": 1881
+  },
+  "schema_version": "0.4.0",
+  "template_id": "normal-order-lookup",
+  "template_version": "1.0.0",
+  "timeout_seconds": 30,
+  "uncovered_obligation_ids": []
+}
