@@ -6,20 +6,7 @@ workflow나 카드에 적힌 코드·URL을 실행하지 않는다. 공개 함�
 
 ## 재현
 
-로컬에 Python·uv를 설치하지 않고 프로젝트 전용 Docker 환경에서 검증하려면:
-
-```bash
-docker compose -f runtime/development/compose.yaml build check
-docker compose -f runtime/development/compose.yaml run --rm check
-```
-
-컨테이너는 Python 3.13.15·uv 0.9.30·uv.lock을 사용한다. 전체 테스트, lint/format,
-타입 검사, 두 계약 예제와 B CLI를 검증한다. 소스는 읽기 전용으로 연결하고
-가상환경은 이미지 내부 `/opt/flowdelta-venv`, 임시 출력은 컨테이너 `/tmp`에 둔다.
-검증 컨테이너는 네트워크를 사용하지 않는다. 의존성이 바뀌면 이미지를 다시 빌드한다.
-기존 n8n 실행 실험과 Docker 기반 baseline/conformance는 이 검증 명령의 범위에 포함되지 않는다.
-
-Python 3.13.15, uv 0.9.30과 잠긴 의존성을 사용한다.
+로컬에 Python 3.13.15와 uv 0.9.30을 준비하고 잠긴 의존성을 사용한다.
 출력 디렉터리는 미리 만들고, 세 출력 파일이 존재하지 않는 위치를 선택한다.
 
 ```bash
@@ -71,4 +58,6 @@ C는 plan의 template ID/version, 정상 입력, 초기 상태, attempts/timeout
 현재 예시 분석으로 생성한 B 파일만으로 전체 실제 pipeline 완료를 주장하지 않는다.
 
 테스트: `uv run --frozen --extra baseline pytest tests/knowledge`.
+전체 코드 검증은 `uv run --frozen --extra baseline sh tools/check-development.sh`로 실행한다.
+스크립트는 Python·uv 지정 버전, lint/format, 타입, 전체 테스트, 두 계약 예제와 B CLI를 확인한다.
 첫 구현에는 벡터 DB, 모델 API, 새로운 템플릿 생성이 포함되지 않는다.
