@@ -17,6 +17,11 @@ class RegisteredTemplate:
     lock_path: str
     approved_inputs_path: str
     compose_path: str
+    # The fixed probe inside the fixture image can call only this endpoint.
+    method: str
+    webhook_path: str
+    # Built locally before a run (`docker build`); the runner never builds or downloads images.
+    fixture_image: str
     # Artifact kinds this implementation can actually collect for the template.
     collectible_kinds: frozenset[str]
 
@@ -30,6 +35,9 @@ REGISTERED_TEMPLATES: dict[tuple[str, str], RegisteredTemplate] = {
         lock_path="runtime/order-lookup/runtime.lock.toml",
         approved_inputs_path="runtime/order-lookup/approved-inputs.json",
         compose_path="runtime/order-lookup/compose.yaml",
+        method="POST",
+        webhook_path="/webhook/flowdelta-order-lookup",
+        fixture_image="flowdelta-order-fixture:0.2.0",
         collectible_kinds=frozenset({"response", "initial-state", "final-state", "events"}),
     ),
 }

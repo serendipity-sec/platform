@@ -95,6 +95,14 @@ def test_catalog_template_without_runtime_registration_is_not_dispatched(
         preflight(handoff, plan, catalog, bundle, REPO)
 
 
+def test_catalog_cannot_redirect_the_registered_template(bundle: Path, no_commands) -> None:
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    moved = catalog.templates[0].model_copy(update={"webhook_path": "/webhook/other"})
+    catalog = catalog.model_copy(update={"templates": [moved]})
+    with pytest.raises(InputError, match="^TEMPLATE_ENDPOINT_MISMATCH$"):
+        preflight(handoff, plan, catalog, bundle, REPO)
+
+
 @pytest.mark.parametrize(
     ("relative", "code"),
     [

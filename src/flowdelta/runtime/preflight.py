@@ -29,6 +29,9 @@ class RuntimeLock:
     workflow_timeout_seconds: int
     preparation_timeout_seconds: int
     max_concurrency: int
+    python_version: str
+    fastapi_version: str
+    uvicorn_version: str
 
 
 @dataclass(frozen=True)
@@ -81,6 +84,9 @@ def load_lock(repo: Path, registered: RegisteredTemplate) -> RuntimeLock:
             workflow_timeout_seconds=int(raw["workflow_timeout_seconds"]),
             preparation_timeout_seconds=int(raw["preparation_timeout_seconds"]),
             max_concurrency=int(raw["max_concurrency"]),
+            python_version=str(raw["python_version"]),
+            fastapi_version=str(raw["fastapi_version"]),
+            uvicorn_version=str(raw["uvicorn_version"]),
         )
     except (KeyError, TypeError, ValueError) as exc:
         raise InputError("RUNTIME_LOCK_INVALID") from exc
@@ -139,6 +145,11 @@ def preflight(
     template = matches[0]
     registered = find_registered(template.template_id, template.version)
     _same(template.mode, registered.mode, "TEMPLATE_MODE_UNSUPPORTED")
+    _same(
+        (template.method, template.webhook_path),
+        (registered.method, registered.webhook_path),
+        "TEMPLATE_ENDPOINT_MISMATCH",
+    )
     _same(template.task_id, handoff.task.task_id, "TASK_ID_MISMATCH")
 
     # 3. The pinned runtime matches the template and the case environment.
