@@ -82,6 +82,41 @@ def snapshot(
         raise typer.Exit(code=2) from None
 
 
+@app.command("analyze")
+def analyze_handoff(
+    handoff: Path,
+    out: Annotated[Path, typer.Option(help="New analysis.json path; parent must exist.")],
+) -> None:
+    """A: write a static control graph and change list; does not run the workflow."""
+    from flowdelta.graph import analyze
+    from flowdelta.pipeline_io import read_handoff
+
+    try:
+        bundle = analyze(read_handoff(handoff))
+        try:
+            with out.open("xb") as file:
+                file.write(json_bytes(bundle.model_dump(mode="json")))
+        except FileExistsError:
+            raise InputError("OUTPUT_EXISTS") from None
+        except OSError:
+            raise InputError("OUTPUT_WRITE_FAILED") from None
+        typer.echo(
+            json_bytes(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "status": "ANALYSIS_WRITTEN",
+                    "analysis_id": bundle.analysis_id,
+                    "changes": len(bundle.changes),
+                    "execution_status": "NOT_RUN",
+                }
+            ).decode("utf-8"),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode("utf-8"), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("baseline")
 def baseline(
     out: Annotated[Path, typer.Option(help="New directory below this repository's var/.")],
@@ -200,6 +235,51 @@ def check_examples(bundle: Path) -> None:
         typer.echo("CONTRACT_EXAMPLES_VALID; execution_status=NOT_RUN")
     except InputError as exc:
         typer.echo(json_bytes({"error": exc.code}).decode("utf-8"), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("plan")
+def plan_command(
+    bundle: Path,
+    catalog: Annotated[Path, typer.Option(help="Registered template catalog JSON.")],
+    cards: Annotated[Path, typer.Option(help="Local card directory.")],
+    out: Annotated[Path, typer.Option(help="New plan file at the future bundle root.")],
+) -> None:
+    """Generate B's plan and sibling retrieval/KB files without running workflows."""
+    from flowdelta.ingestion import _read_local, parse_file_model, parse_json
+    from flowdelta.knowledge import load_cards, write_plan
+    from flowdelta.pipeline_contracts import AnalysisBundle, TemplateCatalog
+    from flowdelta.pipeline_io import read_handoff, read_manifest
+
+    try:
+        root = bundle.resolve()
+        _, documents = read_manifest(root)
+        if "analysis.json" not in documents:
+            raise InputError("PIPELINE_FILE_MISSING")
+        analysis = parse_file_model(AnalysisBundle, documents["analysis.json"])
+        templates = parse_file_model(
+            TemplateCatalog, parse_json(_read_local(catalog.parent.resolve(), catalog.name))
+        )
+        plan = write_plan(
+            read_handoff(root / "input"),
+            analysis,
+            load_cards(cards, bundle_root=root),
+            templates,
+            out,
+        )
+        typer.echo(
+            json_bytes(
+                {
+                    "status": "PLAN_WRITTEN",
+                    "plan_id": plan.plan_id,
+                    "analysis_origin": analysis.authorship.origin,
+                    "execution_status": "NOT_RUN",
+                }
+            ).decode(),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
         raise typer.Exit(code=2) from None
 
 
