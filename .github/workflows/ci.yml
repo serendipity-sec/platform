@@ -55,6 +55,9 @@ jobs:
       - run: uv sync --frozen --extra baseline
       - run: docker build --tag flowdelta-order-fixture:0.2.0 --file runtime/order-lookup/fixture.Dockerfile .
       - run: uv run --frozen --extra baseline flowdelta baseline --out var/ci-baseline
+      - run: docker build --tag flowdelta-order-fixture:0.3.0 --file runtime/order-lookup/fixture.Dockerfile .
+      - run: uv run --frozen --extra baseline flowdelta demo-order-lookup --out var/ci-integrated-order
+      - run: uv run --frozen --extra baseline flowdelta check-pipeline var/ci-integrated-order/bundle
 
   normal-node-conformance:
     runs-on: ubuntu-latest

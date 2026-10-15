@@ -327,5 +327,22 @@ def execute_command(
     raise typer.Exit(code=main([str(bundle), "--out", str(out)]))
 
 
+@app.command("demo-order-lookup")
+def demo_order_lookup(
+    out: Annotated[Path, typer.Option(help="New demo directory under var/.")],
+) -> None:
+    """Generate A/B outputs, execute C, bundle evidence and check the fixed normal case."""
+    from flowdelta.demo import run_order_lookup_demo
+
+    try:
+        summary = run_order_lookup_demo(Path.cwd(), out)
+        typer.echo(json_bytes(summary).decode(), nl=False)
+        if not summary["all_normal_checks_passed"]:
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 if __name__ == "__main__":
     app()

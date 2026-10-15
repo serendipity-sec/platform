@@ -1,8 +1,9 @@
 # FlowDelta · platform
 
 n8n 변경 전후를 같은 업무·정책·환경·초기 상태에 놓고 분석할 수 있도록 만드는 프로젝트입니다.
-현재 입력·정규화·제한된 노드 의미·공통 파일 계약과 두 정상 업무의 기준 환경을 구현했습니다.
-A의 분석기, B의 검색·계획 생성기, C의 일반 실행 엔진은 팀원이 구현합니다.
+입력·정규화·제한된 노드 의미·공통 파일 계약과 두 정상 업무의 기준 환경을 구현했습니다.
+A의 첫 구조 분석, B의 로컬 카드 검색·계획, C의 등록 주문 조회 실행을 연결했습니다.
+[공통 작성기와 통합 실행 안내](docs/MODULE_BUNDLE.md)의 한 명령으로 주문 조회 전후를 재현합니다.
 
 **현재 계약: 0.4.0** · [입력 계약과 이전 방법](docs/INPUT_CONTRACT_04.md)
 
@@ -45,7 +46,9 @@ uv run --frozen --extra baseline python -m flowdelta.cli conformance --out var/n
 - `conformance`: 문의 분류 전후와 분기·빈 배치·명시적 오류 처리·이름 참조의 등록된 8개 사례.
 - 실행마다 별도 로컬 상태를 사용하며 끝나면 해당 컨테이너·네트워크를 정리합니다.
 - `var/*/private/`에는 실행별 DB·자격이 남습니다. 공유 자료는 선택한 JSON 증거로 한정합니다.
-- 두 명령은 팀 작성 고정 정상 사례용입니다. C가 만들 plan 기반 실행 엔진은 후속 구현입니다.
+- 두 명령은 팀 작성 고정 정상 사례용입니다. 계획을 소비하는 C는
+  [`flowdelta execute`](docs/RUNTIME.md), A/B/C 전체 연결은
+  [`flowdelta demo-order-lookup`](docs/MODULE_BUNDLE.md)으로 실행합니다.
 
 ## 모듈 개발
 

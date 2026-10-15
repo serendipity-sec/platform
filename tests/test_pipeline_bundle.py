@@ -140,3 +140,28 @@ def test_cli_explicit_mapping(tmp_path):
     assert (tmp_path / "out/analysis.json").read_bytes() == (
         REFERENCE / "analysis.json"
     ).read_bytes()
+
+
+def test_real_analysis_and_planning_remain_not_run_until_c_arrives(tmp_path):
+    from flowdelta.graph import analyze
+    from flowdelta.knowledge import load_cards, write_plan
+    from flowdelta.pipeline_contracts import TemplateCatalog
+    from flowdelta.pipeline_io import read_handoff
+
+    handoff = read_handoff(REFERENCE / "input")
+    analysis = analyze(handoff)
+    path = tmp_path / "analysis.json"
+    path.write_bytes(json_bytes(analysis.model_dump(mode="json")))
+    catalog_path = REFERENCE / "template-catalog.json"
+    catalog = TemplateCatalog.model_validate_json(catalog_path.read_bytes())
+    write_plan(handoff, analysis, load_cards(REFERENCE / "cards"), catalog, tmp_path / "plan.json")
+    sources = {
+        name: tmp_path / name
+        for name in ("analysis.json", "plan.json", "retrieval.json", "kb-snapshot.json")
+    }
+    sources["template-catalog.json"] = catalog_path
+    write_module_bundle(REFERENCE / "input", sources, tmp_path / "out")
+    result = read_module_outputs(tmp_path / "out")
+    assert result["status"] == "CONTRACT_LINKS_VALID"
+    assert result["runtime_record_coverage"] == "NOT_SUPPLIED"
+    assert result["run_count"] == 0 and result["outcome"] is None
