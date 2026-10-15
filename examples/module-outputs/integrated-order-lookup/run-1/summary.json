@@ -1,0 +1,73 @@
+{
+  "all_normal_checks_passed": true,
+  "analysis_id": "analysis-5dfc5495950ceaca",
+  "analysis_origin": "MODULE_OUTPUT",
+  "artifact_count": 42,
+  "bundle": "bundle",
+  "case_id": "order-lookup-demo-001",
+  "change_count": 1,
+  "comparison_run_id": "comparison-bceb97c1071a4041926ff3bca3ff2c20",
+  "contract_validation": {
+    "analysis_producer": "flowdelta-graph 0.1.0",
+    "case_id": "order-lookup-demo-001",
+    "execution_states": [
+      "SUCCEEDED",
+      "SUCCEEDED"
+    ],
+    "missing_artifact_kinds": [],
+    "outcome": null,
+    "plan_producer": "flowdelta.knowledge/1.0.1",
+    "run_count": 2,
+    "runtime_record_coverage": "CHECKED",
+    "schema_version": "0.4.0",
+    "status": "CONTRACT_LINKS_VALID"
+  },
+  "normal_expectation_origin": "TEAM_DEFINED_NORMAL_EXPECTATION",
+  "observations": [
+    {
+      "checks": {
+        "cleanup_complete": true,
+        "collection_complete": true,
+        "execution_succeeded": true,
+        "expected_response": true,
+        "fresh_state": true,
+        "one_owned_read": true,
+        "orders_unchanged": true
+      },
+      "response": {
+        "body": {
+          "order_id": "ORD-1001",
+          "status": "준비중"
+        },
+        "status_code": 200
+      },
+      "run_id": "run-be3a6dc3979f4c98ab07157c80fb10c9",
+      "side": "before"
+    },
+    {
+      "checks": {
+        "cleanup_complete": true,
+        "collection_complete": true,
+        "execution_succeeded": true,
+        "expected_response": true,
+        "fresh_state": true,
+        "one_owned_read": true,
+        "orders_unchanged": true
+      },
+      "response": {
+        "body": {
+          "display_status": "주문 상태: 준비중",
+          "order_id": "ORD-1001",
+          "status": "준비중"
+        },
+        "status_code": 200
+      },
+      "run_id": "run-7e11b8e7ffed4e2c9e7714de7c0ad672",
+      "side": "after"
+    }
+  ],
+  "plan_id": "plan-cddf98e368d7f75ca5d3f142",
+  "plan_origin": "MODULE_OUTPUT",
+  "schema_version": "0.4.0",
+  "security_outcome": null
+}

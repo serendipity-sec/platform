@@ -1,0 +1,21 @@
+{
+  "collection_status": "COMPLETE",
+  "events": [
+    {
+      "event_type": "ORDER_READ",
+      "method": "GET",
+      "observed_at": "2026-10-15T01:59:04.175071+00:00",
+      "outcome": "RETURNED",
+      "principal": "customer-demo",
+      "producer": "orders-api",
+      "resource_id": "ORD-1001",
+      "response_sha256": "b8275608c200102936ab87006d88b1afc49760f379beb539a12a7b0d71526e61",
+      "run_id": "run-7e11b8e7ffed4e2c9e7714de7c0ad672",
+      "schema_version": "0.4.0",
+      "sequence": 1,
+      "tenant": "tenant-demo"
+    }
+  ],
+  "run_id": "run-7e11b8e7ffed4e2c9e7714de7c0ad672",
+  "schema_version": "0.4.0"
+}

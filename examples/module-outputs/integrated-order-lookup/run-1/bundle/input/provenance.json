@@ -1,0 +1,20 @@
+{
+  "extensions": {
+    "flowdelta.source_urls": [
+      "https://n8n.io/workflows/1750-creating-an-api-endpoint/",
+      "https://n8n.io/workflows/18823-track-secure-order-status-and-email-alerts-with-webhooks-gmail-and-data-tables/"
+    ],
+    "flowdelta.template_json_status": "NOT_ACQUIRED_HTTP_403"
+  },
+  "production_equivalence": "NOT_CLAIMED",
+  "provenance_id": "team-demo-20261011",
+  "reuse_status": "팀 작성 예제. 프로젝트 공개 라이선스는 별도 결정한다.",
+  "schema_version": "0.4.0",
+  "source": "Team-authored local order lookup, informed by the public descriptions of n8n templates 1750 and 18823; no source JSON copied.",
+  "source_kind": "TEAM_SYNTHETIC",
+  "transformations": [
+    "API endpoint pattern adapted to a local order service.",
+    "Gmail, Data Tables and status updates omitted from this read-only baseline.",
+    "after adds display_status only; actor, policy and initial state remain fixed."
+  ]
+}
