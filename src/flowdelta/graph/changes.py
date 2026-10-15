@@ -86,6 +86,14 @@ def diff_values(
     if isinstance(before, list) and isinstance(after, list):
         before_ids, after_ids = _item_ids(before), _item_ids(after)
         if before_ids is not None and after_ids is not None:
+            # IDs avoid false changes after insertion, but array order may affect execution.
+            # Preserve a reorder of surviving items instead of treating every ID list as a set.
+            common = set(before_ids) & set(after_ids)
+            if [item for item in before_ids if item in common] != [
+                item for item in after_ids if item in common
+            ]:
+                yield before_path, after_path, before, after
+                return
             after_index = {item_id: index for index, item_id in enumerate(after_ids)}
             for index, item_id in enumerate(before_ids):
                 if item_id in after_index:

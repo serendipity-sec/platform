@@ -226,6 +226,23 @@ def test_dangling_connection_and_duplicate_node_are_errors() -> None:
     assert error.value.code == "GRAPH_DUPLICATE_NODE_ID"
 
 
+def test_reordering_identified_parameter_items_is_not_lost() -> None:
+    handoff = load("support-triage")
+    node = next(node for node in handoff.after.nodes if node.node_id == "result")
+    items = node.parameters["assignments"]["assignments"]  # type: ignore[index]
+    parameters = {**node.parameters, "assignments": {"assignments": list(reversed(items))}}
+    before = handoff.after
+    after = replace_node(before, "result", parameters=parameters)
+    result = analyze(handoff.model_copy(update={"before": before, "after": after}))
+    assert len(result.changes) == 1
+    change = result.changes[0]
+    assert change.kind == "PARAMETER_CHANGED"
+    assert change.before_value == items
+    assert change.after_value == list(reversed(items))
+    assert change.after_source is not None
+    assert change.after_source.json_pointer == "/nodes/8/parameters/assignments/assignments"
+
+
 def test_cli_writes_new_analysis_file_once(tmp_path: Path) -> None:
     out = tmp_path / "analysis.json"
     runner = CliRunner()
