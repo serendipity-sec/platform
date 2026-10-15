@@ -87,6 +87,7 @@ jobs:
             var/ci-conformance/summary.json
             var/ci-conformance/runs.json
             var/ci-conformance/*/run.json
+            var/ci-conformance/*/publication.json
             var/ci-conformance/*/comparison.json
             var/ci-conformance/*/runtime-executions.json
             var/ci-conformance/*/bootstrap.log
