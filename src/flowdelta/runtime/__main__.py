@@ -1,6 +1,6 @@
 """`python -m flowdelta.runtime <plan-bundle> --out var/<new-dir>` from the repository root.
 
-Temporary entry point until `flowdelta execute` is added to the shared CLI.
+Also available as `flowdelta execute <plan-bundle> --out var/<new-dir>`.
 """
 
 import argparse

@@ -37,7 +37,7 @@ REGISTERED_TEMPLATES: dict[tuple[str, str], RegisteredTemplate] = {
         compose_path="runtime/order-lookup/compose.yaml",
         method="POST",
         webhook_path="/webhook/flowdelta-order-lookup",
-        fixture_image="flowdelta-order-fixture:0.2.0",
+        fixture_image="flowdelta-order-fixture:0.3.0",
         collectible_kinds=frozenset({"response", "initial-state", "final-state", "events"}),
     ),
 }

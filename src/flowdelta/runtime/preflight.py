@@ -173,7 +173,15 @@ def preflight(
     # 6. Every requested artifact kind is one this runner can actually collect.
     if not set(template.required_artifact_kinds).issubset(registered.collectible_kinds):
         raise InputError("TEMPLATE_ARTIFACT_UNSUPPORTED")
+    required = {item.obligation_id: item for item in case.obligations}
+    bound = {item.obligation_id: item for item in plan.obligation_bindings}
+    if set(bound) | set(plan.uncovered_obligation_ids) != set(required):
+        raise InputError("REQUIRED_OBLIGATION_MISSING")
     for binding in plan.obligation_bindings:
+        if not set(required[binding.obligation_id].required_artifacts).issubset(
+            binding.required_artifact_kinds
+        ):
+            raise InputError("OBLIGATION_ARTIFACT_MISSING")
         if not set(binding.required_artifact_kinds).issubset(template.required_artifact_kinds):
             raise InputError("TEMPLATE_ARTIFACT_MISSING")
 

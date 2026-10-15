@@ -1,0 +1,148 @@
+{
+  "actual_engine_version": "2.42.6",
+  "actual_image_digest": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+  "artifacts": {
+    "artifact_kinds": {
+      "events": "after-1-3",
+      "final-state": "after-1-4",
+      "initial-state": "after-1-5",
+      "response": "after-1-7"
+    },
+    "artifacts": [
+      {
+        "artifact_id": "after-1-0",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/allocation.json",
+        "schema_version": "0.4.0",
+        "sha256": "c1da3bb931d9f1afe650669265f224648177a427814ed3097ff50bd12b84cb22",
+        "size_bytes": 329
+      },
+      {
+        "artifact_id": "after-1-1",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/binding.json",
+        "schema_version": "0.4.0",
+        "sha256": "6833d232f2d6f2f4d99272cc741b01d255832e21a6090d4393decfde2409293e",
+        "size_bytes": 711
+      },
+      {
+        "artifact_id": "after-1-2",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/cleanup.json",
+        "schema_version": "0.4.0",
+        "sha256": "c09cb6edc55eaccd4bba032fecff56f2a64c7c46133fb1c178e58cd6d0d243e7",
+        "size_bytes": 370
+      },
+      {
+        "artifact_id": "after-1-3",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/events.json",
+        "schema_version": "0.4.0",
+        "sha256": "d0f4ae193aad1946b4c7bc057ca055f5ad4cb6629b6744b4b5ae16d345ad5617",
+        "size_bytes": 627
+      },
+      {
+        "artifact_id": "after-1-4",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/final-state.json",
+        "schema_version": "0.4.0",
+        "sha256": "c5298204b38d761b2971ea43d81c8a6949ebdcecd87be39033f3e15f1491ca14",
+        "size_bytes": 1276
+      },
+      {
+        "artifact_id": "after-1-5",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/initial-state.json",
+        "schema_version": "0.4.0",
+        "sha256": "6abd75fee78b04fa4b5483638f92d841af48afabdf06af98add14e238527f3b3",
+        "size_bytes": 784
+      },
+      {
+        "artifact_id": "after-1-6",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/request.json",
+        "schema_version": "0.4.0",
+        "sha256": "6948e4112e144c10d78677253e42db2a5b58140c849a9bce9f846062d420df0d",
+        "size_bytes": 187
+      },
+      {
+        "artifact_id": "after-1-7",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/response.json",
+        "schema_version": "0.4.0",
+        "sha256": "be7a459ac069e3a465b72af7488d2d647f569263030969b033eccea80ef590a6",
+        "size_bytes": 146
+      },
+      {
+        "artifact_id": "after-1-8",
+        "extensions": {},
+        "kind": "generated",
+        "media_type": "application/json",
+        "path": "runs/after-1/runtime.json",
+        "schema_version": "0.4.0",
+        "sha256": "b47e169caaf6439f36c7d671c86ecab145caf6400e1848b78345387f045f56e9",
+        "size_bytes": 849
+      }
+    ],
+    "collection_status": "COMPLETE",
+    "extensions": {},
+    "missing_kinds": [],
+    "observed_kinds": [
+      "initial-state",
+      "response",
+      "final-state",
+      "events"
+    ],
+    "required_kinds": [
+      "response",
+      "initial-state",
+      "final-state",
+      "events"
+    ],
+    "run_id": "run-6fc18d6de0b44dacb9ae60b2e3446acc",
+    "schema_version": "0.4.0"
+  },
+  "attempt_number": 1,
+  "authorship": {
+    "extensions": {},
+    "note": "Plan-based run of a registered normal template; no security verdict.",
+    "origin": "RUNTIME_OBSERVATION",
+    "producer": "flowdelta.runtime.order_lookup/0.1.1",
+    "schema_version": "0.4.0"
+  },
+  "case_id": "order-lookup-demo-001",
+  "cleanup_status": "COMPLETE",
+  "comparison_run_id": "comparison-500cc6c4fd8d4c4a9e2bdecfcb0155de",
+  "error_code": null,
+  "execution_status": "SUCCEEDED",
+  "extensions": {
+    "flowdelta.compose_project": "fdrt-9de5b45c84a74b37"
+  },
+  "finished_at": "2026-10-15T01:51:21.032939+00:00",
+  "initial_state_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+  "outcome": null,
+  "phase": "FINISHED",
+  "plan_id": "plan-order-lookup-example",
+  "run_id": "run-6fc18d6de0b44dacb9ae60b2e3446acc",
+  "runtime_profile": "order-lookup-local-v1",
+  "schema_version": "0.4.0",
+  "side": "after",
+  "snapshot_id": "snapshot-645768b23fc1d649ee3289106d4de119570212b6703a52ebc359d7745eed7e81",
+  "started_at": "2026-10-15T01:51:17.339960+00:00"
+}

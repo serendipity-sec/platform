@@ -25,7 +25,7 @@ from flowdelta.ingestion import digest, json_bytes
 from flowdelta.pipeline_contracts import ArtifactCollection, Authorship, ExecutionRun, TestPlan
 from flowdelta.runtime.preflight import PreflightResult, SideSource
 
-PRODUCER = "flowdelta.runtime.order_lookup/0.1.0"
+PRODUCER = "flowdelta.runtime.order_lookup/0.1.1"
 RUNTIME_WORKFLOW_ID = "fdOrderRuntime"
 # docker exec start-up time on top of the plan's request time limit.
 EXEC_OVERHEAD_SECONDS = 15
@@ -129,6 +129,7 @@ def run_side(
     env_file = private / ".env"
     env_file.write_text(
         f'FD_RUN_DIR="{private.as_posix()}"\nFD_RUN_ID={run_id}\n'
+        f"FD_FIXTURE_IMAGE={registered.fixture_image}\n"
         f"FD_ENCRYPTION_KEY={credentials['encryption']}\n"
         f"FD_SERVICE_TOKEN={credentials['service']}\nFD_CONTROL_TOKEN={credentials['control']}\n",
         encoding="utf-8",
@@ -155,7 +156,8 @@ def run_side(
 
     def write_log(name: str, text: str) -> None:
         data = redact(text).encode("utf-8")[-MAX_LOG_BYTES:]
-        (shared / f"{name}.log").write_bytes(data)
+        # Diagnostic text is local-only; the common bundle accepts explicit JSON evidence.
+        (private / f"{name}.log").write_bytes(data)
 
     def call(args: list[str], name: str, timeout: float, input_text: str | None = None) -> str:
         code = name.upper().replace("-", "_")
@@ -177,7 +179,14 @@ def run_side(
         body: object | None = None,
         timeout: float = 45,
     ) -> tuple[int, Any]:
-        payload = json.dumps({"operation": operation, "headers": headers or {}, "body": body})
+        payload = json.dumps(
+            {
+                "operation": operation,
+                "headers": headers or {},
+                "body": body,
+                "timeout_seconds": checked.timeout_seconds if operation == "normal-request" else 30,
+            }
+        )
         output = call(
             [*compose, "exec", "-T", "orders-api", *PROBE],
             f"probe-{operation}",
@@ -189,7 +198,9 @@ def run_side(
         except ValueError as exc:
             raise RunFailure("OBSERVER_OUTPUT_INVALID") from exc
         if "transport_error" in value:
-            raise RunFailure("OBSERVER_TRANSPORT_ERROR")
+            raise RunFailure(
+                "OBSERVER_TRANSPORT_ERROR", timed_out=value["transport_error"] == "TimeoutError"
+            )
         return int(value["status_code"]), value["body"]
 
     def wait_ready(operation: str, deadline: float) -> None:

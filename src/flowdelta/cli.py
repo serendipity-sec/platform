@@ -203,5 +203,16 @@ def check_examples(bundle: Path) -> None:
         raise typer.Exit(code=2) from None
 
 
+@app.command("execute")
+def execute_command(
+    bundle: Path,
+    out: Annotated[Path, typer.Option(help="New execution directory under var/.")],
+) -> None:
+    """Execute a registered plan and collect before/after runtime evidence."""
+    from flowdelta.runtime.__main__ import main
+
+    raise typer.Exit(code=main([str(bundle), "--out", str(out)]))
+
+
 if __name__ == "__main__":
     app()

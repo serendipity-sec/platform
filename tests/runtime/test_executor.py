@@ -67,10 +67,16 @@ def test_plan_runs_before_and_after_in_separate_projects(workspace) -> None:
 
 
 def test_request_uses_plan_input_and_time_limit(workspace) -> None:
+    bundle, _ = workspace
+    path = bundle / "plan.json"
+    value = json.loads(path.read_bytes())
+    value["timeout_seconds"] = 2
+    path.write_text(json.dumps(value), encoding="utf-8")
     docker = FakeDocker()
     _, output, plan = execute(workspace, docker)
     expected = (plan.normal_input, plan.timeout_seconds + EXEC_OVERHEAD_SECONDS)
     assert docker.requests == [expected, expected]
+    assert docker.http_timeouts == [2, 2]
     request = load(output, "runs/before-1/request.json")
     assert request["body"] == plan.normal_input
     assert request["timeout_seconds"] == plan.timeout_seconds
@@ -83,7 +89,8 @@ def test_secrets_stay_out_of_shared_run_files(workspace) -> None:
     assert len(secrets) >= 8
     shared = b"".join(path.read_bytes() for path in (output / "runs").rglob("*") if path.is_file())
     assert not any(secret.encode() in shared for secret in secrets)
-    assert b"[REDACTED]" in (output / "runs/before-1/services.log").read_bytes()
+    assert b"[REDACTED]" in (output / "private/before-1/services.log").read_bytes()
+    assert all(path.suffix == ".json" for path in (output / "runs").rglob("*") if path.is_file())
 
 
 def test_new_output_folder_gets_new_identity_and_clean_state(workspace) -> None:
@@ -96,8 +103,9 @@ def test_new_output_folder_gets_new_identity_and_clean_state(workspace) -> None:
         execute(workspace, FakeDocker(), "run-1")
 
 
-def test_request_timeout_still_collects_and_cleans_up(workspace) -> None:
-    runs, output, _ = execute(workspace, FakeDocker(failures={"normal-request": "timeout"}))
+@pytest.mark.parametrize("failure", ["timeout", "http-timeout"])
+def test_request_timeout_still_collects_and_cleans_up(workspace, failure: str) -> None:
+    runs, output, _ = execute(workspace, FakeDocker(failures={"normal-request": failure}))
     for run in runs:
         assert run.execution_status == "TIMED_OUT"
         assert run.error_code == "REQUEST_TIMEOUT"

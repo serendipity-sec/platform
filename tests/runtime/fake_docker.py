@@ -37,6 +37,7 @@ class FakeDocker:
     calls: list[list[str]] = field(default_factory=list)
     projects: dict[str, Project] = field(default_factory=dict)
     requests: list[tuple[object, float]] = field(default_factory=list)
+    http_timeouts: list[object] = field(default_factory=list)
 
     def __call__(
         self, args: list[str], *, timeout: float, input_text: str | None = None
@@ -136,8 +137,11 @@ class FakeDocker:
             }
         elif operation == "normal-request":
             self.requests.append((payload["body"], timeout))
+            self.http_timeouts.append(payload.get("timeout_seconds"))
             owner = "run-someone-else" if self.foreign_event else project.run_id
             project.events.append({"run_id": owner, "event_type": "ORDER_READ", "sequence": 1})
+            if self.failures.get("normal-request") == "http-timeout":
+                return CommandResult(0, json.dumps({"transport_error": "TimeoutError"}), "")
             result = self.step("normal-request", "")
             if result.returncode:
                 return result

@@ -74,6 +74,10 @@ def test_registered_plan_resolves_template_lock_and_sources(bundle: Path, no_com
             "TEMPLATE_INPUT_FIELDS_MISMATCH",
         ),
         ({"normal_input": {"order_id": "ORD-2001"}}, "NORMAL_INPUT_MISMATCH"),
+        (
+            {"obligation_bindings": [], "uncovered_obligation_ids": []},
+            "REQUIRED_OBLIGATION_MISSING",
+        ),
     ],
 )
 def test_invalid_plan_is_rejected_before_any_process(
