@@ -26,9 +26,13 @@ def workspace(tmp_path: Path) -> tuple[Path, Path]:
     return bundle, repo
 
 
-def execute(workspace: tuple[Path, Path], docker: FakeDocker, name: str = "run-1"):
+def execute(
+    workspace: tuple[Path, Path], docker: FakeDocker, name: str = "run-1", *, plan_update=None
+):
     bundle, repo = workspace
     handoff, plan, catalog = read_plan_bundle(bundle)
+    if plan_update:
+        plan = plan.model_copy(update=plan_update)
     executor = PlanExecutor(bundle, repo, runner=docker, sleep=lambda seconds: None)
     output = repo / "var" / name
     return executor.execute_plan(handoff, plan, catalog, output), output, plan
@@ -67,13 +71,8 @@ def test_plan_runs_before_and_after_in_separate_projects(workspace) -> None:
 
 
 def test_request_uses_plan_input_and_time_limit(workspace) -> None:
-    bundle, _ = workspace
-    path = bundle / "plan.json"
-    value = json.loads(path.read_bytes())
-    value["timeout_seconds"] = 2
-    path.write_text(json.dumps(value), encoding="utf-8")
     docker = FakeDocker()
-    _, output, plan = execute(workspace, docker)
+    _, output, plan = execute(workspace, docker, plan_update={"timeout_seconds": 2})
     expected = (plan.normal_input, plan.timeout_seconds + EXEC_OVERHEAD_SECONDS)
     assert docker.requests == [expected, expected]
     assert docker.http_timeouts == [2, 2]
