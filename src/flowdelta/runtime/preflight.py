@@ -12,9 +12,9 @@ from pathlib import Path
 from typing import Literal
 
 from flowdelta.contracts import Handoff
-from flowdelta.ingestion import InputError, _read_local, parse_file_model, parse_json
+from flowdelta.ingestion import InputError, parse_file_model
 from flowdelta.pipeline_contracts import Template, TemplateCatalog, TestPlan
-from flowdelta.pipeline_io import read_handoff, validate_input_fields, verify_ref
+from flowdelta.pipeline_io import read_handoff, read_manifest, validate_input_fields, verify_ref
 from flowdelta.runtime.templates import RegisteredTemplate, find_registered
 
 # The handoff lives under this folder of the bundle; plan refs already carry the prefix.
@@ -61,11 +61,12 @@ def _same(actual: object, expected: object, code: str) -> None:
 def read_plan_bundle(root: Path) -> tuple[Handoff, TestPlan, TemplateCatalog]:
     """Read `input/`, `plan.json` and `template-catalog.json` from one bundle root."""
     root = root.resolve(strict=True)
+    _, documents = read_manifest(root)
+    if not {"plan.json", "template-catalog.json"}.issubset(documents):
+        raise InputError("PLAN_BUNDLE_FILE_MISSING")
     handoff = read_handoff(root / INPUT_DIR)
-    plan = parse_file_model(TestPlan, parse_json(_read_local(root, "plan.json")))
-    catalog = parse_file_model(
-        TemplateCatalog, parse_json(_read_local(root, "template-catalog.json"))
-    )
+    plan = parse_file_model(TestPlan, documents["plan.json"])
+    catalog = parse_file_model(TemplateCatalog, documents["template-catalog.json"])
     return handoff, plan, catalog
 
 

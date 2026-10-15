@@ -14,6 +14,8 @@ uv run --frozen --extra baseline flowdelta execute examples/contracts/order-look
 같은 명령에 전달한다. `python -m flowdelta.runtime`도 같은 실행 경로다.
 n8n 이미지는 `runtime.lock.toml`의 digest가 로컬에 준비되어 있어야 한다.
 
+실행 CLI는 먼저 최상위 manifest의 완료 여부와 파일 해시·크기를 검증한다.
+plan/catalog는 manifest에 등재된 검증된 JSON만 읽는다.
 실행 전에 case/snapshot/profile, 등록 template, 정상 입력, obligation의 누락 여부,
 필수 자료 종류, 초기 상태·workflow의 승인된 해시를 검사한다. 실패하면 Docker 명령을
 시작하지 않는다. 계획의 timeout은 실제 HTTP observer에 전달한다. Docker exec를

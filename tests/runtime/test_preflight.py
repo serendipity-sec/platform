@@ -4,7 +4,9 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from typer.testing import CliRunner
 
+from flowdelta.cli import app
 from flowdelta.ingestion import InputError
 from flowdelta.runtime.preflight import check_fresh_output, preflight, read_plan_bundle
 
@@ -179,3 +181,33 @@ def test_output_must_be_new_and_below_var(tmp_path: Path) -> None:
         check_fresh_output(tmp_path / "elsewhere", repo)
     with pytest.raises(InputError, match="^OUTPUT_MUST_BE_UNDER_VAR$"):
         check_fresh_output(repo / "var" / ".." / "src", repo)
+
+
+@pytest.mark.parametrize(
+    ("change", "code"),
+    [
+        ("missing-manifest", "MISSING_ARTIFACT"),
+        ("tampered-plan", "ARTIFACT_INTEGRITY_MISMATCH"),
+        ("unlisted-plan", "PLAN_BUNDLE_FILE_MISSING"),
+        ("unlisted-catalog", "PLAN_BUNDLE_FILE_MISSING"),
+    ],
+)
+def test_cli_rejects_incomplete_or_unverified_bundle_before_execution(
+    bundle: Path, tmp_path: Path, no_commands, change: str, code: str
+) -> None:
+    manifest = bundle / "manifest.json"
+    if change == "missing-manifest":
+        manifest.unlink()
+    elif change == "tampered-plan":
+        plan = bundle / "plan.json"
+        plan.write_bytes(plan.read_bytes() + b"\n")
+    else:
+        unlisted = "plan.json" if change == "unlisted-plan" else "template-catalog.json"
+        value = json.loads(manifest.read_bytes())
+        value["artifacts"] = [ref for ref in value["artifacts"] if ref["path"] != unlisted]
+        manifest.write_text(json.dumps(value), encoding="utf-8")
+    output = tmp_path / "var" / "never-created"
+    result = CliRunner().invoke(app, ["execute", str(bundle), "--out", str(output)])
+    assert result.exit_code == 2, result.output
+    assert json.loads(result.output)["error"] == code
+    assert not output.exists()
