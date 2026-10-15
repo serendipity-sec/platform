@@ -1,0 +1,17 @@
+{
+  "credential_refs": [
+    "fd-client-auth",
+    "fd-service-auth"
+  ],
+  "initial_state_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+  "run_id": "run-1eb8b46932d145d2b1f793d7106a3f57",
+  "runtime_workflow_id": "fdOrderRuntime",
+  "runtime_workflow_sha256": "64024f1b7d7f45826e3912d33fee45d84e2c6ed6bab7e871464c49bb20f3c788",
+  "schema_version": "0.4.0",
+  "secret_values_in_artifacts": false,
+  "source_snapshot_id": "snapshot-6c2c5c4df1dc8d596b13028ad0c2163ea848b58fbfd5f0f76b7e27b6ac2873c4",
+  "source_workflow_sha256": "a8f9e7bc9535823e5bda7aa6cfad848d6d82def30cf30878026a90618204d350",
+  "transformations": [
+    "Set a fixed workflow ID for this isolated runtime."
+  ]
+}

@@ -30,7 +30,7 @@ services:
     build:
       context: ../..
       dockerfile: runtime/order-lookup/fixture.Dockerfile
-    image: flowdelta-order-fixture:0.2.0
+    image: ${FD_FIXTURE_IMAGE:-flowdelta-order-fixture:0.2.0}
     environment:
       FD_STATE_DIR: /state
       FD_INITIAL_STATE: /fixtures/initial.json
