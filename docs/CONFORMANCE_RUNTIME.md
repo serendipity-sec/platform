@@ -10,8 +10,9 @@
 `workflow_published_version`의 매핑이 없으면 `Workflow is not active and cannot be executed.`로
 실패한다. `activeVersionId`만 존재하는 것으로는 충분하지 않다.
 
-따라서 서버가 준비된 뒤, 등록한 parent와 dependency 각각에 대해 읽기 전용 SQLite
-조회로 다음을 최대 60초 동안 확인한다.
+따라서 서버가 준비된 뒤, 등록한 parent와 dependency 각각에 대해 실행 중인 동일 컨테이너 안의 Node SQLite 읽기 전용
+조회로 다음을 60초 한도로 반복 확인한다. 진행 중인 단일 조회에는 최대 10초가
+추가될 수 있다.
 
 - `workflow_entity.activeVersionId`가 비어 있지 않다.
 - `workflow_published_version.publishedVersionId`가 위 버전과 같다.
@@ -19,6 +20,7 @@
 
 완료하면 서버를 정지하고 한 번 실행한다. 완료되지 않으면
 `CONFORMANCE_PUBLICATION_TIMEOUT`으로 실패한다. workflow 실행을 자동 재시도하지 않는다.
+Windows 호스트에서 실행 중인 Linux SQLite WAL을 직접 열지 않는다.
 `publication.json`에는 workflow ID, 버전 ID, history 존재 여부, 준비 여부만 남긴다.
 
 CI는 선택한 run/comparison/runtime-executions/publication JSON과 import/publish/bootstrap/

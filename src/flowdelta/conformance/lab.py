@@ -173,7 +173,7 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
             try:
                 if ready:
                     wait_for_publication(
-                        state / "database.sqlite",
+                        container,
                         [
                             json.loads((imports / f"{i}.json").read_bytes())["id"]
                             for i in range(len(paths))
