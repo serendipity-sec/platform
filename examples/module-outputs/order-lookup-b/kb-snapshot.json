@@ -1,0 +1,78 @@
+{
+  "cards": [
+    {
+      "card": {
+        "authorship": {
+          "extensions": {},
+          "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
+          "origin": "CONTRACT_EXAMPLE",
+          "producer": "team-lead-reference",
+          "schema_version": "0.4.0"
+        },
+        "card_id": "normal-order-response",
+        "claim_basis": "TEAM_HYPOTHESIS",
+        "extensions": {},
+        "license_identifier": null,
+        "node_types": [
+          "n8n-nodes-base.webhook",
+          "n8n-nodes-base.httpRequest",
+          "n8n-nodes-base.respondToWebhook"
+        ],
+        "required_artifact_kinds": [
+          "response"
+        ],
+        "reuse_status": "TEAM_AUTHORED",
+        "runtime_profile": "order-lookup-local-v1",
+        "schema_version": "0.4.0",
+        "source": "team-authored:examples/order-lookup/task.json",
+        "source_ref": null,
+        "source_revision": null,
+        "summary": "응답 표시 필드가 바뀌면 고정 주문의 핵심 응답을 유지하는지 확인할 자료가 필요하다.",
+        "template_id": "normal-order-lookup",
+        "template_version": "1.0.0",
+        "title": "주문 조회의 정상 응답",
+        "version": "1.0.0"
+      },
+      "sha256": "66b05221f0d4433614341145aeb1893e87d4b951c3f240bf290db66016f3f7a0"
+    },
+    {
+      "card": {
+        "authorship": {
+          "extensions": {},
+          "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
+          "origin": "CONTRACT_EXAMPLE",
+          "producer": "team-lead-reference",
+          "schema_version": "0.4.0"
+        },
+        "card_id": "read-only-order-state",
+        "claim_basis": "TEAM_HYPOTHESIS",
+        "extensions": {},
+        "license_identifier": null,
+        "node_types": [
+          "n8n-nodes-base.webhook",
+          "n8n-nodes-base.httpRequest",
+          "n8n-nodes-base.respondToWebhook"
+        ],
+        "required_artifact_kinds": [
+          "initial-state",
+          "final-state",
+          "events"
+        ],
+        "reuse_status": "TEAM_AUTHORED",
+        "runtime_profile": "order-lookup-local-v1",
+        "schema_version": "0.4.0",
+        "source": "team-authored:examples/order-lookup/task.json",
+        "source_ref": null,
+        "source_revision": null,
+        "summary": "조회는 주문 데이터를 바꾸지 않는다. 전후 상태와 서비스 이벤트를 수집한다.",
+        "template_id": "normal-order-lookup",
+        "template_version": "1.0.0",
+        "title": "조회 업무의 주문 상태 보존",
+        "version": "1.0.0"
+      },
+      "sha256": "ee35f9ec683c0f43391014f4a735963bb79d5abe6c954483603f671719fa3dc6"
+    }
+  ],
+  "hash_basis": "canonical-json-v1",
+  "schema_version": "0.4.0"
+}
