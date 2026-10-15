@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from uuid import uuid4
 
+from flowdelta.conformance.publication import wait_for_publication
 from flowdelta.ingestion import InputError, digest, json_bytes
 
 
@@ -169,11 +170,26 @@ def run_conformance(repo: Path, output: Path, *, only: str | None = None) -> dic
                     ready = True
                     break
                 time.sleep(1)
-            logs = subprocess.run(["docker", "logs", container], capture_output=True, check=False)
-            (folder / "bootstrap.log").write_bytes(logs.stdout + logs.stderr)
-            subprocess.run(
-                ["docker", "stop", "--timeout", "20", container], capture_output=True, check=True
-            )
+            try:
+                if ready:
+                    wait_for_publication(
+                        container,
+                        [
+                            json.loads((imports / f"{i}.json").read_bytes())["id"]
+                            for i in range(len(paths))
+                        ],
+                        folder / "publication.json",
+                    )
+            finally:
+                logs = subprocess.run(
+                    ["docker", "logs", container], capture_output=True, check=False
+                )
+                (folder / "bootstrap.log").write_bytes(logs.stdout + logs.stderr)
+                subprocess.run(
+                    ["docker", "stop", "--timeout", "20", container],
+                    capture_output=True,
+                    check=True,
+                )
             if not ready:
                 raise InputError("CONFORMANCE_BOOTSTRAP_TIMEOUT")
             result = subprocess.run(

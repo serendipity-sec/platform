@@ -283,6 +283,39 @@ def plan_command(
         raise typer.Exit(code=2) from None
 
 
+@app.command("bundle")
+def bundle_command(
+    handoff: Path,
+    out: Annotated[Path, typer.Option(help="New bundle directory; existing paths are rejected.")],
+    artifact: Annotated[
+        list[str] | None,
+        typer.Option(help="Explicit bundle-relative-path=source-file mapping; repeat per file."),
+    ] = None,
+) -> None:
+    """Preserve selected producer bytes and publish their manifest last."""
+    from flowdelta.pipeline_bundle import write_module_bundle
+
+    try:
+        sources = {}
+        for mapping in artifact or []:
+            name, separator, source = mapping.partition("=")
+            if not separator or not source:
+                raise InputError("ARTIFACT_MAPPING_INVALID")
+            if name in sources:
+                raise InputError("ARTIFACT_PATH_COLLISION", location=name)
+            sources[name] = Path(source)
+        manifest = write_module_bundle(handoff, sources, out)
+        typer.echo(
+            json_bytes(
+                {"status": "BUNDLE_WRITTEN", "artifact_count": len(manifest.artifacts)}
+            ).decode(),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("execute")
 def execute_command(
     bundle: Path,
@@ -292,6 +325,23 @@ def execute_command(
     from flowdelta.runtime.__main__ import main
 
     raise typer.Exit(code=main([str(bundle), "--out", str(out)]))
+
+
+@app.command("demo-order-lookup")
+def demo_order_lookup(
+    out: Annotated[Path, typer.Option(help="New demo directory under var/.")],
+) -> None:
+    """Generate A/B outputs, execute C, bundle evidence and check the fixed normal case."""
+    from flowdelta.demo import run_order_lookup_demo
+
+    try:
+        summary = run_order_lookup_demo(Path.cwd(), out)
+        typer.echo(json_bytes(summary).decode(), nl=False)
+        if not summary["all_normal_checks_passed"]:
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
 
 
 if __name__ == "__main__":

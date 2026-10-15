@@ -55,6 +55,9 @@ jobs:
       - run: uv sync --frozen --extra baseline
       - run: docker build --tag flowdelta-order-fixture:0.2.0 --file runtime/order-lookup/fixture.Dockerfile .
       - run: uv run --frozen --extra baseline flowdelta baseline --out var/ci-baseline
+      - run: docker build --tag flowdelta-order-fixture:0.3.0 --file runtime/order-lookup/fixture.Dockerfile .
+      - run: uv run --frozen --extra baseline flowdelta demo-order-lookup --out var/ci-integrated-order
+      - run: uv run --frozen --extra baseline flowdelta check-pipeline var/ci-integrated-order/bundle
 
   normal-node-conformance:
     runs-on: ubuntu-latest
@@ -72,3 +75,23 @@ jobs:
       - run: python -m pip install uv==0.9.30
       - run: uv sync --frozen --extra baseline
       - run: uv run --frozen --extra baseline flowdelta conformance --out var/ci-conformance
+      # Preserve registered synthetic fixture diagnostics, never private state or credentials.
+      - name: Preserve node conformance evidence
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: node-conformance-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            var/ci-conformance/summary.json
+            var/ci-conformance/runs.json
+            var/ci-conformance/*/run.json
+            var/ci-conformance/*/publication.json
+            var/ci-conformance/*/comparison.json
+            var/ci-conformance/*/runtime-executions.json
+            var/ci-conformance/*/bootstrap.log
+            var/ci-conformance/*/import-*.log
+            var/ci-conformance/*/publish-*.log
+            var/ci-conformance/*/stdout.log
+            var/ci-conformance/*/stderr.log

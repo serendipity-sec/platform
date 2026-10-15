@@ -1,0 +1,11 @@
+{
+  "checks": {
+    "both_normal_checks_passed": true,
+    "distinct_comparisons": true,
+    "distinct_run_ids": true,
+    "same_analysis_id": true,
+    "same_plan_id": true
+  },
+  "schema_version": "0.4.0",
+  "security_outcome": null
+}

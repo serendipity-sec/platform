@@ -1,0 +1,23 @@
+{
+  "engine_version": "2.42.6",
+  "fixture_metadata": {
+    "fastapi": "0.141.1",
+    "python": "3.13.15",
+    "source_sha256": {
+      "fixture.py": "2c617e668da723ac4eccd6c31be6e4ea8ecf5f3815b6d8f7476105efa143236f",
+      "probe.py": "c1733a25d93f814c644e246184a26a8dc0795e3c45ef25fcf8c5547a9c342d23"
+    },
+    "uvicorn": "0.53.0"
+  },
+  "image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+  "image_reference": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+  "network": "internal",
+  "observation_transport": "docker-exec-fixed-probe",
+  "project": "fdrt-207d1237059c4ccf",
+  "published_ports": {
+    "5678/tcp": null
+  },
+  "run_id": "run-7bd69fb691df47d5a37dfec9233c446e",
+  "runtime_profile": "order-lookup-local-v1",
+  "schema_version": "0.4.0"
+}

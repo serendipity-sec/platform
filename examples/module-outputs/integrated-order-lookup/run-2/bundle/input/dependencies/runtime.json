@@ -1,0 +1,11 @@
+{
+  "compose_sha256": "6ea5ae857d45c1ea75380bf769468635f15baa88923e6df6206804921fef1d4b",
+  "engine_version": "2.42.6",
+  "fixture_image": "flowdelta-order-fixture:0.2.0",
+  "fixture_source_sha256": {
+    "fixture.py": "2c617e668da723ac4eccd6c31be6e4ea8ecf5f3815b6d8f7476105efa143236f",
+    "probe.py": "158c2f39cc2a417e2efa2c602fe0acb440dd102127befa4014ec4c149c9892b2"
+  },
+  "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+  "network": "internal-compose-network-no-published-ports"
+}

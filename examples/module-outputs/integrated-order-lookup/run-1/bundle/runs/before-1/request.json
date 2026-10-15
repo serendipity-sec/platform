@@ -1,0 +1,9 @@
+{
+  "authentication": "local-credential-reference",
+  "body": {
+    "order_id": "ORD-1001"
+  },
+  "method": "POST",
+  "path": "/webhook/flowdelta-order-lookup",
+  "timeout_seconds": 30
+}

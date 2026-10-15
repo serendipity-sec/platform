@@ -1,0 +1,23 @@
+{
+  "data": {
+    "events": [],
+    "orders": [
+      {
+        "customer_id": "customer-demo",
+        "internal_note": "synthetic internal field excluded from public response",
+        "order_id": "ORD-1001",
+        "status": "준비중",
+        "tenant_id": "tenant-demo"
+      },
+      {
+        "customer_id": "other-demo",
+        "internal_note": "synthetic second tenant",
+        "order_id": "ORD-2001",
+        "status": "배송중",
+        "tenant_id": "other-tenant"
+      }
+    ]
+  },
+  "schema_version": "0.4.0",
+  "state_id": "order-lookup-state-001"
+}
