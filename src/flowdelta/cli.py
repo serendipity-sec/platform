@@ -203,5 +203,38 @@ def check_examples(bundle: Path) -> None:
         raise typer.Exit(code=2) from None
 
 
+@app.command("bundle")
+def bundle_command(
+    handoff: Path,
+    out: Annotated[Path, typer.Option(help="New bundle directory; existing paths are rejected.")],
+    artifact: Annotated[
+        list[str] | None,
+        typer.Option(help="Explicit bundle-relative-path=source-file mapping; repeat per file."),
+    ] = None,
+) -> None:
+    """Preserve selected producer bytes and publish their manifest last."""
+    from flowdelta.pipeline_bundle import write_module_bundle
+
+    try:
+        sources = {}
+        for mapping in artifact or []:
+            name, separator, source = mapping.partition("=")
+            if not separator or not source:
+                raise InputError("ARTIFACT_MAPPING_INVALID")
+            if name in sources:
+                raise InputError("ARTIFACT_PATH_COLLISION", location=name)
+            sources[name] = Path(source)
+        manifest = write_module_bundle(handoff, sources, out)
+        typer.echo(
+            json_bytes(
+                {"status": "BUNDLE_WRITTEN", "artifact_count": len(manifest.artifacts)}
+            ).decode(),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 if __name__ == "__main__":
     app()
