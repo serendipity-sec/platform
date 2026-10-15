@@ -82,6 +82,41 @@ def snapshot(
         raise typer.Exit(code=2) from None
 
 
+@app.command("analyze")
+def analyze_handoff(
+    handoff: Path,
+    out: Annotated[Path, typer.Option(help="New analysis.json path; parent must exist.")],
+) -> None:
+    """A: write a static control graph and change list; does not run the workflow."""
+    from flowdelta.graph import analyze
+    from flowdelta.pipeline_io import read_handoff
+
+    try:
+        bundle = analyze(read_handoff(handoff))
+        try:
+            with out.open("xb") as file:
+                file.write(json_bytes(bundle.model_dump(mode="json")))
+        except FileExistsError:
+            raise InputError("OUTPUT_EXISTS") from None
+        except OSError:
+            raise InputError("OUTPUT_WRITE_FAILED") from None
+        typer.echo(
+            json_bytes(
+                {
+                    "schema_version": SCHEMA_VERSION,
+                    "status": "ANALYSIS_WRITTEN",
+                    "analysis_id": bundle.analysis_id,
+                    "changes": len(bundle.changes),
+                    "execution_status": "NOT_RUN",
+                }
+            ).decode("utf-8"),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode("utf-8"), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("baseline")
 def baseline(
     out: Annotated[Path, typer.Option(help="New directory below this repository's var/.")],
