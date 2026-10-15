@@ -5,6 +5,7 @@ from pathlib import Path
 
 from flowdelta.contracts import ArtifactRef, Handoff
 from flowdelta.ingestion import (
+    MAX_FILE_BYTES,
     MAX_TOTAL_BYTES,
     InputError,
     _read_local,
@@ -23,9 +24,9 @@ from flowdelta.pipeline_contracts import (
     TemplateCatalog,
     TestPlan,
 )
-from flowdelta.pipeline_io import validate_pipeline, verify_ref
+from flowdelta.pipeline_io import validate_input_fields, validate_pipeline, verify_ref
 
-PRODUCER = "flowdelta.knowledge/1.0.0"
+PRODUCER = "flowdelta.knowledge/1.0.1"
 
 
 def _author(analysis: AnalysisBundle) -> Authorship:
@@ -65,6 +66,8 @@ def load_cards(directory: Path, *, bundle_root: Path | None = None) -> list[Scen
 
 
 def _ref(path: str, data: bytes, artifact_id: str) -> ArtifactRef:
+    if len(data) > MAX_FILE_BYTES:
+        raise InputError("FILE_SIZE_LIMIT", location=path)
     return ArtifactRef(
         artifact_id=artifact_id,
         path=path,
@@ -76,7 +79,7 @@ def _ref(path: str, data: bytes, artifact_id: str) -> ArtifactRef:
 
 def kb_bytes(cards: list[ScenarioCard]) -> bytes:
     """Embed the exact parsed cards, including provenance, in an immutable snapshot."""
-    return json_bytes(
+    data = json_bytes(
         {
             "schema_version": "0.4.0",
             "cards": [
@@ -89,6 +92,9 @@ def kb_bytes(cards: list[ScenarioCard]) -> bytes:
             "hash_basis": "canonical-json-v1",
         }
     )
+    if len(data) > MAX_FILE_BYTES:
+        raise InputError("KNOWLEDGE_SNAPSHOT_SIZE_LIMIT")
+    return data
 
 
 def retrieve(
@@ -129,6 +135,11 @@ def retrieve(
         if template.task_id != handoff.task.task_id or template.runtime_profile != profile:
             excluded[key] = "TEMPLATE_CONTEXT_MISMATCH"
             continue
+        try:
+            validate_input_fields(handoff.task.normal_input, template.input_fields)
+        except InputError as exc:
+            excluded[key] = exc.code
+            continue
         overlap = sorted(set(card.node_types) & set(node_types))
         if card.node_types and not overlap:
             excluded[key] = "NODE_TYPE_MISMATCH"
@@ -142,7 +153,8 @@ def retrieve(
     candidates.sort(key=lambda item: (-item[1], item[0].card_id, item[0].version))
     kb = kb_bytes(cards)
     fingerprint = digest(
-        kb
+        PRODUCER.encode("utf-8")
+        + kb
         + json_bytes(analysis.model_dump(mode="json"))
         + json_bytes(catalog.model_dump(mode="json"))
         + json_bytes(handoff.model_dump(mode="json"))
@@ -199,7 +211,16 @@ def make_plan(
         ]
     if not eligible:
         raise InputError("TEMPLATE_NOT_FOUND")
-    template = sorted(eligible, key=lambda t: (t.template_id, t.version))[0]
+    template = None
+    for candidate in sorted(eligible, key=lambda t: (t.template_id, t.version)):
+        try:
+            validate_input_fields(handoff.task.normal_input, candidate.input_fields)
+        except InputError:
+            continue
+        template = candidate
+        break
+    if template is None:
+        raise InputError("TEMPLATE_INPUT_INVALID")
     bindings = []
     uncovered = []
     for obligation in sorted(handoff.case.obligations, key=lambda item: item.obligation_id):

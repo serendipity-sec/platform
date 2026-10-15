@@ -28,12 +28,14 @@ plan을 마지막에 기록한다. 강제 종료에 대한 원자적 디렉터�
 
 1. 카드는 ID와 version 쌍이 유일해야 한다. 외부 출처 참조는 전체 입력 bundle 루트에서 검증한다.
 2. runtime profile과 등록 템플릿의 업무/profile이 맞지 않으면 제외한다.
+   handoff의 정상 입력이 템플릿 입력 스키마와 맞지 않아도 제외한다.
 3. node type이 지정됐지만 전후 workflow의 node type과 겹치지 않으면 제외한다.
 4. 점수는 node type 교집합 수와 변경 필드 키워드의 제목/요약 일치 수의 합이다.
    업무는 catalog의 task_id로 확인한다. 변경 필드 전용 카드 속성은 추가하지 않는다.
 5. 점수 내림차순, card ID와 version 오름차순으로 정렬하고 첫 카드의 템플릿을 선택한다.
-6. 검색 결과가 없으면 업무/profile에 맞는 등록 정상 템플릿을 ID/version 순으로 선택한다.
-   그런 템플릿도 없으면 `TEMPLATE_NOT_FOUND`다. 검색 결과 없음은 안전 판정이 아니다.
+6. 검색 결과가 없으면 업무/profile과 정상 입력에 맞는 등록 정상 템플릿을 ID/version 순으로 선택한다.
+   업무/profile 후보가 없으면 `TEMPLATE_NOT_FOUND`, 후보가 모두 입력과 맞지 않으면
+   `TEMPLATE_INPUT_INVALID`다. 검색 결과 없음은 안전 판정이 아니다.
 
 검색 방법은 `KEYWORD`, 모델 버전은 null이다. 알고리즘 버전은 query와 planner_metadata에
 기록한다. 점수는 위험 확률이나 보안 성능이 아니다. node type 중첩은 후보 검색 근거이며
@@ -50,6 +52,8 @@ CONTRACT_EXAMPLE은 바꾸지 않는다. 분석 출처는 출력 안내와 autho
 KB에는 정규 JSON 카드 내용과 그 정규 직렬화의 SHA-256을 담는다. 원본 파일의 공백까지
 해싱한 값과는 다르며 `hash_basis=canonical-json-v1`로 구분한다.
 retrieval은 KB 파일 bytes를, plan은 retrieval 파일 bytes를 참조한다.
+생성 KB가 8 MiB를 넘으면 `KNOWLEDGE_SNAPSHOT_SIZE_LIMIT`으로 기록 전에 거부한다.
+같은 입력과 같은 생성 규칙은 같은 ID를 만들며, 생성 규칙 버전이 바뀌면 ID도 달라진다.
 
 A의 실제 분석이 도착하면 같은 analysis.json 자리에 연결하면 된다.
 CLI의 analysis bundle에는 무결성 검사용 manifest.json과 input/이 필요하다.

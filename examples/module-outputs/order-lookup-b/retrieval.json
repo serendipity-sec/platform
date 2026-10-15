@@ -4,7 +4,7 @@
     "extensions": {},
     "note": "Deterministic local planning; analysis origin=CONTRACT_EXAMPLE.",
     "origin": "MODULE_OUTPUT",
-    "producer": "flowdelta.knowledge/1.0.0",
+    "producer": "flowdelta.knowledge/1.0.1",
     "schema_version": "0.4.0"
   },
   "excluded_reasons": {},
@@ -52,10 +52,10 @@
       "n8n-nodes-base.respondToWebhook",
       "n8n-nodes-base.webhook"
     ],
-    "rules_version": "flowdelta.knowledge/1.0.0",
+    "rules_version": "flowdelta.knowledge/1.0.1",
     "runtime_profile": "order-lookup-local-v1",
     "task_id": "order-lookup"
   },
-  "retrieval_id": "retrieval-340e36aa2a4138a87b50e635",
+  "retrieval_id": "retrieval-abb57e31348b7b38c6aa5c2e",
   "schema_version": "0.4.0"
 }
