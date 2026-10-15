@@ -10,7 +10,8 @@ from flowdelta.pipeline_contracts import GraphEdge, SemanticGraph
 _IDENTIFIER = re.compile(r"^[A-Za-z0-9_.-]+$")
 
 GRAPH_LIMITATIONS = [
-    "CONTROL 관계만 계산했다. DATA·지시 영향·권한 관계와 영향 경로는 아직 계산하지 않았다.",
+    "CONTROL 관계와 이름 참조 DATA 관계만 계산했다. "
+    "$json 필드 흐름·지시 영향·권한 관계와 영향 경로는 아직 계산하지 않았다.",
     "정적 연결 가능성이며 실제 실행 경로를 관측한 자료가 아니다.",
 ]
 
@@ -20,8 +21,15 @@ def short_hash(*parts: object, length: int = 16) -> str:
     return hashlib.sha256(joined.encode("utf-8")).hexdigest()[:length]
 
 
+def edge_id(prefix: str, source: str, target: str, key: tuple[object, ...]) -> str:
+    """Same relation gets the same ID on both sides; the hash keeps dashed IDs unambiguous."""
+    readable = f"{prefix}-{source}-{target}-{short_hash(*key, length=8)}"
+    if _IDENTIFIER.match(readable) and len(readable) <= 128:
+        return readable
+    return f"{prefix}-{short_hash(*key)}"
+
+
 def control_edge_id(connection: Connection) -> str:
-    """Same connection gets the same ID on both sides; the hash keeps dashed IDs unambiguous."""
     key = (
         connection.source_node_id,
         connection.source_output_type,
@@ -30,11 +38,7 @@ def control_edge_id(connection: Connection) -> str:
         connection.target_input_type,
         connection.target_input_index,
     )
-    suffix = short_hash(*key, length=8)
-    readable = f"control-{connection.source_node_id}-{connection.target_node_id}-{suffix}"
-    if _IDENTIFIER.match(readable) and len(readable) <= 128:
-        return readable
-    return f"control-{short_hash(*key)}"
+    return edge_id("control", connection.source_node_id, connection.target_node_id, key)
 
 
 def location_text(source: SourceLocation) -> str:

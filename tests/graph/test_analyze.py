@@ -35,6 +35,8 @@ def edge_keys(bundle: AnalysisBundle, side: str) -> list[tuple[object, ...]]:
             edge.condition is not None,
         )
         for edge in graph.edges
+        # The team-lead reference only covers CONTROL; name-reference DATA edges are tested apart.
+        if edge.relation == "CONTROL"
     )
 
 
