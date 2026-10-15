@@ -12,7 +12,7 @@ from flowdelta.pipeline_bundle import write_module_bundle
 from flowdelta.pipeline_contracts import TemplateCatalog
 from flowdelta.pipeline_io import read_handoff
 from flowdelta.runtime.executor import PlanExecutor
-from flowdelta.runtime.preflight import check_fresh_output
+from flowdelta.runtime.preflight import check_fresh_output, read_plan_bundle
 
 
 def run_order_lookup_demo(repo: Path, output: Path) -> dict[str, Any]:
@@ -47,6 +47,7 @@ def run_order_lookup_demo(repo: Path, output: Path) -> dict[str, Any]:
         raise InputError("DEMO_UNEXPECTED_PRIOR_EXECUTION")
 
     runtime_dir = target / "execution"
+    handoff, plan, catalog = read_plan_bundle(plan_bundle)
     runs = PlanExecutor(plan_bundle, repo).execute_plan(handoff, plan, catalog, runtime_dir)
     for run in runs:
         record = f"runs/{run.side}-{run.attempt_number}.run.json"
