@@ -1,6 +1,7 @@
 """Fixed normal-case observer, invoked over Docker exec inside the private lab."""
 
 import json
+import math
 import sys
 import urllib.error
 import urllib.request
@@ -42,8 +43,12 @@ def main() -> None:
         headers={"Content-Type": "application/json", **payload.get("headers", {})},
     )
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    timeout = payload.get("timeout_seconds", 30)
+    if type(timeout) not in (int, float) or not math.isfinite(timeout) or not 0 < timeout <= 30:
+        sys.stdout.write(json.dumps({"transport_error": "InvalidTimeout"}))
+        return
     try:
-        with opener.open(request, timeout=30) as response:
+        with opener.open(request, timeout=timeout) as response:
             result = {"status_code": response.status, "body": json.load(response)}
     except urllib.error.HTTPError as exc:
         try:
@@ -51,6 +56,14 @@ def main() -> None:
         except ValueError:
             data = {"error": "non_json_http_error"}
         result = {"status_code": exc.code, "body": data}
+    except TimeoutError:
+        result = {"transport_error": "TimeoutError"}
+    except urllib.error.URLError as exc:
+        result = {
+            "transport_error": "TimeoutError"
+            if isinstance(exc.reason, TimeoutError)
+            else "URLError"
+        }
     except (OSError, ValueError) as exc:
         result = {"transport_error": type(exc).__name__}
     sys.stdout.write(json.dumps(result, ensure_ascii=True))

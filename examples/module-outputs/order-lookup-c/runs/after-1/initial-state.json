@@ -1,0 +1,26 @@
+{
+  "events": [],
+  "metadata": {
+    "initial_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+    "run_id": "run-6fc18d6de0b44dacb9ae60b2e3446acc"
+  },
+  "orders": [
+    {
+      "customer_id": "customer-demo",
+      "internal_note": "synthetic internal field excluded from public response",
+      "order_id": "ORD-1001",
+      "status": "준비중",
+      "tenant_id": "tenant-demo"
+    },
+    {
+      "customer_id": "other-demo",
+      "internal_note": "synthetic second tenant",
+      "order_id": "ORD-2001",
+      "status": "배송중",
+      "tenant_id": "other-tenant"
+    }
+  ],
+  "orders_sha256": "c77dac14cabe172afa25a8e98eda7ec3647811786bea62422e29955895530df2",
+  "run_id": "run-6fc18d6de0b44dacb9ae60b2e3446acc",
+  "schema_version": "0.4.0"
+}

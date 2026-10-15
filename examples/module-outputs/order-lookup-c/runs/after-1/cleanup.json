@@ -1,0 +1,13 @@
+{
+  "check_command": "docker ps --all --filter label=com.docker.compose.project=fdrt-9de5b45c84a74b37",
+  "private_local_files_retained": true,
+  "project": "fdrt-9de5b45c84a74b37",
+  "remaining": {
+    "containers": [],
+    "networks": [],
+    "volumes": []
+  },
+  "run_id": "run-6fc18d6de0b44dacb9ae60b2e3446acc",
+  "schema_version": "0.4.0",
+  "status": "COMPLETE"
+}

@@ -1,0 +1,8 @@
+{
+  "body": {
+    "display_status": "주문 상태: 준비중",
+    "order_id": "ORD-1001",
+    "status": "준비중"
+  },
+  "status_code": 200
+}
