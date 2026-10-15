@@ -238,6 +238,51 @@ def check_examples(bundle: Path) -> None:
         raise typer.Exit(code=2) from None
 
 
+@app.command("plan")
+def plan_command(
+    bundle: Path,
+    catalog: Annotated[Path, typer.Option(help="Registered template catalog JSON.")],
+    cards: Annotated[Path, typer.Option(help="Local card directory.")],
+    out: Annotated[Path, typer.Option(help="New plan file at the future bundle root.")],
+) -> None:
+    """Generate B's plan and sibling retrieval/KB files without running workflows."""
+    from flowdelta.ingestion import _read_local, parse_file_model, parse_json
+    from flowdelta.knowledge import load_cards, write_plan
+    from flowdelta.pipeline_contracts import AnalysisBundle, TemplateCatalog
+    from flowdelta.pipeline_io import read_handoff, read_manifest
+
+    try:
+        root = bundle.resolve()
+        _, documents = read_manifest(root)
+        if "analysis.json" not in documents:
+            raise InputError("PIPELINE_FILE_MISSING")
+        analysis = parse_file_model(AnalysisBundle, documents["analysis.json"])
+        templates = parse_file_model(
+            TemplateCatalog, parse_json(_read_local(catalog.parent.resolve(), catalog.name))
+        )
+        plan = write_plan(
+            read_handoff(root / "input"),
+            analysis,
+            load_cards(cards, bundle_root=root),
+            templates,
+            out,
+        )
+        typer.echo(
+            json_bytes(
+                {
+                    "status": "PLAN_WRITTEN",
+                    "plan_id": plan.plan_id,
+                    "analysis_origin": analysis.authorship.origin,
+                    "execution_status": "NOT_RUN",
+                }
+            ).decode(),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("bundle")
 def bundle_command(
     handoff: Path,
