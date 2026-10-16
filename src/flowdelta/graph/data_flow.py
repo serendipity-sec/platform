@@ -8,6 +8,9 @@ from flowdelta.graph.control import DATA_ORIGIN, edge_id, location_text
 from flowdelta.pipeline_contracts import GraphEdge, SemanticGraph
 
 PASS_THROUGH = "$json.*:unchanged-item"
+# Set with "Include Other Fields": fields the node does not write itself pass on unchanged.
+PRESERVED_INPUT = "$json.*:preserved-input"
+_PASSES_ON = (PASS_THROUGH, PRESERVED_INPUT)
 # Writers that emit whole items whose field names the adapter cannot list.
 WILDCARD_WRITES = ("$json.*:array-element", "$json.*:caller-input")
 _JSON = "$json."
@@ -67,7 +70,7 @@ def _trace(
         written = _supplied_by(node_facts, read)
         if written is not None:
             hits.append((node_id, written))
-        elif PASS_THROUGH not in (node_facts.writes or []):
+        elif not any(item in _PASSES_ON for item in node_facts.writes or []):
             stops.append((node_id, "NOT_PASSED"))
         elif not parents.get(node_id):
             stops.append((node_id, "NO_UPSTREAM"))

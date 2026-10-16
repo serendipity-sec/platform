@@ -307,5 +307,35 @@ def test_subworkflow_semantics_that_differ_by_side_are_noted() -> None:
     dependency_semantics = {"summary": index.model_copy(update={"semantics": changed})}
     result = analyze(handoff.model_copy(update={"dependency_semantics": dependency_semantics}))
     graph = result.dependency_graphs["summary"]
-    assert any("전후 의미 정보가 달라" in item for item in graph.limitations)
+    [note] = [item for item in graph.limitations if "전후 의미 정보가 달라" in item]
+    assert "child-public" in note and "child-entry" not in note
+    assert "after 쪽" in note
     assert set(flows(graph)) == {("child-entry", "child-public")}
+
+
+def test_subworkflow_with_only_before_semantics_says_so() -> None:
+    handoff = load("support-triage")
+    index = handoff.dependency_semantics["summary"]
+    before_only = [item for item in index.semantics if item.side == "before"]
+    dependency_semantics = {"summary": index.model_copy(update={"semantics": before_only})}
+    result = analyze(handoff.model_copy(update={"dependency_semantics": dependency_semantics}))
+    graph = result.dependency_graphs["summary"]
+    assert any("before 쪽" in item for item in graph.limitations)
+    assert set(flows(graph)) == {("child-entry", "child-public")}
+
+
+def test_preserved_input_passes_fields_it_does_not_write() -> None:
+    graph = graph_of(
+        ["a", "b", "c"],
+        [connect("a", "b"), connect("b", "c")],
+        [
+            facts("a", writes=["$json.x"]),
+            facts("b", writes=["$json.y", "$json.*:preserved-input"]),
+            facts("c", reads=["$json.x", "$json.y"]),
+        ],
+    )
+    assert flows(graph) == {
+        ("a", "c"): (["$json.x"], ["$json.x"]),
+        ("b", "c"): (["$json.y"], ["$json.y"]),
+    }
+    assert added_limitations(graph) == []

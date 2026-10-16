@@ -60,20 +60,24 @@ def dependency_graphs(handoff: Handoff) -> dict[str, SemanticGraph]:
             sides[item.side][item.node_id] = item
         before, after = sides["before"], sides["after"]
         graph = build_graph(workflow, after or before, find_references(workflow, "after"))
-        if (
-            before
-            and after
-            and {key: _graph_facts(value) for key, value in before.items()}
-            != {key: _graph_facts(value) for key, value in after.items()}
-        ):
-            graph = graph.model_copy(
-                update={
-                    "limitations": [
-                        *graph.limitations,
-                        "하위 workflow의 전후 의미 정보가 달라 after 쪽만 사용했다.",
-                    ]
-                }
+        notes: list[str] = []
+        if before and after:
+            differing = sorted(
+                node_id
+                for node_id in before.keys() | after.keys()
+                if node_id not in before
+                or node_id not in after
+                or _graph_facts(before[node_id]) != _graph_facts(after[node_id])
             )
+            if differing:
+                notes.append(
+                    f"하위 workflow의 전후 의미 정보가 달라({', '.join(differing)}) "
+                    "after 쪽만 사용했다."
+                )
+        elif before:
+            notes.append("하위 workflow의 after 의미 정보가 없어 before 쪽을 사용했다.")
+        if notes:
+            graph = graph.model_copy(update={"limitations": [*graph.limitations, *notes]})
         graphs[dependency_id] = graph
     return graphs
 
