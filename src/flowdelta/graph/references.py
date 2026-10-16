@@ -9,7 +9,7 @@ from pydantic import JsonValue
 
 from flowdelta.contracts import NormalizedWorkflow, SourceLocation
 from flowdelta.graph.changes import Path, pointer
-from flowdelta.graph.control import edge_id
+from flowdelta.graph.control import DATA_ORIGIN, edge_id
 from flowdelta.pipeline_contracts import Change, GraphEdge, SemanticGraph
 
 EXTENSION = "flowdelta.graph.name_references"
@@ -115,6 +115,7 @@ def add_reference_edges(
                 target_fields=[reference.location.json_pointer],
                 evidence=[reference.location],
                 basis="STATIC_POSSIBILITY",
+                extensions={DATA_ORIGIN: "NAME_REFERENCE"},
             )
         )
     return SemanticGraph(
