@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -6,6 +7,7 @@ from pydantic import JsonValue
 
 from flowdelta.contracts import Handoff, NormalizedWorkflow
 from flowdelta.graph import analyze
+from flowdelta.graph.references import pointer_encloses
 from flowdelta.pipeline_contracts import AnalysisBundle, Change
 from flowdelta.pipeline_io import read_handoff
 
@@ -104,6 +106,99 @@ def test_rename_with_updated_references_links_the_follow_up_changes() -> None:
     assert len(follow_ups) == 2
     assert set(verdict["related_change_ids"]) == follow_ups
     assert data_edges(result, "after") == {("split", "urgent"), ("split", "standard")}
+
+
+def edit_assignments(
+    workflow: NormalizedWorkflow, edit: Callable[[str, list[JsonValue]], list[JsonValue]]
+) -> NormalizedWorkflow:
+    nodes = []
+    for node in workflow.nodes:
+        if node.node_id in {"urgent", "standard"}:
+            parameters = dict(node.parameters)
+            original = parameters["assignments"]
+            assert isinstance(original, dict)
+            block = dict(original)
+            items = block["assignments"]
+            assert isinstance(items, list)
+            block["assignments"] = edit(node.node_id, items)
+            parameters["assignments"] = block
+            node = node.model_copy(update={"parameters": parameters})
+        nodes.append(node)
+    return workflow.model_copy(update={"nodes": nodes})
+
+
+def renamed_split(handoff: Handoff, after: NormalizedWorkflow) -> tuple[AnalysisBundle, Change]:
+    result = analyze(handoff.model_copy(update={"after": after}))
+    return result, rename_change(result, "split")
+
+
+def follow_ups(result: AnalysisBundle) -> set[str]:
+    return {
+        item.change_id
+        for item in result.changes
+        if item.kind == "PARAMETER_CHANGED" and item.node_id in {"urgent", "standard"}
+    }
+
+
+def test_rename_with_replaced_assignment_ids_links_the_element_changes() -> None:
+    handoff = load("support-triage")
+
+    def new_ids(node_id: str, items: list[JsonValue]) -> list[JsonValue]:
+        first = items[0]
+        assert isinstance(first, dict)
+        return [{**first, "id": f"{node_id}-new"}, *items[1:]]
+
+    after = edit_assignments(
+        rewrite_references(
+            rename_node(handoff.after, "split", "Split items"), "Split tickets", "Split items"
+        ),
+        new_ids,
+    )
+    result, change = renamed_split(handoff, after)
+    verdict = judgment(change)
+    assert verdict["status"] == "REFERENCES_UPDATED"
+    # Each node: the old element is removed and the new one added, one level above /value.
+    assert len(follow_ups(result)) == 4
+    assert set(verdict["related_change_ids"]) == follow_ups(result)
+
+
+def test_rename_with_deleted_referencing_assignment_links_the_deletion() -> None:
+    handoff = load("support-triage")
+    after = edit_assignments(
+        rename_node(handoff.after, "split", "Split items"), lambda _, items: items[1:]
+    )
+    result, change = renamed_split(handoff, after)
+    verdict = judgment(change)
+    assert verdict["status"] == "REFERENCES_UPDATED"
+    assert len(follow_ups(result)) == 2
+    assert set(verdict["related_change_ids"]) == follow_ups(result)
+
+
+def test_rename_with_reordered_assignments_links_the_list_change() -> None:
+    handoff = load("support-triage")
+    after = edit_assignments(
+        rewrite_references(
+            rename_node(handoff.after, "split", "Split items"), "Split tickets", "Split items"
+        ),
+        lambda _, items: list(reversed(items)),
+    )
+    result, change = renamed_split(handoff, after)
+    verdict = judgment(change)
+    assert len(follow_ups(result)) == 2
+    assert set(verdict["related_change_ids"]) == follow_ups(result)
+
+
+@pytest.mark.parametrize(
+    ("outer", "inner", "expected"),
+    [
+        ("/nodes/4/parameters/a/1", "/nodes/4/parameters/a/1/value", True),
+        ("/nodes/4/parameters/a/1", "/nodes/4/parameters/a/1", True),
+        ("/nodes/4/parameters/a/1", "/nodes/4/parameters/a/10/value", False),
+        ("/nodes/1", "/nodes/10/parameters", False),
+    ],
+)
+def test_pointer_nesting_respects_token_boundaries(outer: str, inner: str, expected: bool) -> None:
+    assert pointer_encloses(outer, inner) is expected
 
 
 def test_rename_without_updating_references_is_broken() -> None:
