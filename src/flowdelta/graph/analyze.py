@@ -47,7 +47,7 @@ def build_graph(
 
 
 def _graph_facts(item: NodeSemantics) -> tuple[object, ...]:
-    return (item.reads, item.writes, item.effects, item.support)
+    return (item.reads, item.writes, item.effects, item.support, item.branches)
 
 
 def dependency_graphs(handoff: Handoff) -> dict[str, SemanticGraph]:

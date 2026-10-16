@@ -4,6 +4,7 @@ from typing import Literal
 
 from flowdelta.contracts import (
     Connection,
+    ErrorBehavior,
     Handoff,
     NodeSemantics,
     NormalizedNode,
@@ -33,17 +34,17 @@ def node(index: int, node_id: str) -> NormalizedNode:
     )
 
 
-def connect(source: str, target: str, port: int = 0) -> Connection:
+def connect(source: str, target: str, port: int = 0, output: int = 0) -> Connection:
     return Connection(
         source_node_id=source,
         source_output_type="main",
-        source_output_index=0,
+        source_output_index=output,
         target_node_id=target,
         target_input_type="main",
         target_input_index=port,
         opaque_fields={},
         source=SourceLocation(
-            artifact_id=ARTIFACT, json_pointer=f"/connections/{source}/main/0/{port}"
+            artifact_id=ARTIFACT, json_pointer=f"/connections/{source}/main/{output}/{port}"
         ),
     )
 
@@ -54,7 +55,13 @@ def facts(
     reads: Sequence[str] | None = (),
     writes: Sequence[str] | None = (),
     support: Literal["SUPPORTED", "UNSUPPORTED", "UNKNOWN"] = "SUPPORTED",
+    error_output: int | None = None,
 ) -> NodeSemantics:
+    error = (
+        ErrorBehavior(on_error="continueErrorOutput", error_output_index=error_output)
+        if error_output is not None
+        else None
+    )
     return NodeSemantics(
         node_id=node_id,
         side="after",
@@ -64,6 +71,7 @@ def facts(
         reads=list(reads) if reads is not None else None,
         writes=list(writes) if writes is not None else None,
         support=support,
+        error_behavior=error,
         source=SourceLocation(artifact_id=ARTIFACT, json_pointer=f"/nodes/{node_id}"),
     )
 
@@ -339,3 +347,90 @@ def test_preserved_input_passes_fields_it_does_not_write() -> None:
         ("b", "c"): (["$json.y"], ["$json.y"]),
     }
     assert added_limitations(graph) == []
+
+
+def test_every_matching_write_is_recorded() -> None:
+    graph = graph_of(
+        ["a", "b"],
+        [connect("a", "b")],
+        [facts("a", writes=["$json.body", "$json.body.id"]), facts("b", reads=["$json.body.id"])],
+    )
+    assert flows(graph) == {("a", "b"): (["$json.body", "$json.body.id"], ["$json.body.id"])}
+
+
+def test_nearer_writer_hides_a_farther_one() -> None:
+    graph = graph_of(
+        ["a", "b", "c"],
+        [connect("a", "b"), connect("b", "c")],
+        [
+            facts("a", writes=["$json.x"]),
+            facts("b", writes=["$json.x"]),
+            facts("c", reads=["$json.x"]),
+        ],
+    )
+    assert flows(graph) == {("b", "c"): (["$json.x"], ["$json.x"])}
+
+
+def test_error_output_does_not_carry_declared_writes() -> None:
+    graph = graph_of(
+        ["a", "b"],
+        [connect("a", "b", output=1)],
+        [facts("a", writes=["$json.status"], error_output=1), facts("b", reads=["$json.status"])],
+    )
+    assert flows(graph) == {}
+    assert any("오류 출력" in item and "a" in item for item in added_limitations(graph))
+
+
+def test_pass_through_root_is_named() -> None:
+    graph = graph_of(
+        ["a", "c"],
+        [connect("a", "c")],
+        [facts("a", writes=[PASS_THROUGH]), facts("c", reads=["$json.x"])],
+    )
+    assert flows(graph) == {}
+    assert any("a보다 앞 노드가 없어" in item for item in added_limitations(graph))
+
+
+def test_loop_back_to_the_reader_is_noted() -> None:
+    graph = graph_of(
+        ["a", "c", "b"],
+        [connect("a", "c"), connect("c", "b"), connect("b", "c", 1)],
+        [
+            facts("a", writes=["$json.x"]),
+            facts("c", reads=["$json.x"], writes=["$json.y"]),
+            facts("b", writes=[PASS_THROUGH]),
+        ],
+    )
+    assert flows(graph) == {("a", "c"): (["$json.x"], ["$json.x"])}
+    assert any("c 자신에게 돌아와" in item for item in added_limitations(graph))
+
+
+def test_subworkflow_branch_difference_is_noted() -> None:
+    handoff = load("support-triage")
+    branches = next(
+        item.branches
+        for item in handoff.semantics.semantics
+        if (item.node_id, item.side) == ("priority", "before")
+    )
+    assert branches
+    index = handoff.dependency_semantics["summary"]
+    changed = [
+        item.model_copy(update={"branches": branches})
+        if (item.node_id, item.side) == ("child-public", "before")
+        else item
+        for item in index.semantics
+    ]
+    dependency_semantics = {"summary": index.model_copy(update={"semantics": changed})}
+    result = analyze(handoff.model_copy(update={"dependency_semantics": dependency_semantics}))
+    graph = result.dependency_graphs["summary"]
+    assert any(
+        "전후 의미 정보가 달라" in item and "child-public" in item for item in graph.limitations
+    )
+
+
+def test_graph_explains_how_to_tell_data_edges_apart() -> None:
+    graph = analyze(load("order-lookup")).after_graph
+    assert any(
+        "flowdelta.graph.data_origin" in item and "FIELD_FLOW" in item and "JSON Pointer" in item
+        for item in graph.limitations
+    )
