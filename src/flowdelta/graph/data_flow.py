@@ -17,7 +17,10 @@ _JSON = "$json."
 # Named reads belong to name-reference edges; http.* is the outside request, not a node.
 _HANDLED_ELSEWHERE = ("$(", "http.")
 
-Stop = tuple[str | None, Literal["NO_UPSTREAM", "UNUSABLE", "NOT_PASSED", "NOT_FOUND"]]
+Stop = tuple[
+    str | None,
+    Literal["NO_UPSTREAM", "UNUSABLE", "NOT_PASSED", "NOT_FOUND", "ERROR_OUTPUT", "LOOP"],
+]
 
 
 def usable(facts: NodeSemantics | None) -> TypeGuard[NodeSemantics]:
@@ -33,23 +36,35 @@ def _matches(written: str, read: str) -> bool:
     return written == read or read.startswith(written + ".") or written.startswith(read + ".")
 
 
-def _supplied_by(facts: NodeSemantics, read: str) -> str | None:
-    for written in facts.writes or []:
-        if written in WILDCARD_WRITES or _matches(written, read):
-            return written
-    return None
+def _supplied_by(facts: NodeSemantics, read: str) -> list[str]:
+    return [
+        written
+        for written in facts.writes or []
+        if written in WILDCARD_WRITES or _matches(written, read)
+    ]
 
 
-def _parents(graph: SemanticGraph) -> dict[str, list[str]]:
-    parents: dict[str, set[str]] = {}
+def _parents(graph: SemanticGraph) -> dict[str, list[tuple[str, int]]]:
+    """(parent, output port) per node; the port tells an error output from a regular one."""
+    parents: dict[str, set[tuple[str, int]]] = {}
     for edge in graph.edges:
         if edge.relation == "CONTROL":
-            parents.setdefault(edge.target_node_id, set()).add(edge.source_node_id)
+            parents.setdefault(edge.target_node_id, set()).add(
+                (edge.source_node_id, edge.output_port)
+            )
     return {node_id: sorted(items) for node_id, items in parents.items()}
 
 
+def _error_port(facts: NodeSemantics, port: int) -> bool:
+    error = facts.error_behavior
+    return error is not None and error.error_output_index == port
+
+
 def _trace(
-    reader: str, read: str, parents: dict[str, list[str]], facts: dict[str, NodeSemantics]
+    reader: str,
+    read: str,
+    parents: dict[str, list[tuple[str, int]]],
+    facts: dict[str, NodeSemantics],
 ) -> tuple[list[tuple[str, str]], list[Stop]]:
     """Walk CONTROL edges backwards on every branch; cross only declared pass-through nodes."""
     if not parents.get(reader):
@@ -59,7 +74,9 @@ def _trace(
     seen = {reader}
     queue = deque(parents[reader])
     while queue:
-        node_id = queue.popleft()
+        node_id, port = queue.popleft()
+        if node_id == reader and (reader, "LOOP") not in stops:
+            stops.append((reader, "LOOP"))
         if node_id in seen:
             continue
         seen.add(node_id)
@@ -67,9 +84,13 @@ def _trace(
         if not usable(node_facts):
             stops.append((node_id, "UNUSABLE"))
             continue
+        if _error_port(node_facts, port):
+            # Declared writes describe the regular output; the error item is not modelled.
+            stops.append((node_id, "ERROR_OUTPUT"))
+            continue
         written = _supplied_by(node_facts, read)
-        if written is not None:
-            hits.append((node_id, written))
+        if written:
+            hits.extend((node_id, item) for item in written)
         elif not any(item in _PASSES_ON for item in node_facts.writes or []):
             stops.append((node_id, "NOT_PASSED"))
         elif not parents.get(node_id):
@@ -93,6 +114,18 @@ def _stop_text(where: str, reader: str, read: str, stop: Stop) -> str:
         )
     if reason == "NOT_FOUND":
         return f"{prefix}를 쓰는 앞 노드를 찾지 못했다."
+    if reason == "ERROR_OUTPUT":
+        return (
+            f"{prefix}의 출처를 찾다가 {node_id}의 오류 출력으로 이어져, "
+            "정상 출력의 쓰기 선언을 적용하지 않았다."
+        )
+    if reason == "LOOP":
+        return (
+            f"{prefix}의 출처를 찾다가 순환으로 {node_id} 자신에게 돌아와 "
+            "그 갈래는 따라가지 않았다."
+        )
+    if node_id is not None:
+        return f"{prefix}의 출처를 찾다가 {node_id}보다 앞 노드가 없어 멈췄다."
     return f"{prefix}를 쓰는 앞 노드가 없다."
 
 
