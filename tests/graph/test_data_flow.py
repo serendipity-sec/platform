@@ -1,17 +1,22 @@
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Literal
 
 from flowdelta.contracts import (
     Connection,
+    Handoff,
     NodeSemantics,
     NormalizedNode,
     NormalizedWorkflow,
     SourceLocation,
 )
+from flowdelta.graph import analyze
 from flowdelta.graph.control import DATA_ORIGIN, build_control_graph
 from flowdelta.graph.data_flow import PASS_THROUGH, add_field_flow_edges
 from flowdelta.pipeline_contracts import SemanticGraph
+from flowdelta.pipeline_io import read_handoff
 
+ROOT = Path(__file__).resolve().parents[2]
 ARTIFACT = "wf-1"
 Flows = dict[tuple[str, str], tuple[list[str], list[str]]]
 
@@ -239,3 +244,68 @@ def test_cycle_terminates() -> None:
     )
     assert flows(graph) == {}
     assert any("찾지 못했다" in item for item in added_limitations(graph))
+
+
+def load(case: str) -> Handoff:
+    return read_handoff(ROOT / "examples/contracts" / case / "input")
+
+
+def test_order_lookup_field_flow_on_both_sides() -> None:
+    result = analyze(load("order-lookup"))
+    expected = {
+        ("request", "read-order"): (["$json.body"], ["$json.body.order_id"]),
+        ("read-order", "response"): (
+            ["$json.order_id", "$json.status"],
+            ["$json.order_id", "$json.status"],
+        ),
+    }
+    assert flows(result.before_graph) == expected
+    assert flows(result.after_graph) == expected
+
+
+def test_support_triage_field_flow_stops_at_subworkflow_call() -> None:
+    graph = analyze(load("support-triage")).after_graph
+    assert flows(graph) == {
+        ("seed", "split"): (["$json.tickets"], ["$json.tickets"]),
+        ("split", "priority"): (["$json.*:array-element"], ["$json.priority"]),
+    }
+    assert any(
+        "result가 읽는 $json.queue" in item and "summary" in item for item in graph.limitations
+    )
+
+
+def test_fixed_subworkflow_gets_its_own_graph() -> None:
+    result = analyze(load("support-triage"))
+    assert list(result.dependency_graphs) == ["summary"]
+    graph = result.dependency_graphs["summary"]
+    controls = {
+        (edge.source_node_id, edge.target_node_id)
+        for edge in graph.edges
+        if edge.relation == "CONTROL"
+    }
+    assert controls == {("child-entry", "child-public")}
+    assert flows(graph) == {
+        ("child-entry", "child-public"): (
+            ["$json.*:caller-input"],
+            ["$json.queue", "$json.ticket_id"],
+        )
+    }
+    assert not any("전후 의미 정보가 달라" in item for item in graph.limitations)
+    assert not any("아직 만들지 않았다" in item for item in result.limitations)
+    assert any("dependency_graphs" in item for item in result.limitations)
+
+
+def test_subworkflow_semantics_that_differ_by_side_are_noted() -> None:
+    handoff = load("support-triage")
+    index = handoff.dependency_semantics["summary"]
+    changed = [
+        item.model_copy(update={"reads": []})
+        if (item.node_id, item.side) == ("child-public", "before")
+        else item
+        for item in index.semantics
+    ]
+    dependency_semantics = {"summary": index.model_copy(update={"semantics": changed})}
+    result = analyze(handoff.model_copy(update={"dependency_semantics": dependency_semantics}))
+    graph = result.dependency_graphs["summary"]
+    assert any("전후 의미 정보가 달라" in item for item in graph.limitations)
+    assert set(flows(graph)) == {("child-entry", "child-public")}
