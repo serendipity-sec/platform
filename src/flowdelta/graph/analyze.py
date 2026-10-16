@@ -5,6 +5,7 @@ from flowdelta.contracts import ArtifactRef, Handoff, NodeSemantics, NormalizedW
 from flowdelta.graph.changes import extract_changes
 from flowdelta.graph.control import build_control_graph, short_hash
 from flowdelta.graph.data_flow import add_field_flow_edges
+from flowdelta.graph.impact import Side, impact_paths
 from flowdelta.graph.matching import match_nodes
 from flowdelta.graph.references import (
     NameReference,
@@ -24,7 +25,8 @@ ANALYSIS_LIMITATIONS = [
     "이름 변경의 참조 판정은 해당 변경의 extensions(flowdelta.graph.name_references)에 기록한다.",
     '이름 참조는 $(\'이름\')·$node["이름"]·$items("이름") 형태의 문자열만 찾는다. '
     "실행 중에 조립되는 이름은 찾지 못한다.",
-    "영향 경로(impact_paths)는 아직 계산하지 않았다.",
+    "영향 경로(impact_paths)는 변경 노드에서 효과가 있는 노드·마지막 노드까지의 "
+    "정적 최단 경로다. 정책 규칙과는 연결하지 않았다.",
     "보안 위험 판정을 포함하지 않는다.",
 ]
 
@@ -85,7 +87,7 @@ def dependency_graphs(handoff: Handoff) -> dict[str, SemanticGraph]:
 def analyze(handoff: Handoff) -> AnalysisBundle:
     case = handoff.case
     before_snapshot, after_snapshot = handoff.snapshots.snapshots
-    facts: dict[str, dict[str, NodeSemantics]] = {"before": {}, "after": {}}
+    facts: dict[Side, dict[str, NodeSemantics]] = {"before": {}, "after": {}}
     for item in handoff.semantics.semantics:
         facts[item.side][item.node_id] = item
     before_refs = find_references(handoff.before, "before")
@@ -105,6 +107,14 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
             "호출 노드와 고정 하위 workflow 사이의 필드 전달은 연결하지 않았다. "
             "하위 workflow 그래프는 dependency_graphs에 따로 있다."
         )
+    paths, unplaced = impact_paths(
+        changes, {"before": before_graph, "after": after_graph}, facts, handoff.task.task_id
+    )
+    if unplaced:
+        limitations.append(
+            f"시작 노드가 없는 변경 {unplaced}개(workflow 수준 변경 등)는 "
+            "영향 경로를 만들지 않았다."
+        )
     return AnalysisBundle(
         analysis_id="analysis-"
         + short_hash(before_snapshot.snapshot_id, after_snapshot.snapshot_id, PRODUCER),
@@ -114,7 +124,7 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
         authorship=Authorship(
             origin="MODULE_OUTPUT",
             producer=PRODUCER,
-            note="A 분석기가 handoff에서 생성한 정적 제어·데이터 그래프와 변경 목록이다.",
+            note="A 분석기가 handoff에서 생성한 정적 제어·데이터 그래프, 변경 목록과 영향 경로다.",
         ),
         node_matches=match_nodes(handoff.before, handoff.after),
         before_graph=before_graph,
@@ -124,5 +134,6 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
         policy_ref=_context_ref(handoff, case.evaluation_policy_ref),
         obligation_ids=[item.obligation_id for item in case.obligations],
         limitations=limitations,
+        impact_paths=paths,
         dependency_graphs=dependency_graphs(handoff),
     )

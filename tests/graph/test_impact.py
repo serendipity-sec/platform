@@ -1,0 +1,227 @@
+from pathlib import Path
+
+from flowdelta.contracts import Handoff, NormalizedWorkflow, SourceLocation
+from flowdelta.graph import analyze
+from flowdelta.graph.impact import output_nodes, shortest_paths
+from flowdelta.pipeline_contracts import AnalysisBundle, GraphEdge, ImpactPath, SemanticGraph
+from flowdelta.pipeline_io import read_handoff, read_pipeline_examples, validate_pipeline
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def example(case: str) -> Path:
+    return ROOT / "examples/contracts" / case
+
+
+def load(case: str) -> Handoff:
+    return read_handoff(example(case) / "input")
+
+
+def checked(case: str, handoff: Handoff) -> AnalysisBundle:
+    """Analyze, then run the cross-file check that guards impact path references."""
+    result = analyze(handoff)
+    examples = read_pipeline_examples(example(case))
+    plan = examples.plan.model_copy(update={"analysis_id": result.analysis_id})
+    validate_pipeline(handoff, result, examples.catalog, plan)
+    return result
+
+
+def with_priority_threshold(handoff: Handoff, threshold: int, operation: str = "gte") -> Handoff:
+    nodes = []
+    for node in handoff.after.nodes:
+        if node.node_id == "priority":
+            parameters = dict(node.parameters)
+            conditions = dict(parameters["conditions"])
+            condition = dict(conditions["conditions"][0])
+            condition["rightValue"] = threshold
+            condition["operator"] = {**condition["operator"], "operation": operation}
+            conditions["conditions"] = [condition]
+            parameters["conditions"] = conditions
+            node = node.model_copy(update={"parameters": parameters})
+        nodes.append(node)
+    return handoff.model_copy(update={"after": handoff.after.model_copy(update={"nodes": nodes})})
+
+
+def with_after_semantics(handoff: Handoff, node_id: str, **update: object) -> Handoff:
+    items = [
+        item.model_copy(update=update) if (item.node_id, item.side) == (node_id, "after") else item
+        for item in handoff.semantics.semantics
+    ]
+    semantics = handoff.semantics.model_copy(update={"semantics": items})
+    return handoff.model_copy(update={"semantics": semantics})
+
+
+def without_after_semantics(handoff: Handoff, node_id: str) -> Handoff:
+    items = [
+        item
+        for item in handoff.semantics.semantics
+        if (item.node_id, item.side) != (node_id, "after")
+    ]
+    semantics = handoff.semantics.model_copy(update={"semantics": items})
+    return handoff.model_copy(update={"semantics": semantics})
+
+
+def without_after_node(handoff: Handoff, node_id: str) -> Handoff:
+    after = handoff.after
+    workflow: NormalizedWorkflow = after.model_copy(
+        update={
+            "nodes": [node for node in after.nodes if node.node_id != node_id],
+            "connections": [
+                item
+                for item in after.connections
+                if node_id not in (item.source_node_id, item.target_node_id)
+            ],
+        }
+    )
+    return handoff.model_copy(update={"after": workflow})
+
+
+def hops(result: AnalysisBundle, path: ImpactPath) -> list[tuple[str, str]]:
+    graph = result.before_graph if path.side == "before" else result.after_graph
+    edges = {edge.edge_id: edge for edge in graph.edges}
+    return [(edges[item].source_node_id, edges[item].target_node_id) for item in path.edge_ids]
+
+
+def end_of(result: AnalysisBundle, path: ImpactPath, start: str) -> str:
+    steps = hops(result, path)
+    return steps[-1][1] if steps else start
+
+
+def paths_of(result: AnalysisBundle, node_id: str) -> list[ImpactPath]:
+    ids = {change.change_id for change in result.changes if change.node_id == node_id}
+    return [path for path in result.impact_paths if ids & set(path.change_ids)]
+
+
+def test_order_lookup_response_change_is_its_own_output() -> None:
+    result = checked("order-lookup", load("order-lookup"))
+    [change] = result.changes
+    [path] = result.impact_paths
+    assert path.side == "after"
+    assert path.change_ids == [change.change_id]
+    assert path.edge_ids == []
+    assert path.task_ids == ["order-lookup"]
+    assert path.policy_rule_ids == []
+    assert any("정책" in item for item in path.limitations)
+    assert path.support == "SUPPORTED"
+    assert path.basis == "STATIC_POSSIBILITY"
+
+
+def test_support_triage_result_change_is_the_last_node() -> None:
+    result = checked("support-triage", load("support-triage"))
+    [path] = result.impact_paths
+    assert path.edge_ids == []
+    assert path.task_ids == ["support-triage"]
+    assert [change.node_id for change in result.changes] == ["result"]
+
+
+def test_receive_only_trigger_is_not_an_output() -> None:
+    handoff = load("order-lookup")
+    facts = {item.node_id: item for item in handoff.semantics.semantics if item.side == "after"}
+    assert output_nodes(analyze(handoff).after_graph, facts) == {"read-order", "response"}
+
+
+def test_if_change_reaches_subworkflow_call_and_last_node() -> None:
+    handoff = with_priority_threshold(load("support-triage"), 4)
+    result = checked("support-triage", handoff)
+    paths = {end_of(result, path, "priority"): path for path in paths_of(result, "priority")}
+    assert set(paths) == {"summary", "result"}
+    # Equal-length branches are settled by edge ID: control-priority-standard < -urgent.
+    assert hops(result, paths["summary"]) == [
+        ("priority", "standard"),
+        ("standard", "merge"),
+        ("merge", "summary"),
+    ]
+    assert len(paths["result"].edge_ids) == 4
+    for path in paths.values():
+        assert path.side == "after"
+        assert path.support == "SUPPORTED"
+        assert any("하위 workflow" in item for item in path.limitations)
+
+
+def test_two_changes_on_one_node_share_each_path() -> None:
+    handoff = with_priority_threshold(load("support-triage"), 4, operation="gt")
+    result = checked("support-triage", handoff)
+    ids = sorted(change.change_id for change in result.changes if change.node_id == "priority")
+    assert len(ids) == 2
+    paths = paths_of(result, "priority")
+    assert len(paths) == 2
+    assert all(path.change_ids == ids for path in paths)
+
+
+def test_removed_node_path_uses_the_before_graph() -> None:
+    result = checked("support-triage", without_after_node(load("support-triage"), "standard"))
+    removed = next(change for change in result.changes if change.kind == "REMOVED")
+    paths = [path for path in result.impact_paths if removed.change_id in path.change_ids]
+    assert {end_of(result, path, "standard") for path in paths} == {"summary", "result"}
+    for path in paths:
+        assert path.side == "before"
+        assert hops(result, path)[0][0] == "standard"
+    # The removed connection priority -> standard exists only before, so it starts there too.
+    dropped = next(
+        change
+        for change in result.changes
+        if change.kind == "CONNECTION_CHANGED" and change.node_id == "priority"
+    )
+    assert all(
+        path.side == "before"
+        for path in result.impact_paths
+        if dropped.change_id in path.change_ids
+    )
+
+
+def test_unsupported_node_on_the_path_is_partial() -> None:
+    handoff = with_after_semantics(
+        with_priority_threshold(load("support-triage"), 4), "merge", support="UNSUPPORTED"
+    )
+    result = checked("support-triage", handoff)
+    paths = paths_of(result, "priority")
+    assert paths
+    for path in paths:
+        assert path.support == "PARTIAL"
+        assert any("merge" in item for item in path.limitations)
+
+
+def test_start_without_semantics_is_unknown() -> None:
+    result = analyze(without_after_semantics(load("order-lookup"), "response"))
+    [path] = result.impact_paths
+    assert path.support == "UNKNOWN"
+
+
+def test_workflow_level_change_has_no_path() -> None:
+    handoff = load("order-lookup")
+    settings = {"executionOrder": "v0"}
+    after = handoff.after.model_copy(
+        update={"opaque_fields": {**handoff.after.opaque_fields, "settings": settings}}
+    )
+    result = checked("order-lookup", handoff.model_copy(update={"after": after}))
+    workflow_level = [change for change in result.changes if change.node_id is None]
+    assert len(workflow_level) == 1
+    assert all(workflow_level[0].change_id not in path.change_ids for path in result.impact_paths)
+    assert len(result.impact_paths) == 1
+    assert any("시작 노드가 없는 변경 1개" in item for item in result.limitations)
+    assert not any("아직 계산하지 않았다" in item for item in result.limitations)
+
+
+def edge(source: str, target: str) -> GraphEdge:
+    return GraphEdge(
+        edge_id=f"control-{source}-{target}",
+        source_node_id=source,
+        target_node_id=target,
+        relation="CONTROL",
+        output_port=0,
+        input_port=0,
+        evidence=[SourceLocation(artifact_id="wf-1", json_pointer="/connections")],
+        basis="STATIC_POSSIBILITY",
+    )
+
+
+def test_cycle_terminates() -> None:
+    graph = SemanticGraph(
+        node_ids=["a", "b", "c"],
+        edges=[edge("a", "b"), edge("b", "a"), edge("b", "c")],
+        limitations=[],
+    )
+    paths = shortest_paths(graph, "a")
+    assert set(paths) == {"a", "b", "c"}
+    assert [item.edge_id for item in paths["c"]] == ["control-a-b", "control-b-c"]
+    assert paths["a"] == []
