@@ -140,6 +140,25 @@ def _status(
     return "NO_REFERENCES"
 
 
+def pointer_encloses(outer: str, inner: str) -> bool:
+    """True when inner is outer or lies under it; whole tokens only, so /1 never holds /10."""
+    return inner == outer or inner.startswith(outer + "/")
+
+
+def _touches(change: Change, location: SourceLocation | None, reference: NameReference) -> bool:
+    """Same node and artifact, and the change sits at, above or below the reference string."""
+    if (
+        location is None
+        or change.node_id != reference.node_id
+        or location.artifact_id != reference.location.artifact_id
+    ):
+        return False
+    held = reference.location.json_pointer
+    return pointer_encloses(location.json_pointer, held) or pointer_encloses(
+        held, location.json_pointer
+    )
+
+
 def judge_renames(
     changes: list[Change],
     before: NormalizedWorkflow,
@@ -167,15 +186,14 @@ def judge_renames(
         before_old = [item for item in before_refs if item.name == old]
         after_old = [item for item in after_refs if item.name == old]
         after_new = [item for item in after_refs if item.name == new]
-        before_pointers = {item.location.json_pointer for item in before_old}
-        after_pointers = {item.location.json_pointer for item in after_new}
+        # Element replacement, deletion or reordering is recorded above the reference's /value.
         related = sorted(
             item.change_id
             for item in changes
             if item.kind == "PARAMETER_CHANGED"
             and (
-                (item.before_source and item.before_source.json_pointer in before_pointers)
-                or (item.after_source and item.after_source.json_pointer in after_pointers)
+                any(_touches(item, item.before_source, ref) for ref in before_old)
+                or any(_touches(item, item.after_source, ref) for ref in after_new)
             )
         )
         references = sorted(
