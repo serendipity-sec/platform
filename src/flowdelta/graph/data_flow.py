@@ -77,16 +77,18 @@ def _trace(
         node_id, port = queue.popleft()
         if node_id == reader and (reader, "LOOP") not in stops:
             stops.append((reader, "LOOP"))
+        node_facts = facts.get(node_id)
+        if usable(node_facts) and _error_port(node_facts, port):
+            # Declared writes describe the regular output; the error item is not modelled.
+            # Not marked seen, so the same node's regular output can still be followed.
+            if (node_id, "ERROR_OUTPUT") not in stops:
+                stops.append((node_id, "ERROR_OUTPUT"))
+            continue
         if node_id in seen:
             continue
         seen.add(node_id)
-        node_facts = facts.get(node_id)
         if not usable(node_facts):
             stops.append((node_id, "UNUSABLE"))
-            continue
-        if _error_port(node_facts, port):
-            # Declared writes describe the regular output; the error item is not modelled.
-            stops.append((node_id, "ERROR_OUTPUT"))
             continue
         written = _supplied_by(node_facts, read)
         if written:

@@ -434,3 +434,17 @@ def test_graph_explains_how_to_tell_data_edges_apart() -> None:
         "flowdelta.graph.data_origin" in item and "FIELD_FLOW" in item and "JSON Pointer" in item
         for item in graph.limitations
     )
+
+
+def test_error_output_does_not_hide_the_regular_output_of_the_same_node() -> None:
+    graph = graph_of(
+        ["a", "b", "c"],
+        [connect("a", "b"), connect("b", "c"), connect("a", "c", output=1)],
+        [
+            facts("a", writes=["$json.status"], error_output=1),
+            facts("b", writes=[PASS_THROUGH]),
+            facts("c", reads=["$json.status"]),
+        ],
+    )
+    assert flows(graph) == {("a", "c"): (["$json.status"], ["$json.status"])}
+    assert any("오류 출력" in item for item in added_limitations(graph))
