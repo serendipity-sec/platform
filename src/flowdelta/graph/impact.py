@@ -18,14 +18,21 @@ POLICY_NOTE = (
 )
 
 
+def _known(facts: dict[str, NodeSemantics], node_id: str) -> bool:
+    return node_id in facts and facts[node_id].support == "SUPPORTED"
+
+
 def output_nodes(graph: SemanticGraph, facts: dict[str, NodeSemantics]) -> set[str]:
-    """Nodes with a non-input effect, plus last nodes whose output is the workflow's result."""
+    """Nodes with a non-input effect or unknown effects, plus last nodes (the workflow result)."""
     has_next = {edge.source_node_id for edge in graph.edges if edge.relation == "CONTROL"}
     outputs: set[str] = set()
     for node_id in graph.node_ids:
-        effects = facts[node_id].effects if node_id in facts else None
-        if node_id not in has_next or any(
-            not effect.startswith(_INPUT_EFFECT) for effect in effects or []
+        # Unknown effects are kept as outputs so a node that may act is never silently skipped.
+        effects = facts[node_id].effects if _known(facts, node_id) else None
+        if (
+            node_id not in has_next
+            or effects is None
+            or any(not effect.startswith(_INPUT_EFFECT) for effect in effects)
         ):
             outputs.add(node_id)
     return outputs
@@ -50,7 +57,27 @@ def shortest_paths(graph: SemanticGraph, start: str) -> dict[str, list[GraphEdge
 
 def _side(change: Change) -> Side:
     # Removed nodes and removed connections only exist in the before workflow.
-    return "before" if change.after_source is None else "after"
+    removed_connection = change.kind == "CONNECTION_CHANGED" and change.after_source is None
+    return "before" if change.kind == "REMOVED" or removed_connection else "after"
+
+
+def _routes(
+    change: Change, side: Side, graph: SemanticGraph
+) -> tuple[str, dict[str, list[GraphEdge]]] | None:
+    """Start node and its shortest paths; a connection change must go over that connection."""
+    if change.node_id is None or change.node_id not in graph.node_ids:
+        return None
+    if change.kind != "CONNECTION_CHANGED":
+        return change.node_id, shortest_paths(graph, change.node_id)
+    location = change.before_source if side == "before" else change.after_source
+    edge = next(
+        (item for item in graph.edges if item.relation == "CONTROL" and location in item.evidence),
+        None,
+    )
+    if edge is None:
+        return None
+    onward = shortest_paths(graph, edge.target_node_id)
+    return edge.source_node_id, {end: [edge, *path] for end, path in onward.items()}
 
 
 def _path(
@@ -62,15 +89,13 @@ def _path(
     task_id: str,
 ) -> ImpactPath:
     node_ids = [start, *(edge.target_node_id for edge in edges)]
-    unsupported = [
-        node_id
-        for node_id in node_ids
-        if node_id not in facts or facts[node_id].support != "SUPPORTED"
-    ]
+    unsupported = [node_id for node_id in node_ids if not _known(facts, node_id)]
     limitations = [POLICY_NOTE]
-    if start not in facts:
+    if not _known(facts, start):
         support: Literal["SUPPORTED", "PARTIAL", "UNKNOWN"] = "UNKNOWN"
-        limitations.append(f"시작 노드 {start}에 의미 정보가 없어 지원 범위를 판단하지 않았다.")
+        limitations.append(
+            f"시작 노드 {start}의 의미 정보가 없거나 지원되지 않아 지원 범위를 판단하지 않았다."
+        )
     elif unsupported:
         support = "PARTIAL"
         limitations.append(
@@ -110,14 +135,15 @@ def impact_paths(
     unplaced = 0
     for change in changes:
         side = _side(change)
-        if change.node_id is None or change.node_id not in graphs[side].node_ids:
+        routes = _routes(change, side, graphs[side])
+        if routes is None:
             unplaced += 1
             continue
-        reachable = shortest_paths(graphs[side], change.node_id)
+        start, reachable = routes
         for end in sorted(outputs[side] & reachable.keys()):
             edges = reachable[end]
             key = (side, end, tuple(edge.edge_id for edge in edges))
-            _, _, change_ids = found.setdefault(key, (change.node_id, edges, set()))
+            _, _, change_ids = found.setdefault(key, (start, edges, set()))
             change_ids.add(change.change_id)
     return [
         _path(side, start, edges, sorted(change_ids), facts[side], task_id)

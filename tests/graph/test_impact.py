@@ -3,6 +3,7 @@ from pathlib import Path
 from flowdelta.contracts import Handoff, NormalizedWorkflow, SourceLocation
 from flowdelta.graph import analyze
 from flowdelta.graph.impact import output_nodes, shortest_paths
+from flowdelta.ingestion import json_bytes
 from flowdelta.pipeline_contracts import AnalysisBundle, GraphEdge, ImpactPath, SemanticGraph
 from flowdelta.pipeline_io import read_handoff, read_pipeline_examples, validate_pipeline
 
@@ -76,6 +77,31 @@ def without_after_node(handoff: Handoff, node_id: str) -> Handoff:
     return handoff.model_copy(update={"after": workflow})
 
 
+def without_after_connection(handoff: Handoff, source: str, target: str) -> Handoff:
+    connections = [
+        item
+        for item in handoff.after.connections
+        if (item.source_node_id, item.target_node_id) != (source, target)
+    ]
+    after = handoff.after.model_copy(update={"connections": connections})
+    return handoff.model_copy(update={"after": after})
+
+
+def with_after_connection(handoff: Handoff, source: str, target: str) -> Handoff:
+    template = next(item for item in handoff.after.connections if item.source_node_id == source)
+    added = template.model_copy(
+        update={
+            "target_node_id": target,
+            "target_input_index": 0,
+            "source": template.source.model_copy(
+                update={"json_pointer": template.source.json_pointer[:-1] + "1"}
+            ),
+        }
+    )
+    after = handoff.after.model_copy(update={"connections": [*handoff.after.connections, added]})
+    return handoff.model_copy(update={"after": after})
+
+
 def hops(result: AnalysisBundle, path: ImpactPath) -> list[tuple[str, str]]:
     graph = result.before_graph if path.side == "before" else result.after_graph
     edges = {edge.edge_id: edge for edge in graph.edges}
@@ -104,6 +130,7 @@ def test_order_lookup_response_change_is_its_own_output() -> None:
     assert any("정책" in item for item in path.limitations)
     assert path.support == "SUPPORTED"
     assert path.basis == "STATIC_POSSIBILITY"
+    assert any("대표 최단 경로" in item and "실제 실행 경로" in item for item in result.limitations)
 
 
 def test_support_triage_result_change_is_the_last_node() -> None:
@@ -162,11 +189,86 @@ def test_removed_node_path_uses_the_before_graph() -> None:
         for change in result.changes
         if change.kind == "CONNECTION_CHANGED" and change.node_id == "priority"
     )
-    assert all(
-        path.side == "before"
-        for path in result.impact_paths
-        if dropped.change_id in path.change_ids
+    dropped_paths = [path for path in result.impact_paths if dropped.change_id in path.change_ids]
+    assert dropped_paths
+    for path in dropped_paths:
+        assert path.side == "before"
+        assert hops(result, path)[0] == ("priority", "standard")
+
+
+def test_removed_connection_path_starts_with_that_connection() -> None:
+    # Without the rule the tie-break would pick priority -> standard and hide urgent.
+    result = checked(
+        "support-triage", without_after_connection(load("support-triage"), "priority", "urgent")
     )
+    [dropped] = [change for change in result.changes if change.kind == "CONNECTION_CHANGED"]
+    paths = [path for path in result.impact_paths if dropped.change_id in path.change_ids]
+    assert {end_of(result, path, "priority") for path in paths} == {"summary", "result"}
+    for path in paths:
+        assert path.side == "before"
+        assert hops(result, path)[0] == ("priority", "urgent")
+
+
+def test_added_connection_path_starts_with_that_connection() -> None:
+    result = checked(
+        "support-triage", with_after_connection(load("support-triage"), "seed", "result")
+    )
+    [added] = [change for change in result.changes if change.kind == "CONNECTION_CHANGED"]
+    paths = [path for path in result.impact_paths if added.change_id in path.change_ids]
+    assert [(path.side, hops(result, path)) for path in paths] == [("after", [("seed", "result")])]
+
+
+def test_removed_parameter_on_a_kept_node_starts_after() -> None:
+    handoff = load("support-triage")
+    nodes = []
+    for node in handoff.after.nodes:
+        if node.node_id == "priority":
+            parameters = {k: v for k, v in node.parameters.items() if k != "looseTypeValidation"}
+            node = node.model_copy(update={"parameters": parameters})
+        nodes.append(node)
+    after = handoff.after.model_copy(update={"nodes": nodes})
+    result = checked("support-triage", handoff.model_copy(update={"after": after}))
+    [removed] = [change for change in result.changes if change.node_id == "priority"]
+    assert removed.after_source is None
+    paths = [path for path in result.impact_paths if removed.change_id in path.change_ids]
+    assert paths
+    assert {path.side for path in paths} == {"after"}
+
+
+def test_node_with_unknown_effects_is_an_output() -> None:
+    handoff = with_after_semantics(
+        with_priority_threshold(load("support-triage"), 4),
+        "urgent",
+        support="UNSUPPORTED",
+        reads=None,
+        writes=None,
+        effects=None,
+    )
+    result = checked("support-triage", handoff)
+    paths = {end_of(result, path, "priority"): path for path in paths_of(result, "priority")}
+    assert hops(result, paths["urgent"]) == [("priority", "urgent")]
+    assert paths["urgent"].support == "PARTIAL"
+    assert any("urgent" in item for item in paths["urgent"].limitations)
+
+
+def test_unsupported_start_record_is_unknown() -> None:
+    handoff = with_after_semantics(
+        load("order-lookup"),
+        "response",
+        support="UNSUPPORTED",
+        reads=None,
+        writes=None,
+        effects=None,
+    )
+    [path] = analyze(handoff).impact_paths
+    assert path.support == "UNKNOWN"
+
+
+def test_multi_hop_paths_are_stable_across_runs() -> None:
+    handoff = with_priority_threshold(load("support-triage"), 4)
+    first, second = analyze(handoff), analyze(handoff)
+    assert len(first.impact_paths) == 3
+    assert json_bytes(first.model_dump(mode="json")) == json_bytes(second.model_dump(mode="json"))
 
 
 def test_unsupported_node_on_the_path_is_partial() -> None:
