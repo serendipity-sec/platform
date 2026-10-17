@@ -6,6 +6,16 @@ from flowdelta.graph.changes import extract_changes
 from flowdelta.graph.control import build_control_graph, short_hash
 from flowdelta.graph.data_flow import add_field_flow_edges
 from flowdelta.graph.impact import Side, impact_paths
+from flowdelta.graph.limits import (
+    DEFAULT_LIMITS,
+    FIELD_FLOW_SKIPPED,
+    LIMITS_EXTENSION,
+    AnalysisLimits,
+    limits_record,
+    node_limit_reasons,
+    reason_text,
+    select_paths,
+)
 from flowdelta.graph.matching import match_nodes
 from flowdelta.graph.references import (
     NameReference,
@@ -44,17 +54,21 @@ def build_graph(
     workflow: NormalizedWorkflow,
     facts: dict[str, NodeSemantics],
     references: list[NameReference],
+    *,
+    field_flow: bool = True,
 ) -> SemanticGraph:
     graph = build_control_graph(workflow, facts)
     graph = add_reference_edges(graph, workflow, references)
-    return add_field_flow_edges(graph, workflow, facts)
+    if field_flow:
+        return add_field_flow_edges(graph, workflow, facts)
+    return graph.model_copy(update={"limitations": [*graph.limitations, FIELD_FLOW_SKIPPED]})
 
 
 def _graph_facts(item: NodeSemantics) -> tuple[object, ...]:
     return (item.reads, item.writes, item.effects, item.support, item.branches)
 
 
-def dependency_graphs(handoff: Handoff) -> dict[str, SemanticGraph]:
+def dependency_graphs(handoff: Handoff, *, field_flow: bool = True) -> dict[str, SemanticGraph]:
     """One graph per fixed sub-workflow; it is shared by both sides, so after facts lead."""
     graphs: dict[str, SemanticGraph] = {}
     for dependency_id, workflow in sorted(handoff.dependency_workflows.items()):
@@ -63,7 +77,9 @@ def dependency_graphs(handoff: Handoff) -> dict[str, SemanticGraph]:
         for item in index.semantics if index else []:
             sides[item.side][item.node_id] = item
         before, after = sides["before"], sides["after"]
-        graph = build_graph(workflow, after or before, find_references(workflow, "after"))
+        graph = build_graph(
+            workflow, after or before, find_references(workflow, "after"), field_flow=field_flow
+        )
         notes: list[str] = []
         if before and after:
             differing = sorted(
@@ -86,7 +102,7 @@ def dependency_graphs(handoff: Handoff) -> dict[str, SemanticGraph]:
     return graphs
 
 
-def analyze(handoff: Handoff) -> AnalysisBundle:
+def analyze(handoff: Handoff, limits: AnalysisLimits = DEFAULT_LIMITS) -> AnalysisBundle:
     case = handoff.case
     before_snapshot, after_snapshot = handoff.snapshots.snapshots
     facts: dict[Side, dict[str, NodeSemantics]] = {"before": {}, "after": {}}
@@ -94,8 +110,10 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
         facts[item.side][item.node_id] = item
     before_refs = find_references(handoff.before, "before")
     after_refs = find_references(handoff.after, "after")
-    before_graph = build_graph(handoff.before, facts["before"], before_refs)
-    after_graph = build_graph(handoff.after, facts["after"], after_refs)
+    reasons = node_limit_reasons(handoff, limits)
+    within = not reasons
+    before_graph = build_graph(handoff.before, facts["before"], before_refs, field_flow=within)
+    after_graph = build_graph(handoff.after, facts["after"], after_refs, field_flow=within)
     changes = judge_renames(
         extract_changes(handoff.before, handoff.after),
         handoff.before,
@@ -109,19 +127,46 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
             "호출 노드와 고정 하위 workflow 사이의 필드 전달은 연결하지 않았다. "
             "하위 workflow 그래프는 dependency_graphs에 따로 있다."
         )
-    impact = impact_paths(
-        changes, {"before": before_graph, "after": after_graph}, facts, handoff.task.task_id
-    )
-    if impact.unplaced:
-        limitations.append(
-            f"시작 노드가 없는 변경 {impact.unplaced}개(workflow 수준 변경 등)는 "
-            "영향 경로를 만들지 않았다."
+    if within:
+        impact = impact_paths(
+            changes, {"before": before_graph, "after": after_graph}, facts, handoff.task.task_id
         )
-    if impact.display_only:
-        limitations.append(
-            f"표시 변경 {impact.display_only}개(노드 위치·메모·색, workflow 이름·태그 등)는 "
-            "실행에 영향이 없어 영향 경로를 만들지 않았다."
+        if impact.unplaced:
+            limitations.append(
+                f"시작 노드가 없는 변경 {impact.unplaced}개(workflow 수준 변경 등)는 "
+                "영향 경로를 만들지 않았다."
+            )
+        if impact.display_only:
+            limitations.append(
+                f"표시 변경 {impact.display_only}개(노드 위치·메모·색, workflow 이름·태그 등)는 "
+                "실행에 영향이 없어 영향 경로를 만들지 않았다."
+            )
+        paths, uncovered = select_paths(impact.paths, limits.max_impact_paths)
+        if len(paths) < len(impact.paths):
+            reasons.append(
+                {
+                    "code": "IMPACT_PATH_LIMIT",
+                    "count": len(impact.paths),
+                    "limit": limits.max_impact_paths,
+                }
+            )
+            note = (
+                f"영향 경로 {len(impact.paths)}개 중 {len(paths)}개만 남겼다"
+                f"(상한 {limits.max_impact_paths}개). 변경마다 가장 짧은 경로를 먼저 남겼다."
+            )
+            if uncovered:
+                note += f" 경로가 하나도 남지 않은 변경은 {uncovered}개다."
+            limitations.append(note)
+        record = limits_record(
+            limits, reasons, computed=True, total=len(impact.paths), kept=len(paths)
         )
+    else:
+        paths = []
+        limitations.append(
+            f"노드 수가 분석 상한을 넘어({reason_text(reasons)}) $json 필드 흐름 DATA 간선과 "
+            "영향 경로를 계산하지 않았다. 그래프(CONTROL·이름 참조)와 변경 목록은 전체를 담았다."
+        )
+        record = limits_record(limits, reasons, computed=False, total=None, kept=0)
     return AnalysisBundle(
         analysis_id="analysis-"
         + short_hash(before_snapshot.snapshot_id, after_snapshot.snapshot_id, PRODUCER),
@@ -141,6 +186,7 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
         policy_ref=_context_ref(handoff, case.evaluation_policy_ref),
         obligation_ids=[item.obligation_id for item in case.obligations],
         limitations=limitations,
-        impact_paths=impact.paths,
-        dependency_graphs=dependency_graphs(handoff),
+        impact_paths=paths,
+        dependency_graphs=dependency_graphs(handoff, field_flow=within),
+        extensions={LIMITS_EXTENSION: record},
     )
