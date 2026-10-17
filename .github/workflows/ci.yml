@@ -27,15 +27,15 @@ jobs:
         with:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
-      - run: uv sync --frozen --extra baseline
-      - run: uv run --frozen --extra baseline ruff check src tests
-      - run: uv run --frozen --extra baseline ruff format --check src tests
-      - run: uv run --frozen --extra baseline mypy
-      - run: uv run --frozen --extra baseline pytest
-      - run: uv run --frozen --extra baseline flowdelta inspect-case examples/order-lookup
-      - run: uv run --frozen --extra baseline flowdelta check-examples examples/contracts/order-lookup
-      - run: uv run --frozen --extra baseline flowdelta inspect-case examples/support-triage
-      - run: uv run --frozen --extra baseline flowdelta check-examples examples/contracts/support-triage
+      - run: uv sync --frozen --extra baseline --extra knowledge
+      - run: uv run --frozen --extra baseline --extra knowledge ruff check src tests
+      - run: uv run --frozen --extra baseline --extra knowledge ruff format --check src tests
+      - run: uv run --frozen --extra baseline --extra knowledge mypy
+      - run: uv run --frozen --extra baseline --extra knowledge pytest
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta inspect-case examples/order-lookup
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-examples examples/contracts/order-lookup
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta inspect-case examples/support-triage
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-examples examples/contracts/support-triage
       - run: uv build
 
   normal-n8n-baseline:
@@ -52,12 +52,12 @@ jobs:
         with:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
-      - run: uv sync --frozen --extra baseline
+      - run: uv sync --frozen --extra baseline --extra knowledge
       - run: docker build --tag flowdelta-order-fixture:0.2.0 --file runtime/order-lookup/fixture.Dockerfile .
-      - run: uv run --frozen --extra baseline flowdelta baseline --out var/ci-baseline
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta baseline --out var/ci-baseline
       - run: docker build --tag flowdelta-order-fixture:0.3.0 --file runtime/order-lookup/fixture.Dockerfile .
-      - run: uv run --frozen --extra baseline flowdelta demo-order-lookup --out var/ci-integrated-order
-      - run: uv run --frozen --extra baseline flowdelta check-pipeline var/ci-integrated-order/bundle
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta demo-order-lookup --out var/ci-integrated-order
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-pipeline var/ci-integrated-order/bundle
 
   normal-node-conformance:
     runs-on: ubuntu-latest
@@ -73,8 +73,8 @@ jobs:
         with:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
-      - run: uv sync --frozen --extra baseline
-      - run: uv run --frozen --extra baseline flowdelta conformance --out var/ci-conformance
+      - run: uv sync --frozen --extra baseline --extra knowledge
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta conformance --out var/ci-conformance
       # Preserve registered synthetic fixture diagnostics, never private state or credentials.
       - name: Preserve node conformance evidence
         if: ${{ !cancelled() }}
@@ -95,3 +95,30 @@ jobs:
             var/ci-conformance/*/publish-*.log
             var/ci-conformance/*/stdout.log
             var/ci-conformance/*/stderr.log
+
+  knowledge-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.1-pg17@sha256:3e8b3adfd27b5707128f60956f62a793c3c9326ea8cfaf0eab7adccb5d700b21
+        env:
+          POSTGRES_USER: flowdelta_test
+          POSTGRES_PASSWORD: ci-disposable-only
+          POSTGRES_DB: flowdelta_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U flowdelta_test -d flowdelta_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      FLOWDELTA_KB_TEST_DATABASE_URL: postgresql+psycopg://flowdelta_test:ci-disposable-only@127.0.0.1:5432/flowdelta_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version-file: .python-version
+      - run: python -m pip install uv==0.9.30
+      - run: uv sync --frozen --extra knowledge
+      - run: uv run --frozen --extra knowledge pytest tests/knowledge/test_database.py
