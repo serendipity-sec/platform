@@ -25,7 +25,8 @@ ANALYSIS_LIMITATIONS = [
     "이름 변경의 참조 판정은 해당 변경의 extensions(flowdelta.graph.name_references)에 기록한다.",
     '이름 참조는 $(\'이름\')·$node["이름"]·$items("이름") 형태의 문자열만 찾는다. '
     "실행 중에 조립되는 이름은 찾지 못한다.",
-    "영향 경로(impact_paths)는 변경 노드(연결 변경은 바뀐 연결)에서 효과가 있거나 "
+    "영향 경로(impact_paths)는 변경 노드(연결 변경은 바뀐 연결, 이름 변경으로 끊기거나 "
+    "바뀐 이름 참조는 그 참조)에서 효과가 있거나 "
     "효과를 알 수 없는 노드·마지막 노드까지 끝점마다 고른 대표 최단 경로 하나다. "
     "가능한 모든 경로나 실제 실행 경로의 증거가 아니며, 정책 규칙과는 연결하지 않았다.",
     "보안 위험 판정을 포함하지 않는다.",
@@ -108,13 +109,18 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
             "호출 노드와 고정 하위 workflow 사이의 필드 전달은 연결하지 않았다. "
             "하위 workflow 그래프는 dependency_graphs에 따로 있다."
         )
-    paths, unplaced = impact_paths(
+    impact = impact_paths(
         changes, {"before": before_graph, "after": after_graph}, facts, handoff.task.task_id
     )
-    if unplaced:
+    if impact.unplaced:
         limitations.append(
-            f"시작 노드가 없는 변경 {unplaced}개(workflow 수준 변경 등)는 "
+            f"시작 노드가 없는 변경 {impact.unplaced}개(workflow 수준 변경 등)는 "
             "영향 경로를 만들지 않았다."
+        )
+    if impact.display_only:
+        limitations.append(
+            f"표시 변경 {impact.display_only}개(노드 위치·메모·색, workflow 이름·태그 등)는 "
+            "실행에 영향이 없어 영향 경로를 만들지 않았다."
         )
     return AnalysisBundle(
         analysis_id="analysis-"
@@ -135,6 +141,6 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
         policy_ref=_context_ref(handoff, case.evaluation_policy_ref),
         obligation_ids=[item.obligation_id for item in case.obligations],
         limitations=limitations,
-        impact_paths=paths,
+        impact_paths=impact.paths,
         dependency_graphs=dependency_graphs(handoff),
     )

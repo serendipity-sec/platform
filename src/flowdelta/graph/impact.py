@@ -1,13 +1,18 @@
 """Static impact paths from changed nodes to output nodes; a possibility, not an observed effect."""
 
 from collections import deque
-from typing import Literal
+from typing import Literal, NamedTuple
 
 from flowdelta.contracts import NodeSemantics
-from flowdelta.graph.control import short_hash
+from flowdelta.graph.control import DATA_ORIGIN, short_hash
+from flowdelta.graph.references import EXTENSION as NAME_REFERENCES
 from flowdelta.pipeline_contracts import Change, GraphEdge, ImpactPath, SemanticGraph
 
 Side = Literal["before", "after"]
+# (side, start node, shortest path per reachable node, note for the path's limitations)
+Route = tuple[Side, str, dict[str, list[GraphEdge]], str | None]
+# Rename verdicts where some references still call the old name after the change.
+_STALE = ("BROKEN_REFERENCES", "REFERENCES_RETARGETED")
 _FOLLOWED = ("CONTROL", "DATA")
 # Trigger effects are inputs; a node that only receives is not where a change comes out.
 _INPUT_EFFECT = "receive:"
@@ -76,8 +81,57 @@ def _routes(
     )
     if edge is None:
         return None
-    onward = shortest_paths(graph, edge.target_node_id)
-    return edge.source_node_id, {end: [edge, *path] for end, path in onward.items()}
+    return edge.source_node_id, _onward(graph, edge)
+
+
+def _onward(graph: SemanticGraph, edge: GraphEdge) -> dict[str, list[GraphEdge]]:
+    return {end: [edge, *path] for end, path in shortest_paths(graph, edge.target_node_id).items()}
+
+
+def _stale_references(change: Change) -> set[tuple[str, str]]:
+    """(consumer, pointer) of after-side references that still call the old name."""
+    verdict = change.extensions.get(NAME_REFERENCES)
+    if not isinstance(verdict, dict) or verdict.get("status") not in _STALE:
+        return set()
+    references = verdict.get("references")
+    stale: set[tuple[str, str]] = set()
+    for item in references if isinstance(references, list) else []:
+        if not isinstance(item, dict):
+            continue
+        if (item.get("side"), item.get("name")) != ("after", change.before_value):
+            continue
+        node_id, pointer = item.get("node_id"), item.get("pointer")
+        if isinstance(node_id, str) and isinstance(pointer, str):
+            stale.add((node_id, pointer))
+    return stale
+
+
+def _reference_routes(change: Change, graphs: dict[Side, SemanticGraph]) -> list[Route]:
+    """A rename left references on the old name: follow the lost and the retargeted relation."""
+    stale = _stale_references(change)
+    consumers = {node_id for node_id, _ in stale}
+    routes: list[Route] = []
+    for edge in graphs["before"].edges:
+        if (
+            edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE"
+            and edge.source_node_id == change.node_id
+            and edge.target_node_id in consumers
+        ):
+            note = (
+                f"이름 변경 뒤 끊긴 이름 참조 {edge.source_node_id} → {edge.target_node_id}를 "
+                "수정 전 그래프에서 따라갔다."
+            )
+            routes.append(("before", edge.source_node_id, _onward(graphs["before"], edge), note))
+    for edge in graphs["after"].edges:
+        if edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE" and any(
+            (edge.target_node_id, item.json_pointer) in stale for item in edge.evidence
+        ):
+            note = (
+                f"옛 이름을 가져간 {edge.source_node_id}로 바뀐 이름 참조 "
+                f"{edge.source_node_id} → {edge.target_node_id}에서 출발했다."
+            )
+            routes.append(("after", edge.source_node_id, _onward(graphs["after"], edge), note))
+    return routes
 
 
 def _path(
@@ -85,6 +139,7 @@ def _path(
     start: str,
     edges: list[GraphEdge],
     change_ids: list[str],
+    notes: list[str],
     facts: dict[str, NodeSemantics],
     task_id: str,
 ) -> ImpactPath:
@@ -110,6 +165,7 @@ def _path(
             f"하위 workflow 호출 노드 {', '.join(calls)}에서 하위 workflow 안으로는 "
             "따라가지 않았다."
         )
+    limitations.extend(notes)
     edge_ids = [edge.edge_id for edge in edges]
     return ImpactPath(
         path_id="impact-" + short_hash(side, node_ids[-1], *edge_ids),
@@ -123,29 +179,47 @@ def _path(
     )
 
 
+class ImpactResult(NamedTuple):
+    paths: list[ImpactPath]
+    # Changes with no start node (workflow-level, or a connection no edge matches).
+    unplaced: int
+    # DISPLAY_CHANGED: position, notes, colour, workflow name or tags; no execution meaning.
+    display_only: int
+
+
 def impact_paths(
     changes: list[Change],
     graphs: dict[Side, SemanticGraph],
     facts: dict[Side, dict[str, NodeSemantics]],
     task_id: str,
-) -> tuple[list[ImpactPath], int]:
-    """One shortest path per (change, output node); the int counts changes with no start node."""
+) -> ImpactResult:
+    """One shortest path per (change, route, output node), grouped when the edges match."""
     outputs = {side: output_nodes(graphs[side], facts[side]) for side in graphs}
-    found: dict[tuple[Side, str, tuple[str, ...]], tuple[str, list[GraphEdge], set[str]]] = {}
-    unplaced = 0
+    found: dict[
+        tuple[Side, str, tuple[str, ...]], tuple[str, list[GraphEdge], set[str], set[str]]
+    ] = {}
+    unplaced = display_only = 0
     for change in changes:
+        if change.kind == "DISPLAY_CHANGED":
+            display_only += 1
+            continue
         side = _side(change)
-        routes = _routes(change, side, graphs[side])
-        if routes is None:
+        own = _routes(change, side, graphs[side])
+        if own is None:
             unplaced += 1
             continue
-        start, reachable = routes
-        for end in sorted(outputs[side] & reachable.keys()):
-            edges = reachable[end]
-            key = (side, end, tuple(edge.edge_id for edge in edges))
-            _, _, change_ids = found.setdefault(key, (start, edges, set()))
-            change_ids.add(change.change_id)
-    return [
-        _path(side, start, edges, sorted(change_ids), facts[side], task_id)
-        for (side, _, _), (start, edges, change_ids) in sorted(found.items())
-    ], unplaced
+        start, reachable = own
+        routes: list[Route] = [(side, start, reachable, None), *_reference_routes(change, graphs)]
+        for route_side, route_start, route_reachable, note in routes:
+            for end in sorted(outputs[route_side] & route_reachable.keys()):
+                edges = route_reachable[end]
+                key = (route_side, end, tuple(edge.edge_id for edge in edges))
+                _, _, change_ids, notes = found.setdefault(key, (route_start, edges, set(), set()))
+                change_ids.add(change.change_id)
+                if note is not None:
+                    notes.add(note)
+    paths = [
+        _path(side, start, edges, sorted(change_ids), sorted(notes), facts[side], task_id)
+        for (side, _, _), (start, edges, change_ids, notes) in sorted(found.items())
+    ]
+    return ImpactResult(paths, unplaced, display_only)

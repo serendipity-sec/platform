@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from flowdelta.contracts import Handoff, NormalizedWorkflow, SourceLocation
@@ -327,3 +328,78 @@ def test_cycle_terminates() -> None:
     assert set(paths) == {"a", "b", "c"}
     assert [item.edge_id for item in paths["c"]] == ["control-a-b", "control-b-c"]
     assert paths["a"] == []
+
+
+def renamed(handoff: Handoff, names: dict[str, str], *, rewrite: bool = False) -> Handoff:
+    """Rename nodes in after; with rewrite, $('old') references follow the new names."""
+    nodes = []
+    for node in handoff.after.nodes:
+        if node.node_id in names:
+            node = node.model_copy(update={"name": names[node.node_id]})
+        if rewrite:
+            text = json_bytes(node.parameters).decode("utf-8")
+            for node_id, name in names.items():
+                old = next(item.name for item in handoff.before.nodes if item.node_id == node_id)
+                text = text.replace(f"$('{old}')", f"$('{name}')")
+            node = node.model_copy(update={"parameters": json.loads(text)})
+        nodes.append(node)
+    return handoff.model_copy(update={"after": handoff.after.model_copy(update={"nodes": nodes})})
+
+
+def rename_paths(result: AnalysisBundle, node_id: str) -> list[ImpactPath]:
+    change = next(
+        item
+        for item in result.changes
+        if item.node_id == node_id
+        and item.before_source is not None
+        and item.before_source.json_pointer.endswith("/name")
+    )
+    return [path for path in result.impact_paths if change.change_id in path.change_ids]
+
+
+def first_hops(result: AnalysisBundle, paths: list[ImpactPath], side: str) -> set[tuple[str, str]]:
+    return {hops(result, path)[0] for path in paths if path.side == side and path.edge_ids}
+
+
+def test_broken_reference_is_followed_in_the_before_graph() -> None:
+    result = checked("support-triage", renamed(load("support-triage"), {"split": "Split items"}))
+    paths = rename_paths(result, "split")
+    # The name references are gone after the rename, so the lost relation starts before.
+    assert first_hops(result, paths, "before") == {("split", "urgent"), ("split", "standard")}
+    lost = [path for path in paths if path.side == "before"]
+    assert {end_of(result, path, "split") for path in lost} == {"summary", "result"}
+    assert all(any("이름 참조" in item for item in path.limitations) for path in lost)
+    # The rename itself still starts at split in the after graph as before.
+    assert any(path.side == "after" for path in paths)
+
+
+def test_retargeted_reference_also_starts_at_the_new_holder() -> None:
+    handoff = renamed(load("support-triage"), {"split": "Split items", "seed": "Split tickets"})
+    result = checked("support-triage", handoff)
+    paths = rename_paths(result, "split")
+    assert first_hops(result, paths, "before") == {("split", "urgent"), ("split", "standard")}
+    assert {("seed", "urgent"), ("seed", "standard")} <= first_hops(result, paths, "after")
+
+
+def test_rename_with_updated_references_stays_after() -> None:
+    handoff = renamed(load("support-triage"), {"split": "Split items"}, rewrite=True)
+    result = checked("support-triage", handoff)
+    paths = rename_paths(result, "split")
+    assert paths
+    assert {path.side for path in paths} == {"after"}
+
+
+def test_display_only_change_has_no_path() -> None:
+    handoff = load("order-lookup")
+    nodes = [
+        node.model_copy(update={"opaque_fields": {**node.opaque_fields, "position": [999, 999]}})
+        if node.node_id == "read-order"
+        else node
+        for node in handoff.after.nodes
+    ]
+    after = handoff.after.model_copy(update={"nodes": nodes})
+    result = checked("order-lookup", handoff.model_copy(update={"after": after}))
+    [display] = [change for change in result.changes if change.kind == "DISPLAY_CHANGED"]
+    assert all(display.change_id not in path.change_ids for path in result.impact_paths)
+    assert len(result.impact_paths) == 1
+    assert any("표시 변경 1개" in item for item in result.limitations)
