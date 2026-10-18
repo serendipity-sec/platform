@@ -88,44 +88,66 @@ def _onward(graph: SemanticGraph, edge: GraphEdge) -> dict[str, list[GraphEdge]]
     return {end: [edge, *path] for end, path in shortest_paths(graph, edge.target_node_id).items()}
 
 
-def _stale_references(change: Change) -> set[tuple[str, str]]:
-    """(consumer, pointer) of after-side references that still call the old name."""
+Location = tuple[str, str]
+
+
+def _in_node(pointer: str) -> str:
+    """Pointer inside the node's parameters, so a node moved in the list still matches."""
+    index = pointer.find("/parameters")
+    return pointer[index:] if index >= 0 else pointer
+
+
+def _after_references(change: Change) -> tuple[set[Location], set[Location]]:
+    """(consumer, in-node pointer) after the rename: still on the old name, and all of them."""
     verdict = change.extensions.get(NAME_REFERENCES)
     if not isinstance(verdict, dict) or verdict.get("status") not in _STALE:
-        return set()
+        return set(), set()
     references = verdict.get("references")
-    stale: set[tuple[str, str]] = set()
+    stale: set[Location] = set()
+    seen: set[Location] = set()
     for item in references if isinstance(references, list) else []:
-        if not isinstance(item, dict):
-            continue
-        if (item.get("side"), item.get("name")) != ("after", change.before_value):
+        if not isinstance(item, dict) or item.get("side") != "after":
             continue
         node_id, pointer = item.get("node_id"), item.get("pointer")
-        if isinstance(node_id, str) and isinstance(pointer, str):
-            stale.add((node_id, pointer))
-    return stale
+        if not isinstance(node_id, str) or not isinstance(pointer, str):
+            continue
+        seen.add((node_id, _in_node(pointer)))
+        if item.get("name") == change.before_value:
+            stale.add((node_id, _in_node(pointer)))
+    return stale, seen
+
+
+def _location(edge: GraphEdge) -> Location:
+    # A name-reference edge carries exactly the referencing string's location.
+    return edge.target_node_id, _in_node(edge.evidence[0].json_pointer)
 
 
 def _reference_routes(change: Change, graphs: dict[Side, SemanticGraph]) -> list[Route]:
     """A rename left references on the old name: follow the lost and the retargeted relation."""
-    stale = _stale_references(change)
-    consumers = {node_id for node_id, _ in stale}
+    stale, seen = _after_references(change)
+    candidates = [
+        edge
+        for edge in graphs["before"].edges
+        if edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE"
+        and edge.source_node_id == change.node_id
+    ]
+    # Each lost relation is matched by its own reference; one updated in place stays out.
+    unmatched = stale - {_location(edge) for edge in candidates}
+    moved = {node_id for node_id, _ in unmatched}
     routes: list[Route] = []
-    for edge in graphs["before"].edges:
-        if (
-            edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE"
-            and edge.source_node_id == change.node_id
-            and edge.target_node_id in consumers
-        ):
-            note = (
-                f"이름 변경 뒤 끊긴 이름 참조 {edge.source_node_id} → {edge.target_node_id}를 "
-                "수정 전 그래프에서 따라갔다."
-            )
+    for edge in candidates:
+        note = (
+            f"이름 변경 뒤 끊긴 이름 참조 {edge.source_node_id} → {edge.target_node_id}를 "
+            "수정 전 그래프에서 따라갔다."
+        )
+        if _location(edge) in stale:
+            routes.append(("before", edge.source_node_id, _onward(graphs["before"], edge), note))
+        elif edge.target_node_id in moved and _location(edge) not in seen:
+            # The stale reference moved (e.g. reordered parameters), so no pointer pairs it.
+            note += " 참조 위치가 바뀌어 위치로 대응하지 못한 같은 노드의 참조를 함께 따라갔다."
             routes.append(("before", edge.source_node_id, _onward(graphs["before"], edge), note))
     for edge in graphs["after"].edges:
-        if edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE" and any(
-            (edge.target_node_id, item.json_pointer) in stale for item in edge.evidence
-        ):
+        if edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE" and _location(edge) in stale:
             note = (
                 f"옛 이름을 가져간 {edge.source_node_id}로 바뀐 이름 참조 "
                 f"{edge.source_node_id} → {edge.target_node_id}에서 출발했다."
