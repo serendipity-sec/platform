@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from pydantic import JsonValue
 from sqlalchemy import Connection, Engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -120,16 +121,23 @@ def save_record(
     root: Path,
     source: str,
     external_id: str,
-    raw_payload: bytes,
+    document: dict[str, JsonValue] | bytes,
     *,
+    raw_payload: bytes | None = None,
     modified_at: str | None = None,
 ) -> str:
     state = connection.info.get(_TRANSACTION_STATE_KEY)
     if not isinstance(state, _StorageTransactionState) or not connection.in_transaction():
         raise InputError("KNOWLEDGE_STORAGE_TRANSACTION_REQUIRED")
 
-    document = parse_json(raw_payload)
-    payload = raw_payload
+    if isinstance(document, bytes):
+        normalized_document = parse_json(document)
+        payload = document if raw_payload is None else raw_payload
+    else:
+        normalized_document = document
+        payload = json_bytes(normalized_document) if raw_payload is None else raw_payload
+    if raw_payload is not None:
+        parse_json(payload)
     parsed_modified_at = _parse_modified_at(modified_at)
     checksum = digest(payload)
     if checksum not in state.locked_checksums:
@@ -146,7 +154,7 @@ def save_record(
         "path": path,
         "size": len(payload),
         "modified": parsed_modified_at,
-        "document": json_bytes(document).decode("utf-8"),
+        "document": json_bytes(normalized_document).decode("utf-8"),
     }
     connection.execute(
         text("""
