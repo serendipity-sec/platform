@@ -19,6 +19,42 @@ def version() -> None:
     typer.echo(f"flowdelta {__version__}; schema {SCHEMA_VERSION}")
 
 
+@app.command("embedding-smoke")
+def embedding_smoke() -> None:
+    """Create safe local sample vectors and report profile metadata, never vector contents."""
+    from flowdelta.knowledge.embedding_settings import EmbeddingSettings
+
+    try:
+        provider = EmbeddingSettings.from_environment().provider()
+        document = provider.embed(
+            ["Synthetic advisory record: affected component version 1.2.0."], "DOCUMENT"
+        )
+        query = provider.embed(["Synthetic workflow change may expose an internal memo."], "QUERY")
+        if document.profile.model_digest != query.profile.model_digest:
+            raise InputError("EMBEDDING_MODEL_REVISION_CHANGED")
+        typer.echo(
+            json_bytes(
+                {
+                    "status": "EMBEDDING_READY",
+                    "provider": query.profile.provider,
+                    "model": query.profile.model,
+                    "model_digest": query.profile.model_digest,
+                    "dimensions": query.profile.dimensions,
+                    "document_profile_id": document.profile.profile_id,
+                    "query_profile_id": query.profile.profile_id,
+                    "document_vectors": len(document.vectors),
+                    "query_vectors": len(query.vectors),
+                    "sample_content_emitted": False,
+                    "vector_contents_emitted": False,
+                }
+            ).decode(),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command()
 def schema() -> None:
     """Print JSON Schema; file contract types are under $defs."""

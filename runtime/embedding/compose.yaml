@@ -1,0 +1,16 @@
+name: flowdelta-embedding
+services:
+  ollama:
+    image: ollama/ollama:0.35.1@sha256:292ee7945dfc3d5840a181f3ab86fedb1e66703e02c8af98b50f4da56b7e278c
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${FLOWDELTA_OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - flowdelta-ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "--version"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+volumes:
+  flowdelta-ollama:
