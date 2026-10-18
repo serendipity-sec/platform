@@ -4,7 +4,7 @@ from collections import deque
 from typing import Literal, NamedTuple
 
 from flowdelta.contracts import NodeSemantics
-from flowdelta.graph.control import DATA_ORIGIN, short_hash
+from flowdelta.graph.control import DATA_ORIGIN, is_main, short_hash
 from flowdelta.graph.references import EXTENSION as NAME_REFERENCES
 from flowdelta.pipeline_contracts import Change, GraphEdge, ImpactPath, SemanticGraph
 
@@ -186,6 +186,18 @@ def _path(
         limitations.append(
             f"하위 workflow 호출 노드 {', '.join(calls)}에서 하위 workflow 안으로는 "
             "따라가지 않았다."
+        )
+    sub_node_links = sorted(
+        {
+            edge.output_type
+            for edge in edges
+            if edge.relation == "CONTROL" and not is_main(edge.output_type, edge.input_type)
+        }
+    )
+    if sub_node_links:
+        limitations.append(
+            f"경로의 {', '.join(sub_node_links)} 연결은 실행 순서가 아니라 하위 노드 연결이다. "
+            "모델·도구 설정이 agent에 영향을 줄 수 있다는 정적 가능성으로만 따라갔다."
         )
     limitations.extend(notes)
     edge_ids = [edge.edge_id for edge in edges]
