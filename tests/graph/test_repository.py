@@ -100,3 +100,35 @@ def test_ids_that_could_leave_the_folder_are_refused(tmp_path: Path, analysis_id
     with pytest.raises(InputError) as error:
         FileAnalysisRepository(tmp_path).get(analysis_id)
     assert error.value.code == "ANALYSIS_ID_INVALID"
+
+
+def deeply_nested(levels: int) -> dict[str, object]:
+    value: dict[str, object] = {"leaf": True}
+    for _ in range(levels):
+        value = {"next": value}
+    return value
+
+
+def test_analysis_that_could_not_be_read_back_is_refused(repository: AnalysisRepository) -> None:
+    bundle = analysis("order-lookup")
+    deep = bundle.model_copy(update={"extensions": {"test.deep": deeply_nested(70)}})
+    with pytest.raises(InputError) as error:
+        repository.save(deep)
+    assert error.value.code == "JSON_DEPTH_LIMIT"
+    # Nothing is stored, so the ID stays free instead of holding an unreadable analysis.
+    with pytest.raises(InputError) as missing:
+        repository.get(bundle.analysis_id)
+    assert missing.value.code == "ANALYSIS_NOT_FOUND"
+
+
+def test_relative_file_root_is_fixed_at_creation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    bundle = analysis("order-lookup")
+    repository = FileAnalysisRepository(Path("var/analyses"))
+    repository.save(bundle)
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    monkeypatch.chdir(elsewhere)
+    assert repository.get(bundle.analysis_id) == bundle

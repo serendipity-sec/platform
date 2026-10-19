@@ -52,7 +52,10 @@ def _checked_id(analysis_id: str) -> str:
 
 
 def _encode(bundle: AnalysisBundle) -> bytes:
-    return json_bytes(bundle.model_dump(mode="json"))
+    payload = json_bytes(bundle.model_dump(mode="json"))
+    # Refuse what get() could not read back (e.g. JSON_DEPTH_LIMIT) instead of storing it.
+    _decode(payload, bundle.analysis_id)
+    return payload
 
 
 def _decode(payload: bytes, analysis_id: str) -> AnalysisBundle:
@@ -120,7 +123,8 @@ class FileAnalysisRepository:
     """One folder per analysis ID holding `<sha256>.json`; the file name is its integrity check."""
 
     def __init__(self, root: Path) -> None:
-        self.root = root
+        # Fixed now, so a later change of working directory still finds the same records.
+        self.root = root.absolute()
 
     def _files(self, analysis_id: str) -> list[Path]:
         folder = self.root / _checked_id(analysis_id)
