@@ -134,6 +134,37 @@ def test_postgres_migration_and_transaction(tmp_path):
         assert not raw_path.exists()
 
         with storage_transaction(engine) as connection:
+            current_checksum = save_record(
+                connection,
+                tmp_path,
+                "stale-test",
+                "fixture",
+                json_bytes({"revision": 2}),
+                modified_at="2026-01-02T00:00:00+00:00",
+            )
+        stale_payload = json_bytes({"revision": 1})
+        with pytest.raises(InputError, match="KNOWLEDGE_SOURCE_RECORD_STALE"):
+            with storage_transaction(engine) as connection:
+                save_record(
+                    connection,
+                    tmp_path,
+                    "stale-test",
+                    "fixture",
+                    stale_payload,
+                    modified_at="2026-01-01T00:00:00+00:00",
+                )
+        stale_path = tmp_path / digest(stale_payload)[:2] / f"{digest(stale_payload)}.json"
+        assert not stale_path.exists()
+        with engine.connect() as connection:
+            assert connection.execute(
+                text(
+                    "SELECT sha256 FROM knowledge.source_record "
+                    "WHERE source='stale-test' AND external_id='fixture'"
+                )
+            ).scalar_one().strip() == current_checksum
+        clear_source("stale-test")
+
+        with storage_transaction(engine) as connection:
             first = save_record(
                 connection,
                 tmp_path,

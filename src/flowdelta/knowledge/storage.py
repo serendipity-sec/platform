@@ -135,7 +135,7 @@ def save_record(
     """),
         values,
     )
-    connection.execute(
+    result = connection.execute(
         text("""
         INSERT INTO knowledge.source_record(source, external_id, sha256, modified_at, document)
         VALUES (:source, :external_id, :sha256, CAST(:modified AS timestamptz),
@@ -144,10 +144,13 @@ def save_record(
             sha256=EXCLUDED.sha256, modified_at=EXCLUDED.modified_at, document=EXCLUDED.document
         WHERE source_record.modified_at IS NULL
            OR EXCLUDED.modified_at >= source_record.modified_at
+        RETURNING sha256
     """),
         values,
-    )
-    return checksum
+    ).scalar_one_or_none()
+    if result is None:
+        raise InputError("KNOWLEDGE_SOURCE_RECORD_STALE")
+    return str(result)
 
 
 def cleanup_orphaned_raw(
