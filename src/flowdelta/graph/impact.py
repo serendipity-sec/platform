@@ -1,6 +1,8 @@
 """Static impact paths from changed nodes to output nodes; a possibility, not an observed effect."""
 
+import heapq
 from collections import deque
+from collections.abc import Iterator
 from typing import Literal, NamedTuple
 
 from flowdelta.contracts import NodeSemantics
@@ -9,8 +11,10 @@ from flowdelta.graph.references import EXTENSION as NAME_REFERENCES
 from flowdelta.pipeline_contracts import Change, GraphEdge, ImpactPath, SemanticGraph
 
 Side = Literal["before", "after"]
-# (side, start node, shortest path per reachable node, note for the path's limitations)
-Route = tuple[Side, str, dict[str, list[GraphEdge]], str | None]
+# One path: its side, end node and edge IDs; changes reaching the same key share the path.
+Key = tuple[Side, str, tuple[str, ...]]
+# Selection order of a path: fewest edges first, then path ID.
+Candidate = tuple[int, str, Key]
 # Rename verdicts where some references still call the old name after the change.
 _STALE = ("BROKEN_REFERENCES", "REFERENCES_RETARGETED")
 _FOLLOWED = ("CONTROL", "DATA")
@@ -43,21 +47,40 @@ def output_nodes(graph: SemanticGraph, facts: dict[str, NodeSemantics]) -> set[s
     return outputs
 
 
-def shortest_paths(graph: SemanticGraph, start: str) -> dict[str, list[GraphEdge]]:
-    """BFS over CONTROL and DATA edges in edge-ID order, so ties resolve the same way each run."""
+def _following(graph: SemanticGraph) -> dict[str, list[GraphEdge]]:
     following: dict[str, list[GraphEdge]] = {}
     for edge in sorted(graph.edges, key=lambda item: item.edge_id):
         if edge.relation in _FOLLOWED:
             following.setdefault(edge.source_node_id, []).append(edge)
-    paths: dict[str, list[GraphEdge]] = {start: []}
+    return following
+
+
+def _tree(following: dict[str, list[GraphEdge]], start: str) -> dict[str, GraphEdge | None]:
+    """BFS tree: each reachable node's last edge on its shortest path, None for the start."""
+    tree: dict[str, GraphEdge | None] = {start: None}
     queue = deque([start])
     while queue:
         node_id = queue.popleft()
         for edge in following.get(node_id, []):
-            if edge.target_node_id not in paths:
-                paths[edge.target_node_id] = [*paths[node_id], edge]
+            if edge.target_node_id not in tree:
+                tree[edge.target_node_id] = edge
                 queue.append(edge.target_node_id)
-    return paths
+    return tree
+
+
+def _back(tree: dict[str, GraphEdge | None], end: str) -> list[GraphEdge]:
+    edges: list[GraphEdge] = []
+    edge = tree[end]
+    while edge is not None:
+        edges.append(edge)
+        edge = tree[edge.source_node_id]
+    return edges[::-1]
+
+
+def shortest_paths(graph: SemanticGraph, start: str) -> dict[str, list[GraphEdge]]:
+    """BFS over CONTROL and DATA edges in edge-ID order, so ties resolve the same way each run."""
+    tree = _tree(_following(graph), start)
+    return {end: _back(tree, end) for end in tree}
 
 
 def _side(change: Change) -> Side:
@@ -66,14 +89,23 @@ def _side(change: Change) -> Side:
     return "before" if change.kind == "REMOVED" or removed_connection else "after"
 
 
-def _routes(
-    change: Change, side: Side, graph: SemanticGraph
-) -> tuple[str, dict[str, list[GraphEdge]]] | None:
-    """Start node and its shortest paths; a connection change must go over that connection."""
+class Route(NamedTuple):
+    side: Side
+    start: str
+    # The changed connection or name reference a route goes over first; None starts at the node.
+    via: GraphEdge | None
+    # Added to the limitations of every path the route gives.
+    note: str | None
+
+
+def _own_route(change: Change, graphs: dict[Side, SemanticGraph]) -> Route | None:
+    """Start at the changed node; a connection change must go over that connection."""
+    side = _side(change)
+    graph = graphs[side]
     if change.node_id is None or change.node_id not in graph.node_ids:
         return None
     if change.kind != "CONNECTION_CHANGED":
-        return change.node_id, shortest_paths(graph, change.node_id)
+        return Route(side, change.node_id, None, None)
     location = change.before_source if side == "before" else change.after_source
     edge = next(
         (item for item in graph.edges if item.relation == "CONTROL" and location in item.evidence),
@@ -81,11 +113,7 @@ def _routes(
     )
     if edge is None:
         return None
-    return edge.source_node_id, _onward(graph, edge)
-
-
-def _onward(graph: SemanticGraph, edge: GraphEdge) -> dict[str, list[GraphEdge]]:
-    return {end: [edge, *path] for end, path in shortest_paths(graph, edge.target_node_id).items()}
+    return Route(side, edge.source_node_id, edge, None)
 
 
 Location = tuple[str, str]
@@ -141,18 +169,18 @@ def _reference_routes(change: Change, graphs: dict[Side, SemanticGraph]) -> list
             "수정 전 그래프에서 따라갔다."
         )
         if _location(edge) in stale:
-            routes.append(("before", edge.source_node_id, _onward(graphs["before"], edge), note))
+            routes.append(Route("before", edge.source_node_id, edge, note))
         elif edge.target_node_id in moved and _location(edge) not in seen:
             # The stale reference moved (e.g. reordered parameters), so no pointer pairs it.
             note += " 참조 위치가 바뀌어 위치로 대응하지 못한 같은 노드의 참조를 함께 따라갔다."
-            routes.append(("before", edge.source_node_id, _onward(graphs["before"], edge), note))
+            routes.append(Route("before", edge.source_node_id, edge, note))
     for edge in graphs["after"].edges:
         if edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE" and _location(edge) in stale:
             note = (
                 f"옛 이름을 가져간 {edge.source_node_id}로 바뀐 이름 참조 "
                 f"{edge.source_node_id} → {edge.target_node_id}에서 출발했다."
             )
-            routes.append(("after", edge.source_node_id, _onward(graphs["after"], edge), note))
+            routes.append(Route("after", edge.source_node_id, edge, note))
     return routes
 
 
@@ -202,7 +230,7 @@ def _path(
     limitations.extend(notes)
     edge_ids = [edge.edge_id for edge in edges]
     return ImpactPath(
-        path_id="impact-" + short_hash(side, node_ids[-1], *edge_ids),
+        path_id=_path_id(side, node_ids[-1], tuple(edge_ids)),
         side=side,
         change_ids=change_ids,
         edge_ids=edge_ids,
@@ -213,12 +241,89 @@ def _path(
     )
 
 
+def _path_id(side: Side, end: str, edge_ids: tuple[str, ...]) -> str:
+    return "impact-" + short_hash(side, end, *edge_ids)
+
+
+class _Walks:
+    """Shortest-path trees per start node, built once however many changes start there."""
+
+    def __init__(self, graphs: dict[Side, SemanticGraph], outputs: dict[Side, set[str]]) -> None:
+        self.outputs = outputs
+        self._following = {side: _following(graph) for side, graph in graphs.items()}
+        self._trees: dict[tuple[Side, str], dict[str, GraphEdge | None]] = {}
+        self._orders: dict[tuple[Side, str, str | None], list[Candidate]] = {}
+
+    def ends(self, route: Route) -> dict[str, GraphEdge | None]:
+        """Reachable nodes; a route over an edge goes on from the edge's target."""
+        start = route.via.target_node_id if route.via is not None else route.start
+        key = (route.side, start)
+        if key not in self._trees:
+            self._trees[key] = _tree(self._following[route.side], start)
+        return self._trees[key]
+
+    def edges(self, route: Route, end: str) -> list[GraphEdge]:
+        path = _back(self.ends(route), end)
+        return [route.via, *path] if route.via is not None else path
+
+    def order(self, route: Route) -> list[Candidate]:
+        """The route's paths to output nodes in selection order; keys only, no ImpactPath yet."""
+        key = (route.side, route.start, route.via.edge_id if route.via is not None else None)
+        if key not in self._orders:
+            items: list[Candidate] = []
+            for end in self.outputs[route.side] & self.ends(route).keys():
+                edge_ids = tuple(edge.edge_id for edge in self.edges(route, end))
+                path_id = _path_id(route.side, end, edge_ids)
+                items.append((len(edge_ids), path_id, (route.side, end, edge_ids)))
+            self._orders[key] = sorted(items)
+        return self._orders[key]
+
+
+def _queue(routes: list[Route], walks: _Walks) -> Iterator[Candidate]:
+    """One change's paths in selection order, worked out only once the selection reaches it."""
+    last: Candidate | None = None
+    for item in heapq.merge(*(walks.order(route) for route in routes)):
+        if item != last:
+            yield item
+        last = item
+
+
+def _select(
+    placed: dict[str, list[Route]], walks: _Walks, limit: int | None
+) -> tuple[set[Key], bool]:
+    """Round robin over changes in ID order, each taking its shortest path not yet taken.
+
+    Stops at the first new path past the limit, so paths beyond it are never generated.
+    The flag says whether every path was seen, i.e. the kept paths are all of them.
+    """
+    queues = [_queue(placed[change_id], walks) for change_id in sorted(placed)]
+    kept: set[Key] = set()
+    while queues:
+        active: list[Iterator[Candidate]] = []
+        for queue in queues:
+            item = next(queue, None)
+            if item is None:
+                continue
+            active.append(queue)
+            if item[2] in kept:
+                continue
+            if limit is not None and len(kept) == limit:
+                return kept, False
+            kept.add(item[2])
+        queues = active
+    return kept, True
+
+
 class ImpactResult(NamedTuple):
     paths: list[ImpactPath]
     # Changes with no start node (workflow-level, or a connection no edge matches).
     unplaced: int
     # DISPLAY_CHANGED: position, notes, colour, workflow name or tags; no execution meaning.
     display_only: int
+    # False when generation stopped at the path limit with paths left, so the total is unknown.
+    complete: bool = True
+    # Changes that have a path, none of which fits under the limit.
+    uncovered: int = 0
 
 
 def impact_paths(
@@ -226,34 +331,52 @@ def impact_paths(
     graphs: dict[Side, SemanticGraph],
     facts: dict[Side, dict[str, NodeSemantics]],
     task_id: str,
+    limit: int | None = None,
 ) -> ImpactResult:
-    """One shortest path per (change, route, output node), grouped when the edges match."""
-    outputs = {side: output_nodes(graphs[side], facts[side]) for side in graphs}
-    found: dict[
-        tuple[Side, str, tuple[str, ...]], tuple[str, list[GraphEdge], set[str], set[str]]
-    ] = {}
+    """One shortest path per (change, route, output node), grouped when the edges match.
+
+    With a limit, at most that many paths are generated, every change's shortest first.
+    """
+    walks = _Walks(graphs, {side: output_nodes(graphs[side], facts[side]) for side in graphs})
+    placed: dict[str, list[Route]] = {}
     unplaced = display_only = 0
     for change in changes:
         if change.kind == "DISPLAY_CHANGED":
             display_only += 1
             continue
-        side = _side(change)
-        own = _routes(change, side, graphs[side])
+        own = _own_route(change, graphs)
         if own is None:
             unplaced += 1
             continue
-        start, reachable = own
-        routes: list[Route] = [(side, start, reachable, None), *_reference_routes(change, graphs)]
-        for route_side, route_start, route_reachable, note in routes:
-            for end in sorted(outputs[route_side] & route_reachable.keys()):
-                edges = route_reachable[end]
-                key = (route_side, end, tuple(edge.edge_id for edge in edges))
-                _, _, change_ids, notes = found.setdefault(key, (route_start, edges, set(), set()))
-                change_ids.add(change.change_id)
-                if note is not None:
-                    notes.add(note)
+        placed[change.change_id] = [own, *_reference_routes(change, graphs)]
+    kept, complete = _select(placed, walks, limit)
+    wanted: dict[tuple[Side, str], list[Key]] = {}
+    for key in kept:
+        wanted.setdefault((key[0], key[1]), []).append(key)
+    # Every change and note behind a kept path, also from changes the selection never reached.
+    found: dict[Key, tuple[str, list[GraphEdge], set[str], set[str]]] = {}
+    uncovered = 0
+    for change_id, routes in placed.items():
+        reaches = covered = False
+        for route in routes:
+            ends = walks.ends(route).keys()
+            reaches = reaches or bool(walks.outputs[route.side] & ends)
+            for end in ends:
+                for key in wanted.get((route.side, end), []):
+                    edges = walks.edges(route, end)
+                    if tuple(edge.edge_id for edge in edges) != key[2]:
+                        continue
+                    _, _, change_ids, notes = found.setdefault(
+                        key, (route.start, edges, set(), set())
+                    )
+                    change_ids.add(change_id)
+                    if route.note is not None:
+                        notes.add(route.note)
+                    covered = True
+        if reaches and not covered:
+            uncovered += 1
     paths = [
         _path(side, start, edges, sorted(change_ids), sorted(notes), facts[side], task_id)
         for (side, _, _), (start, edges, change_ids, notes) in sorted(found.items())
     ]
-    return ImpactResult(paths, unplaced, display_only)
+    return ImpactResult(paths, unplaced, display_only, complete, uncovered)
