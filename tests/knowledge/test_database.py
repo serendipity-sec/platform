@@ -203,6 +203,7 @@ def test_postgres_migration_and_transaction(tmp_path):
             ).scalar_one()
             assert count == 2
         clear_source("test")
+        assert cleanup_orphaned_raw(engine, tmp_path, older_than_seconds=0) == 2
         assert list(tmp_path.rglob("*.json")) == []
 
         raw_payload = b'{ "revision": 7.00 }\r\n'
