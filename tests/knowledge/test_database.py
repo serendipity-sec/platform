@@ -1,6 +1,7 @@
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 
 import pytest
 
@@ -17,6 +18,65 @@ from flowdelta.knowledge.storage import (
     save_record,
     storage_transaction,
 )
+
+
+class _StatusResult:
+    def __init__(self, value):
+        self.value = value
+
+    def scalar_one(self):
+        return self.value
+
+    def scalar_one_or_none(self):
+        return self.value
+
+
+class _StatusConnection:
+    def __init__(self, vector, has_migrations, revision):
+        self.vector = vector
+        self.has_migrations = has_migrations
+        self.revision = revision
+
+    def execute(self, statement):
+        sql = str(statement)
+        if "SHOW server_version" in sql:
+            return _StatusResult("17.8")
+        if "FROM pg_extension" in sql:
+            return _StatusResult(self.vector)
+        if "to_regclass" in sql:
+            return _StatusResult(self.has_migrations)
+        if "FROM alembic_version" in sql:
+            return _StatusResult(self.revision)
+        raise AssertionError(f"unexpected status query: {sql}")
+
+
+class _StatusEngine:
+    def __init__(self, connection):
+        self.connection = connection
+
+    @contextmanager
+    def connect(self):
+        yield self.connection
+
+    def dispose(self):
+        pass
+
+
+def test_database_status_reports_uninitialized_database(monkeypatch):
+    import flowdelta.knowledge.database as database
+
+    settings = KnowledgeSettings(database_url="postgresql+psycopg://user:pass@localhost/db")
+    engine = _StatusEngine(_StatusConnection(vector=None, has_migrations=None, revision=None))
+    monkeypatch.setattr(database, "engine_for", lambda _: engine)
+    with pytest.raises(InputError, match="KNOWLEDGE_VECTOR_EXTENSION_MISSING"):
+        database.database_status(settings)
+
+    engine = _StatusEngine(
+        _StatusConnection(vector="0.8.1", has_migrations=None, revision=None)
+    )
+    monkeypatch.setattr(database, "engine_for", lambda _: engine)
+    with pytest.raises(InputError, match="KNOWLEDGE_MIGRATION_REQUIRED"):
+        database.database_status(settings)
 
 
 def test_raw_idempotent_and_integrity(tmp_path):

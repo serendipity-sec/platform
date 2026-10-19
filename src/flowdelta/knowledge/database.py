@@ -50,11 +50,18 @@ def database_status(settings: KnowledgeSettings) -> dict[str, str]:
             vector = connection.execute(
                 text("SELECT extversion FROM pg_extension WHERE extname='vector'")
             ).scalar_one_or_none()
-            revision = connection.execute(
-                text("SELECT version_num FROM alembic_version")
-            ).scalar_one()
             if vector is None:
                 raise InputError("KNOWLEDGE_VECTOR_EXTENSION_MISSING")
+            has_migrations = connection.execute(
+                text("SELECT to_regclass('public.alembic_version')")
+            ).scalar_one()
+            if has_migrations is None:
+                raise InputError("KNOWLEDGE_MIGRATION_REQUIRED")
+            revision = connection.execute(
+                text("SELECT version_num FROM alembic_version")
+            ).scalar_one_or_none()
+            if revision is None:
+                raise InputError("KNOWLEDGE_MIGRATION_REQUIRED")
             return {"postgres": str(version), "pgvector": str(vector), "migration": str(revision)}
     except SQLAlchemyError:
         raise InputError("KNOWLEDGE_DATABASE_UNAVAILABLE") from None
