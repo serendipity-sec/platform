@@ -17,7 +17,7 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 
 ## B·C가 읽는 순서
 
-1. `extensions["flowdelta.graph.limits"].truncated`가 `true`면 일부 계산을 생략했거나 경로를 덜 남긴 것이다. 이유는 `reasons`에 있다.
+1. `extensions["flowdelta.graph.limits"].truncated`가 `true`면 일부 계산을 생략했거나 경로 생성을 상한에서 멈춘 것이다. 이유는 `reasons`에 있다.
 2. `changes`에서 변경과 원본 위치(`before_source`·`after_source`의 artifact ID·JSON Pointer)를 읽는다.
 3. `impact_paths`에서 변경(`change_ids`)이 닿을 수 있는 출력까지의 경로를 읽는다. `edge_ids`를 `side`의 그래프(`before_graph`·`after_graph`)에서 찾아 노드를 따라간다.
 4. 경로의 `support`가 `SUPPORTED`가 아니면, 경로 `limitations`에 이유와 해당 노드가 있다.
@@ -29,13 +29,13 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 
 | 간선 | 만드는 근거 | 읽을 때 |
 |---|---|---|
-| `CONTROL` | 정규화 workflow의 연결 | `output_type`이 `main`이면 실행 순서다. `ai_tool`·`ai_languageModel` 같은 연결은 agent에 하위 노드를 붙이는 연결이며 실행 순서가 아니다. 검증기와 맞추려고 같은 `CONTROL`로 두고 `output_type`으로만 구분한다. |
+| `CONTROL` | 정규화 workflow의 연결 | `output_type`과 `input_type`이 **모두** `main`이면 실행 순서다. 그 밖의 연결(`ai_tool`·`ai_languageModel` 등)은 agent에 하위 노드를 붙이는 연결이며 실행 순서가 아니다. 계약의 `Connection`은 두 값이 다른 연결도 받으므로 한쪽 값만으로 판단하지 않는다. 검증기와 맞추려고 같은 `CONTROL`로 두고 두 값으로 구분한다(`flowdelta.graph.control.is_main`). |
 | `DATA` + `extensions["flowdelta.graph.data_origin"]="NAME_REFERENCE"` | 파라미터 문자열의 `$('이름')`·`$node["이름"]`·`$items("이름")` | 참조되는 노드 → 참조하는 노드. `target_fields`·`evidence`는 참조 문자열의 JSON Pointer다. |
 | `DATA` + `"FIELD_FLOW"` | 의미 정보의 `reads`/`writes` | 쓴 노드 → 읽은 노드. `source_fields`·`target_fields`는 쓴·읽은 `$json` 필드다. |
 
 필드 흐름은 아래 규칙으로만 만든다.
 
-- 읽는 노드에서 `main` 연결을 거꾸로 따라가, 갈래마다 그 필드를 쓰는 가장 가까운 앞 노드를 찾는다. 상위 객체와 하위 필드(`$json.body` ↔ `$json.body.id`)도 같은 필드로 본다.
+- 읽는 노드에서 두 값이 모두 `main`인 `CONTROL` 간선만 거꾸로 따라가, 갈래마다 그 필드를 쓰는 가장 가까운 앞 노드를 찾는다. 상위 객체와 하위 필드(`$json.body` ↔ `$json.body.id`)도 같은 필드로 본다.
 - `$json.*:unchanged-item`(If·Merge)과 `$json.*:preserved-input`(Include Other Fields) 노드는 건너뛰고 더 앞을 본다.
 - `$json.*:array-element`(Split Out)·`$json.*:caller-input`(하위 workflow 진입)은 모든 필드를 쓰는 것으로 본다.
 - 그대로 넘긴다는 선언이 없는 노드, 의미 정보가 없거나 지원되지 않는 노드, 오류 출력 포트에서는 멈추고 그래프 `limitations`에 위치와 이유를 남긴다.
@@ -63,7 +63,7 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 - 끝점: 입력(`receive:`)이 아닌 효과가 있는 노드, 효과를 알 수 없는 노드, 나가는 `CONTROL` 간선이 없는 마지막 노드.
 - 경로: `CONTROL`·`DATA` 간선을 앞으로 따라가는 끝점별 최단 경로 하나. 동점이면 간선 ID 순으로 정해서 같은 입력이면 같은 경로가 나온다. 가능한 모든 경로나 실제 실행 경로의 증거가 아니다.
 - 만들지 않는 것: 표시 변경(`DISPLAY_CHANGED`)과 노드가 없는 workflow 수준 변경. 개수만 분석 `limitations`에 남긴다.
-- 하위 workflow 안으로는 들어가지 않는다. 하위 workflow 호출이나 `ai_*` 연결을 지나는 경로에는 그 사실을 적는다.
+- 하위 workflow 안으로는 들어가지 않는다. 하위 workflow 호출이나 두 값이 모두 `main`은 아닌 연결(`ai_*` 등)을 지나는 경로에는 그 사실을 적는다.
 
 ## 분석 상한
 
@@ -73,9 +73,12 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 |---|---|---|
 | `max_workflow_nodes` | 100 | 그래프(CONTROL·이름 참조)와 변경은 그대로, 필드 흐름과 영향 경로는 계산하지 않음 |
 | `max_snapshot_nodes` | 300 (본 workflow + 고정 하위 workflow) | 위와 같음 |
-| `max_impact_paths` | 20 | 변경마다 가장 짧은 경로를 먼저 하나씩 남기고 나머지를 채움 |
+| `max_impact_paths` | 20 | 20개까지만 만든다. 변경마다 가장 짧은 경로를 먼저 하나씩 고르고 나머지를 채우며, 상한을 넘는 새 경로가 보이면 생성을 멈춘다 |
 
-`extensions["flowdelta.graph.limits"]`에는 상한 값, `truncated`, `reasons`(`WORKFLOW_NODE_LIMIT`·`SNAPSHOT_NODE_LIMIT`·`IMPACT_PATH_LIMIT`), `impact_paths`(`computed`·`total`·`kept`)가 항상 들어간다.
+`extensions["flowdelta.graph.limits"]`에는 상한 값, `truncated`, `reasons`(`WORKFLOW_NODE_LIMIT`·`SNAPSHOT_NODE_LIMIT`·`IMPACT_PATH_LIMIT`), `impact_paths`(`computed`·`complete`·`total`·`kept`)가 항상 들어간다.
+
+- `complete`가 `true`면 경로를 전부 만든 것이고 `total`이 정확한 전체 수다.
+- `complete`가 `false`면 경로 상한에서 생성을 멈췄거나, 노드 상한 때문에 계산하지 않은 것이다(이때는 `computed`도 `false`). 전체 경로 수를 세지 않았으므로 `total`과 `IMPACT_PATH_LIMIT`의 `count`는 `null`이다.
 
 ## 아직 하지 않는 것
 
