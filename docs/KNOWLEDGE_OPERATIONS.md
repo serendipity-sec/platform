@@ -26,7 +26,9 @@ DB는 localhost:55432에 바인딩하며 데이터는 `knowledge-postgres` named
 `FLOWDELTA_KB_MIGRATION_URL`은 DDL 계정, `FLOWDELTA_KB_DATABASE_URL`은 앱 계정이다.
 앱 계정은 knowledge schema의 DML만 허용한다. 다른 서버에서는 관리자가 앱 역할을
 준비하고 migration 실행 후 동일 권한을 부여한다. DB 생성·계정 생성은 migration이
-임의로 수행하지 않는다.
+임의로 수행하지 않는다. `FLOWDELTA_KB_RAW_ROOT`는 절대 경로를 사용하며, 기본값은 OS별
+사용자 데이터 디렉터리다. 로컬 준비 스크립트는 저장소의 `var/knowledge/raw`를 절대 경로로
+설정하므로 실행 작업 디렉터리가 달라져도 같은 원본 저장소를 사용한다.
 
 원본 파일 쓰기와 DB 쓰기는 `storage_transaction()`으로 함께 관리한다. DB 커밋이 실패하거나
 롤백되면 해당 트랜잭션에서 새로 만든 미참조 파일을 정리한다. 프로세스가 강제 종료되어
