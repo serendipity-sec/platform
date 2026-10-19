@@ -29,3 +29,21 @@ def status_command() -> None:
     except InputError as exc:
         typer.echo(exc.code, err=True)
         raise typer.Exit(2) from None
+
+
+@app.command("cleanup-raw")
+def cleanup_raw_command() -> None:
+    from flowdelta.knowledge.database import engine_for
+    from flowdelta.knowledge.storage import cleanup_orphaned_raw
+
+    try:
+        settings = KnowledgeSettings.from_environment()
+        engine = engine_for(settings)
+        try:
+            removed = cleanup_orphaned_raw(engine, settings.raw_root)
+        finally:
+            engine.dispose()
+        typer.echo(json_bytes({"removed": removed}).decode())
+    except InputError as exc:
+        typer.echo(exc.code, err=True)
+        raise typer.Exit(2) from None

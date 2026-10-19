@@ -15,6 +15,7 @@ Get-Content var/knowledge/local.env | ForEach-Object {
 }
 uv run --frozen --extra knowledge flowdelta knowledge migrate
 uv run --frozen --extra knowledge flowdelta knowledge status
+uv run --frozen --extra knowledge flowdelta knowledge cleanup-raw
 ```
 
 환경 파일을 출력하거나 커밋하지 않는다. 생성 도구는 기존 파일을 덮어쓰지 않는다.
@@ -25,6 +26,11 @@ DB는 localhost:55432에 바인딩하며 데이터는 `knowledge-postgres` named
 앱 계정은 knowledge schema의 DML만 허용한다. 다른 서버에서는 관리자가 앱 역할을
 준비하고 migration 실행 후 동일 권한을 부여한다. DB 생성·계정 생성은 migration이
 임의로 수행하지 않는다.
+
+원본 파일 쓰기와 DB 쓰기는 `storage_transaction()`으로 함께 관리한다. DB 커밋이 실패하거나
+롤백되면 해당 트랜잭션에서 새로 만든 미참조 파일을 정리한다. 프로세스가 강제 종료되어
+남은 고아 파일은 `cleanup-raw`가 24시간 이상 된 파일 중 DB revision에서 참조하지 않는 것만
+제거한다. 실행 중인 저장 작업과 정리는 PostgreSQL advisory lock으로 조정한다.
 
 ## 검증
 
