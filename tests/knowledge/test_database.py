@@ -215,6 +215,8 @@ def test_postgres_migration_and_transaction(tmp_path):
         assert checksum == digest(raw_payload)
         assert raw_path.read_bytes() == raw_payload
         clear_source("raw-bytes-test")
+        os.utime(raw_path, (time.time() - 10, time.time() - 10))
+        assert cleanup_orphaned_raw(engine, tmp_path, older_than_seconds=1) == 1
         assert not raw_path.exists()
 
         with pytest.raises(InputError, match="KNOWLEDGE_MODIFIED_AT_TIMEZONE_REQUIRED"):
@@ -258,6 +260,9 @@ def test_postgres_migration_and_transaction(tmp_path):
                 )
             ).scalar_one().strip() == current_checksum
         clear_source("stale-test")
+        current_path = tmp_path / current_checksum[:2] / f"{current_checksum}.json"
+        os.utime(current_path, (time.time() - 10, time.time() - 10))
+        assert cleanup_orphaned_raw(engine, tmp_path, older_than_seconds=1) == 1
 
         with storage_transaction(engine) as connection:
             first = save_record(
