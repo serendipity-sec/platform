@@ -4,6 +4,7 @@ from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
+from alembic.util.exc import CommandError
 from sqlalchemy import Engine, create_engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -36,7 +37,7 @@ def migrate(settings: KnowledgeSettings) -> None:
         with engine.begin() as connection:
             config.attributes["connection"] = connection
             command.upgrade(config, "head")
-    except SQLAlchemyError:
+    except (CommandError, OSError, SQLAlchemyError):
         raise InputError("KNOWLEDGE_MIGRATION_FAILED") from None
     finally:
         engine.dispose()
