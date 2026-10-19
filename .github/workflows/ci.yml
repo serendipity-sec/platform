@@ -127,13 +127,16 @@ jobs:
           uv run --frozen --extra knowledge python - <<'PY'
           import os
           import psycopg
+          from psycopg import sql
 
           admin_url = os.environ["FLOWDELTA_KB_TEST_MIGRATION_URL"].replace(
               "+psycopg://", "://", 1
           )
           with psycopg.connect(admin_url) as connection:
               connection.execute(
-                  "CREATE ROLE flowdelta_app LOGIN PASSWORD %s", ("ci-app-only",)
+                  sql.SQL("CREATE ROLE {} LOGIN PASSWORD {}").format(
+                      sql.Identifier("flowdelta_app"), sql.Literal("ci-app-only")
+                  )
               )
           PY
       - run: uv run --frozen --extra knowledge pytest tests/knowledge/test_database.py
