@@ -5,7 +5,7 @@ from pathlib import Path
 from flowdelta.contracts import Handoff
 from flowdelta.knowledge.cards import kb_bytes, load_cards
 from flowdelta.knowledge.composition import compose_plan as _compose
-from flowdelta.knowledge.output import write_artifacts
+from flowdelta.knowledge.output import validate_output_paths, write_artifacts
 from flowdelta.knowledge.retrieval import retrieve as _retrieve
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
@@ -59,6 +59,7 @@ def write_plan(
     catalog: TemplateCatalog,
     output: Path,
 ) -> TestPlan:
+    validate_output_paths(output)
     retrieval = retrieve(handoff, analysis, cards, catalog)
     plan = compose_plan(handoff, analysis, cards, catalog, retrieval)
     return write_artifacts(cards, retrieval, plan, output)

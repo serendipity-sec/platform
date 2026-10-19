@@ -5,8 +5,9 @@ workflow나 카드에 적힌 코드·URL을 실행하지 않는다. 공개 함�
 `make_plan(handoff, analysis, cards, catalog) -> TestPlan`이다.
 
 검색과 계획 구성은 분리돼 있다. `compose_plan(handoff, analysis, cards, catalog, retrieval)`은
-확정된 검색 결과를 받아 추가 검색 없이 계획을 만든다. analysis, 입력·catalog fingerprint,
-정규 카드 snapshot 해시, 카드 참조와 순위를 검사한다. `write_plan`은 검색을 한 번 수행하고
+확정된 검색 결과를 받아 추가 검색 없이 계획을 만든다. analysis와 규칙 버전, 입력·catalog
+fingerprint, 정규 카드 snapshot, retrieval ID와 결과 fingerprint, 카드 적격성과 hit/exclusion
+분할·순위를 검사한다. `write_plan`은 검색을 한 번 수행하고
 같은 결과를 계획과 `retrieval.json`에 사용한다. 기존 공개 함수와 CLI는 유지한다.
 
 ## 재현

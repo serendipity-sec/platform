@@ -3,7 +3,15 @@
 from flowdelta.contracts import Handoff
 from flowdelta.ingestion import InputError, digest
 from flowdelta.knowledge.cards import _unique, kb_bytes
-from flowdelta.knowledge.retrieval import author, context_fingerprint
+from flowdelta.knowledge.retrieval import (
+    author,
+    context_fingerprint,
+    exclusion_reason,
+    hit_details,
+    retrieval_content_fingerprint,
+    retrieval_identity,
+    search_context,
+)
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
     ObligationBinding,
@@ -27,26 +35,82 @@ def compose_plan(
     cards = _unique(cards)
     if retrieval.analysis_id != analysis.analysis_id:
         raise InputError("RETRIEVAL_ANALYSIS_MISMATCH")
+    if (
+        retrieval.query.get("rules_version") != producer
+        or retrieval.authorship.producer != producer
+    ):
+        raise InputError("RETRIEVAL_VERSION_MISMATCH")
     if retrieval.query.get("context_fingerprint") != context_fingerprint(
-        handoff, analysis, catalog
+        handoff, analysis, catalog, producer
     ):
         raise InputError("RETRIEVAL_CONTEXT_MISMATCH")
+    profile, node_types, fields, tokens = search_context(handoff, analysis)
+    expected_query = {
+        "task_id": handoff.task.task_id,
+        "runtime_profile": profile,
+        "node_types": [str(value) for value in node_types],
+        "changed_fields": [str(value) for value in fields],
+        "rules_version": producer,
+        "context_fingerprint": context_fingerprint(handoff, analysis, catalog, producer),
+    }
+    recorded_query = {
+        key: value for key, value in retrieval.query.items() if key != "result_fingerprint"
+    }
+    if recorded_query != expected_query:
+        raise InputError("RETRIEVAL_CONTEXT_MISMATCH")
+    if retrieval.method != "KEYWORD" or retrieval.model_version is not None:
+        raise InputError("RETRIEVAL_METHOD_MISMATCH")
     snapshot = kb_bytes(cards)
     if (retrieval.kb_snapshot_ref.sha256, retrieval.kb_snapshot_ref.size_bytes) != (
         digest(snapshot),
         len(snapshot),
     ):
         raise InputError("RETRIEVAL_SNAPSHOT_MISMATCH")
+    if retrieval.retrieval_id != retrieval_identity(
+        producer, snapshot, handoff, analysis, catalog
+    ):
+        raise InputError("RETRIEVAL_ID_MISMATCH")
     known = {(card.card_id, card.version) for card in cards}
     keys = [(hit.card_id, hit.card_version) for hit in retrieval.hits]
     if len(keys) != len(set(keys)) or not set(keys).issubset(known):
         raise InputError("RETRIEVAL_CARD_MISMATCH")
+    hit_keys = {f"{card_id}@{version}" for card_id, version in keys}
+    card_keys = {f"{card_id}@{version}" for card_id, version in known}
+    excluded_keys = set(retrieval.excluded_reasons)
+    if (hit_keys & excluded_keys) or (hit_keys | excluded_keys) != card_keys:
+        raise InputError("RETRIEVAL_CARD_MISMATCH")
     if [hit.rank for hit in retrieval.hits] != list(range(1, len(keys) + 1)):
+        raise InputError("RETRIEVAL_RANK_INVALID")
+    expected_order = sorted(
+        retrieval.hits,
+        key=lambda hit: (-hit.score, hit.card_id, hit.card_version),
+    )
+    if retrieval.hits != expected_order:
         raise InputError("RETRIEVAL_RANK_INVALID")
     if any(hit.applicability == "NO_MATCH" for hit in retrieval.hits):
         raise InputError("RETRIEVAL_INELIGIBLE_CARD")
     by_card = {(card.card_id, card.version): card for card in cards}
-    profile = handoff.environment.extensions.get("flowdelta.semantic_profile")
+    node_type_set = set(node_types)
+    templates = {
+        (template.template_id, template.version): template for template in catalog.templates
+    }
+    for card in cards:
+        key = f"{card.card_id}@{card.version}"
+        reason = exclusion_reason(card, handoff, templates, profile, node_type_set)
+        if key in excluded_keys:
+            if reason is None or reason != retrieval.excluded_reasons[key]:
+                raise InputError("RETRIEVAL_CARD_MISMATCH")
+        elif reason is not None:
+            raise InputError("RETRIEVAL_INELIGIBLE_CARD")
+    for hit in retrieval.hits:
+        card = by_card[(hit.card_id, hit.card_version)]
+        score, applicability, reason = hit_details(card, node_type_set, tokens)
+        if hit.applicability != applicability:
+            raise InputError("RETRIEVAL_INELIGIBLE_CARD")
+        if hit.score != score or hit.reason != reason:
+            raise InputError("RETRIEVAL_CONTENT_MISMATCH")
+    if retrieval.query.get("result_fingerprint") != retrieval_content_fingerprint(retrieval):
+        raise InputError("RETRIEVAL_CONTENT_MISMATCH")
     eligible = [
         t
         for t in catalog.templates

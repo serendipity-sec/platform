@@ -2,6 +2,8 @@ import pytest
 
 from flowdelta.ingestion import InputError
 from flowdelta.knowledge import compose_plan, planner, retrieve, write_plan
+from flowdelta.knowledge.retrieval import retrieval_content_fingerprint
+from flowdelta.pipeline_contracts import RetrievalHit
 
 from .test_planner import inputs
 
@@ -57,5 +59,81 @@ def test_reject_changed_retrieval(changed, code):
         result.hits[0].rank = 2
     else:
         result.hits[0].applicability = "NO_MATCH"
+    with pytest.raises(InputError, match=code):
+        compose_plan(*values, result)
+
+
+def test_rejects_search_excluded_card_even_with_recomputed_fingerprint():
+    handoff, analysis, cards, catalog = inputs()
+    card = cards[0].model_copy(update={"runtime_profile": "other"})
+    result = retrieve(handoff, analysis, [card], catalog)
+    result.hits = [
+        RetrievalHit(
+            card_id=card.card_id,
+            card_version=card.version,
+            rank=1,
+            score=0.0,
+            applicability="MATCH",
+            reason="forged hit",
+        )
+    ]
+    result.excluded_reasons = {}
+    result.query["result_fingerprint"] = retrieval_content_fingerprint(result)
+
+    with pytest.raises(InputError, match="RETRIEVAL_INELIGIBLE_CARD"):
+        compose_plan(handoff, analysis, [card], catalog, result)
+
+
+def test_rejects_reordered_hits_even_with_recomputed_fingerprint():
+    values = inputs()
+    result = retrieve(*values)
+    result.hits.reverse()
+    for rank, hit in enumerate(result.hits, 1):
+        hit.rank = rank
+    result.query["result_fingerprint"] = retrieval_content_fingerprint(result)
+
+    with pytest.raises(InputError, match="RETRIEVAL_RANK_INVALID"):
+        compose_plan(*values, result)
+
+
+def test_rejects_changed_hit_score_even_with_recomputed_fingerprint():
+    values = inputs()
+    result = retrieve(*values)
+    result.hits[0].score += 1.0
+    result.query["result_fingerprint"] = retrieval_content_fingerprint(result)
+
+    with pytest.raises(InputError, match="RETRIEVAL_CONTENT_MISMATCH"):
+        compose_plan(*values, result)
+
+
+def test_rejects_omitted_hits_even_with_recomputed_fingerprint():
+    values = inputs()
+    result = retrieve(*values)
+    result.hits = []
+    result.excluded_reasons = {}
+    result.query["result_fingerprint"] = retrieval_content_fingerprint(result)
+
+    with pytest.raises(InputError, match="RETRIEVAL_CARD_MISMATCH"):
+        compose_plan(*values, result)
+
+
+@pytest.mark.parametrize(
+    ("changed", "code"),
+    [
+        ("version", "RETRIEVAL_VERSION_MISMATCH"),
+        ("identity", "RETRIEVAL_ID_MISMATCH"),
+        ("content", "RETRIEVAL_CONTENT_MISMATCH"),
+    ],
+)
+def test_rejects_wrong_retrieval_provenance(changed, code):
+    values = inputs()
+    result = retrieve(*values)
+    if changed == "version":
+        result.query["rules_version"] = "flowdelta.knowledge/0.0.1"
+    elif changed == "identity":
+        result.retrieval_id = "retrieval-forged"
+    else:
+        result.hits[0].reason = "modified after retrieval"
+
     with pytest.raises(InputError, match=code):
         compose_plan(*values, result)
