@@ -5,6 +5,7 @@ import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
@@ -110,6 +111,7 @@ def save_record(
 
     document = parse_json(raw_payload)
     payload = raw_payload
+    parsed_modified_at = _parse_modified_at(modified_at)
     checksum = digest(payload)
     if checksum not in state.locked_checksums:
         connection.execute(text(_BLOB_LOCK_SQL), {"checksum": checksum}).scalar_one()
@@ -124,7 +126,7 @@ def save_record(
         "sha256": checksum,
         "path": path,
         "size": len(payload),
-        "modified": modified_at,
+        "modified": parsed_modified_at,
         "document": json_bytes(document).decode("utf-8"),
     }
     connection.execute(
@@ -151,6 +153,19 @@ def save_record(
     if result is None:
         raise InputError("KNOWLEDGE_SOURCE_RECORD_STALE")
     return str(result)
+
+
+def _parse_modified_at(value: str | None) -> datetime | None:
+    if value is None:
+        return None
+    normalized = f"{value[:-1]}+00:00" if value.endswith("Z") else value
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        raise InputError("KNOWLEDGE_MODIFIED_AT_INVALID") from None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        raise InputError("KNOWLEDGE_MODIFIED_AT_TIMEZONE_REQUIRED")
+    return parsed
 
 
 def cleanup_orphaned_raw(

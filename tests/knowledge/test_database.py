@@ -193,6 +193,17 @@ def test_postgres_migration_and_transaction(tmp_path):
         clear_source("raw-bytes-test")
         assert not raw_path.exists()
 
+        with pytest.raises(InputError, match="KNOWLEDGE_MODIFIED_AT_TIMEZONE_REQUIRED"):
+            with storage_transaction(engine) as connection:
+                save_record(
+                    connection,
+                    tmp_path,
+                    "timezone-test",
+                    "fixture",
+                    json_bytes({"revision": 1}),
+                    modified_at="2026-01-01T00:00:00",
+                )
+
         with storage_transaction(engine) as connection:
             current_checksum = save_record(
                 connection,
