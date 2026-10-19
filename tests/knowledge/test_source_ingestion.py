@@ -54,17 +54,19 @@ def database(tmp_path: Path):
     )
     migrate(settings)
     engine = engine_for(settings)
+    migration_engine = engine_for(settings, migration=True)
     source = f"test-{uuid4().hex}"
     try:
         yield engine, source, tmp_path
     finally:
-        with engine.begin() as connection:
+        with migration_engine.begin() as connection:
             for table in ("sync_failure", "source_record", "source_revision", "sync_state"):
                 connection.execute(
                     text(f"DELETE FROM knowledge.{table} WHERE source=:source"),
                     {"source": source},
                 )
         engine.dispose()
+        migration_engine.dispose()
 
 
 def test_pages_resume_and_preserve_raw_revisions(database):
