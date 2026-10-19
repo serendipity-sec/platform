@@ -1,0 +1,27 @@
+--- Memory Save ---
+PASS team ohne confirmed -> Vorschau, kein Schreibzugriff, kein Embedding, kein Audit
+PASS scope fehlt -> gilt als team, ebenfalls Vorschau
+PASS team mit confirmed=true -> POST mit scope team und owner_user_id, Audit ok
+PASS confirmed als String "true" zaehlt auch
+PASS personal -> sofort gespeichert, ohne confirmed
+PASS Audit-Fehler stoert das Speichern nicht
+--- Memory Update ---
+PASS eigener Team-Eintrag als Nicht-Admin -> PATCH, Audit ok
+PASS fremder Eintrag als Nicht-Admin -> Fehler, kein PATCH, Audit rejected
+PASS fremder persoenlicher Eintrag als Nicht-Admin -> Fehler
+PASS fremder Eintrag als Admin -> PATCH
+PASS Admin-Muster mit Praefix (web:*) gilt
+PASS Eintrag ohne owner_user_id ist nicht "eigen" -> nur Admins
+PASS unbekannte id -> not found, kein Audit
+--- Memory Delete ---
+PASS eigener Team-Eintrag als Nicht-Admin -> DELETE, Audit ok
+PASS fremder Eintrag als Nicht-Admin -> Fehler, kein DELETE, Audit rejected
+PASS fremder Eintrag als Admin -> DELETE
+PASS forget_entity als Nicht-Admin auf eigenem Eintrag -> Eintrag weg, keine Kaskade, Hinweis
+PASS forget_entity als Admin -> Kaskade auf kg_relations und kg_entities
+PASS ohne Identitaet (kein Merge Input) -> fremder Eintrag abgewiesen
+--- Memory Search ---
+PASS Suche uebergibt requesting_user und reicht scope/owner durch
+PASS Beschreibungen: Suche nennt scope/owner, Save nennt confirmed, keine geschweiften Klammern neu
+
+21 von 21 Faellen bestanden
