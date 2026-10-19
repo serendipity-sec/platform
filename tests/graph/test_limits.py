@@ -3,11 +3,12 @@ from typing import Any
 
 import pytest
 
+import flowdelta.graph.impact as impact
 from flowdelta.contracts import Handoff
 from flowdelta.graph import AnalysisLimits, analyze
 from flowdelta.graph.control import DATA_ORIGIN
 from flowdelta.ingestion import json_bytes
-from flowdelta.pipeline_contracts import AnalysisBundle, SemanticGraph
+from flowdelta.pipeline_contracts import AnalysisBundle, ImpactPath, SemanticGraph
 from flowdelta.pipeline_io import read_handoff, read_pipeline_examples, validate_pipeline
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -66,7 +67,7 @@ def test_examples_are_within_the_default_limits(case: str) -> None:
         "max_impact_paths": 20,
         "truncated": False,
         "reasons": [],
-        "impact_paths": {"computed": True, "total": 1, "kept": 1},
+        "impact_paths": {"computed": True, "complete": True, "total": 1, "kept": 1},
     }
     assert not any("상한" in item for item in result.limitations)
 
@@ -76,14 +77,20 @@ def test_path_limit_keeps_each_changes_shortest_path_first() -> None:
     handoff = with_priority_threshold(load("support-triage"), 4)
     result = checked("support-triage", handoff, AnalysisLimits(max_impact_paths=2))
     assert record(result)["truncated"] is True
-    assert record(result)["reasons"] == [{"code": "IMPACT_PATH_LIMIT", "count": 3, "limit": 2}]
-    assert record(result)["impact_paths"] == {"computed": True, "total": 3, "kept": 2}
+    # Generation stopped at the limit, so the total is not known.
+    assert record(result)["reasons"] == [{"code": "IMPACT_PATH_LIMIT", "count": None, "limit": 2}]
+    assert record(result)["impact_paths"] == {
+        "computed": True,
+        "complete": False,
+        "total": None,
+        "kept": 2,
+    }
     kept = sorted(len(path.edge_ids) for path in result.impact_paths)
     assert kept == [0, 3]
     assert {change_id for path in result.impact_paths for change_id in path.change_ids} == {
         change.change_id for change in result.changes
     }
-    assert any("영향 경로 3개 중 2개" in item for item in result.limitations)
+    assert any("상한 2개를 넘어 2개를 만든 뒤" in item for item in result.limitations)
     again = analyze(handoff, AnalysisLimits(max_impact_paths=2))
     assert json_bytes(again.model_dump(mode="json")) == json_bytes(result.model_dump(mode="json"))
 
@@ -95,6 +102,75 @@ def test_path_limit_below_the_change_count_reports_uncovered_changes() -> None:
     assert any("경로가 하나도 남지 않은 변경은 1개" in item for item in result.limitations)
 
 
+def test_path_limit_equal_to_the_path_count_keeps_an_exact_total() -> None:
+    handoff = with_priority_threshold(load("support-triage"), 4)
+    result = checked("support-triage", handoff, AnalysisLimits(max_impact_paths=3))
+    assert record(result)["truncated"] is False
+    assert record(result)["impact_paths"] == {
+        "computed": True,
+        "complete": True,
+        "total": 3,
+        "kept": 3,
+    }
+    assert not any("상한" in item for item in result.limitations)
+
+
+def with_renamed_split(handoff: Handoff) -> Handoff:
+    # References still call the old name, so routes also start from the lost references.
+    nodes = [
+        node.model_copy(update={"name": "Split items"}) if node.node_id == "split" else node
+        for node in handoff.after.nodes
+    ]
+    return handoff.model_copy(update={"after": handoff.after.model_copy(update={"nodes": nodes})})
+
+
+def round_robin(paths: list[ImpactPath], limit: int) -> list[str]:
+    """The selection rule over all paths: by change ID, each change's next shortest path."""
+    queues = [
+        sorted(
+            (path for path in paths if change_id in path.change_ids),
+            key=lambda path: (len(path.edge_ids), path.path_id),
+        )
+        for change_id in sorted({item for path in paths for item in path.change_ids})
+    ]
+    kept: list[str] = []
+    for rank in range(max(len(queue) for queue in queues)):
+        for queue in queues:
+            if rank < len(queue) and queue[rank].path_id not in kept and len(kept) < limit:
+                kept.append(queue[rank].path_id)
+    return sorted(kept)
+
+
+@pytest.mark.parametrize("limit", range(11))
+def test_budgeted_generation_keeps_what_selecting_from_all_paths_keeps(limit: int) -> None:
+    handoff = with_renamed_split(with_priority_threshold(load("support-triage"), 4))
+    every = analyze(handoff, AnalysisLimits(max_impact_paths=1000)).impact_paths
+    assert len(every) == 9
+    result = analyze(handoff, AnalysisLimits(max_impact_paths=limit))
+    assert sorted(path.path_id for path in result.impact_paths) == round_robin(every, limit)
+    # The same paths, each still listing every change behind it.
+    same = {path.path_id: path for path in every}
+    assert all(path == same[path.path_id] for path in result.impact_paths)
+    assert record(result)["impact_paths"]["complete"] is (limit >= 9)
+
+
+def test_paths_past_the_limit_are_never_built(monkeypatch: pytest.MonkeyPatch) -> None:
+    handoff = with_renamed_split(with_priority_threshold(load("support-triage"), 4))
+    built: list[str] = []
+    original = impact._path
+
+    def counting(*args: Any, **kwargs: Any) -> ImpactPath:
+        path = original(*args, **kwargs)
+        built.append(path.path_id)
+        return path
+
+    monkeypatch.setattr(impact, "_path", counting)
+    result = analyze(handoff, AnalysisLimits(max_impact_paths=2))
+    # Nine paths exist; only the two kept ones are generated.
+    assert sorted(built) == sorted(path.path_id for path in result.impact_paths)
+    assert len(built) == 2
+
+
 def test_workflow_node_limit_skips_field_flow_and_impact_paths() -> None:
     result = checked("order-lookup", load("order-lookup"), AnalysisLimits(max_workflow_nodes=2))
     assert record(result)["truncated"] is True
@@ -102,7 +178,12 @@ def test_workflow_node_limit_skips_field_flow_and_impact_paths() -> None:
         {"code": "WORKFLOW_NODE_LIMIT", "scope": "before", "count": 3, "limit": 2},
         {"code": "WORKFLOW_NODE_LIMIT", "scope": "after", "count": 3, "limit": 2},
     ]
-    assert record(result)["impact_paths"] == {"computed": False, "total": None, "kept": 0}
+    assert record(result)["impact_paths"] == {
+        "computed": False,
+        "complete": False,
+        "total": None,
+        "kept": 0,
+    }
     assert result.impact_paths == []
     for graph in (result.before_graph, result.after_graph):
         assert field_flows(graph) == []

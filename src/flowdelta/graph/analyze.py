@@ -14,7 +14,6 @@ from flowdelta.graph.limits import (
     limits_record,
     node_limit_reasons,
     reason_text,
-    select_paths,
 )
 from flowdelta.graph.matching import match_nodes
 from flowdelta.graph.references import (
@@ -129,7 +128,11 @@ def analyze(handoff: Handoff, limits: AnalysisLimits = DEFAULT_LIMITS) -> Analys
         )
     if within:
         impact = impact_paths(
-            changes, {"before": before_graph, "after": after_graph}, facts, handoff.task.task_id
+            changes,
+            {"before": before_graph, "after": after_graph},
+            facts,
+            handoff.task.task_id,
+            limits.max_impact_paths,
         )
         if impact.unplaced:
             limitations.append(
@@ -141,24 +144,27 @@ def analyze(handoff: Handoff, limits: AnalysisLimits = DEFAULT_LIMITS) -> Analys
                 f"표시 변경 {impact.display_only}개(노드 위치·메모·색, workflow 이름·태그 등)는 "
                 "실행에 영향이 없어 영향 경로를 만들지 않았다."
             )
-        paths, uncovered = select_paths(impact.paths, limits.max_impact_paths)
-        if len(paths) < len(impact.paths):
+        paths = impact.paths
+        if not impact.complete:
+            # Generation stopped at the limit, so the paths past it were never counted.
             reasons.append(
-                {
-                    "code": "IMPACT_PATH_LIMIT",
-                    "count": len(impact.paths),
-                    "limit": limits.max_impact_paths,
-                }
+                {"code": "IMPACT_PATH_LIMIT", "count": None, "limit": limits.max_impact_paths}
             )
             note = (
-                f"영향 경로 {len(impact.paths)}개 중 {len(paths)}개만 남겼다"
-                f"(상한 {limits.max_impact_paths}개). 변경마다 가장 짧은 경로를 먼저 남겼다."
+                f"영향 경로가 상한 {limits.max_impact_paths}개를 넘어 {len(paths)}개를 만든 뒤 "
+                "경로 생성을 멈췄다. 전체 경로 수는 세지 않았다. "
+                "변경마다 가장 짧은 경로를 먼저 남겼다."
             )
-            if uncovered:
-                note += f" 경로가 하나도 남지 않은 변경은 {uncovered}개다."
+            if impact.uncovered:
+                note += f" 경로가 하나도 남지 않은 변경은 {impact.uncovered}개다."
             limitations.append(note)
         record = limits_record(
-            limits, reasons, computed=True, total=len(impact.paths), kept=len(paths)
+            limits,
+            reasons,
+            computed=True,
+            complete=impact.complete,
+            total=len(paths) if impact.complete else None,
+            kept=len(paths),
         )
     else:
         paths = []
@@ -166,7 +172,7 @@ def analyze(handoff: Handoff, limits: AnalysisLimits = DEFAULT_LIMITS) -> Analys
             f"노드 수가 분석 상한을 넘어({reason_text(reasons)}) $json 필드 흐름 DATA 간선과 "
             "영향 경로를 계산하지 않았다. 그래프(CONTROL·이름 참조)와 변경 목록은 전체를 담았다."
         )
-        record = limits_record(limits, reasons, computed=False, total=None, kept=0)
+        record = limits_record(limits, reasons, computed=False, complete=False, total=None, kept=0)
     return AnalysisBundle(
         analysis_id="analysis-"
         + short_hash(before_snapshot.snapshot_id, after_snapshot.snapshot_id, PRODUCER),
