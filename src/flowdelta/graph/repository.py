@@ -51,6 +51,13 @@ def _checked_id(analysis_id: str) -> str:
     return analysis_id
 
 
+def _unlinked(path: Path, analysis_id: str) -> Path:
+    # A link under the root could send a write or a read outside it, so none is followed.
+    if path.is_symlink() or path.is_junction():
+        raise InputError("ANALYSIS_LINK_REJECTED", location=analysis_id)
+    return path
+
+
 def _encode(bundle: AnalysisBundle) -> bytes:
     payload = json_bytes(bundle.model_dump(mode="json"))
     # Refuse what get() could not read back (e.g. JSON_DEPTH_LIMIT) instead of storing it.
@@ -127,8 +134,10 @@ class FileAnalysisRepository:
         self.root = root.absolute()
 
     def _files(self, analysis_id: str) -> list[Path]:
-        folder = self.root / _checked_id(analysis_id)
-        return sorted(folder.glob("*.json")) if folder.is_dir() else []
+        folder = _unlinked(self.root / _checked_id(analysis_id), analysis_id)
+        if not folder.is_dir():
+            return []
+        return sorted(_unlinked(item, analysis_id) for item in folder.glob("*.json"))
 
     def save(self, bundle: AnalysisBundle) -> AnalysisRecord:
         payload = _encode(bundle)
@@ -175,7 +184,9 @@ class FileAnalysisRepository:
         if not self.root.is_dir():
             return []
         records = []
-        for folder in sorted(item for item in self.root.iterdir() if item.is_dir()):
+        for folder in sorted(self.root.iterdir()):
+            if not _unlinked(folder, folder.name).is_dir():
+                continue
             bundle, path = self._load(folder.name)
             records.append(_record(bundle, path.stem, path.relative_to(self.root).as_posix()))
         return [

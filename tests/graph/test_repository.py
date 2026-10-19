@@ -102,6 +102,51 @@ def test_ids_that_could_leave_the_folder_are_refused(tmp_path: Path, analysis_id
     assert error.value.code == "ANALYSIS_ID_INVALID"
 
 
+def link(path: Path, target: Path) -> None:
+    try:
+        path.symlink_to(target, target_is_directory=target.is_dir())
+    except OSError:
+        pytest.skip("OS does not grant symlink creation; CI Linux covers this case")
+
+
+def refused_everywhere(repository: FileAnalysisRepository, bundle: AnalysisBundle) -> None:
+    calls: list[Callable[[], object]] = [
+        lambda: repository.save(bundle),
+        lambda: repository.get(bundle.analysis_id),
+        lambda: repository.find(
+            bundle.case_id, bundle.before_snapshot_id, bundle.after_snapshot_id
+        ),
+    ]
+    for call in calls:
+        with pytest.raises(InputError) as error:
+            call()
+        assert error.value.code == "ANALYSIS_LINK_REJECTED"
+
+
+def test_linked_analysis_folder_outside_the_root_is_refused(tmp_path: Path) -> None:
+    bundle = analysis("order-lookup")
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    root = tmp_path / "analyses"
+    root.mkdir()
+    link(root / bundle.analysis_id, outside)
+    refused_everywhere(FileAnalysisRepository(root), bundle)
+    # Nothing was written through the link.
+    assert list(outside.iterdir()) == []
+
+
+def test_linked_analysis_file_outside_the_root_is_refused(tmp_path: Path) -> None:
+    bundle = analysis("order-lookup")
+    # A valid stored analysis outside the root, so only the link itself is wrong.
+    outside = tmp_path / "outside"
+    record = FileAnalysisRepository(outside).save(bundle)
+    root = tmp_path / "analyses"
+    stored = root / record.location
+    stored.parent.mkdir(parents=True)
+    link(stored, outside / record.location)
+    refused_everywhere(FileAnalysisRepository(root), bundle)
+
+
 def deeply_nested(levels: int) -> dict[str, object]:
     value: dict[str, object] = {"leaf": True}
     for _ in range(levels):
