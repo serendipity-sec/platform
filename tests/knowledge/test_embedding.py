@@ -16,6 +16,7 @@ from flowdelta.knowledge.embedding import (
     EmbeddingProvider,
     EmbeddingPurpose,
     OllamaEmbeddingProvider,
+    embedding_profiles_compatible,
 )
 
 _DIGEST_HEX = "a" * 64
@@ -31,7 +32,7 @@ class MockProvider:
 
 
 class Handler(BaseHTTPRequestHandler):
-    tags: object = {"models": [{"name": MODEL_NAME, "digest": _DIGEST_HEX}]}
+    running_models: object = {"models": [{"name": MODEL_NAME, "digest": _DIGEST_HEX}]}
     vectors: object = [[0.25] * DIMENSIONS]
     fail_with: int | None = None
     delay_seconds = 0.0
@@ -50,12 +51,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:
         type(self).requests.append((self.path, None))
+        if self.path != "/api/ps":
+            self._send({"error": "unexpected path"}, 404)
+            return
         if type(self).delay_seconds:
             time.sleep(type(self).delay_seconds)
         if self.fail_with:
             self._send({"error": "fixture error"}, self.fail_with)
         else:
-            self._send(type(self).tags)
+            self._send(type(self).running_models)
 
     def do_POST(self) -> None:
         raw = self.rfile.read(int(self.headers["Content-Length"]))
@@ -69,7 +73,7 @@ class Handler(BaseHTTPRequestHandler):
 
 @pytest.fixture
 def fake_ollama():
-    Handler.tags = {"models": [{"name": MODEL_NAME, "digest": _DIGEST_HEX}]}
+    Handler.running_models = {"models": [{"name": MODEL_NAME, "digest": _DIGEST_HEX}]}
     Handler.vectors = [[0.25] * DIMENSIONS]
     Handler.fail_with = None
     Handler.delay_seconds = 0.0
@@ -101,7 +105,8 @@ def test_provider_protocol_and_query_document_roles(fake_ollama):
     assert document.profile.dimensions == DIMENSIONS
     assert document.profile.normalized is True
     assert sum(value * value for value in document.vectors[0]) ** 0.5 == pytest.approx(1.0)
-    assert document.profile.profile_id != query.profile.profile_id
+    assert embedding_profiles_compatible(document.profile, query.profile)
+    assert document.profile.profile_id == query.profile.profile_id
     requests = [item for path, item in Handler.requests if path == "/api/embed"]
     assert requests[0]["input"] == ["unmodified document"]
     assert requests[0]["truncate"] is False
@@ -117,8 +122,8 @@ def test_provider_protocol_and_query_document_roles(fake_ollama):
         ({"models": None}, "EMBEDDING_MODEL_LIST_INVALID"),
     ],
 )
-def test_model_catalog_is_validated(fake_ollama, tags, code):
-    Handler.tags = tags
+def test_running_model_catalog_is_validated(fake_ollama, tags, code):
+    Handler.running_models = tags
     with pytest.raises(InputError, match=code):
         provider(fake_ollama).embed(["synthetic"], "DOCUMENT")
 
@@ -128,7 +133,7 @@ def test_model_catalog_is_validated(fake_ollama, tags, code):
     [
         ([], "EMBEDDING_VECTOR_COUNT_INVALID"),
         ([[1.0]], "EMBEDDING_DIMENSION_MISMATCH"),
-        ([[float("nan")] * DIMENSIONS], "EMBEDDING_VECTOR_INVALID"),
+        ([[float("nan")] * DIMENSIONS], "NON_FINITE_JSON_NUMBER"),
         ([[0.0] * DIMENSIONS], "EMBEDDING_VECTOR_INVALID"),
     ],
 )

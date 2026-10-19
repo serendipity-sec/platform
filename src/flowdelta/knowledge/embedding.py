@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import http.client
 import json
 import math
 import re
@@ -12,7 +13,9 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
-from flowdelta.ingestion import InputError
+from pydantic import JsonValue
+
+from flowdelta.ingestion import InputError, parse_json
 
 EmbeddingPurpose = Literal["DOCUMENT", "QUERY"]
 MODEL_NAME = "qwen3-embedding:0.6b"
@@ -22,7 +25,7 @@ QUERY_INSTRUCTION = (
     "records or reviewed test scenario cards that apply to the same affected software, version "
     "range, execution context, or security behavior."
 )
-QUERY_INSTRUCTION_VERSION = "flowdelta-vulnerability-retrieval-en-v1"
+QUERY_INSTRUCTION_VERSION = hashlib.sha256(QUERY_INSTRUCTION.encode("utf-8")).hexdigest()
 MAX_RESPONSE_BYTES = 8 * 1024 * 1024
 MAX_TEXT_BYTES = 128 * 1024
 _MODEL_DIGEST = re.compile(r"(?:sha256:)?([0-9a-f]{64})")
@@ -43,6 +46,11 @@ class EmbeddingProfile:
     def profile_id(self) -> str:
         value = json.dumps(self.__dict__, sort_keys=True, separators=(",", ":")).encode()
         return "embedding-" + hashlib.sha256(value).hexdigest()[:24]
+
+
+def embedding_profiles_compatible(left: EmbeddingProfile, right: EmbeddingProfile) -> bool:
+    """Return whether two profiles describe the same compatible vector space."""
+    return left.profile_id == right.profile_id
 
 
 @dataclass(frozen=True)
@@ -87,6 +95,7 @@ class OllamaEmbeddingProvider:
         self._dimensions = dimensions
         self._timeout_seconds = timeout_seconds
         self._max_batch_size = max_batch_size
+        self._opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
     def embed(self, texts: list[str], purpose: EmbeddingPurpose) -> EmbeddingBatch:
         if purpose not in {"DOCUMENT", "QUERY"}:
@@ -95,17 +104,18 @@ class OllamaEmbeddingProvider:
             raise InputError("EMBEDDING_BATCH_SIZE_INVALID")
         if any(not isinstance(item, str) or not item.strip() for item in texts):
             raise InputError("EMBEDDING_INPUT_INVALID")
-        if any(len(item.encode("utf-8")) > MAX_TEXT_BYTES for item in texts):
+        try:
+            input_sizes = [len(item.encode("utf-8")) for item in texts]
+        except UnicodeEncodeError:
+            raise InputError("EMBEDDING_INPUT_INVALID") from None
+        if any(size > MAX_TEXT_BYTES for size in input_sizes):
             raise InputError("EMBEDDING_INPUT_TOO_LARGE")
 
-        model_digest = self._resolve_digest()
         if purpose == "QUERY":
             inputs = [f"Instruct: {QUERY_INSTRUCTION}\nQuery: {item}" for item in texts]
-            instruction_version = QUERY_INSTRUCTION_VERSION
         else:
             # Qwen3 Embedding recommends instructions for queries, not documents.
             inputs = texts
-            instruction_version = "none"
         response = self._request(
             "POST",
             "/api/embed",
@@ -122,18 +132,19 @@ class OllamaEmbeddingProvider:
         if not isinstance(raw_vectors, list) or len(raw_vectors) != len(texts):
             raise InputError("EMBEDDING_VECTOR_COUNT_INVALID")
         vectors = tuple(self._validate_vector(item) for item in raw_vectors)
+        model_digest = self._resolve_running_digest()
         profile = EmbeddingProfile(
             provider="ollama",
             model=self._model,
             model_digest=model_digest,
             dimensions=self._dimensions,
-            query_instruction_version=instruction_version,
+            query_instruction_version=QUERY_INSTRUCTION_VERSION,
             normalized=True,
         )
         return EmbeddingBatch(profile=profile, vectors=vectors)
 
-    def _resolve_digest(self) -> str:
-        response = self._request("GET", "/api/tags", None)
+    def _resolve_running_digest(self) -> str:
+        response = self._request("GET", "/api/ps", None)
         models = response.get("models")
         if not isinstance(models, list):
             raise InputError("EMBEDDING_MODEL_LIST_INVALID")
@@ -153,36 +164,52 @@ class OllamaEmbeddingProvider:
     def _validate_vector(self, value: object) -> tuple[float, ...]:
         if not isinstance(value, list) or len(value) != self._dimensions:
             raise InputError("EMBEDDING_DIMENSION_MISMATCH")
-        if any(type(number) not in {int, float} or not math.isfinite(number) for number in value):
-            raise InputError("EMBEDDING_VECTOR_INVALID")
-        vector = tuple(float(number) for number in value)
+        vector_values: list[float] = []
+        for number in value:
+            if type(number) not in {int, float}:
+                raise InputError("EMBEDDING_VECTOR_INVALID")
+            try:
+                converted = float(number)
+            except OverflowError:
+                raise InputError("EMBEDDING_VECTOR_INVALID") from None
+            if not math.isfinite(converted):
+                raise InputError("EMBEDDING_VECTOR_INVALID")
+            vector_values.append(converted)
+        vector = tuple(vector_values)
         norm = math.hypot(*vector)
         if not math.isfinite(norm) or norm == 0.0:
             raise InputError("EMBEDDING_VECTOR_INVALID")
         return tuple(number / norm for number in vector)
 
-    def _request(self, method: str, path: str, body: dict[str, object] | None) -> dict[str, object]:
-        data = None if body is None else json.dumps(body, allow_nan=False).encode("utf-8")
-        request = urllib.request.Request(
-            self._base_url + path,
-            data=data,
-            method=method,
-            headers={"Content-Type": "application/json"},
-        )
+    def _request(
+        self, method: str, path: str, body: dict[str, object] | None
+    ) -> dict[str, JsonValue]:
         try:
-            with urllib.request.urlopen(request, timeout=self._timeout_seconds) as response:
+            data = None if body is None else json.dumps(body, allow_nan=False).encode("utf-8")
+            request = urllib.request.Request(
+                self._base_url + path,
+                data=data,
+                method=method,
+                headers={"Content-Type": "application/json"},
+            )
+        except (UnicodeError, ValueError):
+            raise InputError("EMBEDDING_ENDPOINT_INVALID") from None
+        try:
+            with self._opener.open(request, timeout=self._timeout_seconds) as response:
                 payload = response.read(MAX_RESPONSE_BYTES + 1)
         except urllib.error.HTTPError as exc:
             exc.close()
             raise InputError("EMBEDDING_PROVIDER_REJECTED") from None
-        except (urllib.error.URLError, TimeoutError, OSError):
+        except http.client.InvalidURL:
+            raise InputError("EMBEDDING_ENDPOINT_INVALID") from None
+        except (
+            urllib.error.URLError,
+            TimeoutError,
+            OSError,
+            http.client.HTTPException,
+            ValueError,
+        ):
             raise InputError("EMBEDDING_PROVIDER_UNAVAILABLE") from None
         if len(payload) > MAX_RESPONSE_BYTES:
             raise InputError("EMBEDDING_RESPONSE_TOO_LARGE")
-        try:
-            parsed = json.loads(payload)
-        except (UnicodeDecodeError, json.JSONDecodeError):
-            raise InputError("EMBEDDING_RESPONSE_INVALID") from None
-        if not isinstance(parsed, dict):
-            raise InputError("EMBEDDING_RESPONSE_INVALID")
-        return parsed
+        return parse_json(payload)

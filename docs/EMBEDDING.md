@@ -2,13 +2,14 @@
 
 현재 provider 계약은 `flowdelta.knowledge.embedding.EmbeddingProvider`다. 검색·색인 호출은
 일반 텍스트와 `DOCUMENT` 또는 `QUERY` 역할을 넘긴다. 구현은 벡터와 함께 provider, 모델,
-실제 Ollama 모델 digest, 차원, query instruction version을 돌려준다. `profile_id`는 문서와
-질의의 입력 규칙까지 구분한다. 질의 벡터는 색인에 저장하지 않으며, 색인과 검색 프로필의 모델
-digest·차원·정규화 방식이 호환되는지 확인해야 한다.
+실제 Ollama 모델 digest, 차원, query instruction 지문을 돌려준다. 같은 provider·모델 digest·차원·
+정규화·지시문을 쓰는 문서와 질의 프로필은 같은 `profile_id`를 가진다.
+`embedding_profiles_compatible`로 색인과 검색 프로필의 호환성을 확인할 수 있다. 질의 벡터는 색인에
+저장하지 않는다.
 
 기본 profile은 Ollama `qwen3-embedding:0.6b`, 1024차원이다. Qwen의 공식 사용 가이드에 맞춰
 document에는 지시문을 붙이지 않고 query에만 검색 의도를 영어로 붙인다. 이 규칙을 바꾸면
-`query_instruction_version`을 바꿔 새 profile/색인으로 취급한다. Ollama에는 `truncate=false`를
+지시문 지문이 달라져 새 profile/색인으로 취급한다. Ollama에는 `truncate=false`를
 보내고 한 입력은 UTF-8 128 KiB 이내로 제한한다. 응답 벡터는 provider 경계에서 L2 단위 길이로
 정규화한다. 이 입력 byte 제한은 토큰 수를 대신하지 않는다. 모델
 컨텍스트 제한을 넘은 요청은 Ollama 오류로 처리하며 내용을 자르거나 다른 결과로 위장하지 않는다.
