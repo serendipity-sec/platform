@@ -1,7 +1,7 @@
-# 실제 A/B/C 통합 주문 조회 — 2026-10-15
+# 실제 A/B/C 통합 주문 조회 — 2026-10-20
 
 팀 작성 정상 주문 조회 한 건을 전체 pipeline으로 두 번 실행한 증거다.
-검증 코드 기준은 `a33195f`이며, 원본 실행은 각각 `var/integrated-order-001`,
+생성 코드 기준은 PR #38의 `7f4acbe`이며, 원본 실행은 각각 `var/integrated-order-001`,
 `var/integrated-order-002`에 보관했다. 이 폴더에는 각 manifest가 명시한 JSON과
 실행 요약만 복사했다. private DB·자격·상세 로그는 포함하지 않았다.
 
@@ -16,9 +16,9 @@
 | 정상 업무 검사 | 전후 각 7개 통과 | 전후 각 7개 통과 |
 
 - 분석: `analysis-5dfc5495950ceaca`
-- 계획: `plan-cddf98e368d7f75ca5d3f142`
-- 첫 비교: `comparison-bceb97c1071a4041926ff3bca3ff2c20`
-- 두 번째 비교: `comparison-7b84367427c0404da7a7610255183799`
+- 계획: `plan-67968e2d05c9fa987f094112` (`flowdelta.knowledge/1.1.0`)
+- 첫 비교: `comparison-5f1afcdf143f4aacb9ebd502d7cee31f`
+- 두 번째 비교: `comparison-a5d8551e9b2d43378ce4ac20708c3539`
 - 네 run ID는 모두 다르다. 초기 이벤트는 매번 비어 있고, 주문 데이터는 실행 후에도 같다.
 - 정상 요청은 `ORD-1001`이며 서비스가 각 실행에서 해당 주문을 한 번 조회했다.
 
