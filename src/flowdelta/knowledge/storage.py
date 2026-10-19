@@ -91,9 +91,28 @@ def _write_raw(root: Path, payload: bytes) -> tuple[str, str, bool, Path]:
         except FileExistsError:
             if target.read_bytes() != payload:
                 raise InputError("KNOWLEDGE_RAW_INTEGRITY_MISMATCH") from None
+        if created:
+            try:
+                _sync_directory(target.parent)
+            except OSError:
+                try:
+                    target.unlink(missing_ok=True)
+                except OSError:
+                    pass
+                raise InputError("KNOWLEDGE_RAW_SYNC_FAILED") from None
     finally:
         temporary.unlink(missing_ok=True)
     return relative.as_posix(), checksum, created, target
+
+
+def _sync_directory(path: Path) -> None:
+    if os.name != "posix":
+        return
+    descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_DIRECTORY", 0))
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
 
 
 def save_record(

@@ -2,6 +2,7 @@ import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
+from pathlib import Path
 
 import pytest
 
@@ -85,6 +86,28 @@ def test_raw_idempotent_and_integrity(tmp_path):
     (tmp_path / path).write_bytes(b"corrupted")
     with pytest.raises(InputError, match="KNOWLEDGE_RAW_INTEGRITY_MISMATCH"):
         save_raw(tmp_path, b'{"fixture":true}')
+
+
+def test_new_raw_blob_syncs_its_directory(tmp_path, monkeypatch):
+    import flowdelta.knowledge.storage as storage
+
+    synced = []
+    monkeypatch.setattr(storage, "_sync_directory", lambda path: synced.append(path))
+    relative, checksum = save_raw(tmp_path, b'{"fixture":"sync"}')
+    assert relative == f"{checksum[:2]}/{checksum}.json"
+    assert synced == [(tmp_path / checksum[:2]).resolve()]
+
+
+def test_raw_blob_is_removed_when_directory_sync_fails(tmp_path, monkeypatch):
+    import flowdelta.knowledge.storage as storage
+
+    def fail_sync(_: Path) -> None:
+        raise OSError("directory sync failed")
+
+    monkeypatch.setattr(storage, "_sync_directory", fail_sync)
+    with pytest.raises(InputError, match="KNOWLEDGE_RAW_SYNC_FAILED"):
+        save_raw(tmp_path, b'{"fixture":"sync-failure"}')
+    assert list(tmp_path.rglob("*.json")) == []
 
 
 def test_settings_hide_credentials():
