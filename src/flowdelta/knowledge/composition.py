@@ -66,9 +66,7 @@ def compose_plan(
         len(snapshot),
     ):
         raise InputError("RETRIEVAL_SNAPSHOT_MISMATCH")
-    if retrieval.retrieval_id != retrieval_identity(
-        producer, snapshot, handoff, analysis, catalog
-    ):
+    if retrieval.retrieval_id != retrieval_identity(producer, snapshot, handoff, analysis, catalog):
         raise InputError("RETRIEVAL_ID_MISMATCH")
     known = {(card.card_id, card.version) for card in cards}
     keys = [(hit.card_id, hit.card_version) for hit in retrieval.hits]
