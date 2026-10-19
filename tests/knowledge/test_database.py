@@ -48,7 +48,36 @@ def test_postgres_migration_and_transaction(tmp_path):
     migrate(settings)
     assert database_status(settings)["pgvector"] == "0.8.1"
     engine = engine_for(settings)
+    migration_engine = engine_for(settings, migration=True)
     try:
+        with engine.connect() as connection:
+            is_superuser = connection.execute(
+                text("SELECT rolsuper FROM pg_roles WHERE rolname = current_user")
+            ).scalar_one()
+            if not is_superuser:
+                assert not connection.execute(
+                    text(
+                        "SELECT has_table_privilege(current_user, "
+                        "'knowledge.source_revision', 'UPDATE')"
+                    )
+                ).scalar_one()
+                assert not connection.execute(
+                    text(
+                        "SELECT has_table_privilege(current_user, "
+                        "'knowledge.source_revision', 'DELETE')"
+                    )
+                ).scalar_one()
+
+        def clear_source(source: str) -> None:
+            with migration_engine.begin() as connection:
+                connection.execute(
+                    text("DELETE FROM knowledge.source_record WHERE source=:source"),
+                    {"source": source},
+                )
+                connection.execute(
+                    text("DELETE FROM knowledge.source_revision WHERE source=:source"),
+                    {"source": source},
+                )
 
         class RollbackFixture(Exception):
             pass
@@ -78,8 +107,7 @@ def test_postgres_migration_and_transaction(tmp_path):
                 text("SELECT count(*) FROM knowledge.source_revision WHERE source='test'")
             ).scalar_one()
             assert count == 2
-            connection.execute(text("DELETE FROM knowledge.source_record WHERE source='test'"))
-            connection.execute(text("DELETE FROM knowledge.source_revision WHERE source='test'"))
+        clear_source("test")
         assert list(tmp_path.rglob("*.json")) == []
 
         with storage_transaction(engine) as connection:
@@ -100,13 +128,7 @@ def test_postgres_migration_and_transaction(tmp_path):
         assert cleanup_orphaned_raw(engine, tmp_path, older_than_seconds=1) == 1
         assert not fresh_path.exists()
 
-        with storage_transaction(engine) as connection:
-            connection.execute(
-                text("DELETE FROM knowledge.source_record WHERE source='cleanup-test'")
-            )
-            connection.execute(
-                text("DELETE FROM knowledge.source_revision WHERE source='cleanup-test'")
-            )
+        clear_source("cleanup-test")
         assert cleanup_orphaned_raw(engine, tmp_path, older_than_seconds=1) == 1
         assert not referenced_path.exists()
 
@@ -135,14 +157,9 @@ def test_postgres_migration_and_transaction(tmp_path):
             )
         concurrent_path = tmp_path / checksums[0][:2] / f"{checksums[0]}.json"
         os.utime(concurrent_path, (old_timestamp, old_timestamp))
-        with storage_transaction(engine) as connection:
-            connection.execute(
-                text("DELETE FROM knowledge.source_record WHERE source='concurrency-test'")
-            )
-            connection.execute(
-                text("DELETE FROM knowledge.source_revision WHERE source='concurrency-test'")
-            )
+        clear_source("concurrency-test")
         assert cleanup_orphaned_raw(engine, tmp_path, older_than_seconds=1) == 1
         assert not concurrent_path.exists()
     finally:
         engine.dispose()
+        migration_engine.dispose()

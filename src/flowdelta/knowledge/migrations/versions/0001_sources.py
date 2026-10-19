@@ -61,11 +61,11 @@ def upgrade() -> None:
                 RAISE EXCEPTION 'Required PostgreSQL role flowdelta_app does not exist';
             END IF;
             GRANT USAGE ON SCHEMA knowledge TO flowdelta_app;
-            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA knowledge
+            GRANT SELECT, INSERT ON knowledge.source_revision TO flowdelta_app;
+            GRANT SELECT, INSERT, UPDATE, DELETE ON
+                knowledge.source_record, knowledge.sync_state, knowledge.sync_failure
                 TO flowdelta_app;
             GRANT SELECT ON public.alembic_version TO flowdelta_app;
-            ALTER DEFAULT PRIVILEGES IN SCHEMA knowledge
-                GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO flowdelta_app;
         END $$
     """)
 
