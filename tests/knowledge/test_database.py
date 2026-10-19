@@ -72,9 +72,7 @@ def test_database_status_reports_uninitialized_database(monkeypatch):
     with pytest.raises(InputError, match="KNOWLEDGE_VECTOR_EXTENSION_MISSING"):
         database.database_status(settings)
 
-    engine = _StatusEngine(
-        _StatusConnection(vector="0.8.1", has_migrations=None, revision=None)
-    )
+    engine = _StatusEngine(_StatusConnection(vector="0.8.1", has_migrations=None, revision=None))
     monkeypatch.setattr(database, "engine_for", lambda _: engine)
     with pytest.raises(InputError, match="KNOWLEDGE_MIGRATION_REQUIRED"):
         database.database_status(settings)
@@ -208,9 +206,7 @@ def test_postgres_migration_and_transaction(tmp_path):
 
         raw_payload = b'{ "revision": 7.00 }\r\n'
         with storage_transaction(engine) as connection:
-            checksum = save_record(
-                connection, tmp_path, "raw-bytes-test", "fixture", raw_payload
-            )
+            checksum = save_record(connection, tmp_path, "raw-bytes-test", "fixture", raw_payload)
         raw_path = tmp_path / checksum[:2] / f"{checksum}.json"
         assert checksum == digest(raw_payload)
         assert raw_path.read_bytes() == raw_payload
@@ -253,12 +249,17 @@ def test_postgres_migration_and_transaction(tmp_path):
         stale_path = tmp_path / digest(stale_payload)[:2] / f"{digest(stale_payload)}.json"
         assert not stale_path.exists()
         with engine.connect() as connection:
-            assert connection.execute(
-                text(
-                    "SELECT sha256 FROM knowledge.source_record "
-                    "WHERE source='stale-test' AND external_id='fixture'"
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT sha256 FROM knowledge.source_record "
+                        "WHERE source='stale-test' AND external_id='fixture'"
+                    )
                 )
-            ).scalar_one().strip() == current_checksum
+                .scalar_one()
+                .strip()
+                == current_checksum
+            )
         clear_source("stale-test")
         current_path = tmp_path / current_checksum[:2] / f"{current_checksum}.json"
         os.utime(current_path, (time.time() - 10, time.time() - 10))
