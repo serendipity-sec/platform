@@ -19,6 +19,7 @@ runtime/**/*.js text eol=lf
 runtime/**/*.yaml text eol=lf
 runtime/**/*.toml text eol=lf
 src/**/*.py text eol=lf
+tools/check_profiled_order.py text eol=lf
 tests/**/*.py text eol=lf
 schemas/*.json     text eol=lf
 poetry.lock        linguist-generated=true -diff

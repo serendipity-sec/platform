@@ -1,0 +1,92 @@
+{
+  "analysis_id": "analysis-5dfc5495950ceaca",
+  "analysis_limitations": [
+    "노드 대응은 같은 ID만 사용한다. ID가 바뀐 노드는 추가·삭제로 남기고 구조 대응을 추측하지 않는다.",
+    "노드 이름·종류 변경과 알 수 없는 필드는 UNKNOWN으로 남긴다. 이름 변경의 참조 판정은 해당 변경의 extensions(flowdelta.graph.name_references)에 기록한다.",
+    "이름 참조는 $('이름')·$node[\"이름\"]·$items(\"이름\") 형태의 문자열만 찾는다. 실행 중에 조립되는 이름은 찾지 못한다.",
+    "영향 경로(impact_paths)는 아직 계산하지 않았다.",
+    "보안 위험 판정을 포함하지 않는다."
+  ],
+  "analysis_origin": "MODULE_OUTPUT",
+  "bundle": "bundle",
+  "bundle_manifest_sha256": "de34b7572a9468d2bdee5164461f4aad450764b392698cf65137b41b256e716a",
+  "case_id": "order-lookup-demo-001",
+  "catalog_sha256": "286f926b92802ccec32e9800bdfba6cea9d16f3f6d71f2e6a304311e5b464bde",
+  "contract_validation": {
+    "analysis_producer": "flowdelta-graph 0.1.0",
+    "case_id": "order-lookup-demo-001",
+    "execution_states": [
+      "SUCCEEDED",
+      "SUCCEEDED"
+    ],
+    "missing_artifact_kinds": [],
+    "outcome": null,
+    "plan_producer": "flowdelta.knowledge/1.0.1",
+    "run_count": 2,
+    "runtime_record_coverage": "CHECKED",
+    "schema_version": "0.4.0",
+    "status": "CONTRACT_LINKS_VALID"
+  },
+  "entrypoint_source_hashes": {
+    "fixed_profile.py": "01c68d3f7707cfe20dfc46a1b0f6e83671003bfbd5ad871d61163b06d624bbba",
+    "graph/analyze.py": "11b543a51d5fa5af4bc4d78f48c757e8d3e82aa557fe17662aa85dc21bda7651",
+    "handoff.py": "e3608d3098369133071572420434e86b7f91fbf8d5664b5d988a48017d843edf",
+    "input_repository.py": "167394a9bf27113a2e40fea80e9068cb4a39fc6d583a818f79d64210159b5778",
+    "knowledge/planner.py": "c2e86bc27a0ffa33ab945b07bf6ad799b850972f8175d6efc33964d0f31eea8f",
+    "pipeline_bundle.py": "a733c26165e2cabbc96d3c4328c27d98756fcac1dcdd2100135804bcf55ae69f",
+    "pipeline_runner.py": "d8b01e3b498de5516bd8d57a0cc474e68e5ba38478bd5a25d15cc716c668500c",
+    "runtime/executor.py": "c76144c4f840dbd4f54219edcae08a9e71300ec1a37b91c54039d2f65183609c"
+  },
+  "input_record": {
+    "after_snapshot_id": "snapshot-645768b23fc1d649ee3289106d4de119570212b6703a52ebc359d7745eed7e81",
+    "before_snapshot_id": "snapshot-6c2c5c4df1dc8d596b13028ad0c2163ea848b58fbfd5f0f76b7e27b6ac2873c4",
+    "case_id": "order-lookup-demo-001",
+    "extensions": {},
+    "handoff_sha256": "08318888993a6e9f1b8290c83e2de0aeaedf1c664e8f75e3d3f7a3ff4c61122c",
+    "profile_id": "runner-order-lookup",
+    "profile_revision": "1.0.0",
+    "profile_sha256": "9b4a8f254d10f1050ed984e4341c45233a96f81a547b8966dfc12a0577ff9a65",
+    "record_format": "flowdelta-input-record-v1",
+    "record_id": "input-53677d693269852eba85567fe1282d9c6ce566f9d83d288f9f5e3a4fa7daa97a",
+    "schema_version": "0.4.0",
+    "source_manifest_sha256": "994329925aeed388d6bdf26cee9e67a279b601888195376f8b6373228635d444"
+  },
+  "kb_sha256": "d0668162282dc7181e64f6c6e25314cf4753d044053fc078160504583607c2fb",
+  "mode": "EXECUTE_REGISTERED",
+  "orchestration_id": "pipeline-6cb6bc14f7aa4d259b7dbae02e719816",
+  "plan_id": "plan-98e0d68cdb6c3dc934272ced",
+  "plan_origin": "MODULE_OUTPUT",
+  "producer_version": "0.1.0",
+  "record_format": "flowdelta-pipeline-run-v1",
+  "retrieval_id": "retrieval-98e0d68cdb6c3dc934272ced",
+  "retrieval_sha256": "7e4e790592111faa4b19ff4544b9327dd2fb89f03065a1f759a30b338fbddf82",
+  "runs": [
+    {
+      "attempt_number": 1,
+      "cleanup_status": "COMPLETE",
+      "collection_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-d8959c9e6b034803a598d6264471eede",
+      "side": "before"
+    },
+    {
+      "attempt_number": 1,
+      "cleanup_status": "COMPLETE",
+      "collection_status": "COMPLETE",
+      "execution_status": "SUCCEEDED",
+      "run_id": "run-be0448a032354a42a85dc727b8b77d1e",
+      "side": "after"
+    }
+  ],
+  "schema_version": "0.4.0",
+  "security_outcome": null,
+  "stages": {
+    "analysis": "SUCCEEDED",
+    "bundle": "SUCCEEDED",
+    "execution": "SUCCEEDED",
+    "input": "SUCCEEDED",
+    "plan": "SUCCEEDED"
+  },
+  "status": "EXECUTED",
+  "storage": "LOCAL_FILE_REPOSITORY"
+}
