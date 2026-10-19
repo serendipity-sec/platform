@@ -12,6 +12,7 @@ dependencies = ["pydantic==2.14.0", "typer==0.27.3", "rich==15.0.0"]
 
 [project.optional-dependencies]
 baseline = ["fastapi==0.141.1", "uvicorn==0.53.0"]
+knowledge = ["sqlalchemy==2.0.44", "psycopg[binary]==3.2.12", "alembic==1.16.5"]
 
 [project.scripts]
 flowdelta = "flowdelta.cli:app"
