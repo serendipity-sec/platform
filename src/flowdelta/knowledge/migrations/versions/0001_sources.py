@@ -57,14 +57,15 @@ def upgrade() -> None:
     """)
     op.execute("""
         DO $$ BEGIN
-            IF EXISTS (SELECT FROM pg_roles WHERE rolname='flowdelta_app') THEN
-                GRANT USAGE ON SCHEMA knowledge TO flowdelta_app;
-                GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA knowledge
-                    TO flowdelta_app;
-                GRANT SELECT ON public.alembic_version TO flowdelta_app;
-                ALTER DEFAULT PRIVILEGES IN SCHEMA knowledge
-                    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO flowdelta_app;
+            IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname='flowdelta_app') THEN
+                RAISE EXCEPTION 'Required PostgreSQL role flowdelta_app does not exist';
             END IF;
+            GRANT USAGE ON SCHEMA knowledge TO flowdelta_app;
+            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA knowledge
+                TO flowdelta_app;
+            GRANT SELECT ON public.alembic_version TO flowdelta_app;
+            ALTER DEFAULT PRIVILEGES IN SCHEMA knowledge
+                GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO flowdelta_app;
         END $$
     """)
 
