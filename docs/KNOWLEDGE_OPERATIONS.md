@@ -1,6 +1,7 @@
 # B 지식 저장소 운영
 
-현재 구현: 로컬 PostgreSQL·pgvector, 명시적 migration, 원본 revision 저장.
+현재 구현: 로컬 PostgreSQL·pgvector, 명시적 migration, 입력 JSON 원본 바이트를 보존하는
+revision 저장. `source_record.document`는 조회용 JSONB 표현이다.
 전체 CVE 수집·색인·보안 실행 완료를 의미하지 않는다.
 
 ## 로컬 시작 (PowerShell)

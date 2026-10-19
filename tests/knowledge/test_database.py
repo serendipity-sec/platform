@@ -8,7 +8,7 @@ pytest.importorskip("sqlalchemy")
 
 from sqlalchemy import text
 
-from flowdelta.ingestion import InputError
+from flowdelta.ingestion import InputError, digest, json_bytes
 from flowdelta.knowledge.database import database_status, engine_for, migrate
 from flowdelta.knowledge.settings import KnowledgeSettings
 from flowdelta.knowledge.storage import (
@@ -84,7 +84,13 @@ def test_postgres_migration_and_transaction(tmp_path):
 
         try:
             with storage_transaction(engine) as connection:
-                save_record(connection, tmp_path, "rollback-test", "fixture", {"revision": 1})
+                save_record(
+                    connection,
+                    tmp_path,
+                    "rollback-test",
+                    "fixture",
+                    json_bytes({"revision": 1}),
+                )
                 raise RollbackFixture
         except RollbackFixture:
             pass
@@ -99,9 +105,15 @@ def test_postgres_migration_and_transaction(tmp_path):
                 == 0
             )
         with storage_transaction(engine) as connection:
-            first = save_record(connection, tmp_path, "test", "fixture", {"revision": 1})
-            assert first == save_record(connection, tmp_path, "test", "fixture", {"revision": 1})
-            second = save_record(connection, tmp_path, "test", "fixture", {"revision": 2})
+            first = save_record(
+                connection, tmp_path, "test", "fixture", json_bytes({"revision": 1})
+            )
+            assert first == save_record(
+                connection, tmp_path, "test", "fixture", json_bytes({"revision": 1})
+            )
+            second = save_record(
+                connection, tmp_path, "test", "fixture", json_bytes({"revision": 2})
+            )
             assert first != second
             count = connection.execute(
                 text("SELECT count(*) FROM knowledge.source_revision WHERE source='test'")
@@ -110,8 +122,25 @@ def test_postgres_migration_and_transaction(tmp_path):
         clear_source("test")
         assert list(tmp_path.rglob("*.json")) == []
 
+        raw_payload = b'{ "revision": 7.00 }\r\n'
         with storage_transaction(engine) as connection:
-            first = save_record(connection, tmp_path, "cleanup-test", "fixture", {"revision": 1})
+            checksum = save_record(
+                connection, tmp_path, "raw-bytes-test", "fixture", raw_payload
+            )
+        raw_path = tmp_path / checksum[:2] / f"{checksum}.json"
+        assert checksum == digest(raw_payload)
+        assert raw_path.read_bytes() == raw_payload
+        clear_source("raw-bytes-test")
+        assert not raw_path.exists()
+
+        with storage_transaction(engine) as connection:
+            first = save_record(
+                connection,
+                tmp_path,
+                "cleanup-test",
+                "fixture",
+                json_bytes({"revision": 1}),
+            )
         referenced_path = tmp_path / first[:2] / f"{first}.json"
         orphan_relative, _ = save_raw(tmp_path, b'{"fixture":"orphan"}')
         orphan_path = tmp_path / orphan_relative
@@ -139,7 +168,7 @@ def test_postgres_migration_and_transaction(tmp_path):
                     tmp_path,
                     "concurrency-test",
                     "fixture",
-                    {"revision": 1},
+                    json_bytes({"revision": 1}),
                 )
 
         with ThreadPoolExecutor(max_workers=2) as executor:

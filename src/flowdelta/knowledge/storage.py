@@ -8,11 +8,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
-from pydantic import JsonValue
 from sqlalchemy import Connection, Engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
-from flowdelta.ingestion import InputError, digest, json_bytes
+from flowdelta.ingestion import InputError, digest, json_bytes, parse_json
 
 _TRANSACTION_STATE_KEY = "flowdelta_knowledge_storage_transaction"
 _BLOB_LOCK_SQL = "SELECT pg_advisory_lock(hashtextextended(:checksum, 0))"
@@ -101,7 +100,7 @@ def save_record(
     root: Path,
     source: str,
     external_id: str,
-    document: dict[str, JsonValue],
+    raw_payload: bytes,
     *,
     modified_at: str | None = None,
 ) -> str:
@@ -109,7 +108,8 @@ def save_record(
     if not isinstance(state, _StorageTransactionState) or not connection.in_transaction():
         raise InputError("KNOWLEDGE_STORAGE_TRANSACTION_REQUIRED")
 
-    payload = json_bytes(document)
+    document = parse_json(raw_payload)
+    payload = raw_payload
     checksum = digest(payload)
     if checksum not in state.locked_checksums:
         connection.execute(text(_BLOB_LOCK_SQL), {"checksum": checksum}).scalar_one()
@@ -125,7 +125,7 @@ def save_record(
         "path": path,
         "size": len(payload),
         "modified": modified_at,
-        "document": payload.decode("utf-8"),
+        "document": json_bytes(document).decode("utf-8"),
     }
     connection.execute(
         text("""
