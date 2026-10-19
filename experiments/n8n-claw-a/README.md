@@ -47,10 +47,10 @@ foreach ($pair in "feature-add", "first-fix") {
 ## 결과
 
 `changes`와 그래프는 A 코드 버전과 관계없이 같다. 영향 경로 수는 상한(#44)이 들어가면 바뀐다.
+`analysis_id`는 결과 내용의 해시를 포함하므로(#65) A 버전마다 달라질 수 있다. 같은 코드로 다시 만들면 같다.
 
 | | `feature-add` | `first-fix` |
 |---|---|---|
-| `analysis_id` | `analysis-06277a39151c0499` | `analysis-915a3652ebe5b091` |
 | 변경 | `ADDED` Memory Delete(`/nodes/29`)·Memory Update(`/nodes/30`), `CONNECTION_CHANGED` 두 도구 → AI Agent `ai_tool`, `PARAMETER_CHANGED` Memory Search `description` | `PARAMETER_CHANGED` 6개: Memory Delete·Save·Search·Update의 `jsCode`, Delete·Save의 `description` |
 | after 그래프 | `CONTROL` main 35·`ai_tool` 18·`ai_languageModel` 1, 이름 참조 `DATA` 27, 필드 흐름 0 | `CONTROL` main 44·`ai_tool` 20·`ai_languageModel` 1, 이름 참조 `DATA` 36, 필드 흐름 0 |
 | 영향 경로(main) | 27개, 변경 5개 모두 경로 있음 | 44개, 변경 6개 모두 경로 있음 |
