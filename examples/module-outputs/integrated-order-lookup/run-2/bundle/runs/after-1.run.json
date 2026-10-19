@@ -16,7 +16,7 @@
         "media_type": "application/json",
         "path": "runs/after-1/allocation.json",
         "schema_version": "0.4.0",
-        "sha256": "7903e30cb9c8adf6877cff034c04eac103b757834c8ff2b9baac198d8861125d",
+        "sha256": "2edb4db1c222a0987b3e87099ebc23a43fdccc02a20a08a69e4dbb24a2509e10",
         "size_bytes": 333
       },
       {
@@ -26,7 +26,7 @@
         "media_type": "application/json",
         "path": "runs/after-1/binding.json",
         "schema_version": "0.4.0",
-        "sha256": "8b9fcdf9d995234ce3e93c2a04dfd9b22dc36607249da506bdb03800bc995e17",
+        "sha256": "23f06c340b6378afd9ab67977e7c593c86d6e92f879a5e0046e9e2772fd891c5",
         "size_bytes": 711
       },
       {
@@ -36,7 +36,7 @@
         "media_type": "application/json",
         "path": "runs/after-1/cleanup.json",
         "schema_version": "0.4.0",
-        "sha256": "3a2d7f8322d4b5a0b2c187f8caf3124a0a69e0f0255160f4baabd82f10b34d8a",
+        "sha256": "fd5414c05f43d41dbfd890f2df93164f657bd9ed65b71809c2370cfd5771f79f",
         "size_bytes": 370
       },
       {
@@ -46,7 +46,7 @@
         "media_type": "application/json",
         "path": "runs/after-1/events.json",
         "schema_version": "0.4.0",
-        "sha256": "4df04a21b5497c1a5266b875422725d3d446a5c969f34f68e209287686e9e2d2",
+        "sha256": "9c5a70af34cc86c52f970bb84230069d662c9d6166fc71903e3f1645541ee962",
         "size_bytes": 627
       },
       {
@@ -56,7 +56,7 @@
         "media_type": "application/json",
         "path": "runs/after-1/final-state.json",
         "schema_version": "0.4.0",
-        "sha256": "e08d6bf55220020955b901d05ae954cdda8a856449b10504ca5e08d981d73a50",
+        "sha256": "e116a1c507e52b3486538fee7a0f87945624d52fa2a73c177780e7b86f843297",
         "size_bytes": 1276
       },
       {
@@ -66,7 +66,7 @@
         "media_type": "application/json",
         "path": "runs/after-1/initial-state.json",
         "schema_version": "0.4.0",
-        "sha256": "dcc52973340443f07191a55dccdd4474504f8232836cf27315e100d916dc7ca0",
+        "sha256": "4feb1d46de90a6d2076ee953f44d68da3d8ac60b7c1c1166132ecb6aa02600f9",
         "size_bytes": 784
       },
       {
@@ -96,7 +96,7 @@
         "media_type": "application/json",
         "path": "runs/after-1/runtime.json",
         "schema_version": "0.4.0",
-        "sha256": "7cfd69a8af5612723b23f383986a6cde2cd817e79432fb0076c9e8ddb65dd2f5",
+        "sha256": "1a08d36d56835e1e9e02b987c8a82d88ffe90b023ba5fdb5d88f933e41fc554d",
         "size_bytes": 849
       }
     ],
@@ -115,7 +115,7 @@
       "final-state",
       "events"
     ],
-    "run_id": "run-e6ee61d4c88e44419ddd9e8fa89d377a",
+    "run_id": "run-221f1ab2731d43e2968d114f251f0909",
     "schema_version": "0.4.0"
   },
   "attempt_number": 1,
@@ -128,21 +128,21 @@
   },
   "case_id": "order-lookup-demo-001",
   "cleanup_status": "COMPLETE",
-  "comparison_run_id": "comparison-7b84367427c0404da7a7610255183799",
+  "comparison_run_id": "comparison-a5d8551e9b2d43378ce4ac20708c3539",
   "error_code": null,
   "execution_status": "SUCCEEDED",
   "extensions": {
-    "flowdelta.compose_project": "fdrt-e8fd00d1db7c47e3"
+    "flowdelta.compose_project": "fdrt-345b347247eb4073"
   },
-  "finished_at": "2026-10-15T02:00:59.511582+00:00",
+  "finished_at": "2026-10-19T15:35:49.184373+00:00",
   "initial_state_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
   "outcome": null,
   "phase": "FINISHED",
-  "plan_id": "plan-cddf98e368d7f75ca5d3f142",
-  "run_id": "run-e6ee61d4c88e44419ddd9e8fa89d377a",
+  "plan_id": "plan-67968e2d05c9fa987f094112",
+  "run_id": "run-221f1ab2731d43e2968d114f251f0909",
   "runtime_profile": "order-lookup-local-v1",
   "schema_version": "0.4.0",
   "side": "after",
   "snapshot_id": "snapshot-645768b23fc1d649ee3289106d4de119570212b6703a52ebc359d7745eed7e81",
-  "started_at": "2026-10-15T02:00:55.526343+00:00"
+  "started_at": "2026-10-19T15:35:44.345103+00:00"
 }

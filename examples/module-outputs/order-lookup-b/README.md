@@ -1,8 +1,10 @@
 # B가 실제 생성한 주문 조회 계획
 
-`flowdelta.knowledge/1.0.0`이 `examples/contracts/order-lookup/`의 분석 예시와
+`flowdelta.knowledge/1.1.0`이 `examples/contracts/order-lookup/`의 분석 예시와
 카드·catalog를 읽어 생성했다. plan과 retrieval은 MODULE_OUTPUT이며,
 입력 분석·카드는 CONTRACT_EXAMPLE을 유지한다. A 실제 분석이나 C 실행 자료는 아니다.
+
+- plan ID: `plan-78648ad0ea14a7c4d14a948d`
 
 - `plan.json`: 정상 입력, 등록 템플릿, 초기 상태, 모든 obligation의 연결.
 - `retrieval.json`: 결정적 검색 순위·점수·선택/제외 이유, KB 파일 참조.

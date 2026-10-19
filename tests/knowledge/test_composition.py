@@ -1,34 +1,51 @@
 import pytest
 
+import flowdelta.knowledge.retrieval as retrieval_module
 from flowdelta.ingestion import InputError
-from flowdelta.knowledge import compose_plan, planner, retrieve, write_plan
+from flowdelta.knowledge import (
+    compose_plan,
+    composition,
+    output,
+    planner,
+    retrieve,
+    write_plan,
+)
 from flowdelta.knowledge.retrieval import retrieval_content_fingerprint
 from flowdelta.pipeline_contracts import RetrievalHit
 
 from .test_planner import inputs
 
 
+def _forbid_internal_retrieval(monkeypatch, *, allow_planner_retrieval=False):
+    def forbidden(*args, **kwargs):
+        raise AssertionError("composition and output must use the supplied retrieval")
+
+    modules = [composition, output, retrieval_module]
+    if not allow_planner_retrieval:
+        modules.append(planner)
+    for module in modules:
+        for name in ("retrieve", "_retrieve"):
+            monkeypatch.setattr(module, name, forbidden, raising=False)
+
+
 def test_composition_does_not_retrieve(monkeypatch):
     values = inputs()
     result = retrieve(*values)
-
-    def forbidden(*args, **kwargs):
-        raise AssertionError("composition must not repeat retrieval")
-
-    monkeypatch.setattr(planner, "retrieve", forbidden)
+    _forbid_internal_retrieval(monkeypatch)
     plan = compose_plan(*values, result)
     assert plan.template_id == "normal-order-lookup"
 
 
 def test_writer_retrieves_once(tmp_path, monkeypatch):
-    original = planner.retrieve
+    original = planner._retrieve
     calls = []
 
     def counting(*args, **kwargs):
         calls.append(1)
         return original(*args, **kwargs)
 
-    monkeypatch.setattr(planner, "retrieve", counting)
+    monkeypatch.setattr(planner, "_retrieve", counting)
+    _forbid_internal_retrieval(monkeypatch, allow_planner_retrieval=True)
     write_plan(*inputs(), tmp_path / "plan.json")
     assert len(calls) == 1
 
