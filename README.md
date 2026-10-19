@@ -7,6 +7,9 @@ A의 첫 구조 분석, B의 로컬 카드 검색·계획, C의 등록 주문 �
 
 **현재 계약: 0.4.0** · [입력 계약과 이전 방법](docs/INPUT_CONTRACT_04.md)
 
+Workflow만 바꾸는 MVP 비교에는 [고정 profile 검사](docs/FIXED_PROFILE.md)를 사용합니다.
+기준 입력의 해시를 별도로 고정하고 후보의 환경·정책·의존성·모델 설정 변경을 거부합니다.
+
 설계·개발 계획·준비 현황은 [팀 문서 저장소](https://github.com/serendipity-sec/docs)에서 관리합니다.
 이 저장소는 코드·Schema·예제·실행 환경과 해당 버전의 사용 설명을 함께 제공합니다.
 
