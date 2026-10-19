@@ -97,7 +97,7 @@ DB 이미지는 로컬 개발용이며 실제 pull한 digest를 runtime 설정�
 | Alembic | 1.16.5 | [MIT](https://raw.githubusercontent.com/sqlalchemy/alembic/rel_1_16_5/LICENSE) | 저작권·허가문 보존 |
 | psycopg / psycopg-binary | 3.2.12 | [LGPL-3.0](https://raw.githubusercontent.com/psycopg/psycopg/3.2.12/LICENSE.txt) | 라이선스·고지 보존, 교체 가능하게 배포, 배포 시 해당 라이브러리 소스 제공 의무 확인 |
 | pgvector | 0.8.1 | [PostgreSQL License](https://raw.githubusercontent.com/pgvector/pgvector/v0.8.1/LICENSE) | 고지 보존 |
-| PostgreSQL | 17.8, pgvector 이미지 digest `3e8b3adfd27b5707128f60956f62a793c3c9326ea8cfaf0eab7adccb5d700b21` | [PostgreSQL License](https://raw.githubusercontent.com/postgres/postgres/REL_17_6/COPYRIGHT) | 이미지에 포함된 PostgreSQL·OS 고지 보존 |
+| PostgreSQL | 17.8, pgvector 이미지 digest `3e8b3adfd27b5707128f60956f62a793c3c9326ea8cfaf0eab7adccb5d700b21` | [PostgreSQL License](https://raw.githubusercontent.com/postgres/postgres/REL_17_8/COPYRIGHT) | 이미지에 포함된 PostgreSQL·OS 고지 보존 |
 
 확인자: Codex. 전이 의존성과 wheel 해시는 `uv.lock`으로 고정한다.
 
