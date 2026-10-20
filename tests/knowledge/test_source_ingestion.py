@@ -1,14 +1,17 @@
 import os
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from threading import Event
+from typing import cast
 from uuid import uuid4
 
 import pytest
 
 pytest.importorskip("sqlalchemy")
 
-from sqlalchemy import text
+from sqlalchemy import Engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
 from flowdelta.ingestion import InputError, digest
@@ -17,12 +20,16 @@ from flowdelta.knowledge.database import engine_for, migrate
 from flowdelta.knowledge.settings import KnowledgeSettings
 from flowdelta.knowledge.source_ingestion import (
     MAX_PAGE_SIZE,
+    MAX_PAGES_PER_RUN,
     Cursor,
     IngestionReport,
     RawSourceRecord,
+    RetryReport,
     SourcePage,
     ingest_source,
+    retry_quarantined_records,
 )
+from flowdelta.knowledge.storage import cleanup_orphaned_raw
 
 
 @dataclass
@@ -352,8 +359,474 @@ def test_stalled_cursor_rejects_page_without_persisting_records(database):
     assert records == 0
 
 
-def test_ingestion_limits_are_checked_before_database_access(database):
-    engine, source, _ = database
-    adapter = FixtureSource(source, [], [])
+@pytest.mark.parametrize(
+    ("page_size", "max_pages"),
+    [(MAX_PAGE_SIZE + 1, 1), (1, MAX_PAGES_PER_RUN + 1)],
+)
+def test_ingestion_limits_are_checked_before_database_access(page_size, max_pages):
+    adapter = FixtureSource("test-limit", [], [])
     with pytest.raises(InputError, match="KNOWLEDGE_INGESTION_LIMIT_INVALID"):
-        ingest_source(engine, Path("."), adapter, page_size=MAX_PAGE_SIZE + 1)
+        ingest_source(
+            cast(Engine, object()),
+            Path("."),
+            adapter,
+            page_size=page_size,
+            max_pages=max_pages,
+        )
+
+
+@pytest.mark.parametrize("external_id", ["VULN\x00SAMPLE", "\ud800"])
+def test_nul_or_unpaired_surrogate_id_is_quarantined(database, external_id):
+    engine, source, raw_root = database
+    raw = b'{"id":"VULN-SAMPLE-7"}'
+    valid_raw = b'{"id":"VULN-SAMPLE-7","summary":"valid"}'
+    adapter = FixtureSource(
+        source,
+        [
+            SourcePage(
+                (
+                    RawSourceRecord(external_id, raw),
+                    RawSourceRecord("VULN-SAMPLE-7", valid_raw),
+                ),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+    )
+
+    report = ingest_source(engine, raw_root, adapter)
+
+    assert report.records_saved == 1
+    assert report.records_failed == 1
+    with engine.connect() as connection:
+        failures = (
+            connection.execute(
+                text(
+                    "SELECT external_id, error_code, raw_path, raw_external_id "
+                    "FROM knowledge.sync_failure WHERE source=:source"
+                ),
+                {"source": source},
+            )
+            .mappings()
+            .all()
+        )
+    assert len(failures) == 1
+    failure = failures[0]
+    assert failure["external_id"].startswith("invalid-")
+    assert failure["error_code"] == "KNOWLEDGE_SOURCE_RECORD_ID_INVALID"
+    assert failure["raw_external_id"] == external_id.encode("utf-8", "surrogatepass")
+    assert failure["raw_path"] is not None
+    assert (raw_root / failure["raw_path"]).read_bytes() == raw
+
+
+def test_jsonb_incompatible_record_is_quarantined_and_page_continues(database):
+    engine, source, raw_root = database
+    adapter = FixtureSource(
+        source,
+        [
+            SourcePage(
+                (
+                    RawSourceRecord(
+                        "VULN-NUL-DOC",
+                        b'{"id":"VULN-NUL-DOC","summary":"abc\\u0000x"}',
+                    ),
+                    RawSourceRecord("VULN-GOOD-DOC", b'{"id":"VULN-GOOD-DOC","summary":"good"}'),
+                ),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+    )
+
+    report = ingest_source(engine, raw_root, adapter)
+
+    assert report.records_saved == 1
+    assert report.records_failed == 1
+    with engine.connect() as connection:
+        state = (
+            connection.execute(
+                text("SELECT status, cursor FROM knowledge.sync_state WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+        failure = (
+            connection.execute(
+                text(
+                    "SELECT error_code, raw_path FROM knowledge.sync_failure WHERE source=:source"
+                ),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+        saved_ids = (
+            connection.execute(
+                text("SELECT external_id FROM knowledge.source_record WHERE source=:source"),
+                {"source": source},
+            )
+            .scalars()
+            .all()
+        )
+    assert state == {"status": "COMPLETE", "cursor": {"page": 1}}
+    assert failure["error_code"] == "KNOWLEDGE_SOURCE_RECORD_INVALID"
+    assert failure["raw_path"] is not None
+    assert saved_ids == ["VULN-GOOD-DOC"]
+
+
+@dataclass
+class ToggleSource(FixtureSource):
+    fail_normalization: bool = True
+
+    def normalize(self, document):
+        if self.fail_normalization:
+            raise KeyError("adapter mapping is temporarily incomplete")
+        return super().normalize(document)
+
+
+def test_quarantined_record_can_be_reprocessed_from_retained_raw(database):
+    engine, source, raw_root = database
+    adapter = ToggleSource(
+        source,
+        [
+            SourcePage(
+                (RawSourceRecord("VULN-RETRY", b'{"id":"VULN-RETRY"}'),),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+    )
+    first = ingest_source(engine, raw_root, adapter)
+    with engine.connect() as connection:
+        raw_path = connection.execute(
+            text("SELECT raw_path FROM knowledge.sync_failure WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+    retained_file = raw_root / raw_path
+    os.utime(retained_file, (0, 0))
+    assert cleanup_orphaned_raw(engine, raw_root, older_than_seconds=0) == 0
+    assert retained_file.exists()
+    adapter.fail_normalization = False
+
+    retried = retry_quarantined_records(engine, raw_root, adapter, limit=10)
+
+    assert first.records_failed == 1
+    assert retried == RetryReport(source, attempted=1, records_saved=1, records_failed=0)
+    with engine.connect() as connection:
+        failures = connection.execute(
+            text("SELECT count(*) FROM knowledge.sync_failure WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+        document = connection.execute(
+            text("SELECT document FROM knowledge.source_record WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+    assert failures == 0
+    assert document == {"identifier": "VULN-RETRY", "summary": ""}
+
+
+def test_success_clears_prior_failures_for_same_id_and_invalid_alias(database):
+    engine, source, raw_root = database
+
+    @dataclass
+    class ConditionalSource(FixtureSource):
+        def normalize(self, document):
+            if document.get("summary") == "broken":
+                raise KeyError("broken adapter mapping")
+            return super().normalize(document)
+
+    good_raw = b'{"id":"VULN-RECOVERED","summary":"good"}'
+    adapter = ConditionalSource(
+        source,
+        [
+            SourcePage(
+                (
+                    RawSourceRecord(
+                        "VULN-RECOVERED", b'{"id":"VULN-RECOVERED","summary":"broken"}'
+                    ),
+                    RawSourceRecord("\x00", good_raw),
+                    RawSourceRecord("VULN-RECOVERED", good_raw),
+                ),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+    )
+
+    report = ingest_source(engine, raw_root, adapter)
+
+    assert report.records_saved == 1
+    assert report.records_failed == 2
+    with engine.connect() as connection:
+        count = connection.execute(
+            text("SELECT count(*) FROM knowledge.sync_failure WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+    assert count == 0
+
+
+def test_jsonb_numeric_cursor_comparison_is_semantic(database):
+    engine, source, raw_root = database
+    cursor_value = 1.7e18
+    adapter = FixtureSource(
+        source,
+        [
+            SourcePage((), {"ts": cursor_value}, False),
+            SourcePage((), {"complete": True}, True),
+        ],
+        [],
+    )
+
+    report = ingest_source(engine, raw_root, adapter, max_pages=2)
+
+    assert report.status == "COMPLETE"
+    assert adapter.calls[1][0] == {"ts": 1700000000000000000}
+
+
+def test_jsonb_incompatible_cursor_is_reported_as_invalid(database):
+    engine, source, raw_root = database
+    adapter = FixtureSource(
+        source,
+        [SourcePage((), {"token": "bad\x00cursor"}, False)],
+        [],
+    )
+
+    with pytest.raises(InputError, match="KNOWLEDGE_SYNC_CURSOR_INVALID"):
+        ingest_source(engine, raw_root, adapter)
+
+    with engine.connect() as connection:
+        state = (
+            connection.execute(
+                text("SELECT status, error_code FROM knowledge.sync_state WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+    assert state == {
+        "status": "FAILED",
+        "error_code": "KNOWLEDGE_SYNC_CURSOR_INVALID",
+    }
+
+
+def test_page_bytes_are_validated_before_any_raw_file_is_written(database):
+    engine, source, raw_root = database
+    adapter = FixtureSource(
+        source,
+        [
+            SourcePage(
+                (
+                    RawSourceRecord("VULN-FIRST", b'{"id":"VULN-FIRST"}'),
+                    RawSourceRecord("VULN-LAST", "not bytes"),
+                ),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+    )
+
+    with pytest.raises(InputError, match="KNOWLEDGE_SOURCE_PAGE_INVALID"):
+        ingest_source(engine, raw_root, adapter)
+
+    assert list(raw_root.rglob("*.json")) == []
+
+
+def test_local_storage_error_code_is_not_mislabeled_as_provider_error(database, monkeypatch):
+    engine, source, raw_root = database
+    adapter = FixtureSource(
+        source,
+        [
+            SourcePage(
+                (RawSourceRecord("VULN-LOCAL-ERROR", b'{"id":"VULN-LOCAL-ERROR"}'),),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+    )
+
+    def fail_local_save(*args, **kwargs):
+        raise InputError("KNOWLEDGE_RAW_PATH_INVALID")
+
+    monkeypatch.setattr(source_ingestion_module, "save_record", fail_local_save)
+
+    with pytest.raises(InputError, match="KNOWLEDGE_RAW_PATH_INVALID"):
+        ingest_source(engine, raw_root, adapter)
+
+    with engine.connect() as connection:
+        state = (
+            connection.execute(
+                text("SELECT status, error_code FROM knowledge.sync_state WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+    assert state == {"status": "FAILED", "error_code": "KNOWLEDGE_RAW_PATH_INVALID"}
+
+
+def test_stale_modified_record_is_quarantined_and_cursor_advances(database):
+    engine, source, raw_root = database
+    adapter = FixtureSource(
+        source,
+        [
+            SourcePage(
+                (
+                    RawSourceRecord(
+                        "VULN-STALE",
+                        b'{"id":"VULN-STALE","summary":"newer"}',
+                        datetime(2026, 1, 2, tzinfo=UTC),
+                    ),
+                ),
+                {},
+                True,
+            ),
+            SourcePage(
+                (RawSourceRecord("VULN-STALE", b'{"id":"VULN-STALE","summary":"older"}'),),
+                {"page": 2},
+                True,
+            ),
+        ],
+        [],
+    )
+    ingest_source(engine, raw_root, adapter)
+
+    report = ingest_source(engine, raw_root, adapter)
+
+    assert report.records_saved == 0
+    assert report.records_failed == 1
+    with engine.connect() as connection:
+        state = (
+            connection.execute(
+                text("SELECT status, cursor FROM knowledge.sync_state WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+        failure = connection.execute(
+            text("SELECT error_code FROM knowledge.sync_failure WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+        document = connection.execute(
+            text("SELECT document FROM knowledge.source_record WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+    assert state == {"status": "COMPLETE", "cursor": {"page": 2}}
+    assert failure == "KNOWLEDGE_SOURCE_RECORD_STALE"
+    assert document["summary"] == "newer"
+
+
+def test_stale_running_state_is_recovered_before_fetch(database):
+    engine, source, raw_root = database
+    with engine.begin() as connection:
+        connection.execute(
+            text("""
+                INSERT INTO knowledge.sync_state(source, cursor, status)
+                VALUES (:source, CAST('{}' AS jsonb), 'RUNNING')
+            """),
+            {"source": source},
+        )
+    adapter = FixtureSource(source, [SourcePage((), {"page": 1}, True)], [])
+
+    with pytest.raises(InputError, match="KNOWLEDGE_SOURCE_RUN_INTERRUPTED"):
+        ingest_source(engine, raw_root, adapter)
+
+    assert adapter.calls == []
+    with engine.connect() as connection:
+        state = (
+            connection.execute(
+                text("SELECT status, error_code FROM knowledge.sync_state WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+    assert state == {
+        "status": "FAILED",
+        "error_code": "KNOWLEDGE_SOURCE_RUN_INTERRUPTED",
+    }
+
+
+def test_concurrent_source_run_is_rejected_before_second_fetch(database):
+    engine, source, raw_root = database
+    started = Event()
+    release = Event()
+
+    @dataclass
+    class BlockingSource(FixtureSource):
+        def fetch_page(self, cursor: Cursor, page_size: int) -> SourcePage:
+            self.calls.append((cursor, page_size))
+            started.set()
+            if not release.wait(timeout=10):
+                raise TimeoutError("test synchronization timed out")
+            return self.pages.pop(0)
+
+    adapter = BlockingSource(source, [SourcePage((), {"page": 1}, True)], [])
+    with ThreadPoolExecutor(max_workers=1) as executor:
+        future = executor.submit(ingest_source, engine, raw_root, adapter)
+        assert started.wait(timeout=5)
+        try:
+            with pytest.raises(InputError, match="KNOWLEDGE_SOURCE_ALREADY_RUNNING"):
+                ingest_source(engine, raw_root, adapter)
+        finally:
+            release.set()
+        assert future.result(timeout=10).status == "COMPLETE"
+    assert len(adapter.calls) == 1
+
+
+def test_keyboard_interrupt_marks_run_failed(database):
+    engine, source, raw_root = database
+
+    class InterruptingSource(FixtureSource):
+        def fetch_page(self, cursor: Cursor, page_size: int) -> SourcePage:
+            raise KeyboardInterrupt
+
+    adapter = InterruptingSource(source, [], [])
+
+    with pytest.raises(KeyboardInterrupt):
+        ingest_source(engine, raw_root, adapter)
+
+    with engine.connect() as connection:
+        state = (
+            connection.execute(
+                text("SELECT status, error_code FROM knowledge.sync_state WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+    assert state == {
+        "status": "FAILED",
+        "error_code": "KNOWLEDGE_SOURCE_RUN_INTERRUPTED",
+    }
+
+
+def test_unexpected_error_marks_run_failed(database, monkeypatch):
+    engine, source, raw_root = database
+    adapter = FixtureSource(source, [SourcePage((), {"page": 1}, True)], [])
+
+    def fail_page(*args, **kwargs):
+        raise ValueError("unexpected internal failure")
+
+    monkeypatch.setattr(source_ingestion_module, "_commit_page", fail_page)
+
+    with pytest.raises(InputError, match="KNOWLEDGE_SOURCE_RUN_FAILED"):
+        ingest_source(engine, raw_root, adapter)
+
+    with engine.connect() as connection:
+        state = (
+            connection.execute(
+                text("SELECT status, error_code FROM knowledge.sync_state WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+    assert state == {"status": "FAILED", "error_code": "KNOWLEDGE_SOURCE_RUN_FAILED"}
