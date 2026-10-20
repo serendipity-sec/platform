@@ -15,6 +15,7 @@ Side = Literal["before", "after"]
 Key = tuple[Side, str, tuple[str, ...]]
 # Selection order of a path: fewest edges first, then path ID.
 Candidate = tuple[int, str, Key]
+RouteKey = tuple[Side, str, str | None]
 # Rename verdicts where some references still call the old name after the change.
 _STALE = ("BROKEN_REFERENCES", "REFERENCES_RETARGETED")
 _FOLLOWED = ("CONTROL", "DATA")
@@ -233,38 +234,123 @@ def _path_id(side: Side, end: str, edge_ids: tuple[str, ...]) -> str:
     return "impact-" + short_hash(side, end, *edge_ids)
 
 
+class _ShortestTree:
+    """A BFS tree expanded one distance layer at a time and shared by routes."""
+
+    def __init__(self, following: dict[str, list[GraphEdge]], start: str) -> None:
+        self.following = following
+        self.predecessors: dict[str, GraphEdge | None] = {start: None}
+        self._layers = [[start]]
+        self._exhausted = False
+
+    def layer(self, index: int) -> list[str] | None:
+        """Return one BFS layer, expanding only as far as the requested layer."""
+        while len(self._layers) <= index and not self._exhausted:
+            next_layer: list[str] = []
+            for node_id in self._layers[-1]:
+                for edge in self.following.get(node_id, []):
+                    if edge.target_node_id not in self.predecessors:
+                        self.predecessors[edge.target_node_id] = edge
+                        next_layer.append(edge.target_node_id)
+            if next_layer:
+                self._layers.append(next_layer)
+            else:
+                self._exhausted = True
+        return self._layers[index] if index < len(self._layers) else None
+
+    def ensure_node(self, node_id: str) -> bool:
+        index = 0
+        while node_id not in self.predecessors:
+            if self.layer(index) is None:
+                return False
+            index += 1
+        return True
+
+    def reaches(self, outputs: set[str]) -> bool:
+        index = 0
+        while (nodes := self.layer(index)) is not None:
+            if any(node_id in outputs for node_id in nodes):
+                return True
+            index += 1
+        return False
+
+
+class _RouteOrder:
+    """Cache only the candidate layers consumed from one route's sorted stream."""
+
+    def __init__(self, route: Route, tree: _ShortestTree, outputs: set[str]) -> None:
+        self.route = route
+        self.tree = tree
+        self.outputs = outputs
+        self._candidate_layers: list[list[Candidate]] = []
+        self._exhausted = False
+
+    def layer(self, index: int) -> list[Candidate] | None:
+        """Materialize one distance layer so path-ID ties can be sorted deterministically."""
+        while len(self._candidate_layers) <= index and not self._exhausted:
+            tree_layer = self.tree.layer(len(self._candidate_layers))
+            if tree_layer is None:
+                self._exhausted = True
+                break
+            items: list[Candidate] = []
+            for end in tree_layer:
+                if end not in self.outputs:
+                    continue
+                path = _back(self.tree.predecessors, end)
+                edges = [self.route.via, *path] if self.route.via is not None else path
+                edge_ids = tuple(edge.edge_id for edge in edges)
+                path_id = _path_id(self.route.side, end, edge_ids)
+                items.append((len(edge_ids), path_id, (self.route.side, end, edge_ids)))
+            self._candidate_layers.append(sorted(items))
+        return self._candidate_layers[index] if index < len(self._candidate_layers) else None
+
+    def candidates(self) -> Iterator[Candidate]:
+        index = 0
+        while (items := self.layer(index)) is not None:
+            yield from items
+            index += 1
+
+
+def _route_key(route: Route) -> RouteKey:
+    return (route.side, route.start, route.via.edge_id if route.via is not None else None)
+
+
 class _Walks:
-    """Shortest-path trees per start node, built once however many changes start there."""
+    """Lazily share shortest-path trees and candidate layers between changes."""
 
     def __init__(self, graphs: dict[Side, SemanticGraph], outputs: dict[Side, set[str]]) -> None:
         self.outputs = outputs
         self._following = {side: _following(graph) for side, graph in graphs.items()}
-        self._trees: dict[tuple[Side, str], dict[str, GraphEdge | None]] = {}
-        self._orders: dict[tuple[Side, str, str | None], list[Candidate]] = {}
+        self._trees: dict[tuple[Side, str], _ShortestTree] = {}
+        self._orders: dict[RouteKey, _RouteOrder] = {}
+        self._reachability: dict[RouteKey, bool] = {}
 
-    def ends(self, route: Route) -> dict[str, GraphEdge | None]:
-        """Reachable nodes; a route over an edge goes on from the edge's target."""
+    def _tree_for(self, route: Route) -> _ShortestTree:
         start = route.via.target_node_id if route.via is not None else route.start
         key = (route.side, start)
         if key not in self._trees:
-            self._trees[key] = _tree(self._following[route.side], start)
+            self._trees[key] = _ShortestTree(self._following[route.side], start)
         return self._trees[key]
 
-    def edges(self, route: Route, end: str) -> list[GraphEdge]:
-        path = _back(self.ends(route), end)
+    def order(self, route: Route) -> Iterator[Candidate]:
+        """Yield paths by distance and path ID without materializing the full route."""
+        key = _route_key(route)
+        if key not in self._orders:
+            self._orders[key] = _RouteOrder(route, self._tree_for(route), self.outputs[route.side])
+        return self._orders[key].candidates()
+
+    def edges(self, route: Route, end: str) -> list[GraphEdge] | None:
+        tree = self._tree_for(route)
+        if not tree.ensure_node(end):
+            return None
+        path = _back(tree.predecessors, end)
         return [route.via, *path] if route.via is not None else path
 
-    def order(self, route: Route) -> list[Candidate]:
-        """The route's paths to output nodes in selection order; keys only, no ImpactPath yet."""
-        key = (route.side, route.start, route.via.edge_id if route.via is not None else None)
-        if key not in self._orders:
-            items: list[Candidate] = []
-            for end in self.outputs[route.side] & self.ends(route).keys():
-                edge_ids = tuple(edge.edge_id for edge in self.edges(route, end))
-                path_id = _path_id(route.side, end, edge_ids)
-                items.append((len(edge_ids), path_id, (route.side, end, edge_ids)))
-            self._orders[key] = sorted(items)
-        return self._orders[key]
+    def reaches_output(self, route: Route) -> bool:
+        key = _route_key(route)
+        if key not in self._reachability:
+            self._reachability[key] = self._tree_for(route).reaches(self.outputs[route.side])
+        return self._reachability[key]
 
 
 def _queue(routes: list[Route], walks: _Walks) -> Iterator[Candidate]:
@@ -281,8 +367,8 @@ def _select(
 ) -> tuple[set[Key], bool]:
     """Round robin over changes in ID order, each taking its shortest path not yet taken.
 
-    Stops at the first new path past the limit, so paths beyond it are never generated.
-    The flag says whether every path was seen, i.e. the kept paths are all of them.
+    Stops consuming streams at the first new path past the limit. The flag says whether every
+    path was seen, i.e. the kept paths are all of them.
     """
     queues = [_queue(placed[change_id], walks) for change_id in sorted(placed)]
     kept: set[Key] = set()
@@ -323,11 +409,16 @@ def impact_paths(
 ) -> ImpactResult:
     """One shortest path per (change, route, output node), grouped when the edges match.
 
-    With a limit, at most that many paths are generated, every change's shortest first.
+    With a limit, candidate streams stop once one extra unique path proves truncation. Only the
+    selected paths become ImpactPath objects; each requested BFS layer is sorted by path ID.
     """
+    if limit is not None and limit < 0:
+        raise ValueError("impact path limit must be non-negative")
     walks = _Walks(graphs, {side: output_nodes(graphs[side], facts[side]) for side in graphs})
     placed: dict[str, list[Route]] = {}
     unplaced = display_only = 0
+    route_examples: dict[RouteKey, Route] = {}
+    route_changes: dict[RouteKey, dict[str, set[str]]] = {}
     for change in changes:
         if change.kind == "DISPLAY_CHANGED":
             display_only += 1
@@ -336,33 +427,52 @@ def impact_paths(
         if own is None:
             unplaced += 1
             continue
-        placed[change.change_id] = [own, *_reference_routes(change, graphs)]
-    kept, complete = _select(placed, walks, limit)
-    wanted: dict[tuple[Side, str], list[Key]] = {}
-    for key in kept:
-        wanted.setdefault((key[0], key[1]), []).append(key)
-    # Every change and note behind a kept path, also from changes the selection never reached.
-    found: dict[Key, tuple[str, list[GraphEdge], set[str], set[str]]] = {}
-    uncovered = 0
-    for change_id, routes in placed.items():
-        reaches = covered = False
+        routes = [own, *_reference_routes(change, graphs)]
+        placed[change.change_id] = routes
         for route in routes:
-            ends = walks.ends(route).keys()
-            reaches = reaches or bool(walks.outputs[route.side] & ends)
-            for end in ends:
-                for key in wanted.get((route.side, end), []):
-                    edges = walks.edges(route, end)
-                    if tuple(edge.edge_id for edge in edges) != key[2]:
-                        continue
-                    _, _, change_ids, notes = found.setdefault(
-                        key, (route.start, edges, set(), set())
-                    )
-                    change_ids.add(change_id)
-                    if route.note is not None:
-                        notes.add(route.note)
-                    covered = True
-        if reaches and not covered:
-            uncovered += 1
+            route_key = _route_key(route)
+            route_examples.setdefault(route_key, route)
+            notes = route_changes.setdefault(route_key, {}).setdefault(change.change_id, set())
+            if route.note is not None:
+                notes.add(route.note)
+    kept, complete = _select(placed, walks, limit)
+    # A kept key can only be shared by its own start route or by a route that uses
+    # the key's first edge as its required first edge. Check those route signatures only.
+    edges_by_id = {
+        side: {edge.edge_id: edge for edge in graph.edges} for side, graph in graphs.items()
+    }
+    found: dict[Key, tuple[str, list[GraphEdge], set[str], set[str]]] = {}
+    covered_changes: set[str] = set()
+    for key in kept:
+        side, end, edge_ids = key
+        if edge_ids:
+            first = edges_by_id[side].get(edge_ids[0])
+            if first is None:
+                continue
+            route_keys = [
+                (side, first.source_node_id, None),
+                (side, first.source_node_id, first.edge_id),
+            ]
+        else:
+            route_keys = [(side, end, None)]
+        for route_key in route_keys:
+            changes_for_route = route_changes.get(route_key)
+            if not changes_for_route:
+                continue
+            route = route_examples[route_key]
+            edges = walks.edges(route, end)
+            if edges is None or tuple(edge.edge_id for edge in edges) != edge_ids:
+                continue
+            _, _, change_ids, notes = found.setdefault(key, (route.start, edges, set(), set()))
+            change_ids.update(changes_for_route)
+            covered_changes.update(changes_for_route)
+            for route_notes in changes_for_route.values():
+                notes.update(route_notes)
+    uncovered = sum(
+        1
+        for change_id, routes in placed.items()
+        if change_id not in covered_changes and any(walks.reaches_output(route) for route in routes)
+    )
     paths = [
         _path(side, start, edges, sorted(change_ids), sorted(notes), facts[side], task_id)
         for (side, _, _), (start, edges, change_ids, notes) in sorted(found.items())

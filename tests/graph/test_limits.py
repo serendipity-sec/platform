@@ -4,11 +4,11 @@ from typing import Any
 import pytest
 
 import flowdelta.graph.impact as impact
-from flowdelta.contracts import Handoff
+from flowdelta.contracts import Handoff, SourceLocation
 from flowdelta.graph import AnalysisLimits, analyze
 from flowdelta.graph.control import DATA_ORIGIN
 from flowdelta.ingestion import json_bytes
-from flowdelta.pipeline_contracts import AnalysisBundle, ImpactPath, SemanticGraph
+from flowdelta.pipeline_contracts import AnalysisBundle, GraphEdge, ImpactPath, SemanticGraph
 from flowdelta.pipeline_io import read_handoff, read_pipeline_examples, validate_pipeline
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -41,6 +41,30 @@ def field_flows(graph: SemanticGraph) -> list[str]:
     return [
         edge.edge_id for edge in graph.edges if edge.extensions.get(DATA_ORIGIN) == "FIELD_FLOW"
     ]
+
+
+def control_edge(source: str, target: str) -> GraphEdge:
+    return GraphEdge(
+        edge_id=f"control-{source}-{target}",
+        source_node_id=source,
+        target_node_id=target,
+        relation="CONTROL",
+        output_port=0,
+        input_port=0,
+        evidence=[SourceLocation(artifact_id="workflow", json_pointer="/connections")],
+        basis="STATIC_POSSIBILITY",
+    )
+
+
+@pytest.mark.parametrize("field", ["max_workflow_nodes", "max_snapshot_nodes", "max_impact_paths"])
+def test_analysis_limits_reject_negative_values(field: str) -> None:
+    with pytest.raises(ValueError, match=field):
+        AnalysisLimits(**{field: -1})
+
+
+def test_impact_paths_rejects_negative_limit() -> None:
+    with pytest.raises(ValueError, match="non-negative"):
+        impact.impact_paths([], {}, {}, "task-1", limit=-1)
 
 
 def with_priority_threshold(handoff: Handoff, threshold: int) -> Handoff:
@@ -169,6 +193,28 @@ def test_paths_past_the_limit_are_never_built(monkeypatch: pytest.MonkeyPatch) -
     # Nine paths exist; only the two kept ones are generated.
     assert sorted(built) == sorted(path.path_id for path in result.impact_paths)
     assert len(built) == 2
+
+
+def test_candidate_generation_stops_after_first_path_past_the_limit() -> None:
+    node_ids = [f"n{index:03}" for index in range(50)]
+    graph = SemanticGraph(
+        node_ids=node_ids,
+        edges=[
+            control_edge(left, right) for left, right in zip(node_ids, node_ids[1:], strict=False)
+        ],
+        limitations=[],
+    )
+    walks = impact._Walks({"after": graph}, {"after": set(node_ids)})
+    route = impact.Route("after", node_ids[0], None, None)
+
+    kept, complete = impact._select({"change-1": [route]}, walks, 2)
+
+    assert len(kept) == 2
+    assert complete is False
+    route_order = walks._orders[("after", node_ids[0], None)]
+    # The third candidate proves truncation; later BFS layers are never expanded.
+    assert [len(layer) for layer in route_order._candidate_layers] == [1, 1, 1]
+    assert len(walks._trees[("after", node_ids[0])].predecessors) == 3
 
 
 def test_workflow_node_limit_skips_field_flow_and_impact_paths() -> None:
