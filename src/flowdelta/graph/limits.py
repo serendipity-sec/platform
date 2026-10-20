@@ -19,15 +19,6 @@ class AnalysisLimits:
     max_snapshot_nodes: int = 300
     max_impact_paths: int = 20
 
-    def __post_init__(self) -> None:
-        for name, value in (
-            ("max_workflow_nodes", self.max_workflow_nodes),
-            ("max_snapshot_nodes", self.max_snapshot_nodes),
-            ("max_impact_paths", self.max_impact_paths),
-        ):
-            if value < 0:
-                raise ValueError(f"{name} must be non-negative")
-
 
 DEFAULT_LIMITS = AnalysisLimits()
 
