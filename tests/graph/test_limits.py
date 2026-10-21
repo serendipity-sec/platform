@@ -4,11 +4,17 @@ from typing import Any
 import pytest
 
 import flowdelta.graph.impact as impact
-from flowdelta.contracts import Handoff
+from flowdelta.contracts import Handoff, SourceLocation
 from flowdelta.graph import AnalysisLimits, analyze
 from flowdelta.graph.control import DATA_ORIGIN
 from flowdelta.ingestion import json_bytes
-from flowdelta.pipeline_contracts import AnalysisBundle, ImpactPath, SemanticGraph
+from flowdelta.pipeline_contracts import (
+    AnalysisBundle,
+    Change,
+    GraphEdge,
+    ImpactPath,
+    SemanticGraph,
+)
 from flowdelta.pipeline_io import read_handoff, read_pipeline_examples, validate_pipeline
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -124,34 +130,117 @@ def with_renamed_split(handoff: Handoff) -> Handoff:
     return handoff.model_copy(update={"after": handoff.after.model_copy(update={"nodes": nodes})})
 
 
-def round_robin(paths: list[ImpactPath], limit: int) -> list[str]:
-    """The selection rule over all paths: by change ID, each change's next shortest path."""
-    queues = [
-        sorted(
-            (path for path in paths if change_id in path.change_ids),
-            key=lambda path: (len(path.edge_ids), path.path_id),
-        )
-        for change_id in sorted({item for path in paths for item in path.change_ids})
-    ]
-    kept: list[str] = []
-    for rank in range(max(len(queue) for queue in queues)):
-        for queue in queues:
-            if rank < len(queue) and queue[rank].path_id not in kept and len(kept) < limit:
-                kept.append(queue[rank].path_id)
-    return sorted(kept)
-
-
 @pytest.mark.parametrize("limit", range(11))
-def test_budgeted_generation_keeps_what_selecting_from_all_paths_keeps(limit: int) -> None:
+def test_budgeted_generation_keeps_paths_of_the_full_result(limit: int) -> None:
     handoff = with_renamed_split(with_priority_threshold(load("support-triage"), 4))
     every = analyze(handoff, AnalysisLimits(max_impact_paths=1000)).impact_paths
     assert len(every) == 9
     result = analyze(handoff, AnalysisLimits(max_impact_paths=limit))
-    assert sorted(path.path_id for path in result.impact_paths) == round_robin(every, limit)
+    assert len(result.impact_paths) == min(limit, 9)
     # The same paths, each still listing every change behind it.
     same = {path.path_id: path for path in every}
     assert all(path == same[path.path_id] for path in result.impact_paths)
     assert record(result)["impact_paths"]["complete"] is (limit >= 9)
+    # Every change takes a turn before any second path, so each first keeps one of its shortest.
+    changes = sorted({item for path in every for item in path.change_ids})
+    if limit >= len(changes):
+        for change_id in changes:
+            shortest = min(len(path.edge_ids) for path in every if change_id in path.change_ids)
+            assert any(
+                change_id in path.change_ids and len(path.edge_ids) == shortest
+                for path in result.impact_paths
+            )
+
+
+def node_change(node_id: str) -> Change:
+    location = SourceLocation(artifact_id="wf-1", json_pointer="/nodes/0/parameters/value")
+    return Change(
+        change_id=f"change-{node_id}",
+        node_id=node_id,
+        kind="PARAMETER_CHANGED",
+        before_value=1,
+        after_value=2,
+        before_source=location,
+        after_source=location,
+    )
+
+
+def control_edge(source: str, target: str) -> GraphEdge:
+    return GraphEdge(
+        edge_id=f"control-{source}-{target}",
+        source_node_id=source,
+        target_node_id=target,
+        relation="CONTROL",
+        output_port=0,
+        input_port=0,
+        evidence=[SourceLocation(artifact_id="wf-1", json_pointer="/connections")],
+        basis="STATIC_POSSIBILITY",
+    )
+
+
+def counted_candidates(
+    monkeypatch: pytest.MonkeyPatch, graph: SemanticGraph, start: str, limit: int
+) -> tuple[impact.ImpactResult, list[str]]:
+    """Run one change at start; every node is an output (no semantics). Returns built ends."""
+    built: list[str] = []
+    original = impact._candidate
+
+    def counting(route: impact.Route, search: Any, end: str) -> impact.Candidate:
+        built.append(end)
+        return original(route, search, end)
+
+    monkeypatch.setattr(impact, "_candidate", counting)
+    graphs: dict[impact.Side, SemanticGraph] = {"before": graph, "after": graph}
+    result = impact.impact_paths(
+        [node_change(start)], graphs, {"before": {}, "after": {}}, "task-1", limit
+    )
+    return result, built
+
+
+def test_candidates_stop_at_the_first_path_past_the_limit_on_a_chain(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    nodes = [f"n{index:02}" for index in range(50)]
+    edges = [control_edge(left, right) for left, right in zip(nodes, nodes[1:], strict=False)]
+    graph = SemanticGraph(node_ids=nodes, edges=edges, limitations=[])
+    result, built = counted_candidates(monkeypatch, graph, "n00", 2)
+    assert [len(path.edge_ids) for path in result.paths] == [0, 1]
+    assert result.complete is False
+    # Two kept and the third that shows there are more; the other 47 are never built.
+    assert built == ["n00", "n01", "n02"]
+
+
+def test_candidates_stop_at_the_first_path_past_the_limit_on_a_wide_node(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    leaves = [f"leaf-{index:02}" for index in range(50)]
+    edges = [control_edge("hub", leaf) for leaf in leaves]
+    graph = SemanticGraph(node_ids=["hub", *leaves], edges=edges, limitations=[])
+    result, built = counted_candidates(monkeypatch, graph, "hub", 3)
+    assert len(result.paths) == 3
+    assert result.complete is False
+    # Fifty paths of one edge tie; candidates are still built one at a time, in edge-ID order.
+    assert built == ["hub", "leaf-00", "leaf-01", "leaf-02"]
+
+
+def test_candidates_cover_everything_when_the_limit_is_not_reached(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    leaves = [f"leaf-{index:02}" for index in range(5)]
+    edges = [control_edge("hub", leaf) for leaf in leaves]
+    graph = SemanticGraph(node_ids=["hub", *leaves], edges=edges, limitations=[])
+    result, built = counted_candidates(monkeypatch, graph, "hub", 20)
+    assert len(result.paths) == 6
+    assert result.complete is True
+    assert sorted(built) == sorted(["hub", *leaves])
+
+
+@pytest.mark.parametrize("field", ["max_workflow_nodes", "max_snapshot_nodes", "max_impact_paths"])
+def test_negative_limits_are_refused(field: str) -> None:
+    with pytest.raises(ValueError, match=field):
+        AnalysisLimits(**{field: -1})
+    with pytest.raises(ValueError, match="non-negative"):
+        impact.impact_paths([], {}, {}, "task-1", -1)
 
 
 def test_paths_past_the_limit_are_never_built(monkeypatch: pytest.MonkeyPatch) -> None:
