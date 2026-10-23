@@ -24,7 +24,7 @@ def _forbid_internal_retrieval(monkeypatch, *, allow_planner_retrieval=False):
     if not allow_planner_retrieval:
         modules.append(planner)
     for module in modules:
-        for name in ("retrieve", "_retrieve"):
+        for name in ("retrieve", "_retrieve", "_retrieve_cards", "_retrieve_snapshot"):
             monkeypatch.setattr(module, name, forbidden, raising=False)
 
 
