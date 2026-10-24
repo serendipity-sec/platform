@@ -1,10 +1,14 @@
 """Explicit-input orchestration over existing A/B/C APIs; no case-specific oracle."""
 
+import sys
+import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
 from flowdelta import __version__
+from flowdelta.artifact_io import write_new_bytes
 from flowdelta.graph import analyze
 from flowdelta.ingestion import (
     InputError,
@@ -19,23 +23,40 @@ from flowdelta.knowledge import load_cards, write_plan
 from flowdelta.module_outputs import read_module_outputs
 from flowdelta.pipeline_bundle import write_module_bundle
 from flowdelta.pipeline_contracts import TemplateCatalog
+from flowdelta.pipeline_io import read_manifest
 from flowdelta.runtime.executor import PlanExecutor
+from flowdelta.runtime.order_lookup import CommandRunner, subprocess_runner
 from flowdelta.runtime.preflight import check_fresh_output, read_plan_bundle
 
 
-def _code_hashes() -> dict[str, str]:
+def _code_hashes(repo: Path) -> dict[str, str]:
     root = Path(__file__).parent
-    names = [
-        "pipeline_runner.py",
-        "input_repository.py",
-        "fixed_profile.py",
-        "handoff.py",
-        "graph/analyze.py",
-        "knowledge/planner.py",
-        "runtime/executor.py",
-        "pipeline_bundle.py",
-    ]
-    return {name: digest((root / name).read_bytes()) for name in names}
+    hashes = {
+        f"src/flowdelta/{path.relative_to(root).as_posix()}": digest(path.read_bytes())
+        for path in sorted(root.rglob("*.py"))
+    }
+    for path in sorted((repo / "runtime").rglob("*")):
+        if path.is_file() and "__pycache__" not in path.parts:
+            hashes[path.relative_to(repo).as_posix()] = digest(path.read_bytes())
+    for name in ("pyproject.toml", "uv.lock", "tools/check_profiled_order.py"):
+        if (repo / name).is_file():
+            hashes[name] = digest((repo / name).read_bytes())
+    return hashes
+
+
+def _save_summary(target: Path, summary: dict[str, Any]) -> None:
+    write_new_bytes(target / "summary.json", json_bytes(summary))
+
+
+def _allocated_runs(target: Path) -> list[dict[str, Any]]:
+    records = []
+    for path in sorted((target / "execution/runs").glob("*/allocation.json")):
+        try:
+            value = parse_json(_read_local(path.parent, path.name))
+            records.append({key: value[key] for key in ("run_id", "side", "attempt_number")})
+        except (InputError, KeyError, OSError):
+            continue
+    return records
 
 
 def run_pipeline(
@@ -48,6 +69,8 @@ def run_pipeline(
     cards: Path,
     output: Path,
     execute: bool = False,
+    runner: CommandRunner = subprocess_runner,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
     """Prepare by default. Execution always delegates registration and hash checks to C."""
     repo = repo.resolve(strict=True)
@@ -74,7 +97,9 @@ def run_pipeline(
     }
     stage = "input"
     try:
-        summary["entrypoint_source_hashes"] = _code_hashes()
+        stages[stage] = "RUNNING"
+        summary["source_hashes"] = _code_hashes(repo)
+        summary["source_tree_sha256"] = digest(json_bytes(summary["source_hashes"]))
         repository = FileInputRepository(target / "inputs")
         record = repository.save(case, profile, expected_profile_sha256=profile_sha256)
         handoff = repository.get(record)
@@ -85,6 +110,7 @@ def run_pipeline(
         stages[stage] = "SUCCEEDED"
 
         stage = "analysis"
+        stages[stage] = "RUNNING"
         analysis = analyze(handoff)
         producers = target / "producers"
         producers.mkdir()
@@ -93,9 +119,11 @@ def run_pipeline(
         summary["analysis_id"] = analysis.analysis_id
         summary["analysis_origin"] = analysis.authorship.origin
         summary["analysis_limitations"] = analysis.limitations
+        summary["analysis_graph_limits"] = analysis.extensions.get("flowdelta.graph.limits")
         stages[stage] = "SUCCEEDED"
 
         stage = "plan"
+        stages[stage] = "RUNNING"
         # Capture the catalog once. The planner and bundle see these same bytes.
         catalog_data = _read_local(catalog.absolute().parent.resolve(strict=True), catalog.name)
         parsed_catalog = parse_file_model(TemplateCatalog, parse_json(catalog_data))
@@ -108,14 +136,21 @@ def run_pipeline(
         plan = write_plan(handoff, analysis, parsed_cards, parsed_catalog, producers / "plan.json")
         for name in ("plan.json", "retrieval.json", "kb-snapshot.json"):
             sources[name] = producers / name
-        summary["retrieval_id"] = parse_json((producers / "retrieval.json").read_bytes())[
-            "retrieval_id"
-        ]
         plan_bundle = target / "plan-bundle"
         write_module_bundle(handoff_dir, sources, plan_bundle)
         validation = read_module_outputs(plan_bundle)
         if validation["runtime_record_coverage"] != "NOT_SUPPLIED":
             raise InputError("PIPELINE_UNEXPECTED_PRIOR_EXECUTION")
+        frozen_manifest, frozen_docs = read_manifest(plan_bundle)
+        frozen_manifest_hash = digest(_read_local(plan_bundle, "manifest.json"))
+        # Final publication uses precisely the bundle consumed by C, not mutable producers.
+        sources = {
+            ref.path: plan_bundle / ref.path
+            for ref in frozen_manifest.artifacts
+            if not ref.path.startswith("input/")
+        }
+        handoff_dir = plan_bundle / "input"
+        summary["retrieval_id"] = frozen_docs["retrieval.json"]["retrieval_id"]
         summary.update(
             plan_id=plan.plan_id,
             plan_origin=plan.authorship.origin,
@@ -127,9 +162,10 @@ def run_pipeline(
 
         if execute:
             stage = "execution"
+            stages[stage] = "RUNNING"
             runtime_dir = target / "execution"
             checked_handoff, checked_plan, checked_catalog = read_plan_bundle(plan_bundle)
-            runs = PlanExecutor(plan_bundle, repo).execute_plan(
+            runs = PlanExecutor(plan_bundle, repo, runner=runner, sleep=sleep).execute_plan(
                 checked_handoff, checked_plan, checked_catalog, runtime_dir
             )
             if not runs:
@@ -142,6 +178,8 @@ def run_pipeline(
                     "execution_status": run.execution_status,
                     "collection_status": run.artifacts.collection_status,
                     "cleanup_status": run.cleanup_status,
+                    "error_code": run.error_code,
+                    "failed_phase": run.extensions.get("flowdelta.failed_phase"),
                 }
                 for run in runs
             ]
@@ -162,6 +200,13 @@ def run_pipeline(
             )
 
         stage = "bundle"
+        stages[stage] = "RUNNING"
+        current_manifest, _ = read_manifest(plan_bundle)
+        if (
+            current_manifest != frozen_manifest
+            or digest(_read_local(plan_bundle, "manifest.json")) != frozen_manifest_hash
+        ):
+            raise InputError("PIPELINE_PLAN_BUNDLE_CHANGED")
         final_bundle = target / "bundle"
         manifest = write_module_bundle(handoff_dir, sources, final_bundle)
         summary["contract_validation"] = read_module_outputs(final_bundle)
@@ -175,6 +220,7 @@ def run_pipeline(
         )
     except (InputError, OSError) as exc:
         stages[stage] = "FAILED"
+        summary["failed_stage"] = stage
         summary["status"] = "FAILED"
         summary["error"] = exc.code if isinstance(exc, InputError) else "PIPELINE_IO_ERROR"
         if isinstance(exc, InputError):
@@ -182,9 +228,22 @@ def run_pipeline(
         raise InputError("PIPELINE_IO_ERROR") from exc
     except Exception as exc:
         stages[stage] = "FAILED"
+        summary["failed_stage"] = stage
         summary["status"] = "FAILED"
         summary["error"] = "PIPELINE_INTERNAL_ERROR"
         raise InputError("PIPELINE_INTERNAL_ERROR") from exc
+    except BaseException:
+        stages[stage] = "INTERRUPTED"
+        summary.update(status="INTERRUPTED", failed_stage=stage, error="PIPELINE_INTERRUPTED")
+        raise
     finally:
-        (target / "summary.json").write_bytes(json_bytes(summary))
+        original_error = sys.exception()
+        try:
+            summary["allocated_runs"] = _allocated_runs(target)
+            _save_summary(target, summary)
+        except (InputError, OSError):
+            if original_error is not None:
+                original_error.add_note("PIPELINE_SUMMARY_WRITE_FAILED")
+            else:
+                raise InputError("PIPELINE_SUMMARY_WRITE_FAILED") from None
     return summary

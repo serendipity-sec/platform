@@ -17,7 +17,7 @@ def inputs(tmp_path, example="order-lookup"):
     source = Path(shutil.copytree(EXAMPLE.parent / example, tmp_path / "input"))
     profile = freeze_profile(load_case(source), profile_id="test", revision="1")
     profile_path = tmp_path / "profile.json"
-    write_profile(profile, profile_path)
+    write_profile(profile, profile_path, input_root=source)
     reference = EXAMPLE.parent / "contracts" / example
     return dict(
         repo=tmp_path,
@@ -75,7 +75,7 @@ def test_missing_kb_evidence_is_not_reported_as_success(tmp_path):
 
 def test_unregistered_template_never_bypasses_c_preflight(tmp_path):
     options = inputs(tmp_path, "support-triage")
-    with pytest.raises(InputError):
+    with pytest.raises(InputError, match="^TEMPLATE_NOT_REGISTERED$"):
         run_pipeline(**options, execute=True)
     summary = json.loads((options["output"] / "summary.json").read_bytes())
     assert summary["stages"]["plan"] == "SUCCEEDED"
@@ -130,3 +130,53 @@ def test_unexpected_stage_failure_is_recorded_without_input_values(tmp_path, mon
     data = (options["output"] / "summary.json").read_text()
     assert "private-input-must-not-appear" not in data
     assert json.loads(data)["stages"]["analysis"] == "FAILED"
+
+
+def test_private_parent_of_workspace_is_allowed(tmp_path):
+    workspace = tmp_path / "private" / "workspace"
+    workspace.mkdir(parents=True)
+    assert run_pipeline(**inputs(workspace))["status"] == "PREPARED"
+
+
+def test_interrupt_is_not_reported_as_not_run(tmp_path, monkeypatch):
+    from flowdelta import pipeline_runner
+
+    class InterruptedExecutor:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def execute_plan(self, *args):
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(pipeline_runner, "PlanExecutor", InterruptedExecutor)
+    options = inputs(tmp_path)
+    with pytest.raises(KeyboardInterrupt):
+        run_pipeline(**options, execute=True)
+    summary = json.loads((options["output"] / "summary.json").read_bytes())
+    assert summary["status"] == "INTERRUPTED"
+    assert summary["stages"]["execution"] == "INTERRUPTED"
+    assert summary["failed_stage"] == "execution"
+
+
+def test_code_provenance_covers_transitive_execution_sources(tmp_path):
+    result = run_pipeline(**inputs(tmp_path))
+    paths = result["source_hashes"]
+    assert "src/flowdelta/runtime/preflight.py" in paths
+    assert "src/flowdelta/graph/data_flow.py" in paths
+    assert "src/flowdelta/knowledge/retrieval.py" in paths
+
+
+def test_published_example_identifies_current_implementation_bytes():
+    from flowdelta.ingestion import digest, json_bytes
+
+    root = Path(__file__).parents[1]
+    folder = root / "examples/module-outputs/profiled-runner"
+    summary_bytes = (folder / "summary.json").read_bytes()
+    summary = json.loads(summary_bytes)
+    verification = json.loads((folder / "verification.json").read_bytes())
+    assert summary["status"] == "EXECUTED"
+    assert digest(summary_bytes) == verification["summary_sha256"]
+    assert summary["bundle_manifest_sha256"] == verification["bundle_manifest_sha256"]
+    for name, checksum in summary["source_hashes"].items():
+        assert digest((root / name).read_bytes()) == checksum, name
+    assert digest(json_bytes(summary["source_hashes"])) == summary["source_tree_sha256"]

@@ -1,34 +1,42 @@
 {
-  "bundle_manifest_sha256": "de34b7572a9468d2bdee5164461f4aad450764b392698cf65137b41b256e716a",
+  "bundle_manifest_sha256": "953be240e1a913bc9a9aa94086ec5eb8698383b9ba2dd038c2383c4e25d8c5cf",
   "n8n_claw_full_runtime_verified": false,
   "observations": [
     {
       "checks": {
-        "fresh_initial_state": true,
-        "one_owned_order_read": true,
-        "orders_unchanged": true,
-        "response_matches_preexisting_expectation": true,
-        "runtime_collection_cleanup_complete": true
+        "cleanup_complete": true,
+        "collection_complete": true,
+        "execution_succeeded": true,
+        "expected_input": true,
+        "expected_response": true,
+        "final_state_owned": true,
+        "fresh_state": true,
+        "one_owned_read": true,
+        "orders_unchanged": true
       },
-      "run_id": "run-d8959c9e6b034803a598d6264471eede",
-      "side": "before"
+      "run_id": "run-8b74c0dc70d74056af25b885f8795ec8",
+      "side": "after"
     },
     {
       "checks": {
-        "fresh_initial_state": true,
-        "one_owned_order_read": true,
-        "orders_unchanged": true,
-        "response_matches_preexisting_expectation": true,
-        "runtime_collection_cleanup_complete": true
+        "cleanup_complete": true,
+        "collection_complete": true,
+        "execution_succeeded": true,
+        "expected_input": true,
+        "expected_response": true,
+        "final_state_owned": true,
+        "fresh_state": true,
+        "one_owned_read": true,
+        "orders_unchanged": true
       },
-      "run_id": "run-be0448a032354a42a85dc727b8b77d1e",
-      "side": "after"
+      "run_id": "run-0d6475151d6a4dd8b80e3d5a841fa792",
+      "side": "before"
     }
   ],
   "passed": true,
   "preexisting_expected_sha256": "36a79fc4cd6e93f2d32c0e6393557a6da3b27277f12acf5c1c40446b72dd1cde",
   "scope": "REGISTERED_SYNTHETIC_ORDER_LOOKUP_ONLY",
   "security_outcome": null,
-  "summary_sha256": "899f31894cf3ab137c3be556b3a3c4ab1bc3dcf89e40131db1545a5c6c20e76e",
-  "verification_script_sha256": "9f85d135cd2ce6bc5cb09d1deb048b173a0bab9b6843655e0ceb2774ad197582"
+  "summary_sha256": "e83c9d24fe526416a2740d1cbecf1b4e2fb24d89c727a9dbe947b79519b20d1b",
+  "verification_source_sha256": "eb703f51cfda1f7607708319144540d5ab5169bdc44d6d40f3cc4acb5e3dd44b"
 }
