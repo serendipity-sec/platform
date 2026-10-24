@@ -2,9 +2,9 @@
   "analysis_id": "analysis-order-lookup-example",
   "authorship": {
     "extensions": {},
-    "note": "Deterministic local planning; analysis origin=CONTRACT_EXAMPLE.",
+    "note": "Deterministic planning; analysis origin=CONTRACT_EXAMPLE.",
     "origin": "MODULE_OUTPUT",
-    "producer": "flowdelta.knowledge/1.0.1",
+    "producer": "flowdelta.knowledge/1.1.0",
     "schema_version": "0.4.0"
   },
   "excluded_reasons": {},
@@ -47,15 +47,17 @@
     "changed_fields": [
       "responseBody"
     ],
+    "context_fingerprint": "c46179dd13d03357363aa31d8cda64f38276d3c5d57c3794d3f85109bd78a46a",
     "node_types": [
       "n8n-nodes-base.httpRequest",
       "n8n-nodes-base.respondToWebhook",
       "n8n-nodes-base.webhook"
     ],
-    "rules_version": "flowdelta.knowledge/1.0.1",
+    "result_fingerprint": "3a3456b84744ca7f418a68385f4a14d532f511ea66406abb25f0b6c1e438fa1b",
+    "rules_version": "flowdelta.knowledge/1.1.0",
     "runtime_profile": "order-lookup-local-v1",
     "task_id": "order-lookup"
   },
-  "retrieval_id": "retrieval-abb57e31348b7b38c6aa5c2e",
+  "retrieval_id": "retrieval-78648ad0ea14a7c4d14a948d",
   "schema_version": "0.4.0"
 }

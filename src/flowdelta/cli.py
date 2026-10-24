@@ -9,14 +9,52 @@ from flowdelta import SCHEMA_VERSION, __version__
 from flowdelta.contracts import Handoff
 from flowdelta.handoff import build_handoff, write_handoff
 from flowdelta.ingestion import InputError, json_bytes, load_case
+from flowdelta.knowledge.cli import app as knowledge_app
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
+app.add_typer(knowledge_app, name="knowledge")
 
 
 @app.command()
 def version() -> None:
     """Print package and contract versions."""
     typer.echo(f"flowdelta {__version__}; schema {SCHEMA_VERSION}")
+
+
+@app.command("embedding-smoke")
+def embedding_smoke() -> None:
+    """Create safe local sample vectors and report profile metadata, never vector contents."""
+    from flowdelta.knowledge.embedding_settings import EmbeddingSettings
+
+    try:
+        provider = EmbeddingSettings.from_environment().provider()
+        document = provider.embed(
+            ["Synthetic advisory record: affected component version 1.2.0."], "DOCUMENT"
+        )
+        query = provider.embed(["Synthetic workflow change may expose an internal memo."], "QUERY")
+        if document.profile.model_digest != query.profile.model_digest:
+            raise InputError("EMBEDDING_MODEL_REVISION_CHANGED")
+        typer.echo(
+            json_bytes(
+                {
+                    "status": "EMBEDDING_READY",
+                    "provider": query.profile.provider,
+                    "model": query.profile.model,
+                    "model_digest": query.profile.model_digest,
+                    "dimensions": query.profile.dimensions,
+                    "document_profile_id": document.profile.profile_id,
+                    "query_profile_id": query.profile.profile_id,
+                    "document_vectors": len(document.vectors),
+                    "query_vectors": len(query.vectors),
+                    "sample_content_emitted": False,
+                    "vector_contents_emitted": False,
+                }
+            ).decode(),
+            nl=False,
+        )
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
 
 
 @app.command()
@@ -129,13 +167,14 @@ def freeze_profile_command(
     from flowdelta.fixed_profile import freeze_profile, profile_digest, write_profile
 
     try:
+        loaded = load_case(bundle)
         profile = freeze_profile(
-            load_case(bundle),
+            loaded,
             profile_id=profile_id,
             revision=revision,
             additional_fixed_node_ids=tuple(fixed_node or []),
         )
-        write_profile(profile, out)
+        write_profile(profile, out, input_root=loaded.root)
         typer.echo(json_bytes({"profile_sha256": profile_digest(profile)}).decode(), nl=False)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
@@ -149,10 +188,11 @@ def check_profile_command(
     profile_sha256: Annotated[str, typer.Option(help="Trusted canonical profile digest.")],
 ) -> None:
     """Check fixed inputs without running the workflow or accepting a new baseline."""
-    from flowdelta.fixed_profile import load_profiled_handoff
+    from flowdelta.fixed_profile import read_profile, validate_profile
 
     try:
-        _, _, result = load_profiled_handoff(bundle, profile, expected_sha256=profile_sha256)
+        pinned = read_profile(profile, expected_sha256=profile_sha256)
+        result = validate_profile(load_case(bundle), pinned)
         typer.echo(json_bytes(result.model_dump(mode="json")).decode(), nl=False)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)

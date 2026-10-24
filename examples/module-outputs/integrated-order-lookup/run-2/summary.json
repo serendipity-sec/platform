@@ -6,7 +6,7 @@
   "bundle": "bundle",
   "case_id": "order-lookup-demo-001",
   "change_count": 1,
-  "comparison_run_id": "comparison-7b84367427c0404da7a7610255183799",
+  "comparison_run_id": "comparison-a5d8551e9b2d43378ce4ac20708c3539",
   "contract_validation": {
     "analysis_producer": "flowdelta-graph 0.1.0",
     "case_id": "order-lookup-demo-001",
@@ -16,7 +16,7 @@
     ],
     "missing_artifact_kinds": [],
     "outcome": null,
-    "plan_producer": "flowdelta.knowledge/1.0.1",
+    "plan_producer": "flowdelta.knowledge/1.1.0",
     "run_count": 2,
     "runtime_record_coverage": "CHECKED",
     "schema_version": "0.4.0",
@@ -41,7 +41,7 @@
         },
         "status_code": 200
       },
-      "run_id": "run-7bd69fb691df47d5a37dfec9233c446e",
+      "run_id": "run-32afaa811b9449669bf0b411615fab98",
       "side": "before"
     },
     {
@@ -62,11 +62,11 @@
         },
         "status_code": 200
       },
-      "run_id": "run-e6ee61d4c88e44419ddd9e8fa89d377a",
+      "run_id": "run-221f1ab2731d43e2968d114f251f0909",
       "side": "after"
     }
   ],
-  "plan_id": "plan-cddf98e368d7f75ca5d3f142",
+  "plan_id": "plan-67968e2d05c9fa987f094112",
   "plan_origin": "MODULE_OUTPUT",
   "schema_version": "0.4.0",
   "security_outcome": null

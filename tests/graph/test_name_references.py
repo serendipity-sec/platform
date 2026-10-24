@@ -7,6 +7,7 @@ from pydantic import JsonValue
 
 from flowdelta.contracts import Handoff, NormalizedWorkflow
 from flowdelta.graph import analyze
+from flowdelta.graph.control import DATA_ORIGIN
 from flowdelta.graph.references import pointer_encloses
 from flowdelta.pipeline_contracts import AnalysisBundle, Change
 from flowdelta.pipeline_io import read_handoff
@@ -67,7 +68,7 @@ def data_edges(bundle: AnalysisBundle, side: str) -> set[tuple[str, str]]:
     return {
         (edge.source_node_id, edge.target_node_id)
         for edge in graph.edges
-        if edge.relation == "DATA"
+        if edge.extensions.get(DATA_ORIGIN) == "NAME_REFERENCE"
     }
 
 

@@ -11,14 +11,19 @@ from flowdelta.ingestion import LoadedCase, digest, json_bytes
 from flowdelta.normalize import structural_digest
 
 
+def configuration_node(node: dict[str, JsonValue]) -> dict[str, JsonValue]:
+    """The shared node configuration projection; only display coordinates are omitted."""
+    return {key: value for key, value in node.items() if key != "position"}
+
+
 def configuration_workflow(document: dict[str, JsonValue]) -> dict[str, JsonValue]:
     """Only node display coordinates are omitted. All unknown fields remain significant."""
     result = deepcopy(document)
     nodes = result.get("nodes")
     if isinstance(nodes, list):
-        for node in nodes:
-            if isinstance(node, dict):
-                node.pop("position", None)
+        result["nodes"] = [
+            configuration_node(node) if isinstance(node, dict) else node for node in nodes
+        ]
     return result
 
 
