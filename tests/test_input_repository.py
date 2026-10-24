@@ -21,7 +21,7 @@ def repository(request, tmp_path):
 def setup_profile(bundle: Path, tmp_path: Path):
     profile = freeze_profile(load_case(bundle), profile_id="test", revision="1.0.0")
     path = tmp_path / "profile.json"
-    write_profile(profile, path)
+    write_profile(profile, path, input_root=bundle)
     return path, profile_digest(profile)
 
 
@@ -117,7 +117,7 @@ def test_two_profile_revisions_do_not_share_namespace(bundle, tmp_path):
     first = repo.save(bundle, profile_path, expected_profile_sha256=checksum)
     second_profile = freeze_profile(load_case(bundle), profile_id="test", revision="2.0.0")
     path = tmp_path / "profile2.json"
-    write_profile(second_profile, path)
+    write_profile(second_profile, path, input_root=bundle)
     second = repo.save(bundle, path, expected_profile_sha256=profile_digest(second_profile))
     assert first.record_id != second.record_id
     assert repo.get(first).case.case_id == repo.get(second).case.case_id
@@ -137,6 +137,8 @@ def test_interrupted_write_has_no_complete_record(bundle, tmp_path, monkeypatch)
     profile, checksum = setup_profile(bundle, tmp_path)
     repo = FileInputRepository(tmp_path / "repository")
 
+    original = input_repository.write_handoff
+
     def fail(*args):
         raise OSError("simulated write failure")
 
@@ -144,12 +146,103 @@ def test_interrupted_write_has_no_complete_record(bundle, tmp_path, monkeypatch)
     with pytest.raises(InputError, match="INPUT_REPOSITORY_WRITE_ERROR"):
         repo.save(bundle, profile, expected_profile_sha256=checksum)
     assert not list(repo.root.glob("*/record.json"))
-    with pytest.raises(InputError, match="INPUT_NOT_FOUND_OR_INCOMPLETE"):
-        repo.save(bundle, profile, expected_profile_sha256=checksum)
+    monkeypatch.setattr(input_repository, "write_handoff", original)
+    record = repo.save(bundle, profile, expected_profile_sha256=checksum)
+    assert repo.get(record).case.case_id == record.case_id
 
 
 def test_record_schema_matches_export():
-    import json
-
     path = Path(__file__).parents[1] / "schemas/input-record-v1.schema.json"
-    assert json.loads(path.read_bytes()) == InputRecord.model_json_schema()
+    assert path.read_bytes() == json_bytes(InputRecord.model_json_schema())
+
+
+def test_memory_accepts_valid_per_document_depth(bundle, tmp_path):
+    nested = "leaf"
+    for _ in range(62):
+        nested = {"n": nested}
+    edit_document(bundle, "task.json", lambda v: v.update(extensions={"test.deep": nested}))
+    profile, checksum = setup_profile(bundle, tmp_path)
+    repo = MemoryInputRepository()
+    record = repo.save(bundle, profile, expected_profile_sha256=checksum)
+    assert repo.get(record).task.extensions["test.deep"] == nested
+
+
+def test_file_checks_readability_before_publication(bundle, tmp_path, monkeypatch):
+    from flowdelta import pipeline_io
+
+    profile, checksum = setup_profile(bundle, tmp_path)
+    repo = FileInputRepository(tmp_path / "repository")
+    monkeypatch.setattr(pipeline_io, "MAX_TOTAL_BYTES", 100)
+    with pytest.raises(InputError, match="BUNDLE_SIZE_LIMIT"):
+        repo.save(bundle, profile, expected_profile_sha256=checksum)
+    assert not list(repo.root.glob("input-*"))
+
+
+def test_relative_repository_root_survives_cwd_change(bundle, tmp_path, monkeypatch):
+    profile, checksum = setup_profile(bundle, tmp_path)
+    monkeypatch.chdir(tmp_path)
+    repo = FileInputRepository(Path("repository"))
+    record = repo.save(bundle, profile, expected_profile_sha256=checksum)
+    monkeypatch.chdir(bundle)
+    assert repo.get(record).case.case_id == record.case_id
+
+
+def test_concurrent_identical_saves_publish_one_complete_record(bundle, tmp_path, monkeypatch):
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    from flowdelta import input_repository
+
+    profile, checksum = setup_profile(bundle, tmp_path)
+    repo = FileInputRepository(tmp_path / "repository")
+    barrier = Barrier(2)
+    original = input_repository.write_handoff
+
+    def delayed(*args):
+        barrier.wait(timeout=10)
+        return original(*args)
+
+    monkeypatch.setattr(input_repository, "write_handoff", delayed)
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [
+            pool.submit(repo.save, bundle, profile, expected_profile_sha256=checksum)
+            for _ in range(2)
+        ]
+        records = [future.result() for future in futures]
+    assert records[0] == records[1]
+    assert repo.get(records[0]).case.case_id == records[0].case_id
+    assert len(list(repo.root.iterdir())) == 1
+
+
+def test_missing_record_code_is_identical_between_adapters(bundle, tmp_path):
+    profile, checksum = setup_profile(bundle, tmp_path)
+    record = MemoryInputRepository().save(bundle, profile, expected_profile_sha256=checksum)
+    root = tmp_path / "empty"
+    root.mkdir()
+    for repo in (MemoryInputRepository(), FileInputRepository(root)):
+        with pytest.raises(InputError, match="^INPUT_NOT_FOUND$"):
+            repo.get(record)
+
+
+def test_receipt_write_failure_removes_only_own_stage_and_is_retryable(
+    bundle, tmp_path, monkeypatch
+):
+    from flowdelta import input_repository
+
+    profile, checksum = setup_profile(bundle, tmp_path)
+    repo = FileInputRepository(tmp_path / "repository")
+    repo.root.mkdir()
+    unrelated = repo.root / "unrelated"
+    unrelated.write_text("preserve")
+    with monkeypatch.context() as patch:
+
+        def fail(*args):
+            raise OSError("injected receipt failure")
+
+        patch.setattr(input_repository, "write_new_bytes", fail)
+        with pytest.raises(InputError, match="INPUT_REPOSITORY_WRITE_ERROR"):
+            repo.save(bundle, profile, expected_profile_sha256=checksum)
+    assert list(repo.root.iterdir()) == [unrelated]
+    record = repo.save(bundle, profile, expected_profile_sha256=checksum)
+    assert repo.get(record).case.case_id == record.case_id
+    assert unrelated.read_text() == "preserve"

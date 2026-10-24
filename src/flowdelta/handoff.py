@@ -6,6 +6,7 @@ import tempfile
 from pathlib import Path
 from typing import Literal
 
+from flowdelta.artifact_io import write_new_bytes
 from flowdelta.contracts import (
     ArtifactRef,
     DependencyWorkflowsIndex,
@@ -226,7 +227,7 @@ def write_handoff(loaded: LoadedCase, handoff: Handoff, output_dir: Path) -> Pat
                         )
                     )
             manifest = Manifest(schema_version="0.4.0", artifacts=refs)
-            (stage / "manifest.json").write_bytes(json_bytes(manifest.model_dump(mode="json")))
+            write_new_bytes(stage / "manifest.json", json_bytes(manifest.model_dump(mode="json")))
             # Reserve destination, then move files into that reservation without replacing it.
             # A COMPLETE marker is unnecessary: manifest is transferred last as the commit marker.
             target.mkdir(exist_ok=False)
