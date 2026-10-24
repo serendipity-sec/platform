@@ -85,6 +85,33 @@
 |---|---|---|---|
 | ibam28/customer-support-ai-automation-n8n | `71fee7067364e9ac139a55bca3683c15b5ec2c16` | [원본](https://github.com/ibam28/customer-support-ai-automation-n8n/tree/71fee7067364e9ac139a55bca3683c15b5ec2c16), [MIT LICENSE](https://github.com/ibam28/customer-support-ai-automation-n8n/blob/71fee7067364e9ac139a55bca3683c15b5ec2c16/LICENSE) | 선택한 workflow JSON·정상 입력 예시·업무 설명을 무수정 보존. Copyright (c) 2026 Bambang Saputra Jaya와 허가문을 함께 배포. 파일별 SHA-256·획득 URL 기록. 실행·배포 실적은 독립 확인하지 않음 |
 
+## B 지식 저장 기반 — 2026-10-17
+
+도입 전에 아래 공식 라이선스 원문을 확인했다. 라이브러리는 무수정 패키지로 사용하며
+고지와 라이선스 원문을 보존한다. psycopg는 교체 가능한 동적 Python 의존성으로 사용한다.
+DB 이미지는 로컬 개발용이며 실제 pull한 digest를 runtime 설정에 고정한다.
+
+| 구성요소 | 버전 | 직접 확인한 원문 | 의무사항 |
+|---|---|---|---|
+| SQLAlchemy | 2.0.44 | [MIT](https://raw.githubusercontent.com/sqlalchemy/sqlalchemy/rel_2_0_44/LICENSE) | 저작권·허가문 보존 |
+| Alembic | 1.16.5 | [MIT](https://raw.githubusercontent.com/sqlalchemy/alembic/rel_1_16_5/LICENSE) | 저작권·허가문 보존 |
+| psycopg / psycopg-binary | 3.2.12 | [LGPL-3.0](https://raw.githubusercontent.com/psycopg/psycopg/3.2.12/LICENSE.txt) | 라이선스·고지 보존, 교체 가능하게 배포, 배포 시 해당 라이브러리 소스 제공 의무 확인 |
+| pgvector | 0.8.1 | [PostgreSQL License](https://raw.githubusercontent.com/pgvector/pgvector/v0.8.1/LICENSE) | 고지 보존 |
+| PostgreSQL | 17.8, pgvector 이미지 digest `3e8b3adfd27b5707128f60956f62a793c3c9326ea8cfaf0eab7adccb5d700b21` | [PostgreSQL License](https://raw.githubusercontent.com/postgres/postgres/REL_17_8/COPYRIGHT) | 이미지에 포함된 PostgreSQL·OS 고지 보존 |
+
+확인자: Codex. 전이 의존성과 wheel 해시는 `uv.lock`으로 고정한다.
+
+## 로컬 임베딩 런타임 — 2026-10-18
+
+아래 구성요소는 B 임베딩 adapter의 로컬 실험에 사용한다. Docker 이미지는 tag와 digest를 함께
+고정했다. Ollama model tag는 공급자에서 갱신될 수 있으므로 애플리케이션은 실행 때 `/api/ps`에서
+실행 중인 모델의 실제 digest를 읽어 embedding profile에 기록한다.
+
+| 구성요소 | 고정 버전/식별자 | 출처·라이선스 원문 | 사용 방식 |
+|---|---|---|---|
+| Ollama official Docker image | `0.35.1`; `sha256:292ee7945dfc3d5840a181f3ab86fedb1e66703e02c8af98b50f4da56b7e278c` | [Ollama v0.35.1 MIT LICENSE](https://github.com/ollama/ollama/blob/v0.35.1/LICENSE) | 로컬 HTTP 임베딩 서버. Docker Compose에서 localhost에만 port publish |
+| Qwen3-Embedding-0.6B (Ollama library) | `qwen3-embedding:0.6b`; 2026-10-18 pull digest `sha256:ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d` | [Ollama model](https://ollama.com/library/qwen3-embedding:0.6b), [Hugging Face model card 및 Apache-2.0 메타데이터](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) | 로컬 임베딩. 문서에는 지시문을 붙이지 않고 query에는 버전이 지정된 검색 지시문을 붙임. adapter가 L2 단위 길이로 정규화하며 가중치는 저장소에 복사하지 않음 |
+
 ## 우리 코드의 공개 라이선스 결정 상태
 
 ⬜ 미정. 재사용할 엔진들의 라이선스를 확인한 뒤 결정합니다.

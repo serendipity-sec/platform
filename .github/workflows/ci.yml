@@ -27,15 +27,15 @@ jobs:
         with:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
-      - run: uv sync --frozen --extra baseline
-      - run: uv run --frozen --extra baseline ruff check src tests
-      - run: uv run --frozen --extra baseline ruff format --check src tests
-      - run: uv run --frozen --extra baseline mypy
-      - run: uv run --frozen --extra baseline pytest
-      - run: uv run --frozen --extra baseline flowdelta inspect-case examples/order-lookup
-      - run: uv run --frozen --extra baseline flowdelta check-examples examples/contracts/order-lookup
-      - run: uv run --frozen --extra baseline flowdelta inspect-case examples/support-triage
-      - run: uv run --frozen --extra baseline flowdelta check-examples examples/contracts/support-triage
+      - run: uv sync --frozen --extra baseline --extra knowledge
+      - run: uv run --frozen --extra baseline --extra knowledge ruff check src tests
+      - run: uv run --frozen --extra baseline --extra knowledge ruff format --check src tests
+      - run: uv run --frozen --extra baseline --extra knowledge mypy
+      - run: uv run --frozen --extra baseline --extra knowledge pytest
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta inspect-case examples/order-lookup
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-examples examples/contracts/order-lookup
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta inspect-case examples/support-triage
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-examples examples/contracts/support-triage
       - run: uv build
 
   normal-n8n-baseline:
@@ -52,12 +52,12 @@ jobs:
         with:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
-      - run: uv sync --frozen --extra baseline
+      - run: uv sync --frozen --extra baseline --extra knowledge
       - run: docker build --tag flowdelta-order-fixture:0.2.0 --file runtime/order-lookup/fixture.Dockerfile .
-      - run: uv run --frozen --extra baseline flowdelta baseline --out var/ci-baseline
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta baseline --out var/ci-baseline
       - run: docker build --tag flowdelta-order-fixture:0.3.0 --file runtime/order-lookup/fixture.Dockerfile .
-      - run: uv run --frozen --extra baseline flowdelta demo-order-lookup --out var/ci-integrated-order
-      - run: uv run --frozen --extra baseline flowdelta check-pipeline var/ci-integrated-order/bundle
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta demo-order-lookup --out var/ci-integrated-order
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-pipeline var/ci-integrated-order/bundle
 
   normal-node-conformance:
     runs-on: ubuntu-latest
@@ -73,12 +73,12 @@ jobs:
         with:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
-      - run: uv sync --frozen --extra baseline
-      - run: uv run --frozen --extra baseline flowdelta conformance --out var/ci-conformance
+      - run: uv sync --frozen --extra baseline --extra knowledge
+      - run: uv run --frozen --extra baseline --extra knowledge flowdelta conformance --out var/ci-conformance
       # Preserve registered synthetic fixture diagnostics, never private state or credentials.
       - name: Preserve node conformance evidence
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: node-conformance-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 7
@@ -95,3 +95,70 @@ jobs:
             var/ci-conformance/*/publish-*.log
             var/ci-conformance/*/stdout.log
             var/ci-conformance/*/stderr.log
+
+  knowledge-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: pgvector/pgvector:0.8.1-pg17@sha256:3e8b3adfd27b5707128f60956f62a793c3c9326ea8cfaf0eab7adccb5d700b21
+        env:
+          POSTGRES_USER: flowdelta_admin
+          POSTGRES_PASSWORD: ci-admin-only
+          POSTGRES_DB: flowdelta_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U flowdelta_admin -d flowdelta_test"
+          --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      FLOWDELTA_KB_TEST_DATABASE_URL: postgresql+psycopg://flowdelta_app:ci-app-only@127.0.0.1:5432/flowdelta_test
+      FLOWDELTA_KB_TEST_MIGRATION_URL: postgresql+psycopg://flowdelta_admin:ci-admin-only@127.0.0.1:5432/flowdelta_test
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version-file: .python-version
+      - run: python -m pip install uv==0.9.30
+      - run: uv sync --frozen --extra knowledge
+      - name: Create application role
+        run: |
+          uv run --frozen --extra knowledge python - <<'PY'
+          import os
+          import psycopg
+          from psycopg import sql
+
+          admin_url = os.environ["FLOWDELTA_KB_TEST_MIGRATION_URL"].replace(
+              "+psycopg://", "://", 1
+          )
+          with psycopg.connect(admin_url) as connection:
+              connection.execute(
+                  sql.SQL("CREATE ROLE {} LOGIN PASSWORD {}").format(
+                      sql.Identifier("flowdelta_app"), sql.Literal("ci-app-only")
+                  )
+              )
+          PY
+      - run: uv run --frozen --extra knowledge pytest tests/knowledge/test_database.py
+
+  cli-without-knowledge-extra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      PYTHONUTF8: "1"
+      UV_NO_PROGRESS: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version-file: .python-version
+      - run: python -m pip install uv==0.9.30
+      - run: uv sync --frozen --extra baseline
+      - run: >-
+          uv run --frozen --extra baseline python -c
+          "import sys; import flowdelta.cli;
+          assert 'flowdelta.knowledge.planner' not in sys.modules;
+          assert 'sqlalchemy' not in sys.modules"
+      - run: uv run --frozen --extra baseline flowdelta version
