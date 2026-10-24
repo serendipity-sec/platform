@@ -2,12 +2,12 @@
   "allocated_runs": [
     {
       "attempt_number": 1,
-      "run_id": "run-8b74c0dc70d74056af25b885f8795ec8",
+      "run_id": "run-29375bf309cd483b863e64b75294983c",
       "side": "after"
     },
     {
       "attempt_number": 1,
-      "run_id": "run-0d6475151d6a4dd8b80e3d5a841fa792",
+      "run_id": "run-1ebdcfb48abd4f5297fdecbe4b8de21e",
       "side": "before"
     }
   ],
@@ -22,7 +22,7 @@
   ],
   "analysis_origin": "MODULE_OUTPUT",
   "bundle": "bundle",
-  "bundle_manifest_sha256": "953be240e1a913bc9a9aa94086ec5eb8698383b9ba2dd038c2383c4e25d8c5cf",
+  "bundle_manifest_sha256": "dfc7f5243fe7296139f3d73152703540978ce5b403f34ed03382f7b5d68af143",
   "case_id": "order-lookup-demo-001",
   "catalog_sha256": "286f926b92802ccec32e9800bdfba6cea9d16f3f6d71f2e6a304311e5b464bde",
   "contract_validation": {
@@ -56,7 +56,7 @@
   },
   "kb_sha256": "d0668162282dc7181e64f6c6e25314cf4753d044053fc078160504583607c2fb",
   "mode": "EXECUTE_REGISTERED",
-  "orchestration_id": "pipeline-bfdf4374ecc9454e83af4d978c16d06e",
+  "orchestration_id": "pipeline-ee39affce0c84bd190cec8200f9fd14d",
   "plan_id": "plan-fb731a0c0305c67f0ddb6cbd",
   "plan_origin": "MODULE_OUTPUT",
   "producer_version": "0.1.0",
@@ -71,7 +71,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-0d6475151d6a4dd8b80e3d5a841fa792",
+      "run_id": "run-1ebdcfb48abd4f5297fdecbe4b8de21e",
       "side": "before"
     },
     {
@@ -81,14 +81,14 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-8b74c0dc70d74056af25b885f8795ec8",
+      "run_id": "run-29375bf309cd483b863e64b75294983c",
       "side": "after"
     }
   ],
   "schema_version": "0.4.0",
   "security_outcome": null,
   "source_hashes": {
-    "pyproject.toml": "6e52f9095109341fc39be499d49e359977b770de4e26d97c0b75fb8375383e35",
+    "pyproject.toml": "d7aea587aa9f09e423c693c463dbff3b523bb0fe96b88d57b129c504e5a52126",
     "runtime/conformance/registry.json": "e8b1e86737501d80163cd5a6dd835bc6fe25cc3fcf02c62b2f65803a3a72dae9",
     "runtime/conformance/workflows/all-true.json": "ce38620af1c15d3803a0dabd1678386741e34322b3a68e9de45919104e4d9b95",
     "runtime/conformance/workflows/empty-batch.json": "1f9dfd4682d28ddf22c4214a9786d766f4c0e69a2311be8578c75a74fff1780d",
@@ -101,10 +101,10 @@
     "runtime/knowledge/init-app.sh": "350e02facd6e14cf5da264eb5c54e59581c98ce4d8f9b15daeb7bfc42d4b472c",
     "runtime/order-lookup/approved-inputs.json": "cf97ff12e762ed3e1063a68e0c6b71ac3e1102d8627d046740947eb133f82976",
     "runtime/order-lookup/compose.yaml": "4178631aff8393549a6fdde26fbf22dfd8e1c8e0deae7f0c925383ad1c785033",
-    "runtime/order-lookup/evidence/README.md": "9ebbe8b4df5fbba25935b5a760eb5b4d2856712f03faaa0ce4a70ce5c83b538a",
+    "runtime/order-lookup/evidence/README.md": "81327c88d34f5bcc953e34185332e0e57eaeef0302162425ef2653a3f74f8240",
     "runtime/order-lookup/evidence/local-2026-10-11.json": "a13f17ac949c708544c22a5f77fc6e2f9196506bcbd2149d58311f8526a604e6",
     "runtime/order-lookup/expected.json": "36a79fc4cd6e93f2d32c0e6393557a6da3b27277f12acf5c1c40446b72dd1cde",
-    "runtime/order-lookup/fixture.Dockerfile": "605e4330ee64b0f8f6e11d4447993d268f246eab561eac917280f3861dda9a14",
+    "runtime/order-lookup/fixture.Dockerfile": "cbdf2379d0643aee7fcf21ccafb5e3047f03253c1f5bb683ef41138232cdaec7",
     "runtime/order-lookup/inspect-nodes.js": "83330edd789a814e9953f0e0c4d22e19b5fa7e1da112d55c2371819718f42665",
     "runtime/order-lookup/inspect-readiness-nodes.js": "3ac9b34c7b0a0cbeeca92ffafbfd440605562e5c6dadbce5ba0d88862ab9d158",
     "runtime/order-lookup/node-metadata.json": "0164cdc49b23f77ae6002f6157832e2ad34fc90ab67eb0e879a1c47c055839f9",
@@ -187,9 +187,9 @@
     "src/flowdelta/semantics.py": "f5f224dab71a16c75fd5ddde95724074f278d8ead9359ba7f2a3cf8a132cc1c4",
     "src/flowdelta/snapshots.py": "bd4d90a064de1f3f018553f4537e1c60a27c9ee7d8acec47bcf836a59d05dda2",
     "tools/check_profiled_order.py": "1c7efd70290b29a0797d8cfaef3b2a37b4c88157f50d1087a90b1c61874f29f3",
-    "uv.lock": "d9e65245e406cf19744c49321bfc92092c437c7b3e6532f20bc9e0d44b6605e3"
+    "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
   },
-  "source_tree_sha256": "dd84abdae81bc120d918bf8d7b788fd4f7a1ed3d0cf0bc98e60dafd2a7fc84e0",
+  "source_tree_sha256": "8083ac8dcddc0304e8df35abcb24a5d956db80c8ac859c1dc584c337ac3d9a37",
   "stages": {
     "analysis": "SUCCEEDED",
     "bundle": "SUCCEEDED",

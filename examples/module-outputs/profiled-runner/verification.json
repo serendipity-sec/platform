@@ -1,5 +1,5 @@
 {
-  "bundle_manifest_sha256": "953be240e1a913bc9a9aa94086ec5eb8698383b9ba2dd038c2383c4e25d8c5cf",
+  "bundle_manifest_sha256": "dfc7f5243fe7296139f3d73152703540978ce5b403f34ed03382f7b5d68af143",
   "n8n_claw_full_runtime_verified": false,
   "observations": [
     {
@@ -14,7 +14,7 @@
         "one_owned_read": true,
         "orders_unchanged": true
       },
-      "run_id": "run-8b74c0dc70d74056af25b885f8795ec8",
+      "run_id": "run-29375bf309cd483b863e64b75294983c",
       "side": "after"
     },
     {
@@ -29,7 +29,7 @@
         "one_owned_read": true,
         "orders_unchanged": true
       },
-      "run_id": "run-0d6475151d6a4dd8b80e3d5a841fa792",
+      "run_id": "run-1ebdcfb48abd4f5297fdecbe4b8de21e",
       "side": "before"
     }
   ],
@@ -37,6 +37,6 @@
   "preexisting_expected_sha256": "36a79fc4cd6e93f2d32c0e6393557a6da3b27277f12acf5c1c40446b72dd1cde",
   "scope": "REGISTERED_SYNTHETIC_ORDER_LOOKUP_ONLY",
   "security_outcome": null,
-  "summary_sha256": "e83c9d24fe526416a2740d1cbecf1b4e2fb24d89c727a9dbe947b79519b20d1b",
+  "summary_sha256": "060e2eebb3d11e9daf129b08721d1cefafd0602e64ee054dc57d41f749b02b59",
   "verification_source_sha256": "eb703f51cfda1f7607708319144540d5ab5169bdc44d6d40f3cc4acb5e3dd44b"
 }
