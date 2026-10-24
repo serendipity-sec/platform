@@ -1,559 +1,856 @@
 {
-  "schema": "bounded-memory-observation-v1",
-  "runtime": {
-    "node": "v26.7.0",
-    "network": "none"
-  },
-  "scope": {
-    "original_tool_js": true,
-    "http_receiver": "SYNTHETIC",
-    "caller_context": "SYNTHETIC",
-    "full_workflow_run": false,
-    "llm_run": false,
-    "real_database": false,
-    "historical_deployment_reproduced": false
-  },
   "observations": [
     {
-      "version": "before-feature",
-      "relationship": "foreign",
-      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
-      "tool_present": false,
+      "context_lookups": [],
       "deleted": false,
-      "observation": "TOOL_ABSENT",
-      "passed": true
-    },
-    {
-      "version": "before-feature",
-      "relationship": "own",
-      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
-      "tool_present": false,
-      "deleted": false,
-      "observation": "TOOL_ABSENT",
-      "passed": true
-    },
-    {
-      "version": "before-feature",
-      "relationship": "admin",
-      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
-      "tool_present": false,
-      "deleted": false,
-      "observation": "TOOL_ABSENT",
-      "passed": true
-    },
-    {
-      "version": "feature",
-      "relationship": "foreign",
-      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "feature",
-      "relationship": "own",
-      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-a",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "feature",
-      "relationship": "admin",
-      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "before-fix",
-      "relationship": "foreign",
-      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "before-fix",
-      "relationship": "own",
-      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-a",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "before-fix",
-      "relationship": "admin",
-      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "first-fix",
-      "relationship": "foreign",
-      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
+      "execution_status": "NOT_RUN",
+      "expectation_match": true,
+      "expected_deleted": null,
       "final_state": [
         {
+          "entity_name": null,
           "id": 8,
-          "scope": "personal",
           "owner_user_id": "web:fixture-b",
-          "entity_name": null
+          "scope": "personal"
         }
       ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "observation": "TOOL_ABSENT",
+      "passed": true,
+      "relationship": "foreign",
+      "requests": [],
+      "scope": "SELECTED_NODE_ONLY",
+      "tool_present": false,
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
+    },
+    {
+      "context_lookups": [],
       "deleted": false,
-      "returned_error": true,
-      "requests": [
-        {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "GET",
-          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "first-fix",
-      "relationship": "own",
-      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-a",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "first-fix",
-      "relationship": "admin",
-      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "GET",
-          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content"
-        },
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "reverted",
-      "relationship": "foreign",
-      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "reverted",
-      "relationship": "own",
-      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-a",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "reverted",
-      "relationship": "admin",
-      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "before-september",
-      "relationship": "foreign",
-      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
+      "execution_status": "NOT_RUN",
+      "expectation_match": true,
+      "expected_deleted": null,
       "final_state": [
         {
+          "entity_name": null,
           "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
-      "deleted": false,
-      "returned_error": true,
-      "requests": [
-        {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "GET",
-          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "before-september",
-      "relationship": "own",
-      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
           "owner_user_id": "web:fixture-a",
-          "entity_name": null
+          "scope": "personal"
         }
       ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "before-september",
-      "relationship": "admin",
-      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca",
-      "tool_present": true,
+      "harness_violations": [],
       "initial_state": [
         {
+          "entity_name": null,
           "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
         }
       ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "GET",
-          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content"
-        },
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        }
-      ],
-      "passed": true
+      "observation": "TOOL_ABSENT",
+      "passed": true,
+      "relationship": "own",
+      "requests": [],
+      "scope": "SELECTED_NODE_ONLY",
+      "tool_present": false,
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
     },
     {
-      "version": "september",
-      "relationship": "foreign",
-      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-b",
-          "entity_name": null
-        }
-      ],
+      "context_lookups": [],
+      "deleted": false,
+      "execution_status": "NOT_RUN",
+      "expectation_match": true,
+      "expected_deleted": null,
       "final_state": [
         {
+          "entity_name": null,
           "id": 8,
-          "scope": "personal",
           "owner_user_id": "web:fixture-b",
-          "entity_name": null
+          "scope": "personal"
         }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "observation": "TOOL_ABSENT",
+      "passed": true,
+      "relationship": "admin",
+      "requests": [],
+      "scope": "SELECTED_NODE_ONLY",
+      "tool_present": false,
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "context_lookups": [
+        "Merge Input"
       ],
       "deleted": false,
-      "returned_error": true,
-      "requests": [
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": false,
+      "final_state": [
         {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "GET",
-          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content"
-        },
-        {
-          "method": "POST",
-          "path": "/rest/v1/tool_audit_log"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "september",
-      "relationship": "own",
-      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452",
-      "tool_present": true,
-      "initial_state": [
-        {
+          "entity_name": null,
           "id": 8,
-          "scope": "personal",
-          "owner_user_id": "web:fixture-a",
-          "entity_name": null
-        }
-      ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
-      "requests": [
-        {
-          "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
-        },
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        },
-        {
-          "method": "POST",
-          "path": "/rest/v1/tool_audit_log"
-        }
-      ],
-      "passed": true
-    },
-    {
-      "version": "september",
-      "relationship": "admin",
-      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452",
-      "tool_present": true,
-      "initial_state": [
-        {
-          "id": 8,
-          "scope": "personal",
           "owner_user_id": "web:fixture-b",
-          "entity_name": null
+          "scope": "personal"
         }
       ],
-      "final_state": [],
-      "deleted": true,
-      "returned_error": false,
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "foreign",
       "requests": [
         {
+          "host": "fixture.invalid",
           "method": "GET",
-          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name"
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
         },
         {
+          "host": "fixture.invalid",
           "method": "GET",
-          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content"
-        },
-        {
-          "method": "DELETE",
-          "path": "/rest/v1/memory_long?id=eq.8"
-        },
-        {
-          "method": "POST",
-          "path": "/rest/v1/tool_audit_log"
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
         }
       ],
-      "passed": true
+      "returned_error": true,
+      "returned_error_reason": "OWNERSHIP_DENIED",
+      "returned_error_sha256": "8c56a72891c67bbacb8fd4f247f6902ab350b02c96526a8704fba7f8ab2fc819",
+      "tool_present": true,
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+    },
+    {
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+    },
+    {
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "context_lookups": [],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "deleted": false,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": false,
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        }
+      ],
+      "returned_error": true,
+      "returned_error_reason": "OWNERSHIP_DENIED",
+      "returned_error_sha256": "8c56a72891c67bbacb8fd4f247f6902ab350b02c96526a8704fba7f8ab2fc819",
+      "tool_present": true,
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca"
+    },
+    {
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca"
+    },
+    {
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca"
+    },
+    {
+      "context_lookups": [
+        "Merge Input",
+        "Merge Input"
+      ],
+      "deleted": false,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": false,
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "POST",
+          "path": "/rest/v1/tool_audit_log",
+          "url_sha256": "c979a2c4c08cc1a88ee568e5682c756a23318a63d4634956f288dcb8424557c2"
+        }
+      ],
+      "returned_error": true,
+      "returned_error_reason": "OWNERSHIP_DENIED",
+      "returned_error_sha256": "bc18fb4b9c7726ba0f2c7f95686e6389e1244d8db7392604a11ba85a9f8bd653",
+      "tool_present": true,
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452"
+    },
+    {
+      "context_lookups": [
+        "Merge Input",
+        "Merge Input"
+      ],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "POST",
+          "path": "/rest/v1/tool_audit_log",
+          "url_sha256": "c979a2c4c08cc1a88ee568e5682c756a23318a63d4634956f288dcb8424557c2"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452"
+    },
+    {
+      "context_lookups": [
+        "Merge Input",
+        "Merge Input"
+      ],
+      "deleted": true,
+      "execution_status": "COMPLETED",
+      "expectation_match": true,
+      "expected_deleted": true,
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "passed": true,
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "POST",
+          "path": "/rest/v1/tool_audit_log",
+          "url_sha256": "c979a2c4c08cc1a88ee568e5682c756a23318a63d4634956f288dcb8424557c2"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452"
     }
   ],
-  "passed": true
+  "passed": true,
+  "runtime": {
+    "network": "none",
+    "node": "v26.7.0"
+  },
+  "schema": "bounded-memory-observation-v2",
+  "scope": {
+    "caller_context": "SYNTHETIC",
+    "full_workflow_run": false,
+    "historical_deployment_reproduced": false,
+    "http_receiver": "SYNTHETIC_SUBSET",
+    "llm_run": false,
+    "original_tool_js": true,
+    "real_database": false
+  }
 }
