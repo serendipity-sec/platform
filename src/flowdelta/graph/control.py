@@ -9,10 +9,16 @@ from flowdelta.pipeline_contracts import GraphEdge, SemanticGraph
 
 _IDENTIFIER = re.compile(r"^[A-Za-z0-9_.-]+$")
 
+# DATA edges come from two rules; consumers tell them apart by this extension.
+DATA_ORIGIN = "flowdelta.graph.data_origin"
+
 GRAPH_LIMITATIONS = [
-    "CONTROL 관계와 이름 참조 DATA 관계만 계산했다. "
-    "$json 필드 흐름·지시 영향·권한 관계와 영향 경로는 아직 계산하지 않았다.",
+    "CONTROL 관계와 DATA 관계(이름 참조·$json 필드 흐름)만 계산했다. "
+    "지시 영향·권한 관계는 아직 계산하지 않았다.",
     "정적 연결 가능성이며 실제 실행 경로를 관측한 자료가 아니다.",
+    f"DATA 간선의 종류는 extensions의 {DATA_ORIGIN}으로 구분한다. "
+    "NAME_REFERENCE의 target_fields는 참조 문자열의 JSON Pointer이고, "
+    "FIELD_FLOW의 source_fields·target_fields는 쓴·읽은 $json 필드다.",
 ]
 
 

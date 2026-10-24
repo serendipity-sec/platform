@@ -4,9 +4,9 @@
   "attempts_per_side": 1,
   "authorship": {
     "extensions": {},
-    "note": "Deterministic local planning; analysis origin=MODULE_OUTPUT.",
+    "note": "Deterministic planning; analysis origin=MODULE_OUTPUT.",
     "origin": "MODULE_OUTPUT",
-    "producer": "flowdelta.knowledge/1.0.1",
+    "producer": "flowdelta.knowledge/1.1.0",
     "schema_version": "0.4.0"
   },
   "before_snapshot_id": "snapshot-6c2c5c4df1dc8d596b13028ad0c2163ea848b58fbfd5f0f76b7e27b6ac2873c4",
@@ -45,22 +45,22 @@
       "schema_version": "0.4.0"
     }
   ],
-  "plan_id": "plan-cddf98e368d7f75ca5d3f142",
+  "plan_id": "plan-67968e2d05c9fa987f094112",
   "planner_metadata": {
     "retrieval_empty": false,
-    "rules_version": "flowdelta.knowledge/1.0.1",
+    "rules_version": "flowdelta.knowledge/1.1.0",
     "security_outcome": null,
     "selection": "ranked-card"
   },
   "retrieval_ref": {
-    "artifact_id": "retrieval-cddf98e368d7f75ca5d3f142",
+    "artifact_id": "retrieval-67968e2d05c9fa987f094112",
     "extensions": {},
     "kind": "generated",
     "media_type": "application/json",
     "path": "retrieval.json",
     "schema_version": "0.4.0",
-    "sha256": "7dad2ee9ea22977fd4105402e9f147b8fa04dcff3a3df56109cd379632911703",
-    "size_bytes": 1874
+    "sha256": "ac88c4733c4e3c3f59d99149390057babaea902abccf84176014e28e96e280f9",
+    "size_bytes": 2057
   },
   "schema_version": "0.4.0",
   "template_id": "normal-order-lookup",
