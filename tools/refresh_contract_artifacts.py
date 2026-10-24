@@ -10,7 +10,9 @@ from flowdelta.additional_examples import write_support_examples
 from flowdelta.contract_examples import write_contract_examples
 from flowdelta.contracts import ArtifactRef, Handoff, Manifest
 from flowdelta.core_adapters import ADAPTER_VERSION, ENGINE_VERSION, RUNTIME_DEFAULTS, VERSIONS
+from flowdelta.fixed_profile import FixedComparisonProfile
 from flowdelta.ingestion import digest, json_bytes
+from flowdelta.input_repository import InputRecord
 from flowdelta.pipeline_contracts import PipelineExamples
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,6 +61,8 @@ def main() -> None:
     save(ROOT / "runtime/order-lookup/approved-inputs.json", approved)
     save(ROOT / "schemas/input-0.4.0.schema.json", Handoff.model_json_schema())
     save(ROOT / "schemas/pipeline-0.4.0.schema.json", PipelineExamples.model_json_schema())
+    save(ROOT / "schemas/fixed-profile-v1.schema.json", FixedComparisonProfile.model_json_schema())
+    save(ROOT / "schemas/input-record-v1.schema.json", InputRecord.model_json_schema())
     subsets = {
         "set": "manual assignments; flat output names; explicit constants/current or named fields; optional input preservation",
         "if": "one strict case-sensitive string/number/boolean comparison; true port 0 and false port 1",

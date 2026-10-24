@@ -4,14 +4,21 @@ Profiles are trusted, separately pinned inputs, never part of a candidate's mani
 This gate reads declared configuration only; it does not approve runtime execution.
 """
 
-from copy import deepcopy
 from pathlib import Path
 from typing import Literal, Self
 
 from pydantic import Field, JsonValue, model_validator
 
-from flowdelta.contracts import ArtifactRef, Contract, Handoff, Identifier, NonEmpty, Sha256
-from flowdelta.dependencies import dependency_closure
+from flowdelta.artifact_io import write_new_bytes
+from flowdelta.contracts import (
+    ArtifactRef,
+    Contract,
+    Handoff,
+    Identifier,
+    NonEmpty,
+    Sha256,
+    SnapshotIndex,
+)
 from flowdelta.handoff import build_handoff
 from flowdelta.ingestion import (
     InputError,
@@ -25,7 +32,19 @@ from flowdelta.ingestion import (
     parse_model,
 )
 from flowdelta.normalize import normalize
-from flowdelta.snapshots import build_snapshots
+from flowdelta.snapshots import build_snapshots, configuration_node
+
+MODEL_PORTS = {"ai_languageModel", "ai_embedding", "ai_reranker"}
+MODEL_PREFIXES = tuple(
+    "@n8n/n8n-nodes-langchain." + name for name in ("lm", "embeddings", "reranker")
+)
+DIRECT_MODEL_TYPES = {
+    "@n8n/n8n-nodes-langchain.openAi",
+    "@n8n/n8n-nodes-langchain.anthropic",
+    "@n8n/n8n-nodes-langchain.googleGemini",
+    "@n8n/n8n-nodes-langchain.ollama",
+    "n8n-nodes-base.openAi",
+}
 
 
 class FixedComparisonProfile(Contract):
@@ -86,24 +105,34 @@ def _fixed_artifacts(loaded: LoadedCase) -> list[ArtifactRef]:
     )
 
 
-def _require_workflow_only(loaded: LoadedCase) -> None:
+def _require_workflow_only(loaded: LoadedCase) -> SnapshotIndex:
     if loaded.case.changed_axes != ["workflow"]:
         raise InputError("PROFILE_CHANGED_AXES_REJECTED")
     manifest = loaded.dependency_manifest
     if manifest is None:
         raise InputError("PROFILE_DEPENDENCIES_REQUIRED")
-    before = dependency_closure(manifest, "before")
-    after = dependency_closure(manifest, "after")
-    if set(manifest.before_roots) != set(manifest.after_roots) or before != after:
+    if set(manifest.before_roots) != set(manifest.after_roots):
         raise InputError("PROFILE_DEPENDENCIES_CHANGED")
-    if any(snapshot.dependency_limits for snapshot in build_snapshots(loaded).snapshots):
+    paths = [loaded.case.before_ref, loaded.case.after_ref]
+    paths.extend(item.path for item in manifest.dependencies if item.kind == "WORKFLOW")
+    for path in paths:
+        nodes = loaded.documents[path].get("nodes", [])
+        if isinstance(nodes, list) and any(
+            isinstance(node, dict)
+            and str(node.get("type", "")).rsplit(".", 1)[-1].casefold().startswith("mcpclient")
+            for node in nodes
+        ):
+            # The input contract has no binding from a client to its MCP_DESCRIPTOR.
+            # Even a declared descriptor cannot establish that this endpoint is pinned.
+            raise InputError("PROFILE_MCP_DEPENDENCY_UNSUPPORTED")
+    snapshots = build_snapshots(loaded)
+    if any(snapshot.dependency_limits for snapshot in snapshots.snapshots):
         raise InputError("PROFILE_DEPENDENCIES_UNRESOLVED")
+    return snapshots
 
 
 def _node_hash(node: dict[str, JsonValue]) -> str:
-    value = deepcopy(node)
-    value.pop("position", None)
-    return digest(json_bytes(value))
+    return digest(json_bytes(configuration_node(node)))
 
 
 def _dynamic(value: JsonValue) -> bool:
@@ -128,17 +157,20 @@ def _model_configuration(
     model_ids = {
         node.node_id
         for node in workflow.nodes
-        if node.node_type.startswith("@n8n/n8n-nodes-langchain.lm")
+        if node.node_type.startswith(MODEL_PREFIXES) or node.node_type in DIRECT_MODEL_TYPES
     }
     connections = []
     for edge in workflow.connections:
-        if "ai_languageModel" in (edge.source_output_type, edge.target_input_type):
+        if MODEL_PORTS.intersection((edge.source_output_type, edge.target_input_type)):
             # This is inventory, not a statement about control or execution direction.
             model_ids.add(edge.source_node_id)
             connections.append(edge.model_dump(mode="json", exclude={"source"}))
     for identity in model_ids:
         if _dynamic(nodes[identity].get("parameters", {})):
             raise InputError("PROFILE_DYNAMIC_MODEL_CONFIGURATION")
+    for identity in additional_ids:
+        if _dynamic(nodes[identity].get("parameters", {})):
+            raise InputError("PROFILE_DYNAMIC_FIXED_CONFIGURATION")
     return (
         {identity: _node_hash(nodes[identity]) for identity in sorted(model_ids)},
         digest(json_bytes(sorted(connections, key=json_bytes))),
@@ -154,7 +186,6 @@ def freeze_profile(
     additional_fixed_node_ids: tuple[str, ...] = (),
 ) -> FixedComparisonProfile:
     """Explicitly establish a baseline; validation never calls this automatically."""
-    _require_workflow_only(loaded)
     if len(set(additional_fixed_node_ids)) != len(additional_fixed_node_ids):
         raise InputError("PROFILE_DUPLICATE_FIXED_NODE")
     models, connections, additional = _model_configuration(
@@ -184,11 +215,8 @@ def freeze_profile(
 
 def validate_profile(loaded: LoadedCase, profile: FixedComparisonProfile) -> ProfileValidation:
     """Use a trusted profile; use read_profile at an untrusted file boundary."""
-    _require_workflow_only(loaded)
-    if (
-        loaded.case.family_id != profile.family_id
-        or _case_digest(loaded) != profile.case_contract_sha256
-    ):
+    snapshots = _require_workflow_only(loaded)
+    if _case_digest(loaded) != profile.case_contract_sha256:
         raise InputError("PROFILE_CASE_CONTRACT_CHANGED")
     if _fixed_artifacts(loaded) != profile.fixed_artifacts:
         raise InputError("PROFILE_FIXED_INPUT_CHANGED")
@@ -200,7 +228,7 @@ def validate_profile(loaded: LoadedCase, profile: FixedComparisonProfile) -> Pro
             raise InputError("PROFILE_MODEL_CONFIGURATION_CHANGED")
         if additional != profile.additional_fixed_nodes:
             raise InputError("PROFILE_FIXED_NODE_CHANGED")
-    before, after = build_snapshots(loaded).snapshots
+    before, after = snapshots.snapshots
     return ProfileValidation(
         profile_id=profile.profile_id,
         revision=profile.revision,
@@ -223,10 +251,13 @@ def read_profile(path: Path, *, expected_sha256: str) -> FixedComparisonProfile:
     return profile
 
 
-def write_profile(profile: FixedComparisonProfile, output: Path) -> None:
+def write_profile(profile: FixedComparisonProfile, output: Path, *, input_root: Path) -> None:
     try:
-        with output.open("xb") as stream:
-            stream.write(json_bytes(profile.model_dump(mode="json")))
+        target = output.absolute().parent.resolve(strict=True) / output.name
+        source = input_root.resolve(strict=True)
+        if target.is_relative_to(source) or source.is_relative_to(target):
+            raise InputError("OUTPUT_OVERLAPS_INPUT")
+        write_new_bytes(target, json_bytes(profile.model_dump(mode="json")))
     except FileExistsError as exc:
         raise InputError("OUTPUT_ALREADY_EXISTS") from exc
     except OSError as exc:
@@ -240,4 +271,6 @@ def load_profiled_handoff(
     profile = read_profile(profile_path, expected_sha256=expected_sha256)
     loaded = load_case(bundle)
     result = validate_profile(loaded, profile)
-    return loaded, build_handoff(loaded), result
+    handoff = build_handoff(loaded)
+    handoff.snapshots.extensions["flowdelta.fixed_profile"] = result.model_dump(mode="json")
+    return loaded, handoff, result

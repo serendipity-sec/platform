@@ -38,10 +38,17 @@ profile 생성과 해시는 [FIXED_PROFILE.md](FIXED_PROFILE.md)를 따른다.
   원본 manifest 해시를 보존한다. 같은 case의 '최신 결과'를 읽는 API는 없다.
 - 파일 adapter는 기존 manifest와 원본 bytes를 보존한다. 조회 시 각 파일 해시와
   호출자가 보관한 기록의 Handoff 해시를 확인한다. record나 manifest를 고쳐도 정상 조회로 바뀌지 않는다.
-- 파일 저장 중 실패하면 `record.json` 없는 미완료 폴더가 남을 수 있다. 완료 기록으로 읽거나
-  자동 덮어쓰기하지 않는다. 원인을 확인한 뒤 해당 로컬 실패 자료를 별도로 정리해야 한다.
+- 파일 저장은 비공개 staging에서 Handoff를 작성한 뒤 실제 조회 함수로 깊이·파일별/전체 용량·해시를
+  확인한다. 영수증과 manifest를 fsync한 후 완성된 디렉터리를 원자적으로 공개한다.
+  실패한 staging은 정리되므로 재시도할 수 있다. 프로세스 강제 종료로 남은 staging은 조회 대상이 아니다.
+  동시 저장에서 같은 내용은 같은 기록을 돌려주고 다른 내용은 충돌로 거부한다.
+  Windows는 디렉터리 fsync를 지원하지 않으며 전원 손실 내구성을 보장하지 않는다.
+- 상대 root도 생성 시 절대 경로로 고정한다. 두 adapter 모두 없는 기록은 `INPUT_NOT_FOUND`다.
+  파일 adapter에서 기존 기록 폴더가 손상되어 영수증이 없으면 `INPUT_NOT_FOUND_OR_INCOMPLETE`다.
 - 메모리 adapter는 원문 bytes를 보존하고 조회 때 새 모델을 반환한다. 소비자의 모델 수정은
-  저장된 입력을 바꾸지 않는다. `get_artifact`는 전달된 artifact ID만 읽는다.
+  저장된 입력을 바꾸지 않는다. 이미 검증된 Handoff의 깊은 복사본을 저장하므로 전체를 하나의
+  JSON으로 감싸서 발생하는 불필요한 깊이 제한을 적용하지 않는다.
+  `get_artifact`는 전달된 artifact ID만 읽고 반환 직전 bytes도 다시 확인한다.
 
 ## 공용 DB로 이어갈 범위
 

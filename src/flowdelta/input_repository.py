@@ -1,9 +1,13 @@
 """Immutable profiled inputs for exact-ID handoff, with memory and local file adapters."""
 
+import os
+import shutil
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, Protocol
 
+from flowdelta.artifact_io import sync_directory, write_new_bytes
 from flowdelta.contracts import ArtifactRef, Contract, Handoff, Identifier, NonEmpty, Sha256
 from flowdelta.fixed_profile import load_profiled_handoff
 from flowdelta.handoff import write_handoff
@@ -75,7 +79,6 @@ def _check_key(record: InputRecord) -> None:
 
 
 def _check_handoff(record: InputRecord, handoff: Handoff) -> Handoff:
-    _check_key(record)
     snapshots = handoff.snapshots.snapshots
     if (
         digest(_payload(handoff)) != record.handoff_sha256
@@ -99,7 +102,7 @@ def _artifact(handoff: Handoff, artifact_id: str) -> ArtifactRef:
 @dataclass(frozen=True)
 class _MemoryEntry:
     record: bytes
-    handoff: bytes
+    handoff: Handoff
     sources: dict[str, bytes]
 
 
@@ -112,7 +115,9 @@ class MemoryInputRepository:
     def save(self, bundle: Path, profile: Path, *, expected_profile_sha256: str) -> InputRecord:
         loaded, handoff, record = _prepare(bundle, profile, expected_profile_sha256)
         entry = _MemoryEntry(
-            json_bytes(record.model_dump(mode="json")), _payload(handoff), dict(loaded.raw)
+            json_bytes(record.model_dump(mode="json")),
+            handoff.model_copy(deep=True),
+            dict(loaded.raw),
         )
         existing = self._entries.setdefault(record.record_id, entry)
         if existing != entry:
@@ -126,7 +131,8 @@ class MemoryInputRepository:
             raise InputError("INPUT_NOT_FOUND")
         if entry.record != json_bytes(record.model_dump(mode="json")):
             raise InputError("INPUT_RECORD_INTEGRITY_MISMATCH")
-        handoff = parse_file_model(Handoff, parse_json(entry.handoff))
+        # Input depth is bounded per document, not on an artificial enclosing Handoff JSON.
+        handoff = entry.handoff.model_copy(deep=True)
         return _check_handoff(record, handoff)
 
     def get_artifact(self, record: InputRecord, artifact_id: str) -> bytes:
@@ -145,29 +151,51 @@ class FileInputRepository:
     """
 
     def __init__(self, root: Path) -> None:
-        self.root = root
+        self.root = root.resolve()
+
+    def _existing(self, record: InputRecord) -> InputRecord:
+        if self._read_record(record) != record:
+            raise InputError("INPUT_ID_CONFLICT")
+        self.get(record)
+        return record
 
     def save(self, bundle: Path, profile: Path, *, expected_profile_sha256: str) -> InputRecord:
         loaded, handoff, record = _prepare(bundle, profile, expected_profile_sha256)
         try:
-            root = self.root.resolve()
+            root = self.root
             if root.is_relative_to(loaded.root) or loaded.root.is_relative_to(root):
                 raise InputError("OUTPUT_OVERLAPS_INPUT")
             root.mkdir(parents=True, exist_ok=True)
             target = root / record.record_id
             if target.is_symlink() or target.is_junction():
                 raise InputError("LINK_REFERENCE_REJECTED")
+            if target.exists():
+                return self._existing(record)
+            stage = Path(tempfile.mkdtemp(prefix=".input-stage-", dir=root))
             try:
-                target.mkdir(exist_ok=False)
-            except FileExistsError:
-                previous = self._read_record(record)
-                if previous != record:
-                    raise InputError("INPUT_ID_CONFLICT") from None
-                self.get(record)  # Revalidate existing bytes, not just the receipt.
-                return record
-            write_handoff(loaded, handoff, target / "handoff")
-            with (target / "record.json").open("xb") as stream:
-                stream.write(json_bytes(record.model_dump(mode="json")))
+                write_handoff(loaded, handoff, stage / "handoff")
+                # Exercise the consumer's actual per-file, depth and total-size limits.
+                _check_handoff(record, read_handoff(stage / "handoff"))
+                write_new_bytes(stage / "record.json", json_bytes(record.model_dump(mode="json")))
+                for directory in sorted(stage.rglob("*"), reverse=True):
+                    if directory.is_dir():
+                        sync_directory(directory)
+                sync_directory(stage)
+                try:
+                    os.rename(stage, target)
+                except OSError:
+                    # A concurrent winner has published a complete nonempty directory.
+                    # rename cannot replace it on either Windows or POSIX.
+                    if target.exists():
+                        return self._existing(record)
+                    raise
+                sync_directory(root)
+            finally:
+                if stage.exists():
+                    # Only this invocation's staging directory is eligible for removal.
+                    assert stage.resolve().parent == root
+                    assert stage.name.startswith(".input-stage-")
+                    shutil.rmtree(stage)
             return record
         except OSError as exc:
             raise InputError("INPUT_REPOSITORY_WRITE_ERROR") from exc
@@ -185,7 +213,12 @@ class FileInputRepository:
             data = _read_local(root, f"{record.record_id}/record.json")
         except InputError as exc:
             if exc.code == "MISSING_ARTIFACT":
-                raise InputError("INPUT_NOT_FOUND_OR_INCOMPLETE") from exc
+                code = (
+                    "INPUT_NOT_FOUND_OR_INCOMPLETE"
+                    if (root / record.record_id).exists()
+                    else "INPUT_NOT_FOUND"
+                )
+                raise InputError(code) from exc
             raise
         return parse_file_model(InputRecord, parse_json(data))
 
