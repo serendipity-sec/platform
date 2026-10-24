@@ -48,7 +48,7 @@ def test_existing_families_round_trip_and_real_a_consumption(tmp_path: Path, exa
     source = Path(shutil.copytree(EXAMPLE.parent / example, tmp_path / "input"))
     profile = frozen(source)
     path = tmp_path / "profile.json"
-    write_profile(profile, path)
+    write_profile(profile, path, input_root=source)
     pin = profile_digest(profile)
     assert read_profile(path, expected_sha256=pin) == profile
     loaded, handoff, receipt = load_profiled_handoff(source, path, expected_sha256=pin)
@@ -230,13 +230,13 @@ def test_unresolved_workflow_dependency_is_rejected(bundle: Path) -> None:
 
 def test_profile_schema_matches_export() -> None:
     path = EXAMPLE.parents[1] / "schemas" / "fixed-profile-v1.schema.json"
-    assert json.loads(path.read_bytes()) == FixedComparisonProfile.model_json_schema()
+    assert path.read_bytes() == json_bytes(FixedComparisonProfile.model_json_schema())
 
 
 def test_profile_symlink_rejected(bundle: Path, tmp_path: Path) -> None:
     profile = frozen(bundle)
     target = tmp_path / "target.json"
-    write_profile(profile, target)
+    write_profile(profile, target, input_root=bundle)
     path = tmp_path / "profile.json"
     try:
         path.symlink_to(target)
@@ -263,9 +263,9 @@ def test_forged_profile_wrong_pin_and_existing_output_rejected(
 ) -> None:
     profile = frozen(bundle)
     path = tmp_path / "profile.json"
-    write_profile(profile, path)
+    write_profile(profile, path, input_root=bundle)
     with pytest.raises(InputError, match="OUTPUT_ALREADY_EXISTS"):
-        write_profile(profile, path)
+        write_profile(profile, path, input_root=bundle)
     with pytest.raises(InputError, match="PROFILE_IDENTITY_MISMATCH"):
         read_profile(path, expected_sha256="0" * 64)
     forged = profile.model_copy(update={"revision": "forged"})

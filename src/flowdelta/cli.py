@@ -167,13 +167,14 @@ def freeze_profile_command(
     from flowdelta.fixed_profile import freeze_profile, profile_digest, write_profile
 
     try:
+        loaded = load_case(bundle)
         profile = freeze_profile(
-            load_case(bundle),
+            loaded,
             profile_id=profile_id,
             revision=revision,
             additional_fixed_node_ids=tuple(fixed_node or []),
         )
-        write_profile(profile, out)
+        write_profile(profile, out, input_root=loaded.root)
         typer.echo(json_bytes({"profile_sha256": profile_digest(profile)}).decode(), nl=False)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
@@ -187,10 +188,11 @@ def check_profile_command(
     profile_sha256: Annotated[str, typer.Option(help="Trusted canonical profile digest.")],
 ) -> None:
     """Check fixed inputs without running the workflow or accepting a new baseline."""
-    from flowdelta.fixed_profile import load_profiled_handoff
+    from flowdelta.fixed_profile import read_profile, validate_profile
 
     try:
-        _, _, result = load_profiled_handoff(bundle, profile, expected_sha256=profile_sha256)
+        pinned = read_profile(profile, expected_sha256=profile_sha256)
+        result = validate_profile(load_case(bundle), pinned)
         typer.echo(json_bytes(result.model_dump(mode="json")).decode(), nl=False)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
