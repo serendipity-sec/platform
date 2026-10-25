@@ -168,6 +168,7 @@ def test_code_provenance_covers_transitive_execution_sources(tmp_path):
 
 def test_published_example_identifies_current_implementation_bytes():
     from flowdelta.ingestion import digest, json_bytes
+    from flowdelta.pipeline_runner import _code_hashes
 
     root = Path(__file__).parents[1]
     folder = root / "examples/module-outputs/profiled-runner"
@@ -177,6 +178,8 @@ def test_published_example_identifies_current_implementation_bytes():
     assert summary["status"] == "EXECUTED"
     assert digest(summary_bytes) == verification["summary_sha256"]
     assert summary["bundle_manifest_sha256"] == verification["bundle_manifest_sha256"]
+    # New implementation files must be present, not just the files in an old receipt.
+    assert set(summary["source_hashes"]) == set(_code_hashes(root))
     for name, checksum in summary["source_hashes"].items():
         assert digest((root / name).read_bytes()) == checksum, name
     assert digest(json_bytes(summary["source_hashes"])) == summary["source_tree_sha256"]
