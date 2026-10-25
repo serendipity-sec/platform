@@ -1,0 +1,118 @@
+{
+  "authorship": {
+    "extensions": {},
+    "note": "C가 작성한 기대 입출력 예시. B가 생성한 plan이나 실제 C 실행 기록이 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "flowdelta.runtime.static_examples",
+    "schema_version": "0.4.0"
+  },
+  "case_id": "n8n-claw-memory-first-fix",
+  "comparison_run_id": "comparison-example-claw-first-fix",
+  "error_code": null,
+  "extensions": {},
+  "findings": [],
+  "finished_at": "2026-10-25T08:00:05Z",
+  "outcome": null,
+  "plan_id": "plan-example-claw-first-fix-static",
+  "raw_report": {
+    "artifact_id": "static-raw-report-after-1",
+    "extensions": {},
+    "kind": "generated",
+    "media_type": "application/json",
+    "path": "runs/after-1/static-raw-report.json",
+    "schema_version": "0.4.0",
+    "sha256": "5ef57e32adab48cc42567a1bd0f211c84b14403b7368c8c479b5beef47715a7a",
+    "size_bytes": 2158
+  },
+  "run_id": "static-run-example-after-1",
+  "scanned_node_ids": [
+    "mcp-client-code",
+    "tool-entity-manager",
+    "tool-http",
+    "tool-memory-delete",
+    "tool-memory-save",
+    "tool-memory-search",
+    "tool-memory-update",
+    "tool-project-manager",
+    "tool-self-modify",
+    "tool-task-manager",
+    "tool-web-reader",
+    "tool-web-search"
+  ],
+  "schema_version": "0.4.0",
+  "side": "after",
+  "snapshot_id": "snapshot-example-claw-eb6d7bc",
+  "started_at": "2026-10-25T08:00:00Z",
+  "status": "SUCCEEDED",
+  "template_id": "static-agent-tool-ownership",
+  "template_version": "0.1.0",
+  "tool": {
+    "extensions": {},
+    "name": "semgrep",
+    "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+    "rule_path": "runtime/static-scan/rules/agent-tool-write-without-ownership-check.yaml",
+    "rule_sha256": "25dec6427a6c620b0eebc4c3bceea5cb20672cb81ee91be20e4b5efe98d50c5f",
+    "rule_version": "0.3.0",
+    "schema_version": "0.4.0",
+    "version": "1.181.0"
+  },
+  "unsupported": [
+    {
+      "extensions": {},
+      "node_id": "mcp-builder-tool",
+      "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "node_id": "tool-agent-library",
+      "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "node_id": "tool-browser-use",
+      "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "node_id": "tool-expert-agent",
+      "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "node_id": "tool-library-manager",
+      "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "node_id": "tool-reminder-wf",
+      "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "node_id": "tool-telegram-status",
+      "node_type": "n8n-nodes-base.telegramTool",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    },
+    {
+      "extensions": {},
+      "node_id": "tool-workflow-builder",
+      "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "reason": "TARGET_TYPE_NOT_SUPPORTED",
+      "schema_version": "0.4.0"
+    }
+  ],
+  "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+}

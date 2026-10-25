@@ -1,0 +1,56 @@
+[
+  {
+    "expected_error": "STATIC_CATALOG_ID_MISMATCH",
+    "name": "catalog-mismatch",
+    "patch": {
+      "catalog_id": "other-catalog"
+    }
+  },
+  {
+    "expected_error": "STATIC_TEMPLATE_NOT_FOUND",
+    "name": "unknown-template",
+    "patch": {
+      "template_version": "9.9.9"
+    }
+  },
+  {
+    "expected_error": "STATIC_NORMAL_INPUT_NOT_ALLOWED",
+    "name": "normal-input",
+    "patch": {
+      "normal_input": {
+        "order_id": "ORD-1001"
+      }
+    }
+  },
+  {
+    "expected_error": "STATIC_ATTEMPTS_INVALID",
+    "name": "repeated-attempts",
+    "patch": {
+      "attempts_per_side": 2
+    }
+  },
+  {
+    "expected_error": "STATIC_TIMEOUT_EXCEEDED",
+    "name": "timeout-over-template",
+    "patch": {
+      "timeout_seconds": 300
+    }
+  },
+  {
+    "expected_error": "STATIC_OBLIGATION_UNSUPPORTED",
+    "name": "runtime-evidence-obligation",
+    "patch": {
+      "obligation_bindings": [
+        {
+          "extensions": {},
+          "obligation_id": "owner-check-before-write",
+          "required_artifact_kinds": [
+            "response",
+            "final-state"
+          ],
+          "schema_version": "0.4.0"
+        }
+      ]
+    }
+  }
+]
