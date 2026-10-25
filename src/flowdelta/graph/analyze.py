@@ -13,10 +13,12 @@ from flowdelta.graph.references import (
     find_references,
     judge_renames,
 )
-from flowdelta.ingestion import InputError
+from flowdelta.ingestion import InputError, digest, json_bytes
 from flowdelta.pipeline_contracts import AnalysisBundle, Authorship, SemanticGraph
 
 PRODUCER = f"flowdelta-graph {__version__}"
+# Placeholder while the content hash for the real ID is computed.
+_PENDING_ID = "analysis-pending"
 
 ANALYSIS_LIMITATIONS = [
     "노드 대응은 같은 ID만 사용한다. "
@@ -122,9 +124,8 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
             f"표시 변경 {impact.display_only}개(노드 위치·메모·색, workflow 이름·태그 등)는 "
             "실행에 영향이 없어 영향 경로를 만들지 않았다."
         )
-    return AnalysisBundle(
-        analysis_id="analysis-"
-        + short_hash(before_snapshot.snapshot_id, after_snapshot.snapshot_id, PRODUCER),
+    bundle = AnalysisBundle(
+        analysis_id=_PENDING_ID,
         case_id=case.case_id,
         before_snapshot_id=before_snapshot.snapshot_id,
         after_snapshot_id=after_snapshot.snapshot_id,
@@ -144,3 +145,17 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
         impact_paths=impact.paths,
         dependency_graphs=dependency_graphs(handoff),
     )
+    return identified(bundle)
+
+
+def identified(bundle: AnalysisBundle) -> AnalysisBundle:
+    """ID from both snapshots, the producer and the content itself.
+
+    The producer version does not change with every analyzer rule or limit, so the content
+    hash keeps a different analysis from reusing an ID. The same input and code give the same ID.
+    """
+    content = digest(json_bytes(bundle.model_dump(mode="json")))
+    analysis_id = "analysis-" + short_hash(
+        bundle.before_snapshot_id, bundle.after_snapshot_id, bundle.authorship.producer, content
+    )
+    return bundle.model_copy(update={"analysis_id": analysis_id})
