@@ -1,7 +1,9 @@
 """Static impact paths from changed nodes to output nodes; a possibility, not an observed effect."""
 
+import heapq
 from collections import deque
 from collections.abc import Iterator
+from collections.abc import Set as AbstractSet
 from typing import Literal, NamedTuple
 
 from flowdelta.contracts import NodeSemantics
@@ -57,13 +59,23 @@ def _following(graph: SemanticGraph) -> dict[str, list[GraphEdge]]:
 class _Search:
     """BFS from one node in edge-ID order, expanded only as far as callers ask."""
 
-    def __init__(self, following: dict[str, list[GraphEdge]], start: str) -> None:
+    def __init__(
+        self,
+        following: dict[str, list[GraphEdge]],
+        start: str,
+        outputs: AbstractSet[str] = frozenset(),
+    ) -> None:
         self._following = following
         self._queue = deque([start])
+        self._outputs = outputs
         # Each reached node's last edge on its shortest path; None for the start.
         self.tree: dict[str, GraphEdge | None] = {start: None}
+        self.depth: dict[str, int] = {start: 0}
         # Reached nodes in discovery order, which is also fewest-edges-first order.
         self.found: list[str] = [start]
+        # Reached output nodes in the same order, shared by every route using this search.
+        self._ends: list[str] = []
+        self._scanned = 0
 
     def expand(self) -> bool:
         """Visit the next queued node; False once nothing is left to reach."""
@@ -73,6 +85,7 @@ class _Search:
         for edge in self._following.get(node_id, []):
             if edge.target_node_id not in self.tree:
                 self.tree[edge.target_node_id] = edge
+                self.depth[edge.target_node_id] = self.depth[node_id] + 1
                 self.found.append(edge.target_node_id)
                 self._queue.append(edge.target_node_id)
         return True
@@ -81,6 +94,17 @@ class _Search:
         while len(self.found) <= index and self.expand():
             pass
         return self.found[index] if index < len(self.found) else None
+
+    def end(self, index: int) -> str | None:
+        """The index-th reached output node."""
+        while len(self._ends) <= index:
+            node_id = self.nth(self._scanned)
+            if node_id is None:
+                return None
+            self._scanned += 1
+            if node_id in self._outputs:
+                self._ends.append(node_id)
+        return self._ends[index]
 
     def reaches(self, node_id: str) -> bool:
         while node_id not in self.tree and self.expand():
@@ -265,24 +289,27 @@ def _candidate(route: Route, search: _Search, end: str) -> Candidate:
 class _Candidates:
     """One route's paths to output nodes, fewest edges first and then in BFS order.
 
-    Built one at a time as the selection asks, and shared by every change on the route.
+    A path's edge count is read from the search; the path itself is built only when taken.
+    Shared by every change on the route.
     """
 
-    def __init__(self, route: Route, search: _Search, outputs: set[str]) -> None:
+    def __init__(self, route: Route, search: _Search) -> None:
         self._route = route
         self._search = search
-        self._outputs = outputs
-        self._scanned = 0
         self._items: list[Candidate] = []
 
-    def get(self, index: int) -> Candidate | None:
+    def length(self, index: int) -> int | None:
+        end = self._search.end(index)
+        if end is None:
+            return None
+        return self._search.depth[end] + (1 if self._route.via is not None else 0)
+
+    def get(self, index: int) -> Candidate:
         while len(self._items) <= index:
-            node_id = self._search.nth(self._scanned)
-            if node_id is None:
-                return None
-            self._scanned += 1
-            if node_id in self._outputs:
-                self._items.append(_candidate(self._route, self._search, node_id))
+            end = self._search.end(len(self._items))
+            if end is None:
+                raise IndexError(index)
+            self._items.append(_candidate(self._route, self._search, end))
         return self._items[index]
 
 
@@ -300,7 +327,9 @@ class _Walks:
         start = route.via.target_node_id if route.via is not None else route.start
         key = (route.side, start)
         if key not in self._searches:
-            self._searches[key] = _Search(self._following[route.side], start)
+            self._searches[key] = _Search(
+                self._following[route.side], start, self._outputs[route.side]
+            )
         return self._searches[key]
 
     def edges(self, route: Route, end: str) -> list[GraphEdge]:
@@ -310,27 +339,31 @@ class _Walks:
     def candidates(self, route: Route) -> _Candidates:
         key = (route.side, route.start, route.via.edge_id if route.via is not None else None)
         if key not in self._candidates:
-            self._candidates[key] = _Candidates(
-                route, self.search(route), self._outputs[route.side]
-            )
+            self._candidates[key] = _Candidates(route, self.search(route))
         return self._candidates[key]
 
 
 def _queue(routes: list[Route], walks: _Walks) -> Iterator[Candidate]:
-    """One change's paths, fewest edges first; a tie goes to the earlier route, then BFS order."""
+    """One change's paths, fewest edges first; a tie goes to the earlier route, then BFS order.
+
+    Routes wait in a heap keyed by the edge count of their next path, so with many routes
+    (e.g. one per name reference) only the path actually taken is built.
+    """
     lists = [walks.candidates(route) for route in routes]
-    positions = [0] * len(lists)
+    heap: list[tuple[int, int, int]] = []
+    for route_index, candidates in enumerate(lists):
+        length = candidates.length(0)
+        if length is not None:
+            heap.append((length, route_index, 0))
+    heapq.heapify(heap)
     seen: set[Key] = set()
-    while True:
-        best: tuple[Candidate, int] | None = None
-        for index, candidates in enumerate(lists):
-            item = candidates.get(positions[index])
-            if item is not None and (best is None or item[0] < best[0][0]):
-                best = (item, index)
-        if best is None:
-            return
-        item, index = best
-        positions[index] += 1
+    while heap:
+        _, route_index, index = heapq.heappop(heap)
+        candidates = lists[route_index]
+        item = candidates.get(index)
+        following = candidates.length(index + 1)
+        if following is not None:
+            heapq.heappush(heap, (following, route_index, index + 1))
         if item[1] not in seen:
             seen.add(item[1])
             yield item
@@ -413,6 +446,9 @@ def impact_paths(
             search = walks.search(route)
             for key in wanted.get(route.side, []):
                 _, end, edge_ids = key
+                # A route over an edge only gives paths that start with that edge.
+                if route.via is not None and edge_ids[:1] != (route.via.edge_id,):
+                    continue
                 if not search.reaches(end):
                     continue
                 edges = walks.edges(route, end)
@@ -425,7 +461,7 @@ def impact_paths(
                 covered = True
         # Only a stopped selection can leave a change that has a path without one.
         if not complete and not covered:
-            if any(walks.candidates(route).get(0) is not None for route in routes):
+            if any(walks.candidates(route).length(0) is not None for route in routes):
                 uncovered += 1
     paths = [
         _path(side, start, edges, sorted(change_ids), sorted(notes), facts[side], task_id)
