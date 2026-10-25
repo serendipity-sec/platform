@@ -1,15 +1,24 @@
 """A's public entry point: Handoff in, AnalysisBundle (MODULE_OUTPUT) out."""
 
 from flowdelta import __version__
-from flowdelta.contracts import ArtifactRef, Handoff, NodeSemantics
+from flowdelta.contracts import ArtifactRef, Handoff, NodeSemantics, NormalizedWorkflow
 from flowdelta.graph.changes import extract_changes
 from flowdelta.graph.control import build_control_graph, short_hash
+from flowdelta.graph.data_flow import add_field_flow_edges
+from flowdelta.graph.impact import Side, impact_paths
 from flowdelta.graph.matching import match_nodes
-from flowdelta.graph.references import add_reference_edges, find_references, judge_renames
-from flowdelta.ingestion import InputError
-from flowdelta.pipeline_contracts import AnalysisBundle, Authorship
+from flowdelta.graph.references import (
+    NameReference,
+    add_reference_edges,
+    find_references,
+    judge_renames,
+)
+from flowdelta.ingestion import InputError, digest, json_bytes
+from flowdelta.pipeline_contracts import AnalysisBundle, Authorship, SemanticGraph
 
 PRODUCER = f"flowdelta-graph {__version__}"
+# Placeholder while the content hash for the real ID is computed.
+_PENDING_ID = "analysis-pending"
 
 ANALYSIS_LIMITATIONS = [
     "노드 대응은 같은 ID만 사용한다. "
@@ -18,7 +27,10 @@ ANALYSIS_LIMITATIONS = [
     "이름 변경의 참조 판정은 해당 변경의 extensions(flowdelta.graph.name_references)에 기록한다.",
     '이름 참조는 $(\'이름\')·$node["이름"]·$items("이름") 형태의 문자열만 찾는다. '
     "실행 중에 조립되는 이름은 찾지 못한다.",
-    "영향 경로(impact_paths)는 아직 계산하지 않았다.",
+    "영향 경로(impact_paths)는 변경 노드(연결 변경은 바뀐 연결, 이름 변경으로 끊기거나 "
+    "바뀐 이름 참조는 그 참조)에서 효과가 있거나 "
+    "효과를 알 수 없는 노드·마지막 노드까지 끝점마다 고른 대표 최단 경로 하나다. "
+    "가능한 모든 경로나 실제 실행 경로의 증거가 아니며, 정책 규칙과는 연결하지 않았다.",
     "보안 위험 판정을 포함하지 않는다.",
 ]
 
@@ -30,20 +42,62 @@ def _context_ref(handoff: Handoff, path: str) -> ArtifactRef:
     return refs[path].model_copy(update={"path": f"input/{path}"})
 
 
+def build_graph(
+    workflow: NormalizedWorkflow,
+    facts: dict[str, NodeSemantics],
+    references: list[NameReference],
+) -> SemanticGraph:
+    graph = build_control_graph(workflow, facts)
+    graph = add_reference_edges(graph, workflow, references)
+    return add_field_flow_edges(graph, workflow, facts)
+
+
+def _graph_facts(item: NodeSemantics) -> tuple[object, ...]:
+    return (item.reads, item.writes, item.effects, item.support, item.branches)
+
+
+def dependency_graphs(handoff: Handoff) -> dict[str, SemanticGraph]:
+    """One graph per fixed sub-workflow; it is shared by both sides, so after facts lead."""
+    graphs: dict[str, SemanticGraph] = {}
+    for dependency_id, workflow in sorted(handoff.dependency_workflows.items()):
+        index = handoff.dependency_semantics.get(dependency_id)
+        sides: dict[str, dict[str, NodeSemantics]] = {"before": {}, "after": {}}
+        for item in index.semantics if index else []:
+            sides[item.side][item.node_id] = item
+        before, after = sides["before"], sides["after"]
+        graph = build_graph(workflow, after or before, find_references(workflow, "after"))
+        notes: list[str] = []
+        if before and after:
+            differing = sorted(
+                node_id
+                for node_id in before.keys() | after.keys()
+                if node_id not in before
+                or node_id not in after
+                or _graph_facts(before[node_id]) != _graph_facts(after[node_id])
+            )
+            if differing:
+                notes.append(
+                    f"하위 workflow의 전후 의미 정보가 달라({', '.join(differing)}) "
+                    "after 쪽만 사용했다."
+                )
+        elif before:
+            notes.append("하위 workflow의 after 의미 정보가 없어 before 쪽을 사용했다.")
+        if notes:
+            graph = graph.model_copy(update={"limitations": [*graph.limitations, *notes]})
+        graphs[dependency_id] = graph
+    return graphs
+
+
 def analyze(handoff: Handoff) -> AnalysisBundle:
     case = handoff.case
     before_snapshot, after_snapshot = handoff.snapshots.snapshots
-    facts: dict[str, dict[str, NodeSemantics]] = {"before": {}, "after": {}}
+    facts: dict[Side, dict[str, NodeSemantics]] = {"before": {}, "after": {}}
     for item in handoff.semantics.semantics:
         facts[item.side][item.node_id] = item
     before_refs = find_references(handoff.before, "before")
     after_refs = find_references(handoff.after, "after")
-    before_graph = add_reference_edges(
-        build_control_graph(handoff.before, facts["before"]), handoff.before, before_refs
-    )
-    after_graph = add_reference_edges(
-        build_control_graph(handoff.after, facts["after"]), handoff.after, after_refs
-    )
+    before_graph = build_graph(handoff.before, facts["before"], before_refs)
+    after_graph = build_graph(handoff.after, facts["after"], after_refs)
     changes = judge_renames(
         extract_changes(handoff.before, handoff.after),
         handoff.before,
@@ -54,19 +108,31 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
     limitations = list(ANALYSIS_LIMITATIONS)
     if handoff.dependency_workflows:
         limitations.append(
-            f"고정 하위 workflow {len(handoff.dependency_workflows)}개의 그래프"
-            "(dependency_graphs)는 아직 만들지 않았다."
+            "호출 노드와 고정 하위 workflow 사이의 필드 전달은 연결하지 않았다. "
+            "하위 workflow 그래프는 dependency_graphs에 따로 있다."
         )
-    return AnalysisBundle(
-        analysis_id="analysis-"
-        + short_hash(before_snapshot.snapshot_id, after_snapshot.snapshot_id, PRODUCER),
+    impact = impact_paths(
+        changes, {"before": before_graph, "after": after_graph}, facts, handoff.task.task_id
+    )
+    if impact.unplaced:
+        limitations.append(
+            f"시작 노드가 없는 변경 {impact.unplaced}개(workflow 수준 변경 등)는 "
+            "영향 경로를 만들지 않았다."
+        )
+    if impact.display_only:
+        limitations.append(
+            f"표시 변경 {impact.display_only}개(노드 위치·메모·색, workflow 이름·태그 등)는 "
+            "실행에 영향이 없어 영향 경로를 만들지 않았다."
+        )
+    bundle = AnalysisBundle(
+        analysis_id=_PENDING_ID,
         case_id=case.case_id,
         before_snapshot_id=before_snapshot.snapshot_id,
         after_snapshot_id=after_snapshot.snapshot_id,
         authorship=Authorship(
             origin="MODULE_OUTPUT",
             producer=PRODUCER,
-            note="A 분석기가 handoff에서 생성한 정적 제어·이름 참조 그래프와 변경 목록이다.",
+            note="A 분석기가 handoff에서 생성한 정적 제어·데이터 그래프, 변경 목록과 영향 경로다.",
         ),
         node_matches=match_nodes(handoff.before, handoff.after),
         before_graph=before_graph,
@@ -76,4 +142,20 @@ def analyze(handoff: Handoff) -> AnalysisBundle:
         policy_ref=_context_ref(handoff, case.evaluation_policy_ref),
         obligation_ids=[item.obligation_id for item in case.obligations],
         limitations=limitations,
+        impact_paths=impact.paths,
+        dependency_graphs=dependency_graphs(handoff),
     )
+    return identified(bundle)
+
+
+def identified(bundle: AnalysisBundle) -> AnalysisBundle:
+    """ID from both snapshots, the producer and the content itself.
+
+    The producer version does not change with every analyzer rule or limit, so the content
+    hash keeps a different analysis from reusing an ID. The same input and code give the same ID.
+    """
+    content = digest(json_bytes(bundle.model_dump(mode="json")))
+    analysis_id = "analysis-" + short_hash(
+        bundle.before_snapshot_id, bundle.after_snapshot_id, bundle.authorship.producer, content
+    )
+    return bundle.model_copy(update={"analysis_id": analysis_id})

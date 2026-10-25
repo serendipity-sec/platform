@@ -13,11 +13,11 @@
   "image_reference": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
   "network": "internal",
   "observation_transport": "docker-exec-fixed-probe",
-  "project": "fdrt-6ebfea1178dd4756",
+  "project": "fdrt-61b3c3a5322c456b",
   "published_ports": {
     "5678/tcp": null
   },
-  "run_id": "run-7e11b8e7ffed4e2c9e7714de7c0ad672",
+  "run_id": "run-7fb9c128b3c74667bb286aea46ad98e5",
   "runtime_profile": "order-lookup-local-v1",
   "schema_version": "0.4.0"
 }
