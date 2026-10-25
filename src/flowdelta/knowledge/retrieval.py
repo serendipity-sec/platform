@@ -8,7 +8,7 @@ from pydantic import JsonValue
 
 from flowdelta.contracts import Handoff
 from flowdelta.ingestion import InputError, digest, json_bytes
-from flowdelta.knowledge.cards import _ref, _unique, kb_bytes
+from flowdelta.knowledge.cards import KB_SNAPSHOT_FILENAME, _KnowledgeSnapshot
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
     Authorship,
@@ -140,10 +140,23 @@ def retrieve(
     cards: list[ScenarioCard],
     catalog: TemplateCatalog,
     *,
-    kb_path: str = "kb-snapshot.json",
+    kb_path: str = KB_SNAPSHOT_FILENAME,
     producer: str,
 ) -> RetrievalResult:
-    cards = _unique(cards)
+    return _retrieve_snapshot(
+        handoff, analysis, _KnowledgeSnapshot.prepare(cards, kb_path), catalog, producer=producer
+    )
+
+
+def _retrieve_snapshot(
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    snapshot: _KnowledgeSnapshot,
+    catalog: TemplateCatalog,
+    *,
+    producer: str,
+) -> RetrievalResult:
+    cards = snapshot.cards
     profile, node_types, fields, tokens = search_context(handoff, analysis)
     node_type_set = set(node_types)
     templates = {(t.template_id, t.version): t for t in catalog.templates}
@@ -158,12 +171,11 @@ def retrieve(
         score, applicability, reason = hit_details(card, node_type_set, tokens)
         candidates.append((card, score, applicability, reason))
     candidates.sort(key=lambda item: (-item[1], item[0].card_id, item[0].version))
-    kb = kb_bytes(cards)
     result = RetrievalResult(
-        retrieval_id=retrieval_identity(producer, kb, handoff, analysis, catalog),
+        retrieval_id=retrieval_identity(producer, snapshot.data, handoff, analysis, catalog),
         analysis_id=analysis.analysis_id,
         authorship=author(analysis, producer),
-        kb_snapshot_ref=_ref(kb_path, kb, "knowledge-snapshot"),
+        kb_snapshot_ref=snapshot.reference,
         method="KEYWORD",
         model_version=None,
         query={

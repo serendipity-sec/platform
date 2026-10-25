@@ -1,5 +1,6 @@
 """Bounded card loading and canonical snapshot serialization."""
 
+from dataclasses import dataclass
 from pathlib import Path
 
 from flowdelta.contracts import ArtifactRef
@@ -15,6 +16,30 @@ from flowdelta.ingestion import (
 )
 from flowdelta.pipeline_contracts import ScenarioCard
 from flowdelta.pipeline_io import verify_ref
+
+KB_SNAPSHOT_FILENAME = "kb-snapshot.json"
+
+
+@dataclass(frozen=True)
+class _KnowledgeSnapshot:
+    """Call-local, owned cards and their bounded canonical bytes; never a public cache."""
+
+    cards: tuple[ScenarioCard, ...]
+    data: bytes
+    _reference: ArtifactRef
+
+    @classmethod
+    def prepare(
+        cls, cards: list[ScenarioCard], path: str = KB_SNAPSHOT_FILENAME
+    ) -> "_KnowledgeSnapshot":
+        owned = [card.model_copy(deep=True) for card in _unique(cards)]
+        data = kb_bytes(owned)
+        return cls(tuple(owned), data, _ref(path, data, "knowledge-snapshot"))
+
+    @property
+    def reference(self) -> ArtifactRef:
+        # RetrievalResult is mutable; it must not share the validation baseline.
+        return self._reference.model_copy(deep=True)
 
 
 def _unique(cards: list[ScenarioCard]) -> list[ScenarioCard]:
