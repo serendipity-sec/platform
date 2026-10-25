@@ -101,6 +101,17 @@ DB 이미지는 로컬 개발용이며 실제 pull한 digest를 runtime 설정�
 
 확인자: Codex. 전이 의존성과 wheel 해시는 `uv.lock`으로 고정한다.
 
+## 로컬 임베딩 런타임 — 2026-10-18
+
+아래 구성요소는 B 임베딩 adapter의 로컬 실험에 사용한다. Docker 이미지는 tag와 digest를 함께
+고정했다. Ollama model tag는 공급자에서 갱신될 수 있으므로 애플리케이션은 실행 때 `/api/ps`에서
+실행 중인 모델의 실제 digest를 읽어 embedding profile에 기록한다.
+
+| 구성요소 | 고정 버전/식별자 | 출처·라이선스 원문 | 사용 방식 |
+|---|---|---|---|
+| Ollama official Docker image | `0.35.1`; `sha256:292ee7945dfc3d5840a181f3ab86fedb1e66703e02c8af98b50f4da56b7e278c` | [Ollama v0.35.1 MIT LICENSE](https://github.com/ollama/ollama/blob/v0.35.1/LICENSE) | 로컬 HTTP 임베딩 서버. Docker Compose에서 localhost에만 port publish |
+| Qwen3-Embedding-0.6B (Ollama library) | `qwen3-embedding:0.6b`; 2026-10-18 pull digest `sha256:ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d` | [Ollama model](https://ollama.com/library/qwen3-embedding:0.6b), [Hugging Face model card 및 Apache-2.0 메타데이터](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) | 로컬 임베딩. 문서에는 지시문을 붙이지 않고 query에는 버전이 지정된 검색 지시문을 붙임. adapter가 L2 단위 길이로 정규화하며 가중치는 저장소에 복사하지 않음 |
+
 ## 우리 코드의 공개 라이선스 결정 상태
 
 ⬜ 미정. 재사용할 엔진들의 라이선스를 확인한 뒤 결정합니다.

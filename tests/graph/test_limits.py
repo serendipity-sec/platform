@@ -7,6 +7,7 @@ import flowdelta.graph.impact as impact
 from flowdelta.contracts import Handoff, SourceLocation
 from flowdelta.graph import AnalysisLimits, analyze
 from flowdelta.graph.control import DATA_ORIGIN
+from flowdelta.graph.references import EXTENSION as NAME_REFERENCES
 from flowdelta.ingestion import json_bytes
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
@@ -233,6 +234,68 @@ def test_candidates_cover_everything_when_the_limit_is_not_reached(
     assert len(result.paths) == 6
     assert result.complete is True
     assert sorted(built) == sorted(["hub", *leaves])
+
+
+def test_many_reference_routes_build_only_the_paths_taken(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A renamed node whose 100 name references all broke: 100 routes reach the same output."""
+    pointers = [f"/nodes/1/parameters/p{index:03}" for index in range(100)]
+    references = [
+        GraphEdge(
+            edge_id=f"data-{index:03}",
+            source_node_id="a",
+            target_node_id="b",
+            relation="DATA",
+            output_port=0,
+            input_port=0,
+            target_fields=[pointer],
+            evidence=[SourceLocation(artifact_id="wf-1", json_pointer=pointer)],
+            basis="STATIC_POSSIBILITY",
+            extensions={DATA_ORIGIN: "NAME_REFERENCE"},
+        )
+        for index, pointer in enumerate(pointers)
+    ]
+    before = SemanticGraph(node_ids=["a", "b"], edges=references, limitations=[])
+    after = SemanticGraph(node_ids=["a", "b"], edges=[], limitations=[])
+    name = SourceLocation(artifact_id="wf-1", json_pointer="/nodes/0/name")
+    rename = Change(
+        change_id="change-a",
+        node_id="a",
+        kind="UNKNOWN",
+        before_value="A",
+        after_value="A2",
+        before_source=name,
+        after_source=name,
+        extensions={
+            NAME_REFERENCES: {
+                "status": "BROKEN_REFERENCES",
+                "references": [
+                    {"side": "after", "node_id": "b", "name": "A", "pointer": pointer}
+                    for pointer in pointers
+                ],
+                "related_change_ids": [],
+            }
+        },
+    )
+    built: list[str] = []
+    original = impact._candidate
+
+    def counting(route: impact.Route, search: Any, end: str) -> impact.Candidate:
+        built.append(end)
+        return original(route, search, end)
+
+    monkeypatch.setattr(impact, "_candidate", counting)
+    graphs: dict[impact.Side, SemanticGraph] = {"before": before, "after": after}
+    facts: dict[impact.Side, dict[str, Any]] = {"before": {}, "after": {}}
+    result = impact.impact_paths([rename], graphs, facts, "task-1", 1)
+    assert len(result.paths) == 1
+    assert result.complete is False
+    # The renamed node itself (0 edges) is kept; one reference path shows there are more.
+    # The other 99 reference routes are never built.
+    assert len(built) == 2
+    everything = impact.impact_paths([rename], graphs, facts, "task-1")
+    assert len(everything.paths) == 101
 
 
 @pytest.mark.parametrize("field", ["max_workflow_nodes", "max_snapshot_nodes", "max_impact_paths"])
