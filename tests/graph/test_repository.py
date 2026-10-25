@@ -1,10 +1,16 @@
 from collections.abc import Callable
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+from contextlib import ExitStack
+from multiprocessing import get_context
 from pathlib import Path
+from threading import Barrier
 
 import pytest
 
 from flowdelta.graph import analyze
+from flowdelta.graph import repository as storage
 from flowdelta.graph.repository import (
+    AnalysisRecord,
     AnalysisRepository,
     FileAnalysisRepository,
     MemoryAnalysisRepository,
@@ -93,6 +99,136 @@ def test_file_repository_detects_a_changed_file(tmp_path: Path) -> None:
     with pytest.raises(InputError) as error:
         repository.get(bundle.analysis_id)
     assert error.value.code == "ANALYSIS_INTEGRITY_MISMATCH"
+
+
+@pytest.mark.parametrize("corrupt", [b"", b'{"corrupt": true}'])
+def test_resaving_does_not_report_success_for_a_corrupt_file(
+    tmp_path: Path, corrupt: bytes
+) -> None:
+    bundle = analysis("order-lookup")
+    repository = FileAnalysisRepository(tmp_path)
+    record = repository.save(bundle)
+    stored = tmp_path / record.location
+    stored.write_bytes(corrupt)
+
+    with pytest.raises(InputError) as error:
+        FileAnalysisRepository(tmp_path).save(bundle)
+
+    assert error.value.code == "ANALYSIS_INTEGRITY_MISMATCH"
+    assert stored.read_bytes() == corrupt
+
+
+def save_after_empty_scan(
+    root: Path, bundle: AnalysisBundle, synchronize: Callable[[], object]
+) -> AnalysisRecord | str:
+    class RacingRepository(FileAnalysisRepository):
+        scanned = False
+
+        def _files(self, analysis_id: str) -> list[Path]:
+            files = super()._files(analysis_id)
+            if not self.scanned:
+                self.scanned = True
+                assert files == []
+                # Both writers see an unused ID before either publishes its result.
+                synchronize()
+            return files
+
+    try:
+        return RacingRepository(root).save(bundle)
+    except InputError as error:
+        return error.code
+
+
+@pytest.mark.parametrize("different_content", [False, True])
+@pytest.mark.parametrize("workers", ["threads", "processes"])
+def test_concurrent_saves_keep_one_readable_analysis(
+    tmp_path: Path, different_content: bool, workers: str
+) -> None:
+    bundle = analysis("order-lookup")
+    other = (
+        bundle.model_copy(update={"limitations": [*bundle.limitations, "different content"]})
+        if different_content
+        else bundle
+    )
+    with ExitStack() as stack:
+        if workers == "processes":
+            context = get_context("spawn")
+            manager = stack.enter_context(context.Manager())
+            synchronize = manager.Barrier(2, timeout=15).wait
+            pool = stack.enter_context(ProcessPoolExecutor(max_workers=2, mp_context=context))
+        else:
+            synchronize = Barrier(2, timeout=15).wait
+            pool = stack.enter_context(ThreadPoolExecutor(max_workers=2))
+        futures = [
+            pool.submit(save_after_empty_scan, tmp_path, item, synchronize)
+            for item in (bundle, other)
+        ]
+        results = [future.result(timeout=30) for future in futures]
+
+    records = [result for result in results if isinstance(result, AnalysisRecord)]
+    errors = [result for result in results if isinstance(result, str)]
+    assert len(records) == (1 if different_content else 2)
+    assert errors == (["ANALYSIS_ID_CONFLICT"] if different_content else [])
+    assert all(record == records[0] for record in records)
+    repository = FileAnalysisRepository(tmp_path)
+    stored = repository.get(bundle.analysis_id)
+    assert stored in (bundle, other)
+    assert repository.find(bundle.case_id, bundle.before_snapshot_id, bundle.after_snapshot_id) == [
+        records[0]
+    ]
+    assert len(list((tmp_path / bundle.analysis_id).glob("*.json"))) == 1
+    assert [path.name for path in tmp_path.iterdir()] == [bundle.analysis_id]
+
+
+@pytest.mark.parametrize("failure", ["fsync", "rename"])
+def test_failed_write_leaves_no_partial_analysis_and_can_be_retried(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    repository = FileAnalysisRepository(tmp_path)
+    previous = analysis("support-triage")
+    repository.save(previous)
+    bundle = analysis("order-lookup")
+
+    def fail(*_: object) -> None:
+        raise OSError("injected storage failure")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(storage.os, failure, fail)
+        with pytest.raises(OSError, match="injected storage failure"):
+            repository.save(bundle)
+
+    assert [path.name for path in tmp_path.iterdir()] == [previous.analysis_id]
+    assert repository.get(previous.analysis_id) == previous
+    repository.save(bundle)
+    assert repository.get(bundle.analysis_id) == bundle
+
+
+def test_readers_see_only_complete_analyses_during_a_write(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    bundle = analysis("order-lookup")
+    previous = bundle.model_copy(update={"analysis_id": "analysis-previous"})
+    repository = FileAnalysisRepository(tmp_path)
+    record = repository.save(previous)
+    fsync = storage.os.fsync
+    checked = False
+
+    def check_before_publication(descriptor: int) -> None:
+        nonlocal checked
+        fsync(descriptor)
+        reader = FileAnalysisRepository(tmp_path)
+        with pytest.raises(InputError) as missing:
+            reader.get(bundle.analysis_id)
+        assert missing.value.code == "ANALYSIS_NOT_FOUND"
+        assert reader.find(bundle.case_id, bundle.before_snapshot_id, bundle.after_snapshot_id) == [
+            record
+        ]
+        checked = True
+
+    monkeypatch.setattr(storage.os, "fsync", check_before_publication)
+    repository.save(bundle)
+    assert checked
+    assert repository.get(bundle.analysis_id) == bundle
 
 
 @pytest.mark.parametrize("analysis_id", ["..", ".", "a/b", ""])

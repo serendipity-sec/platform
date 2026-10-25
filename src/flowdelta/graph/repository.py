@@ -8,7 +8,7 @@ import os
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from tempfile import NamedTemporaryFile
+from tempfile import TemporaryDirectory
 from typing import Protocol
 
 from pydantic import JsonValue
@@ -18,6 +18,8 @@ from flowdelta.pipeline_contracts import AnalysisBundle
 
 # Contract Identifier characters; "." and ".." are refused so a file path never escapes.
 _ID = re.compile(r"^[A-Za-z0-9_.-]{1,128}$")
+# Outside the Identifier alphabet, so pending writes cannot hide a valid analysis.
+_PENDING_PREFIX = "~pending-analysis-"
 
 
 @dataclass(frozen=True)
@@ -144,27 +146,28 @@ class FileAnalysisRepository:
         checksum = digest(payload)
         target = self.root / _checked_id(bundle.analysis_id) / f"{checksum}.json"
         existing = self._files(bundle.analysis_id)
-        if existing and existing != [target]:
-            raise InputError("ANALYSIS_ID_CONFLICT", location=bundle.analysis_id)
         if not existing:
-            target.parent.mkdir(parents=True, exist_ok=True)
-            with NamedTemporaryFile(dir=target.parent, delete=False) as stream:
-                temporary = Path(stream.name)
-                stream.write(payload)
-                stream.flush()
-                os.fsync(stream.fileno())
-            try:
-                os.link(temporary, target)
-            except FileExistsError:
-                if target.read_bytes() != payload:
-                    raise InputError(
-                        "ANALYSIS_INTEGRITY_MISMATCH", location=bundle.analysis_id
-                    ) from None
-            finally:
-                temporary.unlink(missing_ok=True)
-        return _record(bundle, checksum, target.relative_to(self.root).as_posix())
+            self.root.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(prefix=_PENDING_PREFIX, dir=self.root) as pending:
+                staged = Path(pending)
+                with (staged / target.name).open("xb") as stream:
+                    stream.write(payload)
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                try:
+                    # Publish the complete directory, not a checksum-specific file.
+                    # Another writer's nonempty ID directory cannot be replaced.
+                    os.rename(staged, target.parent)
+                except OSError:
+                    if not _unlinked(target.parent, bundle.analysis_id).exists():
+                        raise
+                    # A competing writer may have won; verify its result below.
+        stored, path = self._load(bundle.analysis_id, expected=payload)
+        return _record(stored, path.stem, path.relative_to(self.root).as_posix())
 
-    def _load(self, analysis_id: str) -> tuple[AnalysisBundle, Path]:
+    def _load(
+        self, analysis_id: str, *, expected: bytes | None = None
+    ) -> tuple[AnalysisBundle, Path]:
         files = self._files(analysis_id)
         if not files:
             raise InputError("ANALYSIS_NOT_FOUND", location=analysis_id)
@@ -173,7 +176,10 @@ class FileAnalysisRepository:
         payload = files[0].read_bytes()
         if digest(payload) != files[0].stem:
             raise InputError("ANALYSIS_INTEGRITY_MISMATCH", location=analysis_id)
-        return _decode(payload, analysis_id), files[0]
+        bundle = _decode(payload, analysis_id)
+        if expected is not None and payload != expected:
+            raise InputError("ANALYSIS_ID_CONFLICT", location=analysis_id)
+        return bundle, files[0]
 
     def get(self, analysis_id: str) -> AnalysisBundle:
         return self._load(analysis_id)[0]
@@ -185,6 +191,9 @@ class FileAnalysisRepository:
             return []
         records = []
         for folder in sorted(self.root.iterdir()):
+            # A running or interrupted write is not yet a published analysis.
+            if folder.name.startswith(_PENDING_PREFIX):
+                continue
             if not _unlinked(folder, folder.name).is_dir():
                 continue
             bundle, path = self._load(folder.name)
