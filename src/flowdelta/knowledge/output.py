@@ -3,14 +3,14 @@
 from pathlib import Path
 
 from flowdelta.ingestion import InputError, json_bytes
-from flowdelta.knowledge.cards import _ref, kb_bytes
+from flowdelta.knowledge.cards import KB_SNAPSHOT_FILENAME, _KnowledgeSnapshot, _ref
 from flowdelta.pipeline_contracts import RetrievalResult, ScenarioCard, TestPlan
 
 
 def validate_output_paths(output: Path) -> tuple[Path, Path, Path]:
     if not output.parent.is_dir():
         raise InputError("OUTPUT_PARENT_MISSING")
-    kb_path = output.with_name("kb-snapshot.json")
+    kb_path = output.with_name(KB_SNAPSHOT_FILENAME)
     retrieval_path = output.with_name("retrieval.json")
     paths = (kb_path, retrieval_path, output)
     if len(set(paths)) != len(paths):
@@ -27,13 +27,22 @@ def write_artifacts(
     output: Path,
 ) -> TestPlan:
     """Write new sibling KB/retrieval files; publish plan last. No bundle manifest."""
+    kb_path, _, _ = validate_output_paths(output)
+    return _write_snapshot(_KnowledgeSnapshot.prepare(cards, kb_path.name), retrieval, plan, output)
+
+
+def _write_snapshot(
+    snapshot: _KnowledgeSnapshot,
+    retrieval: RetrievalResult,
+    plan: TestPlan,
+    output: Path,
+) -> TestPlan:
     kb_path, retrieval_path, plan_path = validate_output_paths(output)
     expected_plan_id = f"plan-{retrieval.retrieval_id.removeprefix('retrieval-')}"
     if plan.plan_id != expected_plan_id or plan.analysis_id != retrieval.analysis_id:
         raise InputError("PLAN_RETRIEVAL_MISMATCH")
-    snapshot = kb_bytes(cards)
-    expected = _ref(kb_path.name, snapshot, "knowledge-snapshot")
-    if retrieval.kb_snapshot_ref != expected:
+    expected = snapshot.reference
+    if expected.path != kb_path.name or retrieval.kb_snapshot_ref != expected:
         raise InputError("RETRIEVAL_SNAPSHOT_MISMATCH")
     plan = plan.model_copy(deep=True)
     retrieval_data = json_bytes(retrieval.model_dump(mode="json"))
@@ -45,7 +54,7 @@ def write_artifacts(
     try:
         for path, data in zip(
             [kb_path, retrieval_path, plan_path],
-            [snapshot, retrieval_data, json_bytes(plan.model_dump(mode="json"))],
+            [snapshot.data, retrieval_data, json_bytes(plan.model_dump(mode="json"))],
             strict=True,
         ):
             with path.open("xb") as stream:
