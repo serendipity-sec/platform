@@ -346,7 +346,9 @@ def _commit_page(
                 failed += 1
                 continue
 
-            _clear_record_failures(connection, source, record.external_id, checksum)
+            _clear_record_failures(
+                connection, source, record.external_id, checksum, modified_at
+            )
             saved += 1
 
         connection.execute(
@@ -505,14 +507,23 @@ def _record_failure(
 
 
 def _clear_record_failures(
-    connection: Connection, source: str, external_id: str, checksum: str
+    connection: Connection,
+    source: str,
+    external_id: str,
+    checksum: str,
+    modified_at: str | None,
 ) -> None:
     connection.execute(
         text("""
             DELETE FROM knowledge.sync_failure
             WHERE source=:source AND (
-                external_id=:external_id OR external_id=:invalid_alias
-                OR raw_external_id=:external_id_bytes
+                external_id=:invalid_alias OR (
+                    (external_id=:external_id OR raw_external_id=:external_id_bytes)
+                    AND (
+                        sha256=:checksum
+                        OR modified_at < CAST(:modified_at AS text)
+                    )
+                )
             )
         """),
         {
@@ -520,6 +531,8 @@ def _clear_record_failures(
             "external_id": external_id,
             "invalid_alias": f"invalid-{checksum}",
             "external_id_bytes": _external_id_bytes(external_id),
+            "checksum": checksum,
+            "modified_at": modified_at,
         },
     )
 
@@ -690,7 +703,9 @@ def retry_quarantined_records(
                         failed += 1
                         continue
 
-                    _clear_record_failures(connection, source, external_id, checksum)
+                    _clear_record_failures(
+                        connection, source, external_id, checksum, modified_at
+                    )
                     saved += 1
     except SQLAlchemyError:
         raise InputError("KNOWLEDGE_DATABASE_UNAVAILABLE") from None

@@ -529,6 +529,89 @@ def test_quarantined_record_can_be_reprocessed_from_retained_raw(database):
     assert document == {"identifier": "VULN-RETRY", "summary": ""}
 
 
+def test_retry_keeps_newer_quarantined_revision_after_older_one_succeeds(database):
+    engine, source, raw_root = database
+
+    @dataclass
+    class VersionedSource(FixtureSource):
+        failing_summaries: set[str]
+
+        def normalize(self, document):
+            if document["summary"] in self.failing_summaries:
+                raise KeyError("adapter mapping is temporarily incomplete")
+            return super().normalize(document)
+
+    v1_raw = b'{"id":"VULN-VERSIONS","summary":"v1"}'
+    v2_raw = b'{"id":"VULN-VERSIONS","summary":"v2"}'
+    adapter = VersionedSource(
+        source,
+        [
+            SourcePage(
+                (
+                    RawSourceRecord(
+                        "VULN-VERSIONS", v1_raw, datetime(2026, 1, 1, tzinfo=UTC)
+                    ),
+                    RawSourceRecord(
+                        "VULN-VERSIONS", v2_raw, datetime(2026, 1, 2, tzinfo=UTC)
+                    ),
+                ),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+        {"v1", "v2"},
+    )
+
+    first = ingest_source(engine, raw_root, adapter)
+    assert first.records_failed == 2
+    adapter.failing_summaries = {"v2"}
+
+    retried = retry_quarantined_records(engine, raw_root, adapter, limit=10)
+
+    assert retried == RetryReport(source, attempted=2, records_saved=1, records_failed=1)
+    with engine.connect() as connection:
+        failure = (
+            connection.execute(
+                text("""
+                    SELECT sha256, raw_path, modified_at
+                    FROM knowledge.sync_failure
+                    WHERE source=:source AND external_id='VULN-VERSIONS'
+                """),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+        document = connection.execute(
+            text("SELECT document FROM knowledge.source_record WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+    assert failure["sha256"] == digest(v2_raw)
+    assert failure["raw_path"] is not None
+    assert failure["modified_at"] == "2026-01-02T00:00:00+00:00"
+    assert (raw_root / failure["raw_path"]).exists()
+    assert document == {"identifier": "VULN-VERSIONS", "summary": "v1"}
+
+    adapter.failing_summaries = set()
+    retried_again = retry_quarantined_records(engine, raw_root, adapter, limit=10)
+
+    assert retried_again == RetryReport(
+        source, attempted=1, records_saved=1, records_failed=0
+    )
+    with engine.connect() as connection:
+        failures = connection.execute(
+            text("SELECT count(*) FROM knowledge.sync_failure WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+        document = connection.execute(
+            text("SELECT document FROM knowledge.source_record WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+    assert failures == 0
+    assert document == {"identifier": "VULN-VERSIONS", "summary": "v2"}
+
+
 def test_success_clears_prior_failures_for_same_id_and_invalid_alias(database):
     engine, source, raw_root = database
 
@@ -546,10 +629,14 @@ def test_success_clears_prior_failures_for_same_id_and_invalid_alias(database):
             SourcePage(
                 (
                     RawSourceRecord(
-                        "VULN-RECOVERED", b'{"id":"VULN-RECOVERED","summary":"broken"}'
+                        "VULN-RECOVERED",
+                        b'{"id":"VULN-RECOVERED","summary":"broken"}',
+                        datetime(2026, 1, 1, tzinfo=UTC),
                     ),
                     RawSourceRecord("\x00", good_raw),
-                    RawSourceRecord("VULN-RECOVERED", good_raw),
+                    RawSourceRecord(
+                        "VULN-RECOVERED", good_raw, datetime(2026, 1, 2, tzinfo=UTC)
+                    ),
                 ),
                 {"page": 1},
                 True,
