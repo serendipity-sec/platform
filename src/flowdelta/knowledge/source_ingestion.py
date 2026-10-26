@@ -346,9 +346,7 @@ def _commit_page(
                 failed += 1
                 continue
 
-            _clear_record_failures(
-                connection, source, record.external_id, checksum, modified_at
-            )
+            _clear_record_failures(connection, source, record.external_id, checksum, modified_at)
             saved += 1
 
         connection.execute(
@@ -703,9 +701,7 @@ def retry_quarantined_records(
                         failed += 1
                         continue
 
-                    _clear_record_failures(
-                        connection, source, external_id, checksum, modified_at
-                    )
+                    _clear_record_failures(connection, source, external_id, checksum, modified_at)
                     saved += 1
     except SQLAlchemyError:
         raise InputError("KNOWLEDGE_DATABASE_UNAVAILABLE") from None

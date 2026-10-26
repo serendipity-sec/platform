@@ -548,12 +548,8 @@ def test_retry_keeps_newer_quarantined_revision_after_older_one_succeeds(databas
         [
             SourcePage(
                 (
-                    RawSourceRecord(
-                        "VULN-VERSIONS", v1_raw, datetime(2026, 1, 1, tzinfo=UTC)
-                    ),
-                    RawSourceRecord(
-                        "VULN-VERSIONS", v2_raw, datetime(2026, 1, 2, tzinfo=UTC)
-                    ),
+                    RawSourceRecord("VULN-VERSIONS", v1_raw, datetime(2026, 1, 1, tzinfo=UTC)),
+                    RawSourceRecord("VULN-VERSIONS", v2_raw, datetime(2026, 1, 2, tzinfo=UTC)),
                 ),
                 {"page": 1},
                 True,
@@ -596,9 +592,7 @@ def test_retry_keeps_newer_quarantined_revision_after_older_one_succeeds(databas
     adapter.failing_summaries = set()
     retried_again = retry_quarantined_records(engine, raw_root, adapter, limit=10)
 
-    assert retried_again == RetryReport(
-        source, attempted=1, records_saved=1, records_failed=0
-    )
+    assert retried_again == RetryReport(source, attempted=1, records_saved=1, records_failed=0)
     with engine.connect() as connection:
         failures = connection.execute(
             text("SELECT count(*) FROM knowledge.sync_failure WHERE source=:source"),
@@ -634,9 +628,7 @@ def test_success_clears_prior_failures_for_same_id_and_invalid_alias(database):
                         datetime(2026, 1, 1, tzinfo=UTC),
                     ),
                     RawSourceRecord("\x00", good_raw),
-                    RawSourceRecord(
-                        "VULN-RECOVERED", good_raw, datetime(2026, 1, 2, tzinfo=UTC)
-                    ),
+                    RawSourceRecord("VULN-RECOVERED", good_raw, datetime(2026, 1, 2, tzinfo=UTC)),
                 ),
                 {"page": 1},
                 True,
