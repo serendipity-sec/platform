@@ -347,13 +347,17 @@ def plan_command(
     catalog: Annotated[Path, typer.Option(help="Registered template catalog JSON.")],
     cards: Annotated[Path, typer.Option(help="Local card directory.")],
     out: Annotated[Path, typer.Option(help="New plan file at the future bundle root.")],
+    persist: Annotated[
+        bool, typer.Option(help="Also store the exact B artifacts in configured PostgreSQL.")
+    ] = False,
 ) -> None:
-    """Generate B's plan and sibling retrieval/KB files without running workflows."""
+    """Generate B's plan and optionally store its sibling retrieval/KB files in PostgreSQL."""
     from flowdelta.ingestion import _read_local, parse_file_model, parse_json
     from flowdelta.knowledge import load_cards, write_plan
     from flowdelta.pipeline_contracts import AnalysisBundle, TemplateCatalog
     from flowdelta.pipeline_io import read_handoff, read_manifest
 
+    engine = None
     try:
         root = bundle.resolve()
         _, documents = read_manifest(root)
@@ -363,6 +367,11 @@ def plan_command(
         templates = parse_file_model(
             TemplateCatalog, parse_json(_read_local(catalog.parent.resolve(), catalog.name))
         )
+        if persist:
+            from flowdelta.knowledge.database import engine_for
+            from flowdelta.knowledge.settings import KnowledgeSettings
+
+            engine = engine_for(KnowledgeSettings.from_environment())
         plan = write_plan(
             read_handoff(root / "input"),
             analysis,
@@ -370,12 +379,17 @@ def plan_command(
             templates,
             out,
         )
+        if engine is not None:
+            from flowdelta.knowledge.repository import store_b_outputs
+
+            store_b_outputs(engine, out)
         typer.echo(
             json_bytes(
                 {
                     "status": "PLAN_WRITTEN",
                     "plan_id": plan.plan_id,
                     "analysis_origin": analysis.authorship.origin,
+                    "database_status": "STORED" if persist else "NOT_REQUESTED",
                     "execution_status": "NOT_RUN",
                 }
             ).decode(),
@@ -384,6 +398,18 @@ def plan_command(
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
         raise typer.Exit(code=2) from None
+    except ModuleNotFoundError as exc:
+        if exc.name not in {"alembic", "psycopg", "sqlalchemy"}:
+            raise
+        typer.echo(
+            json_bytes({"error": "KNOWLEDGE_EXTRA_REQUIRED"}).decode("utf-8"),
+            err=True,
+            nl=False,
+        )
+        raise typer.Exit(code=2) from None
+    finally:
+        if engine is not None:
+            engine.dispose()
 
 
 @app.command("bundle")
