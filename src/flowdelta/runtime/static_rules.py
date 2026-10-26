@@ -1,18 +1,24 @@
-"""Generate the registered Semgrep rule for agent tools that write without an owner check.
+"""Generate the registered Semgrep rule for agent tools that write without enforcing ownership.
 
-Semgrep cannot constrain a field name inside `pattern-not-inside`, so the owner check is
-spelled out for each field, operator and statement form. The YAML file under
-`runtime/static-scan/rules/` is generated from this spec and a test keeps the two equal.
+A write is excluded only when a supported guard stops a non-owner before it. Comparing the
+owner field is not enough: the comparison must decide a branch that returns or throws, or
+that alone contains the write. Every other shape — a comparison that is only computed, a
+mismatch branch that only logs, a check in a helper function — is reported, because the
+rule cannot show that the write is blocked. A finding therefore means "ownership enforcement
+not confirmed", not "no comparison exists".
+
+Semgrep cannot constrain a field name inside `pattern-not-inside`, so each guard is spelled out
+for each field, operator and statement form. The YAML file under `runtime/static-scan/rules/`
+is generated from this spec and a test keeps the two equal.
 """
 
 from pathlib import Path
 
 RULE_ID = "flowdelta.n8n.agent-tool-write-without-ownership-check"
-RULE_VERSION = "0.3.0"
+RULE_VERSION = "0.4.0"
 RULE_PATH = Path("runtime/static-scan/rules/agent-tool-write-without-ownership-check.yaml")
 
-# Field names that hold the owner of the record being changed. A comparison of one of these
-# with any other value before the write counts as an owner check.
+# Field names that hold the owner of the record being changed.
 OWNER_FIELDS = (
     "owner_user_id",
     "owner_id",
@@ -24,32 +30,67 @@ OWNER_FIELDS = (
     "author_id",
     "authorId",
 )
-OPERATORS = ("===", "!==", "==", "!=")
+MATCH = ("===", "==")  # true when the caller owns the record
+MISMATCH = ("!==", "!=")  # true when the caller does not own the record
 WRITE_METHODS = ("DELETE", "PATCH", "PUT")
 
 
+def _exits(condition: str) -> list[str]:
+    """`condition` true -> leave before the write, with or without braces."""
+    return [
+        f"if ({condition}) {{ ... return ...; }}",
+        f"if ({condition}) return ...;",
+        f"if ({condition}) {{ ... throw $ERR; }}",
+        f"if ({condition}) throw $ERR;",
+    ]
+
+
+def guard_forms(field: str) -> list[list[str]]:
+    """Supported guards for one owner field. Each is a list of statements before the write."""
+    forms: list[list[str]] = []
+    for op in MISMATCH:
+        # if (row.owner !== caller) return/throw
+        forms += [[exit_] for exit_ in _exits(f"<... $ROW.{field} {op} $REQ ...>")]
+        # const foreign = row.owner !== caller; if (foreign) return/throw
+        forms += [
+            [f"$V = <... $ROW.{field} {op} $REQ ...>;", "...", exit_]
+            for exit_ in _exits("<... $V ...>")
+        ]
+    for op in MATCH:
+        # const own = row.owner === caller; if (!own ...) return/throw  (n8n-claw's fix)
+        forms += [
+            [f"$V = <... $ROW.{field} {op} $REQ ...>;", "...", exit_]
+            for exit_ in _exits("<... !$V ...>")
+        ]
+    return forms
+
+
+def branch_forms(field: str) -> list[list[str]]:
+    """The write sits inside the branch that only an owner reaches."""
+    forms: list[list[str]] = []
+    for op in MATCH:
+        forms.append([f"if (<... $ROW.{field} {op} $REQ ...>) {{", "  ...", "}"])
+        forms.append([f"$V = <... $ROW.{field} {op} $REQ ...>;", "...", "if ($V) {", "  ...", "}"])
+    return forms
+
+
+def _indent(lines: list[str], depth: int) -> list[str]:
+    return [" " * depth + line for line in lines]
+
+
 def _guards() -> list[str]:
-    lines: list[str] = []
+    out: list[str] = []
     for field in OWNER_FIELDS:
-        for operator in OPERATORS:
-            for statement in (
-                f"$V = <... $ROW.{field} {operator} $REQ ...>;",
-                f"if (<... $ROW.{field} {operator} $REQ ...>) {{ ... }}",
-            ):
-                # The check may sit at the top level of the tool or inside a plain block.
-                lines += [
-                    "          - pattern-not-inside: |",
-                    f"              {statement}",
-                    "              ...",
-                    "          - pattern-not-inside: |",
-                    "              {",
-                    "                ...",
-                    f"                {statement}",
-                    "                ...",
-                    "              }",
-                    "              ...",
-                ]
-    return lines
+        for statements in guard_forms(field):
+            # The guard runs before the write, at the top level of the tool or in a plain block.
+            out += ["          - pattern-not-inside: |"]
+            out += _indent([*statements, "..."], 14)
+            out += ["          - pattern-not-inside: |"]
+            out += _indent(["{", "  ...", *_indent(statements, 2), "  ...", "}", "..."], 14)
+        for statements in branch_forms(field):
+            out += ["          - pattern-not-inside: |"]
+            out += _indent(statements, 14)
+    return out
 
 
 def rule_yaml() -> str:
@@ -68,9 +109,13 @@ def rule_yaml() -> str:
         "        jsCode of an n8n toolCode node that an AI Agent can call through ai_tool,",
         "        extracted as one function per tool. Static condition only: it does not show",
         "        that the agent calls the tool or that a record changes.",
+        "      meaning: >-",
+        "        A finding means no supported guard was found that stops a non-owner before",
+        "        the write. It does not mean that no owner comparison exists.",
         "    message: >-",
         "      Agent tool sends a $METHOD request whose target comes from the model-written",
-        "      tool input, and no owner comparison appears earlier in the same tool.",
+        "      tool input, and no supported owner guard (a mismatch branch that returns or",
+        "      throws, or an owner-only branch around the write) appears before it.",
         "    severity: ERROR",
         "    languages: [javascript]",
         "    mode: taint",
