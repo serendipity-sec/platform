@@ -139,7 +139,7 @@ jobs:
                   )
               )
           PY
-      - run: uv run --frozen --extra knowledge pytest tests/knowledge/test_database.py
+      - run: uv run --frozen --extra knowledge pytest tests/knowledge/test_database.py tests/graph/test_database.py
 
   cli-without-knowledge-extra:
     runs-on: ubuntu-latest
