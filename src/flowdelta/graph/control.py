@@ -47,6 +47,11 @@ def control_edge_id(connection: Connection) -> str:
     return edge_id("control", connection.source_node_id, connection.target_node_id, key)
 
 
+def is_main(output_type: str, input_type: str) -> bool:
+    """n8n item flow; ai_* types attach sub-nodes (model, memory, tool) to an agent."""
+    return output_type == "main" and input_type == "main"
+
+
 def location_text(source: SourceLocation) -> str:
     return f"{source.artifact_id}#{source.json_pointer}"
 
@@ -95,6 +100,24 @@ def build_control_graph(
     if len({edge.edge_id for edge in edges}) != len(edges):
         raise InputError("GRAPH_DUPLICATE_CONNECTION", location=workflow.source_artifact_id)
     limitations = list(GRAPH_LIMITATIONS)
+    non_main = sorted(
+        {
+            connection.source_output_type
+            for connection in workflow.connections
+            if not is_main(connection.source_output_type, connection.target_input_type)
+        }
+    )
+    if non_main:
+        count = sum(
+            1
+            for connection in workflow.connections
+            if not is_main(connection.source_output_type, connection.target_input_type)
+        )
+        limitations.append(
+            f"main이 아닌 연결 {count}개({', '.join(non_main)})는 실행 순서가 아니라 "
+            "모델·도구 등 하위 노드 연결이다. 검증 범위와 맞추려고 CONTROL 간선의 "
+            "output_type으로만 구분했고, 권한·지시 영향 관계로는 아직 분류하지 않았다."
+        )
     if workflow.semantic_support != "SUPPORTED":
         limitations.append(f"정규화 workflow의 의미 지원 상태: {workflow.semantic_support}.")
     return SemanticGraph(node_ids=node_ids, edges=edges, limitations=limitations)
