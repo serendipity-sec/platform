@@ -89,6 +89,13 @@ transaction에서 커밋된다. 페이지 저장이 실패하면 cursor도 이�
 받은 원본 bytes와 SHA-256을 보존하고, `knowledge.source_record.document`에는 별도
 정규 JSON을 둔다.
 
+격리 레코드를 재시도할 때 `modified_at`이 없으면 현재 문서가 없는 경우 저장할 수 있다.
+현재 문서도 시각이 없는 같은 checksum의 재시도는 멱등하게 성공한다. 다른 checksum의
+시각 없는 레코드는 기존 문서를 교체하지 않고 `KNOWLEDGE_SOURCE_RECORD_STALE`로 격리한다.
+같은 ID에 서로 다른 시각 없는 격리본이 여럿 있으면 어떤 것도 저장하지 않고 모두
+`KNOWLEDGE_SOURCE_REVISION_ORDER_UNKNOWN`으로 남긴다. 재시도 정렬 순서는 최신 여부를 뜻하지
+않는다. 일반 수집의 도착 순서 처리와 시각이 있는 레코드의 비교 규칙은 유지한다.
+
 수집 상태와 격리 건수는 다음 쿼리로 확인한다.
 
 ```sql

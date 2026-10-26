@@ -529,6 +529,125 @@ def test_quarantined_record_can_be_reprocessed_from_retained_raw(database):
     assert document == {"identifier": "VULN-RETRY", "summary": ""}
 
 
+def test_retry_does_not_replace_stored_record_with_untimestamped_quarantine(database):
+    engine, source, raw_root = database
+
+    @dataclass
+    class VersionedSource(FixtureSource):
+        fail_v1: bool = True
+
+        def normalize(self, document):
+            if self.fail_v1 and document["summary"] == "v1":
+                raise KeyError("adapter mapping is temporarily incomplete")
+            return super().normalize(document)
+
+    v1_raw = b'{"id":"VULN-NULL-VERSIONS","summary":"v1"}'
+    v2_raw = b'{"id":"VULN-NULL-VERSIONS","summary":"v2"}'
+    adapter = VersionedSource(
+        source,
+        [
+            SourcePage(
+                (RawSourceRecord("VULN-NULL-VERSIONS", v1_raw),),
+                {"page": 1},
+                True,
+            ),
+            SourcePage(
+                (RawSourceRecord("VULN-NULL-VERSIONS", v2_raw),),
+                {"page": 2},
+                True,
+            ),
+        ],
+        [],
+    )
+
+    first = ingest_source(engine, raw_root, adapter, max_pages=1)
+    second = ingest_source(engine, raw_root, adapter, max_pages=1)
+    adapter.fail_v1 = False
+
+    retried = retry_quarantined_records(engine, raw_root, adapter, limit=10)
+
+    assert first.records_failed == 1
+    assert second.records_saved == 1
+    assert retried == RetryReport(source, attempted=1, records_saved=0, records_failed=1)
+    with engine.connect() as connection:
+        record = (
+            connection.execute(
+                text("SELECT sha256, document FROM knowledge.source_record WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+        failure = (
+            connection.execute(
+                text("SELECT sha256, error_code FROM knowledge.sync_failure WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .one()
+        )
+    assert record["sha256"] == digest(v2_raw)
+    assert record["document"] == {"identifier": "VULN-NULL-VERSIONS", "summary": "v2"}
+    assert failure == {"sha256": digest(v1_raw), "error_code": "KNOWLEDGE_SOURCE_RECORD_STALE"}
+
+
+def test_retry_does_not_overwrite_between_untimestamped_quarantines(database):
+    engine, source, raw_root = database
+
+    @dataclass
+    class VersionedSource(FixtureSource):
+        fail_all: bool = True
+
+        def normalize(self, document):
+            if self.fail_all:
+                raise KeyError("adapter mapping is temporarily incomplete")
+            return super().normalize(document)
+
+    revisions = {
+        "v1": b'{"id":"VULN-NULL-QUARANTINED","summary":"v1"}',
+        "v2": b'{"id":"VULN-NULL-QUARANTINED","summary":"v2"}',
+    }
+    adapter = VersionedSource(
+        source,
+        [
+            SourcePage(
+                tuple(RawSourceRecord("VULN-NULL-QUARANTINED", raw) for raw in revisions.values()),
+                {"page": 1},
+                True,
+            )
+        ],
+        [],
+    )
+
+    first = ingest_source(engine, raw_root, adapter, max_pages=1)
+    adapter.fail_all = False
+
+    retried = retry_quarantined_records(engine, raw_root, adapter, limit=10)
+
+    assert first.records_failed == 2
+    assert retried == RetryReport(source, attempted=2, records_saved=0, records_failed=2)
+    with engine.connect() as connection:
+        record_count = connection.execute(
+            text("SELECT count(*) FROM knowledge.source_record WHERE source=:source"),
+            {"source": source},
+        ).scalar_one()
+        failures = (
+            connection.execute(
+                text("SELECT sha256, error_code FROM knowledge.sync_failure WHERE source=:source"),
+                {"source": source},
+            )
+            .mappings()
+            .all()
+        )
+    assert record_count == 0
+    assert {failure["sha256"].strip() for failure in failures} == {
+        digest(raw) for raw in revisions.values()
+    }
+    assert {failure["error_code"] for failure in failures} == {
+        "KNOWLEDGE_SOURCE_REVISION_ORDER_UNKNOWN"
+    }
+
+
 def test_retry_keeps_newer_quarantined_revision_after_older_one_succeeds(database):
     engine, source, raw_root = database
 
