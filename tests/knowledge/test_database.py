@@ -131,6 +131,31 @@ def test_postgres_migration_and_transaction(tmp_path):
     engine = engine_for(settings)
     migration_engine = engine_for(settings, migration=True)
     try:
+        with migration_engine.connect() as connection:
+            assert (
+                connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
+                == "kb_0003"
+            )
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT count(*) FROM information_schema.tables "
+                        "WHERE table_schema='knowledge' AND table_name IN "
+                        "('b_kb_snapshot', 'b_retrieval', 'b_test_plan')"
+                    )
+                ).scalar_one()
+                == 3
+            )
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT count(*) FROM information_schema.columns "
+                        "WHERE table_schema='knowledge' AND table_name='sync_failure' "
+                        "AND column_name IN ('raw_path', 'raw_external_id', 'modified_at')"
+                    )
+                ).scalar_one()
+                == 3
+            )
         with engine.connect() as connection:
             is_superuser = connection.execute(
                 text("SELECT rolsuper FROM pg_roles WHERE rolname = current_user")

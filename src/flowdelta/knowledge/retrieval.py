@@ -141,8 +141,7 @@ def analysis_retrieval_context(
         "after": analysis.after_graph,
     }
     edges_by_side = {
-        side: {edge.edge_id: edge for edge in graph.edges}
-        for side, graph in graphs_by_side.items()
+        side: {edge.edge_id: edge for edge in graph.edges} for side, graph in graphs_by_side.items()
     }
     graph_to_workflow_nodes_by_side = {
         side: (
@@ -203,9 +202,7 @@ def analysis_retrieval_context(
             if edge is None:
                 continue
             for endpoint_id in (edge.source_node_id, edge.target_node_id):
-                workflow_node_id = graph_to_workflow_nodes_by_side[path.side].get(
-                    endpoint_id
-                )
+                workflow_node_id = graph_to_workflow_nodes_by_side[path.side].get(endpoint_id)
                 if workflow_node_id is None:
                     continue
                 node_type = nodes_by_side[path.side].get(workflow_node_id)

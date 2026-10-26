@@ -128,8 +128,7 @@ def test_impact_path_edge_endpoints_guide_retrieval():
     baseline_hit = baseline.hits[0]
     assert hit.score == baseline_hit.score + 2
     assert (
-        "impact_node_types=['n8n-nodes-base.httpRequest', "
-        "'n8n-nodes-base.respondToWebhook']"
+        "impact_node_types=['n8n-nodes-base.httpRequest', 'n8n-nodes-base.respondToWebhook']"
     ) in hit.reason
 
 
