@@ -26,3 +26,5 @@ poetry.lock        linguist-generated=true -diff
 
 # Acquired originals retain the exact bytes recorded in acquisition.json on every OS.
 examples/public-sources/** -text
+# Preserve recorded harness and observation bytes on every OS.
+experiments/n8n-claw-memory/** -text
