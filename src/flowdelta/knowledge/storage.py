@@ -165,6 +165,7 @@ def save_record(
     *,
     raw_payload: bytes | None = None,
     modified_at: str | None = None,
+    allow_untimestamped_replacement: bool = True,
 ) -> str:
     state = connection.info.get(_TRANSACTION_STATE_KEY)
     if not isinstance(state, _StorageTransactionState) or not connection.in_transaction():
@@ -198,6 +199,7 @@ def save_record(
     """),
         values,
     )
+    # Retry callers disable replacing a row when neither revision has a timestamp.
     result = connection.execute(
         text("""
         INSERT INTO knowledge.source_record(source, external_id, sha256, modified_at, document)
@@ -205,11 +207,27 @@ def save_record(
                 CAST(:document AS jsonb))
         ON CONFLICT (source, external_id) DO UPDATE SET
             sha256=EXCLUDED.sha256, modified_at=EXCLUDED.modified_at, document=EXCLUDED.document
-        WHERE source_record.modified_at IS NULL
-           OR EXCLUDED.modified_at >= source_record.modified_at
+        WHERE (
+                EXCLUDED.modified_at IS NOT NULL
+                AND (
+                    source_record.modified_at IS NULL
+                    OR EXCLUDED.modified_at >= source_record.modified_at
+                )
+              )
+           OR (
+                EXCLUDED.modified_at IS NULL
+                AND source_record.modified_at IS NULL
+                AND (
+                    :allow_untimestamped_replacement
+                    OR EXCLUDED.sha256 = source_record.sha256
+                )
+              )
         RETURNING sha256
     """),
-        values,
+        {
+            **values,
+            "allow_untimestamped_replacement": allow_untimestamped_replacement,
+        },
     ).scalar_one_or_none()
     if result is None:
         raise InputError("KNOWLEDGE_SOURCE_RECORD_STALE")
