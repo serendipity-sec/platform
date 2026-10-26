@@ -8,7 +8,8 @@ side. Nothing from the target is executed and no request is sent.
 What is recorded instead of hidden:
 - a side with no supported target is `NOT_RUN` with `NO_SUPPORTED_TARGET`, not "no finding";
 - a tool error, an unreadable report or a target the tool did not read is `FAILED`;
-- the time limit is `TIMED_OUT`, Ctrl+C is `INTERRUPTED` (the other side is `NOT_RUN`).
+- the time limit is `TIMED_OUT`, Ctrl+C is `INTERRUPTED` (a side not started is `NOT_RUN`);
+- each side's run file is written as soon as that side ends.
 Only `SUCCEEDED` runs carry findings. Raw reports contain original code and stay in the
 output folder under `var/`.
 """
@@ -24,9 +25,8 @@ from typing import Literal
 from uuid import uuid4
 
 from flowdelta.contracts import ArtifactRef, Handoff
-from flowdelta.ingestion import InputError, digest, json_bytes
+from flowdelta.ingestion import InputError, _read_local, digest, json_bytes
 from flowdelta.pipeline_contracts import Authorship, TestPlan
-from flowdelta.pipeline_io import verify_ref
 from flowdelta.runtime.preflight import check_fresh_output
 from flowdelta.runtime.static_scan import (
     StaticFinding,
@@ -82,6 +82,9 @@ class StaticSide:
     snapshot_id: str
     workflow_path: Path
     workflow_sha256: str
+    # The bytes checked against the handoff. They are scanned as-is; the file is not read
+    # again, so a file replaced after the check cannot be scanned under the recorded hash.
+    workflow_bytes: bytes
 
 
 @dataclass(frozen=True)
@@ -121,17 +124,21 @@ def static_preflight(
         if not set(required[obligation_id].required_artifacts).issubset(template.result_kinds):
             raise InputError("STATIC_OBLIGATION_NOT_COVERABLE")
 
-    # The workflow bytes are the ones the handoff recorded (same hash and size).
+    # Read each workflow once and keep the bytes that match the handoff (same hash and size).
     root = handoff_root.resolve(strict=True)
     sides = []
     for snapshot in (before, after):
-        verify_ref(root, snapshot.workflow_ref)
+        ref = snapshot.workflow_ref
+        data = _read_local(root, ref.path)
+        if len(data) != ref.size_bytes or digest(data) != ref.sha256:
+            raise InputError("ARTIFACT_INTEGRITY_MISMATCH")
         sides.append(
             StaticSide(
                 side=snapshot.side,
                 snapshot_id=snapshot.snapshot_id,
-                workflow_path=root / snapshot.workflow_ref.path,
-                workflow_sha256=snapshot.workflow_ref.sha256,
+                workflow_path=root / ref.path,
+                workflow_sha256=ref.sha256,
+                workflow_bytes=data,
             )
         )
     return StaticPreflight(template, (sides[0], sides[1]), plan.timeout_seconds)
@@ -196,6 +203,8 @@ def _tool_version_error(context: _Context) -> str | None:
         return "STATIC_TOOL_NOT_FOUND"
     except ToolTimeout:
         return "STATIC_TOOL_VERSION_TIMEOUT"
+    except OSError:
+        return "STATIC_TOOL_START_FAILED"
     if code != 0 or out.decode("utf-8", "replace").strip() != context.template.tool.version:
         return "STATIC_TOOL_VERSION_MISMATCH"
     return None
@@ -203,7 +212,7 @@ def _tool_version_error(context: _Context) -> str | None:
 
 def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     template = context.template
-    targets = find_targets(side.workflow_path.read_bytes(), template)
+    targets = find_targets(side.workflow_bytes, template)
     if not targets.scanned:
         return _record(
             context,
@@ -272,6 +281,10 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
         return failed("TIMED_OUT", "STATIC_TOOL_TIMEOUT")
     except FileNotFoundError:
         return failed("FAILED", "STATIC_TOOL_NOT_FOUND")
+    except OSError:
+        # The tool could not be started (for example permission denied). The output folder
+        # is fine, so this is a tool failure, not an output write failure.
+        return failed("FAILED", "STATIC_TOOL_START_FAILED")
     finished = context.clock()
 
     raw_path = folder / "static-raw-report.json"
@@ -351,8 +364,12 @@ def run_static_plan(
 ) -> list[StaticScanRun]:
     """Scan before and after with the same template and write `runs/<side>-1.static-run.json`.
 
-    Raises InputError before anything is written when the inputs disagree. After that, every
-    side gets a run file, including on Ctrl+C (KeyboardInterrupt is re-raised afterwards).
+    Raises InputError before anything is written when the inputs disagree. After that, each
+    side's run file is written as soon as that side ends, so a later error or Ctrl+C never
+    loses an earlier result. Ctrl+C during the tool version check marks both sides
+    INTERRUPTED; during a side it marks that side INTERRUPTED and the rest NOT_RUN, and
+    KeyboardInterrupt is re-raised after the files are written. A failure to write into the
+    output folder itself is STATIC_OUTPUT_WRITE_FAILED (InputError), not a tool result.
     """
     checked = static_preflight(handoff, plan, catalog, handoff_root, repo.resolve(strict=True))
     target = check_fresh_output(output, repo)
@@ -368,23 +385,39 @@ def run_static_plan(
         clock=clock,
     )
     runs: list[StaticScanRun] = []
+
+    def keep(run: StaticScanRun) -> None:
+        path = target / "runs" / f"{run.side}-1.static-run.json"
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(json_bytes(run.model_dump(mode="json")))
+        except OSError as exc:
+            raise InputError("STATIC_OUTPUT_WRITE_FAILED") from exc
+        runs.append(run)
+
+    try:
+        version_error = _tool_version_error(context)
+    except KeyboardInterrupt:
+        for side in checked.sides:
+            keep(_record(context, side, "INTERRUPTED", error_code="STATIC_INTERRUPTED"))
+        raise
     interrupted = False
-    version_error = _tool_version_error(context)
     for side in checked.sides:
         if interrupted:
-            runs.append(_record(context, side, "NOT_RUN", error_code="PREVIOUS_SIDE_INTERRUPTED"))
-        elif version_error is not None:
-            runs.append(_record(context, side, "FAILED", error_code=version_error))
-        else:
-            try:
-                runs.append(_scan_side(context, side))
-            except KeyboardInterrupt:
-                interrupted = True
-                runs.append(_record(context, side, "INTERRUPTED", error_code="STATIC_INTERRUPTED"))
-    for run in runs:
-        path = target / "runs" / f"{run.side}-1.static-run.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(json_bytes(run.model_dump(mode="json")))
+            keep(_record(context, side, "NOT_RUN", error_code="PREVIOUS_SIDE_INTERRUPTED"))
+            continue
+        if version_error is not None:
+            keep(_record(context, side, "FAILED", error_code=version_error))
+            continue
+        try:
+            run = _scan_side(context, side)
+        except KeyboardInterrupt:
+            interrupted = True
+            run = _record(context, side, "INTERRUPTED", error_code="STATIC_INTERRUPTED")
+        except OSError as exc:
+            # Writing extracted code or the raw report into the output folder failed.
+            raise InputError("STATIC_OUTPUT_WRITE_FAILED") from exc
+        keep(run)
     if interrupted:
         raise KeyboardInterrupt
     return runs

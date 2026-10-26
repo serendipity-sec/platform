@@ -331,3 +331,83 @@ def test_registered_rule_through_the_adapter(setup: Setup) -> None:
 def test_plan_type_is_the_shared_test_plan() -> None:
     # B hands over the shared TestPlan; the adapter adds no plan type of its own.
     assert Plan.__name__ == "TestPlan"
+
+
+def test_file_replaced_after_the_check_is_not_scanned(setup: Setup) -> None:
+    # #51 review P1: the bytes checked against the handoff are the bytes scanned.
+    path = setup.root / setup.handoff.snapshots.snapshots[0].workflow_ref.path
+    inner = fake_semgrep()
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        if arguments == ["--version"]:
+            path.write_bytes(workflow(GUARDED))  # Swap the file between check and scan.
+        return inner(arguments, timeout)
+
+    before, _ = setup.run(runner)
+    assert before.status == "SUCCEEDED"
+    assert before.workflow_sha256 == digest(workflow(UNGUARDED))
+    assert [item.node_id for item in before.findings] == ["memory-delete"]
+    assert [item.code_sha256 for item in before.findings] == [digest(UNGUARDED.encode())]
+    scanned = (setup.out / "before" / "targets" / "001.js").read_text(encoding="utf-8")
+    assert UNGUARDED in scanned and "owner_user_id" not in scanned
+
+
+def test_tool_start_error_on_after_keeps_before(setup: Setup) -> None:
+    # #51 review P2: a later tool error must not lose the side that already finished.
+    inner = fake_semgrep()
+    scans: list[str] = []
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        if arguments != ["--version"]:
+            scans.append(arguments[-1])
+            if len(scans) == 2:
+                raise PermissionError("denied")
+        return inner(arguments, timeout)
+
+    before, after = setup.run(runner)
+    assert before.status == "SUCCEEDED" and before.findings
+    assert (after.status, after.error_code, after.findings) == (
+        "FAILED",
+        "STATIC_TOOL_START_FAILED",
+        [],
+    )
+    assert saved(setup, "before") == before and saved(setup, "after") == after
+
+
+def test_version_check_problems_are_recorded_for_both_sides(setup: Setup) -> None:
+    def denied(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        raise PermissionError("denied")
+
+    runs = setup.run(denied)
+    assert [(run.status, run.error_code) for run in runs] == [
+        ("FAILED", "STATIC_TOOL_START_FAILED")
+    ] * 2
+    assert [saved(setup, side).status for side in ("before", "after")] == ["FAILED"] * 2
+
+
+def test_interrupt_during_version_check_is_recorded(setup: Setup) -> None:
+    def interrupted(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        raise KeyboardInterrupt
+
+    with pytest.raises(KeyboardInterrupt):
+        setup.run(interrupted)
+    for side in ("before", "after"):
+        run = saved(setup, side)
+        assert (run.status, run.error_code, run.findings) == (
+            "INTERRUPTED",
+            "STATIC_INTERRUPTED",
+            [],
+        )
+
+
+def test_output_write_failure_is_not_a_tool_result(setup: Setup) -> None:
+    inner = fake_semgrep()
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        if arguments != ["--version"]:
+            # A plain file where the run folder must go: the output folder is broken.
+            (Path(arguments[-1]).parents[1] / "runs").write_text("x", encoding="utf-8")
+        return inner(arguments, timeout)
+
+    with pytest.raises(InputError, match="STATIC_OUTPUT_WRITE_FAILED"):
+        setup.run(runner)
