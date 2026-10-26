@@ -1,3 +1,4 @@
+import importlib
 import json
 from pathlib import Path
 
@@ -110,6 +111,26 @@ def test_analysis_is_deterministic() -> None:
     first = json_bytes(analyze(load("order-lookup")).model_dump(mode="json"))
     second = json_bytes(analyze(load("order-lookup")).model_dump(mode="json"))
     assert first == second
+
+
+def test_analysis_id_follows_the_content_not_only_the_snapshots(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    handoff = load("support-triage")
+    first = analyze(handoff)
+    assert analyze(handoff).analysis_id == first.analysis_id
+    # An analyzer rule changed under the same package version: same snapshots, other content.
+    module = importlib.import_module("flowdelta.graph.analyze")
+    monkeypatch.setattr(
+        module, "ANALYSIS_LIMITATIONS", [*module.ANALYSIS_LIMITATIONS, "바뀐 분석 규칙"]
+    )
+    changed = analyze(handoff)
+    assert (changed.before_snapshot_id, changed.after_snapshot_id) == (
+        first.before_snapshot_id,
+        first.after_snapshot_id,
+    )
+    assert changed.authorship.producer == first.authorship.producer
+    assert changed.analysis_id != first.analysis_id
 
 
 def test_position_only_change_is_display_change() -> None:
