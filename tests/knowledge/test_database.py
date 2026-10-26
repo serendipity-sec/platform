@@ -185,15 +185,44 @@ def test_postgres_migration_and_transaction(tmp_path):
                 ).scalar_one()
                 == 0
             )
+        raw_payload = b'{"source_revision":1, "original": "kept"}'
         with storage_transaction(engine) as connection:
             first = save_record(
-                connection, tmp_path, "test", "fixture", json_bytes({"revision": 1})
+                connection,
+                tmp_path,
+                "test",
+                "fixture",
+                {"normalized_revision": 1},
+                raw_payload=raw_payload,
             )
+            raw_row = (
+                connection.execute(
+                    text(
+                        "SELECT raw_path, sha256, size_bytes FROM knowledge.source_revision "
+                        "WHERE source='test' AND external_id='fixture'"
+                    )
+                )
+                .mappings()
+                .one()
+            )
+            assert (tmp_path / raw_row["raw_path"]).read_bytes() == raw_payload
+            assert raw_row["sha256"] == first
+            assert raw_row["size_bytes"] == len(raw_payload)
             assert first == save_record(
-                connection, tmp_path, "test", "fixture", json_bytes({"revision": 1})
+                connection,
+                tmp_path,
+                "test",
+                "fixture",
+                {"normalized_revision": 1},
+                raw_payload=raw_payload,
             )
             second = save_record(
-                connection, tmp_path, "test", "fixture", json_bytes({"revision": 2})
+                connection,
+                tmp_path,
+                "test",
+                "fixture",
+                {"normalized_revision": 2},
+                raw_payload=b'{"source_revision":2}',
             )
             assert first != second
             count = connection.execute(
