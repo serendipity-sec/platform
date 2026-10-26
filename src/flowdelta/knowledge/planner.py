@@ -22,7 +22,7 @@ from flowdelta.pipeline_contracts import (
     TestPlan,
 )
 
-PRODUCER = "flowdelta.knowledge/1.1.0"
+PRODUCER = "flowdelta.knowledge/1.2.0"
 __all__ = ["compose_plan", "kb_bytes", "load_cards", "make_plan", "retrieve", "write_plan"]
 
 
