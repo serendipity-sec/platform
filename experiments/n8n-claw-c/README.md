@@ -34,7 +34,7 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 | Agentic Radar 0.14.1 | SplxAI(Zscaler) | 표시(ACE) | 없음 | 결과 동일 |
 | FlowSentry 0.1.0 | 개인 | 없음 | 없음 | 결과 동일 |
 | n8n-flowguard 0.1.1 | 개인 | 없음 | 없음 | 결과 동일 |
-| **Semgrep 1.181.0 + 팀 규칙 0.3.0** | Semgrep 엔진 | 표시 | **Delete·Update** | **구분됨** |
+| **Semgrep 1.181.0 + 팀 규칙 0.4.0** | Semgrep 엔진 | 표시 | **Delete·Update** | **구분됨** |
 
 - 공개 도구 4개는 노드 **종류·연결·설정**만 보고 `toolCode` 안의 코드 논리는 읽지 않는다.
   n8n audit의 위험 노드 목록에는 `toolCode`가 없다. Agentic Radar는 `toolCode`를 모두
@@ -64,18 +64,37 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 
 1. source: 모델이 쓴 도구 입력 `query`.
 2. sink: `helpers.httpRequest`의 method가 `DELETE`/`PATCH`/`PUT`일 때의 `url`.
-3. 제외: sink보다 앞(최상위 또는 일반 블록 안)에 소유자 필드(`owner_user_id` 등 9개) 비교가 있음.
+3. 제외: sink보다 앞(최상위 또는 일반 블록 안)에 **비소유자를 막는 지원 guard**가 있음.
+   - 소유자 필드(`owner_user_id` 등 9개)의 불일치(`!==`·`!=`)가 참일 때 `return`·`throw`하는 분기
+   - 일치 비교를 담은 변수가 거짓일 때(`!own`) `return`·`throw`하는 분기 — n8n-claw 보완 코드의 형태
+   - 쓰기가 일치(`===`·`==`) 분기 안에만 있음
 
-사례 이름·노드 이름·테이블 이름은 규칙에 없다. 개발 중 두 번 고쳤다(0.1.0: 아무 필드 비교나
-검사로 오인해 Update 누락, 0.2.0: 블록 안의 검사를 못 봐 보완된 Update 오탐). 이 7개 버전에 맞춰
-고쳤으므로 위 표는 **개발셋 결과**이며 일반화 성능 주장에 쓰지 않는다.
+**비교 구문 존재 ≠ 권한 강제 확인.** 0.4.0부터 비교식이 있다는 것만으로는 제외하지 않는다. 비교를
+계산만 하거나, 불일치 때 로그만 남기거나, 소유자를 오히려 돌려보내는 코드는 경고한다. 따라서 경고는
+"지원 guard로 비소유자 차단을 확인하지 못했다"는 뜻이고, "비교 코드가 없다"는 뜻이 아니다. 경고가 없는
+것도 "정적으로 지원 guard를 찾았다"까지이며 실제 차단이나 정책 준수를 보인 것은 아니다.
 
-팀이 직접 쓴 합성 코드(`tests/runtime/static_cases/`)로 고정한 알려진 한계:
+사례 이름·노드 이름·테이블 이름은 규칙에 없다. 개발 중 세 번 고쳤다.
+- 0.1.0: 아무 필드 비교나 검사로 오인해 Update 누락
+- 0.2.0: 블록 안의 검사를 못 봐 보완된 Update 오탐
+- 0.3.0 → 0.4.0: 비교식만 있어도 제외하던 미탐(PR #69 리뷰). 지원 차단 형태로만 제외하도록 좁혔다.
+
+이 7개 버전에 맞춰 고쳤으므로 위 표는 **개발셋 결과**이며 일반화 성능 주장에 쓰지 않는다.
+0.4.0에서도 7개 버전 결과는 0.3.0과 같다(노드·줄 동일, `evidence/semgrep-summary.json`).
+
+팀이 직접 쓴 합성 코드(`tests/runtime/static_cases/`)로 고정한 동작과 알려진 한계:
 
 | 경우 | 결과 |
 |---|---|
-| 소유자 검사를 별도 함수로 분리 | 오탐 |
-| method를 변수에 담음 | 미탐 |
+| 검사 없이 DELETE (`vulnerable.js`) | 경고 |
+| 비교값만 계산하고 DELETE (`unenforced_comparison_only.js`) | 경고 |
+| 불일치 때 `console.log`만 하고 DELETE (`unenforced_mismatch_logs.js`) | 경고 |
+| 소유자를 돌려보내고 비소유자는 DELETE (`unenforced_wrong_branch.js`) | 경고 |
+| 불일치 때 `return` / `throw`, `!own`이면 `return`, 일치 분기 안에서만 쓰기 (`guarded*.js`) | 경고 없음 |
+| 소유자 검사를 별도 함수로 분리 (`known_false_positive_helper.js`) | 오탐(판단 불가를 경고로 남김) |
+| method를 변수에 담음 (`known_false_negative_method_variable.js`) | 미탐 |
+| 비교식 피연산자 순서 반대(`caller !== row.owner_user_id`) (`known_false_positive_reversed_operands.js`) | 오탐(지원 형태가 아님) |
+| 조건을 다시 부정(`if (!(owner !== caller)) return`) (`known_false_negative_negated_condition.js`) | 미탐(조건 안의 비교만 보고 극성은 따지지 않음) |
 | `POST` 기반 쓰기, 모델이 method를 고르는 범용 HTTP Tool | 범위 밖 |
 | 다른 노드·하위 workflow·DB 정책(RLS)의 검사 | 보지 못함 |
 

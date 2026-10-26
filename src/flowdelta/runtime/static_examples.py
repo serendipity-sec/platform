@@ -14,6 +14,7 @@ from pydantic import JsonValue
 from flowdelta.contracts import ArtifactRef
 from flowdelta.ingestion import json_bytes
 from flowdelta.pipeline_contracts import Authorship, ObligationBinding, TestPlan
+from flowdelta.runtime import static_rules
 from flowdelta.runtime.static_scan import (
     StaticFinding,
     StaticScanRun,
@@ -120,7 +121,7 @@ def _finding(node: str, name: str, pointer: str, code_sha: str, line: int) -> St
     return StaticFinding(
         finding_id=f"finding-before-{node}",
         rule_id="flowdelta.n8n.agent-tool-write-without-ownership-check",
-        rule_version="0.3.0",
+        rule_version=static_rules.RULE_VERSION,
         node_id=node,
         node_name=name,
         node_type="@n8n/n8n-nodes-langchain.toolCode",
@@ -195,8 +196,8 @@ def example_runs(repo: Path) -> list[StaticScanRun]:
                 51,
             ),
         ],
-        "d67b6d58261757a685b4662573fde6e604678cd09859994cf083d7c1de425177",
-        3986,
+        "4fc523a552f3fdab64585bb6c517c16e5583370ea62520965e0d3f9357cb376c",
+        5544,
     )
     after = _run(
         repo,
@@ -204,8 +205,8 @@ def example_runs(repo: Path) -> list[StaticScanRun]:
         "snapshot-example-claw-eb6d7bc",
         AFTER_SHA,
         [],
-        "5ef57e32adab48cc42567a1bd0f211c84b14403b7368c8c479b5beef47715a7a",
-        2158,
+        "cbfd1ed7af41ba773577db1d4e9eda6ca1e586a9e4677e9cca673c0537067653",
+        3607,
     )
     return [before, after]
 

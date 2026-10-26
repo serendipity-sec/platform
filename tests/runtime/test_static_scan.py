@@ -147,7 +147,16 @@ def test_rule_on_team_written_cases(tmp_path: Path) -> None:
     )
     report = json.loads(result.stdout)
     assert report["errors"] == []
-    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 5
+    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 12
     flagged = sorted(Path(item["path"]).name for item in report["results"])
-    # Expected labels, including the two documented limitations of rule 0.3.0.
-    assert flagged == ["known_false_positive_helper.js", "vulnerable.js"]
+    # A comparison alone is not a guard: only a branch that stops a non-owner before the
+    # write (return/throw) or that alone holds the write is excluded. The "known_" cases are
+    # documented limitations (false positives are reported, false negatives are missed).
+    assert flagged == [
+        "known_false_positive_helper.js",
+        "known_false_positive_reversed_operands.js",
+        "unenforced_comparison_only.js",
+        "unenforced_mismatch_logs.js",
+        "unenforced_wrong_branch.js",
+        "vulnerable.js",
+    ]
