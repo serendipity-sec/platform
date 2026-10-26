@@ -62,6 +62,47 @@ side마다 하나. `workflow_sha256`, 도구·규칙 버전, `scanned_node_ids`,
 예시의 finding 값은 `experiments/n8n-claw-c`의 실제 실행 결과와 같다. 예시 자체의
 `authorship.origin`은 `CONTRACT_EXAMPLE`이다.
 
+## 실행 (`static_adapter`)
+
+`src/flowdelta/runtime/static_adapter.py`가 plan을 받아 before·after를 같은 template으로 검사한다.
+입력은 A가 분석한 handoff 폴더(`flowdelta snapshot` 출력), 공유 `TestPlan`, 위 정적 catalog다.
+
+```bash
+uv run --frozen --extra baseline --extra knowledge python -m flowdelta.runtime.static_cli \
+  --handoff <handoff 폴더> --plan <plan.json> --catalog <static-scan-catalog.json> --out var/<새 폴더>
+```
+
+1. **검사 전 확인** (실패하면 아무 파일도 쓰지 않음): 위 plan 규칙, case·snapshot ID가 handoff와
+   같음(`STATIC_CASE_ID_MISMATCH`, `STATIC_SNAPSHOT_ID_MISMATCH`), case의 obligation이 모두 bound
+   또는 uncovered(`STATIC_OBLIGATION_SET_MISMATCH`), workflow 바이트가 handoff의 해시·크기와 같음
+   (`ARTIFACT_INTEGRITY_MISMATCH`), 출력이 `var/` 아래 새 폴더(`OUTPUT_MUST_BE_UNDER_VAR`,
+   `OUTPUT_ALREADY_EXISTS`).
+2. **obligation**: 정적 검사는 `static-findings`·`static-raw-report`만 만든다. case obligation이 다른
+   자료(예: `final-state`)를 요구하면 bind할 수 없고 uncovered로 둬야 한다
+   (`STATIC_OBLIGATION_NOT_COVERABLE`). n8n-claw 사례의 `owner-scoped-memory-change`가 이 경우다.
+3. **대상 추출** (`static_targets.py`): agent에 `ai_tool`로 연결된 노드만 본다. 지원 노드의 코드는
+   원본 JSON Pointer·코드 해시와 함께 `var/<out>/<side>/targets/`에 쓰고, 나머지는 이유와 함께
+   `unsupported`에 남긴다(`TARGET_TYPE_NOT_SUPPORTED`, `AGENT_VERSION_NOT_SUPPORTED`,
+   `CODE_PARAMETER_MISSING`).
+4. **도구 실행**: 버전을 먼저 확인하고 side마다 한 번, plan의 `timeout_seconds`로 실행한다.
+5. **결과**: `var/<out>/runs/<side>-1.static-run.json`. 원시 보고서는 같은 폴더의 `<side>/`에만 둔다.
+
+| 상황 | status | error_code |
+|---|---|---|
+| 정상 | `SUCCEEDED` | — |
+| 지원 대상이 없음 | `NOT_RUN` | `NO_SUPPORTED_TARGET` |
+| 도구 없음 / 버전 다름 | `FAILED` | `STATIC_TOOL_NOT_FOUND` / `STATIC_TOOL_VERSION_MISMATCH` |
+| 시간 초과 | `TIMED_OUT` | `STATIC_TOOL_TIMEOUT` |
+| 도구 오류·비정상 종료 | `FAILED` | `STATIC_TOOL_ERROR` / `STATIC_TOOL_FAILED` |
+| 보고서를 읽을 수 없음 / 다른 규칙 결과 | `FAILED` | `STATIC_RAW_REPORT_INVALID` / `STATIC_UNEXPECTED_RULE` |
+| 추출한 파일을 도구가 읽지 않음 | `FAILED` | `STATIC_SCAN_INCOMPLETE` |
+| Ctrl+C | 진행 중 side `INTERRUPTED`, 남은 side `NOT_RUN` | `STATIC_INTERRUPTED` / `PREVIOUS_SIDE_INTERRUPTED` |
+
+`SUCCEEDED`가 아니면 finding은 비어 있다. 어떤 경우에도 "경고 없음"이 "안전"을 뜻하지 않는다.
+
+아직 하지 않은 것: 결과의 공용 DB 저장·조회(`feat/51-result-repo`), B가 만든 실제 plan으로 다시
+확인(공유 catalog 형식 합의 뒤, 아래 1번).
+
 ## 합의가 필요한 것
 
 1. **공유 계약에 넣는 방법**: `Template.mode`에 `STATIC_SCAN`을 더할지, 정적 catalog를 별도로
