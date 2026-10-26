@@ -1,0 +1,186 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "source",
+            "generated"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "media_type": {
+          "default": "application/json",
+          "enum": [
+            "application/json",
+            "text/plain"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 8388608,
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "path",
+        "sha256",
+        "size_bytes",
+        "kind"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "description": "A separately versioned gate; the existing Handoff schema is unchanged.",
+  "properties": {
+    "additional_fixed_nodes": {
+      "additionalProperties": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Additional Fixed Nodes",
+      "type": "object"
+    },
+    "allowed_changed_axes": {
+      "items": {
+        "const": "workflow",
+        "type": "string"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Allowed Changed Axes",
+      "type": "array"
+    },
+    "case_contract_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Case Contract Sha256",
+      "type": "string"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "family_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Family Id",
+      "type": "string"
+    },
+    "fixed_artifacts": {
+      "items": {
+        "$ref": "#/$defs/ArtifactRef"
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Fixed Artifacts",
+      "type": "array"
+    },
+    "interpretation": {
+      "const": "DECLARED_CONFIGURATION_ONLY",
+      "title": "Interpretation",
+      "type": "string"
+    },
+    "model_connections_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Model Connections Sha256",
+      "type": "string"
+    },
+    "model_nodes": {
+      "additionalProperties": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Model Nodes",
+      "type": "object"
+    },
+    "profile_format": {
+      "const": "flowdelta-fixed-profile-v1",
+      "title": "Profile Format",
+      "type": "string"
+    },
+    "profile_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "revision": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Revision",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.4.0",
+      "default": "0.4.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_case_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Source Case Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "profile_format",
+    "profile_id",
+    "revision",
+    "source_case_id",
+    "family_id",
+    "case_contract_sha256",
+    "fixed_artifacts",
+    "model_nodes",
+    "model_connections_sha256",
+    "additional_fixed_nodes",
+    "allowed_changed_axes",
+    "interpretation"
+  ],
+  "title": "FixedComparisonProfile",
+  "type": "object"
+}

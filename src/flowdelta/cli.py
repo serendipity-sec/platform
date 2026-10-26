@@ -155,6 +155,71 @@ def analyze_handoff(
         raise typer.Exit(code=2) from None
 
 
+@app.command("freeze-profile")
+def freeze_profile_command(
+    bundle: Path,
+    out: Annotated[Path, typer.Option(help="New profile JSON; parent must exist.")],
+    profile_id: Annotated[str, typer.Option()],
+    revision: Annotated[str, typer.Option()],
+    fixed_node: Annotated[list[str] | None, typer.Option(help="Additional fixed node ID.")] = None,
+) -> None:
+    """Explicitly establish a workflow-only baseline and print its canonical digest."""
+    from flowdelta.fixed_profile import freeze_profile, profile_digest, write_profile
+
+    try:
+        loaded = load_case(bundle)
+        profile = freeze_profile(
+            loaded,
+            profile_id=profile_id,
+            revision=revision,
+            additional_fixed_node_ids=tuple(fixed_node or []),
+        )
+        write_profile(profile, out, input_root=loaded.root)
+        typer.echo(json_bytes({"profile_sha256": profile_digest(profile)}).decode(), nl=False)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("check-profile")
+def check_profile_command(
+    bundle: Path,
+    profile: Annotated[Path, typer.Option()],
+    profile_sha256: Annotated[str, typer.Option(help="Trusted canonical profile digest.")],
+) -> None:
+    """Check fixed inputs without running the workflow or accepting a new baseline."""
+    from flowdelta.fixed_profile import read_profile, validate_profile
+
+    try:
+        pinned = read_profile(profile, expected_sha256=profile_sha256)
+        result = validate_profile(load_case(bundle), pinned)
+        typer.echo(json_bytes(result.model_dump(mode="json")).decode(), nl=False)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("profile-snapshot")
+def profile_snapshot_command(
+    bundle: Path,
+    profile: Annotated[Path, typer.Option()],
+    profile_sha256: Annotated[str, typer.Option(help="Trusted canonical profile digest.")],
+    out: Annotated[Path, typer.Option(help="New output directory; parent must exist.")],
+) -> None:
+    """Gate captured source bytes, then write an ordinary 0.4.0 handoff for A/B/C."""
+    from flowdelta.fixed_profile import load_profiled_handoff
+
+    try:
+        loaded, handoff, result = load_profiled_handoff(
+            bundle, profile, expected_sha256=profile_sha256
+        )
+        write_handoff(loaded, handoff, out)
+        typer.echo(json_bytes(result.model_dump(mode="json")).decode(), nl=False)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("baseline")
 def baseline(
     out: Annotated[Path, typer.Option(help="New directory below this repository's var/.")],
