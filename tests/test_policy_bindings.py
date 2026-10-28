@@ -1,5 +1,7 @@
 import copy
+import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import pytest
@@ -10,6 +12,7 @@ from flowdelta.fixed_profile import freeze_profile, validate_profile
 from flowdelta.graph import analyze
 from flowdelta.handoff import build_handoff, write_handoff
 from flowdelta.ingestion import InputError, load_case, parse_model
+from flowdelta.input_repository import InputRecord
 from flowdelta.knowledge import load_cards, make_plan
 from flowdelta.normalize import normalize
 from flowdelta.pipeline_io import read_handoff, read_pipeline_examples, validate_pipeline
@@ -177,3 +180,22 @@ def test_pipeline_refuses_foreign_rule_or_task(field: str, code: str) -> None:
 def test_schema_artifacts_are_current() -> None:
     schema = json.loads((ROOT / "schemas/policy-bindings-v1.schema.json").read_bytes())
     assert schema == PolicyBindings.model_json_schema()
+
+
+def test_schema_only_refresh_keeps_input_record_and_policy_binding(tmp_path, monkeypatch) -> None:
+    spec = importlib.util.spec_from_file_location(
+        "refresh_contract_artifacts", ROOT / "tools/refresh_contract_artifacts.py"
+    )
+    assert spec is not None and spec.loader is not None
+    refresh = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(refresh)
+    monkeypatch.setattr(refresh, "ROOT", tmp_path)
+    monkeypatch.setattr(sys, "argv", ["refresh_contract_artifacts.py", "--schemas-only"])
+    refresh.main()
+    assert json.loads((tmp_path / "schemas/input-record-v1.schema.json").read_bytes()) == (
+        InputRecord.model_json_schema()
+    )
+    assert json.loads((tmp_path / "schemas/policy-bindings-v1.schema.json").read_bytes()) == (
+        PolicyBindings.model_json_schema()
+    )
+    assert {path.name for path in tmp_path.iterdir()} == {"schemas"}
