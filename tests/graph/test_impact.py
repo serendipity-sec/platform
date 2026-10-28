@@ -91,12 +91,16 @@ def without_after_connection(handoff: Handoff, source: str, target: str) -> Hand
     return handoff.model_copy(update={"after": after})
 
 
-def with_after_connection(handoff: Handoff, source: str, target: str) -> Handoff:
+def with_after_connection(
+    handoff: Handoff, source: str, target: str, kind: str = "main"
+) -> Handoff:
     template = next(item for item in handoff.after.connections if item.source_node_id == source)
     added = template.model_copy(
         update={
             "target_node_id": target,
             "target_input_index": 0,
+            "source_output_type": kind,
+            "target_input_type": kind,
             "source": template.source.model_copy(
                 update={"json_pointer": template.source.json_pointer[:-1] + "1"}
             ),
@@ -478,3 +482,12 @@ def test_moved_reference_on_the_old_name_is_still_followed() -> None:
     assert first_hops(result, paths, "before") == {("split", "urgent"), ("split", "standard")}
     moved = [path for path in paths if hops(result, path)[0] == ("split", "urgent")]
     assert all(any("위치" in item for item in path.limitations) for path in moved)
+
+
+def test_path_over_an_ai_connection_says_it_is_not_execution_order() -> None:
+    handoff = with_after_connection(load("support-triage"), "seed", "result", kind="ai_tool")
+    result = checked("support-triage", handoff)
+    [added] = [change for change in result.changes if change.kind == "CONNECTION_CHANGED"]
+    [path] = [path for path in result.impact_paths if added.change_id in path.change_ids]
+    assert hops(result, path) == [("seed", "result")]
+    assert any("ai_tool" in item and "실행 순서" in item for item in path.limitations)

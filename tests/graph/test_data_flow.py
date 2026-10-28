@@ -34,17 +34,19 @@ def node(index: int, node_id: str) -> NormalizedNode:
     )
 
 
-def connect(source: str, target: str, port: int = 0, output: int = 0) -> Connection:
+def connect(
+    source: str, target: str, port: int = 0, output: int = 0, kind: str = "main"
+) -> Connection:
     return Connection(
         source_node_id=source,
-        source_output_type="main",
+        source_output_type=kind,
         source_output_index=output,
         target_node_id=target,
-        target_input_type="main",
+        target_input_type=kind,
         target_input_index=port,
         opaque_fields={},
         source=SourceLocation(
-            artifact_id=ARTIFACT, json_pointer=f"/connections/{source}/main/{output}/{port}"
+            artifact_id=ARTIFACT, json_pointer=f"/connections/{source}/{kind}/{output}/{port}"
         ),
     )
 
@@ -448,3 +450,16 @@ def test_error_output_does_not_hide_the_regular_output_of_the_same_node() -> Non
     )
     assert flows(graph) == {("a", "c"): (["$json.status"], ["$json.status"])}
     assert any("오류 출력" in item for item in added_limitations(graph))
+
+
+def test_ai_connection_does_not_carry_item_fields() -> None:
+    # n8n sub-nodes (model, memory, tool) attach to an agent with ai_* connections.
+    graph = graph_of(
+        ["a", "c"],
+        [connect("a", "c", kind="ai_tool")],
+        [facts("a", writes=["$json.x"]), facts("c", reads=["$json.x"])],
+    )
+    assert flows(graph) == {}
+    [edge] = graph.edges
+    assert (edge.relation, edge.output_type) == ("CONTROL", "ai_tool")
+    assert any("main이 아닌 연결 1개" in item and "ai_tool" in item for item in graph.limitations)

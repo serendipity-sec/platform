@@ -3,10 +3,17 @@
 from pathlib import Path
 
 from flowdelta.contracts import Handoff
-from flowdelta.knowledge.cards import kb_bytes, load_cards
+from flowdelta.knowledge.cards import (
+    KB_SNAPSHOT_FILENAME,
+    _KnowledgeSnapshot,
+    kb_bytes,
+    load_cards,
+)
+from flowdelta.knowledge.composition import _compose_snapshot
 from flowdelta.knowledge.composition import compose_plan as _compose
-from flowdelta.knowledge.output import validate_output_paths, write_artifacts
-from flowdelta.knowledge.retrieval import retrieve as _retrieve
+from flowdelta.knowledge.output import _write_snapshot, validate_output_paths
+from flowdelta.knowledge.retrieval import _retrieve_snapshot as _retrieve
+from flowdelta.knowledge.retrieval import retrieve as _retrieve_cards
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
     RetrievalResult,
@@ -15,7 +22,7 @@ from flowdelta.pipeline_contracts import (
     TestPlan,
 )
 
-PRODUCER = "flowdelta.knowledge/1.1.0"
+PRODUCER = "flowdelta.knowledge/1.2.0"
 __all__ = ["compose_plan", "kb_bytes", "load_cards", "make_plan", "retrieve", "write_plan"]
 
 
@@ -25,9 +32,9 @@ def retrieve(
     cards: list[ScenarioCard],
     catalog: TemplateCatalog,
     *,
-    kb_path: str = "kb-snapshot.json",
+    kb_path: str = KB_SNAPSHOT_FILENAME,
 ) -> RetrievalResult:
-    return _retrieve(handoff, analysis, cards, catalog, kb_path=kb_path, producer=PRODUCER)
+    return _retrieve_cards(handoff, analysis, cards, catalog, kb_path=kb_path, producer=PRODUCER)
 
 
 def compose_plan(
@@ -59,7 +66,8 @@ def write_plan(
     catalog: TemplateCatalog,
     output: Path,
 ) -> TestPlan:
-    validate_output_paths(output)
-    retrieval = retrieve(handoff, analysis, cards, catalog)
-    plan = compose_plan(handoff, analysis, cards, catalog, retrieval)
-    return write_artifacts(cards, retrieval, plan, output)
+    kb_path, _, _ = validate_output_paths(output)
+    snapshot = _KnowledgeSnapshot.prepare(cards, kb_path.name)
+    retrieval = _retrieve(handoff, analysis, snapshot, catalog, producer=PRODUCER)
+    plan = _compose_snapshot(handoff, analysis, snapshot, catalog, retrieval, producer=PRODUCER)
+    return _write_snapshot(snapshot, retrieval, plan, output)

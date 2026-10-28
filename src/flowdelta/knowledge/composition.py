@@ -1,9 +1,10 @@
 """Pure composition from a fixed retrieval result and canonical card snapshot."""
 
 from flowdelta.contracts import Handoff
-from flowdelta.ingestion import InputError, digest
-from flowdelta.knowledge.cards import _unique, kb_bytes
+from flowdelta.ingestion import InputError
+from flowdelta.knowledge.cards import _KnowledgeSnapshot
 from flowdelta.knowledge.retrieval import (
+    analysis_retrieval_context,
     author,
     context_fingerprint,
     exclusion_reason,
@@ -32,7 +33,21 @@ def compose_plan(
     *,
     producer: str,
 ) -> TestPlan:
-    cards = _unique(cards)
+    return _compose_snapshot(
+        handoff, analysis, _KnowledgeSnapshot.prepare(cards), catalog, retrieval, producer=producer
+    )
+
+
+def _compose_snapshot(
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    snapshot: _KnowledgeSnapshot,
+    catalog: TemplateCatalog,
+    retrieval: RetrievalResult,
+    *,
+    producer: str,
+) -> TestPlan:
+    cards = snapshot.cards
     if retrieval.analysis_id != analysis.analysis_id:
         raise InputError("RETRIEVAL_ANALYSIS_MISMATCH")
     if (
@@ -45,11 +60,15 @@ def compose_plan(
     ):
         raise InputError("RETRIEVAL_CONTEXT_MISMATCH")
     profile, node_types, fields, tokens = search_context(handoff, analysis)
+    analysis_context, impacted_node_types, impact_tokens, impact_path_signals = (
+        analysis_retrieval_context(handoff, analysis)
+    )
     expected_query = {
         "task_id": handoff.task.task_id,
         "runtime_profile": profile,
         "node_types": [str(value) for value in node_types],
         "changed_fields": [str(value) for value in fields],
+        "analysis_context": analysis_context,
         "rules_version": producer,
         "context_fingerprint": context_fingerprint(handoff, analysis, catalog, producer),
     }
@@ -60,13 +79,15 @@ def compose_plan(
         raise InputError("RETRIEVAL_CONTEXT_MISMATCH")
     if retrieval.method != "KEYWORD" or retrieval.model_version is not None:
         raise InputError("RETRIEVAL_METHOD_MISMATCH")
-    snapshot = kb_bytes(cards)
+    expected = snapshot.reference
     if (retrieval.kb_snapshot_ref.sha256, retrieval.kb_snapshot_ref.size_bytes) != (
-        digest(snapshot),
-        len(snapshot),
+        expected.sha256,
+        expected.size_bytes,
     ):
         raise InputError("RETRIEVAL_SNAPSHOT_MISMATCH")
-    if retrieval.retrieval_id != retrieval_identity(producer, snapshot, handoff, analysis, catalog):
+    if retrieval.retrieval_id != retrieval_identity(
+        producer, snapshot.data, handoff, analysis, catalog
+    ):
         raise InputError("RETRIEVAL_ID_MISMATCH")
     known = {(card.card_id, card.version) for card in cards}
     keys = [(hit.card_id, hit.card_version) for hit in retrieval.hits]
@@ -102,7 +123,14 @@ def compose_plan(
             raise InputError("RETRIEVAL_INELIGIBLE_CARD")
     for hit in retrieval.hits:
         card = by_card[(hit.card_id, hit.card_version)]
-        score, applicability, reason = hit_details(card, node_type_set, tokens)
+        score, applicability, reason = hit_details(
+            card,
+            node_type_set,
+            tokens,
+            impacted_node_types=impacted_node_types,
+            impact_tokens=impact_tokens,
+            impact_path_signals=impact_path_signals,
+        )
         if hit.applicability != applicability:
             raise InputError("RETRIEVAL_INELIGIBLE_CARD")
         if hit.score != score or hit.reason != reason:
@@ -170,6 +198,7 @@ def compose_plan(
             "rules_version": producer,
             "retrieval_empty": not retrieval.hits,
             "selection": "ranked-card" if retrieval.hits else "registered-normal-fallback",
+            "analysis_context": analysis_context,
             "security_outcome": None,
         },
     )

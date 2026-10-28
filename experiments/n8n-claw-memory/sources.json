@@ -1,0 +1,71 @@
+{
+  "schema": "pinned-research-sources-v1",
+  "repository": "https://github.com/freddy-schuetz/n8n-claw",
+  "redistribution": "REFERENCES_ONLY",
+  "files": [
+    {
+      "path": "before-feature/workflows/n8n-claw-agent.json",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/9ebf36b052b73457acab0fcead254e48986cad01/workflows/n8n-claw-agent.json",
+      "source_path": "workflows/n8n-claw-agent.json",
+      "commit": "9ebf36b052b73457acab0fcead254e48986cad01",
+      "sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+      "bytes": 75657
+    },
+    {
+      "path": "feature/workflows/n8n-claw-agent.json",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377/workflows/n8n-claw-agent.json",
+      "source_path": "workflows/n8n-claw-agent.json",
+      "commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+      "sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+      "bytes": 81027
+    },
+    {
+      "path": "before-fix/workflows/n8n-claw-agent.json",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44/workflows/n8n-claw-agent.json",
+      "source_path": "workflows/n8n-claw-agent.json",
+      "commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+      "sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "bytes": 107030
+    },
+    {
+      "path": "first-fix/workflows/n8n-claw-agent.json",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/eb6d7bc185eaecdf96885b3e17ef1f8dac93a852/workflows/n8n-claw-agent.json",
+      "source_path": "workflows/n8n-claw-agent.json",
+      "commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+      "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+      "bytes": 110981
+    },
+    {
+      "path": "reverted/workflows/n8n-claw-agent.json",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/2c6df444bdc3c31358d4b70c7d36113605654f8c/workflows/n8n-claw-agent.json",
+      "source_path": "workflows/n8n-claw-agent.json",
+      "commit": "2c6df444bdc3c31358d4b70c7d36113605654f8c",
+      "sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "bytes": 107030
+    },
+    {
+      "path": "before-september/workflows/n8n-claw-agent.json",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/c71b39e604b1563504b4ae95674b4e3647efef85/workflows/n8n-claw-agent.json",
+      "source_path": "workflows/n8n-claw-agent.json",
+      "commit": "c71b39e604b1563504b4ae95674b4e3647efef85",
+      "sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca",
+      "bytes": 127476
+    },
+    {
+      "path": "september/workflows/n8n-claw-agent.json",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/fe57d162023e0e2b5f56fb75ea5990b48a635d1e/workflows/n8n-claw-agent.json",
+      "source_path": "workflows/n8n-claw-agent.json",
+      "commit": "fe57d162023e0e2b5f56fb75ea5990b48a635d1e",
+      "sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452",
+      "bytes": 143757
+    },
+    {
+      "path": "september/tests/memory-governance.test.js",
+      "source_url": "https://github.com/freddy-schuetz/n8n-claw/blob/fe57d162023e0e2b5f56fb75ea5990b48a635d1e/tests/memory-governance.test.js",
+      "source_path": "tests/memory-governance.test.js",
+      "commit": "fe57d162023e0e2b5f56fb75ea5990b48a635d1e",
+      "sha256": "e0b45da2be33dee5aaa5be09b4abf6ff7254ab1f62f39f9355ad93399a9fc1fa",
+      "bytes": 14190
+    }
+  ]
+}

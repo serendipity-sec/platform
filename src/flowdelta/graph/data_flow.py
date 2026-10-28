@@ -4,7 +4,7 @@ from collections import deque
 from typing import Literal, TypeGuard
 
 from flowdelta.contracts import NodeSemantics, NormalizedWorkflow
-from flowdelta.graph.control import DATA_ORIGIN, edge_id, location_text
+from flowdelta.graph.control import DATA_ORIGIN, edge_id, is_main, location_text
 from flowdelta.pipeline_contracts import GraphEdge, SemanticGraph
 
 PASS_THROUGH = "$json.*:unchanged-item"
@@ -48,7 +48,8 @@ def _parents(graph: SemanticGraph) -> dict[str, list[tuple[str, int]]]:
     """(parent, output port) per node; the port tells an error output from a regular one."""
     parents: dict[str, set[tuple[str, int]]] = {}
     for edge in graph.edges:
-        if edge.relation == "CONTROL":
+        # Items travel over main connections only; ai_* links carry no $json fields.
+        if edge.relation == "CONTROL" and is_main(edge.output_type, edge.input_type):
             parents.setdefault(edge.target_node_id, set()).add(
                 (edge.source_node_id, edge.output_port)
             )
