@@ -199,6 +199,16 @@ def load_case(bundle_dir: Path) -> LoadedCase:
     provenance = parse_model(Provenance, documents[case.provenance_ref])
     if task.provenance_ref != case.provenance_ref or policy.provenance_ref != case.provenance_ref:
         raise InputError("PROVENANCE_REFERENCE_MISMATCH")
+    if policy.bindings is not None:
+        from flowdelta.normalize import normalize
+        from flowdelta.policy_bindings import validate_policy_bindings
+
+        refs = {ref.path: ref.artifact_id for ref in manifest.artifacts}
+        validate_policy_bindings(
+            policy,
+            normalize(documents[case.before_ref], refs[case.before_ref]),
+            normalize(documents[case.after_ref], refs[case.after_ref]),
+        )
     return LoadedCase(
         root,
         case,

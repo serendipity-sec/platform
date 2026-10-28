@@ -196,12 +196,89 @@ class PolicyRule(Contract):
     rationale: NonEmpty
 
 
+class BindingValue(BaseModel):
+    """Strict declarations; no expressions here are executed or inferred from text."""
+
+    model_config = ConfigDict(strict=True, extra="forbid", allow_inf_nan=False)
+
+
+class PolicyEvidence(BindingValue):
+    kind: Literal["RESEARCH_POLICY", "BUSINESS_REQUIREMENT", "PUBLIC_IMPLEMENTATION"]
+    reference: NonEmpty
+    rationale: NonEmpty
+
+
+class PolicyNodeTarget(BindingValue):
+    side: Literal["before", "after"]
+    node_id: NonEmpty
+    json_pointer: NonEmpty | None = None
+
+
+class PolicyResource(BindingValue):
+    resource: NonEmpty
+    # Business data fields, NOT workflow JSON Pointers.
+    fields: Annotated[list[NonEmpty], Field(min_length=1)]
+
+
+class PolicySubject(PolicyNodeTarget):
+    # Declared output data path; existence/trust is not proved by static node lookup.
+    field_path: Annotated[list[NonEmpty], Field(min_length=1)]
+
+
+class PolicyEffect(BindingValue):
+    operation: NonEmpty
+    condition: NonEmpty
+
+
+class PolicyException(BindingValue):
+    condition: NonEmpty
+    evidence_refs: Annotated[list[PolicyEvidence], Field(min_length=1)]
+
+    @model_validator(mode="after")
+    def explicit_policy_basis(self) -> Self:
+        if not any(
+            ref.kind in {"RESEARCH_POLICY", "BUSINESS_REQUIREMENT"} for ref in self.evidence_refs
+        ):
+            raise ValueError("an implementation alone cannot authorize a policy exception")
+        return self
+
+
+class ObjectOwnershipBinding(BindingValue):
+    rule_id: Identifier
+    policy_kind: Literal["OBJECT_OWNERSHIP"]
+    applies_to: Annotated[list[PolicyNodeTarget], Field(min_length=1, max_length=128)]
+    protected_resource: PolicyResource
+    subject: PolicySubject
+    forbidden_effect: PolicyEffect
+    # Required even when empty: an admin exception is never implicit.
+    allowed_exceptions: list[PolicyException]
+    evidence_refs: Annotated[list[PolicyEvidence], Field(min_length=1)]
+
+
+class PolicyBindings(BindingValue):
+    version: Literal["1.0.0"]
+    bindings: Annotated[list[ObjectOwnershipBinding], Field(min_length=1, max_length=128)]
+
+    @model_validator(mode="after")
+    def unique_bindings(self) -> Self:
+        ids = [item.rule_id for item in self.bindings]
+        if len(set(ids)) != len(ids):
+            raise ValueError("one binding declaration per rule; use multiple applies_to targets")
+        for item in self.bindings:
+            targets = [(target.side, target.node_id) for target in item.applies_to]
+            if len(set(targets)) != len(targets):
+                raise ValueError("duplicate policy target")
+        return self
+
+
 class Policy(InputContract):
     policy_id: Identifier
     policy_version: NonEmpty
     interpretation: Literal["DECLARED_ONLY"]
     rules: Annotated[list[PolicyRule], Field(min_length=1)]
     provenance_ref: str
+    # Preserve legacy bytes and hashes when the optional versioned feature is absent.
+    bindings: PolicyBindings | None = Field(default=None, exclude_if=lambda value: value is None)
     _ref = field_validator("provenance_ref")(validate_relative_path)
 
     @model_validator(mode="after")

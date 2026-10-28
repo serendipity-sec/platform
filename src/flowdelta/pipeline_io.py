@@ -120,6 +120,21 @@ def read_handoff(bundle: Path) -> Handoff:
         for dependency in snapshot.dependencies:
             if refs.get(dependency.artifact_ref.path) != dependency.artifact_ref:
                 raise InputError("DEPENDENCY_SOURCE_MISMATCH")
+    if result.policy.bindings is not None:
+        from flowdelta.normalize import normalize
+        from flowdelta.policy_bindings import resolve_policy_bindings, validate_policy_bindings
+
+        raw_before = normalize(docs[case.before_ref], refs[case.before_ref].artifact_id)
+        raw_after = normalize(docs[case.after_ref], refs[case.after_ref].artifact_id)
+        validate_policy_bindings(result.policy, raw_before, raw_after)
+        # Pointer validation must remain tied to original bytes after a handoff round trip.
+        for raw, normalized in [(raw_before, result.before), (raw_after, result.after)]:
+
+            def locations(workflow: NormalizedWorkflow) -> list[tuple[object, ...]]:
+                return [(node.node_id, node.source, node.parameters) for node in workflow.nodes]
+
+            _same(locations(raw), locations(normalized), "POLICY_BINDING_SOURCE_MISMATCH")
+        resolve_policy_bindings(result)
     return result
 
 
@@ -185,6 +200,15 @@ def validate_pipeline(
     plan: TestPlan,
 ) -> None:
     """Cross-file contracts, independent of A/B's future generation algorithms."""
+    from flowdelta.policy_bindings import resolve_policy_bindings
+
+    resolve_policy_bindings(handoff)
+    policy_ids = {rule.rule_id for rule in handoff.policy.rules}
+    for impact in analysis.impact_paths:
+        if not set(impact.policy_rule_ids).issubset(policy_ids):
+            raise InputError("IMPACT_PATH_POLICY_UNKNOWN")
+        if not set(impact.task_ids).issubset({handoff.task.task_id}):
+            raise InputError("IMPACT_PATH_TASK_UNKNOWN")
     case = handoff.case
     before, after = handoff.snapshots.snapshots
     _same((analysis.case_id, plan.case_id), (case.case_id, case.case_id), "CASE_ID_MISMATCH")

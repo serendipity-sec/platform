@@ -1,0 +1,43 @@
+{
+  "bindings": [
+    {
+      "allowed_exceptions": [],
+      "applies_to": [
+        {
+          "json_pointer": "/nodes/2/parameters/responseBody",
+          "node_id": "response",
+          "side": "after"
+        }
+      ],
+      "evidence_refs": [
+        {
+          "kind": "RESEARCH_POLICY",
+          "rationale": "Synthetic declared subject header for node-link testing; this header is not configured or verified as trusted by the order example.",
+          "reference": "examples/policy-bindings-v1/README.md#research-policy"
+        }
+      ],
+      "forbidden_effect": {
+        "condition": "Return another owner's order data.",
+        "operation": "respond"
+      },
+      "policy_kind": "OBJECT_OWNERSHIP",
+      "protected_resource": {
+        "fields": [
+          "order_id",
+          "status"
+        ],
+        "resource": "orders"
+      },
+      "rule_id": "own-order",
+      "subject": {
+        "field_path": [
+          "headers",
+          "x-fixture-subject"
+        ],
+        "node_id": "request",
+        "side": "after"
+      }
+    }
+  ],
+  "version": "1.0.0"
+}
