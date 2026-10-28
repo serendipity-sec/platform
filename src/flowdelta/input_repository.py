@@ -37,6 +37,8 @@ class InputRecord(Contract):
 
 
 class InputRepository(Protocol):
+    """Adapters accept only handoffs that round-trip through the shared file format."""
+
     def save(self, bundle: Path, profile: Path, *, expected_profile_sha256: str) -> InputRecord: ...
 
     def get(self, record: InputRecord) -> Handoff: ...
@@ -99,6 +101,15 @@ def _artifact(handoff: Handoff, artifact_id: str) -> ArtifactRef:
     raise InputError("INPUT_ARTIFACT_NOT_FOUND")
 
 
+def _write_checked_handoff(
+    loaded: LoadedCase, handoff: Handoff, record: InputRecord, destination: Path
+) -> None:
+    # Use the consumer's actual serialization, paths, depth and size limits on both adapters.
+    # The caller owns this private directory and removes it if validation fails.
+    write_handoff(loaded, handoff, destination)
+    _check_handoff(record, read_handoff(destination))
+
+
 @dataclass(frozen=True)
 class _MemoryEntry:
     record: bytes
@@ -114,6 +125,11 @@ class MemoryInputRepository:
 
     def save(self, bundle: Path, profile: Path, *, expected_profile_sha256: str) -> InputRecord:
         loaded, handoff, record = _prepare(bundle, profile, expected_profile_sha256)
+        try:
+            with tempfile.TemporaryDirectory(prefix=".input-check-") as directory:
+                _write_checked_handoff(loaded, handoff, record, Path(directory) / "handoff")
+        except OSError as exc:
+            raise InputError("INPUT_REPOSITORY_WRITE_ERROR") from exc
         entry = _MemoryEntry(
             json_bytes(record.model_dump(mode="json")),
             handoff.model_copy(deep=True),
@@ -173,9 +189,7 @@ class FileInputRepository:
                 return self._existing(record)
             stage = Path(tempfile.mkdtemp(prefix=".input-stage-", dir=root))
             try:
-                write_handoff(loaded, handoff, stage / "handoff")
-                # Exercise the consumer's actual per-file, depth and total-size limits.
-                _check_handoff(record, read_handoff(stage / "handoff"))
+                _write_checked_handoff(loaded, handoff, record, stage / "handoff")
                 write_new_bytes(stage / "record.json", json_bytes(record.model_dump(mode="json")))
                 for directory in sorted(stage.rglob("*"), reverse=True):
                     if directory.is_dir():
