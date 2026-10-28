@@ -1,0 +1,55 @@
+{
+  "authorship": {
+    "extensions": {},
+    "note": "C가 등록한 정적 검사 template 목록. 검사 실행 결과가 아니다.",
+    "origin": "MODULE_OUTPUT",
+    "producer": "flowdelta.runtime.static_scan",
+    "schema_version": "0.4.0"
+  },
+  "catalog_id": "static-scan-catalog-v1",
+  "extensions": {},
+  "schema_version": "0.4.0",
+  "templates": [
+    {
+      "executes_target_code": false,
+      "extensions": {},
+      "mode": "STATIC_SCAN",
+      "network": "NONE",
+      "purpose": "AI Agent가 호출하는 toolCode가 모델 입력으로 쓰기·삭제 요청을 보내기 전에 대상 기록의 소유자를 비교하는지 정적으로 확인한다.",
+      "result_kinds": [
+        "static-findings",
+        "static-raw-report"
+      ],
+      "schema_version": "0.4.0",
+      "targets": [
+        {
+          "agent_node_type": "@n8n/n8n-nodes-langchain.agent",
+          "agent_type_versions": [
+            "3.1"
+          ],
+          "code_parameter": "jsCode",
+          "connection_type": "ai_tool",
+          "extensions": {},
+          "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+          "schema_version": "0.4.0",
+          "type_versions": [
+            "1.2"
+          ]
+        }
+      ],
+      "template_id": "static-agent-tool-ownership",
+      "timeout_seconds": 120,
+      "tool": {
+        "extensions": {},
+        "name": "semgrep",
+        "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+        "rule_path": "runtime/static-scan/rules/agent-tool-write-without-ownership-check.yaml",
+        "rule_sha256": "33aa37f9784868226943346d0794643a90498bcc5ebc14d665c44046f8acf034",
+        "rule_version": "0.4.0",
+        "schema_version": "0.4.0",
+        "version": "1.181.0"
+      },
+      "version": "0.1.0"
+    }
+  ]
+}
