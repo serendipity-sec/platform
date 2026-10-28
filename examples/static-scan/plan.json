@@ -1,0 +1,49 @@
+{
+  "after_snapshot_id": "snapshot-example-claw-eb6d7bc",
+  "analysis_id": "analysis-example-claw-first-fix",
+  "attempts_per_side": 1,
+  "authorship": {
+    "extensions": {},
+    "note": "C가 작성한 기대 입출력 예시. B가 생성한 plan이나 실제 C 실행 기록이 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "flowdelta.runtime.static_examples",
+    "schema_version": "0.4.0"
+  },
+  "before_snapshot_id": "snapshot-example-claw-4d1b1b7",
+  "case_id": "n8n-claw-memory-first-fix",
+  "catalog_id": "static-scan-catalog-v1",
+  "extensions": {},
+  "initial_state_ref": {
+    "artifact_id": "initial-state",
+    "extensions": {},
+    "kind": "source",
+    "media_type": "application/json",
+    "path": "input/state/initial.json",
+    "schema_version": "0.4.0",
+    "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "size_bytes": 3
+  },
+  "normal_input": {},
+  "obligation_bindings": [
+    {
+      "extensions": {},
+      "obligation_id": "owner-check-before-write",
+      "required_artifact_kinds": [
+        "static-findings"
+      ],
+      "schema_version": "0.4.0"
+    }
+  ],
+  "plan_id": "plan-example-claw-first-fix-static",
+  "planner_metadata": {
+    "security_outcome": null
+  },
+  "retrieval_ref": null,
+  "schema_version": "0.4.0",
+  "template_id": "static-agent-tool-ownership",
+  "template_version": "0.1.0",
+  "timeout_seconds": 120,
+  "uncovered_obligation_ids": [
+    "no-cross-user-memory-change"
+  ]
+}
