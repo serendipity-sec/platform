@@ -129,3 +129,18 @@ DB 이미지는 로컬 개발용이며 실제 pull한 digest를 runtime 설정�
 
 ⬜ 미정. 재사용할 엔진들의 라이선스를 확인한 뒤 결정합니다.
 (Apache-2.0 계열 엔진을 링크할 경우 Apache-2.0이 무난하고, 특허 조항이 있어 팀에도 유리합니다.)
+
+## C 정적 검사 도구 적합성 — 2026-10-25
+
+#51 n8n-claw 사례의 도구 비교(`experiments/n8n-claw-c`)와 C 정적 검사 template에 사용했다. 각 LICENSE
+원문을 직접 확인했다. 도구는 무수정 실행만 했으며 소스·규칙을 저장소에 복사하거나 vendor하지 않았다.
+팀 규칙(`runtime/static-scan/rules/`)은 팀이 직접 작성했다. 분석 대상 n8n-claw 원본은 LICENSE 파일이
+없어 재배포하지 않고 고정 URL·해시만 기록한다.
+
+| 구성요소 | 용도 | 고정 버전 | 직접 확인한 LICENSE | 적용 사항 |
+|---|---|---|---|---|
+| Semgrep CE | C 정적 검사 엔진(등록 template) | 1.181.0 | [LGPL-2.1](https://github.com/semgrep/semgrep/blob/v1.181.0/LICENSE) | 무수정 CLI 실행. 링크·수정·재배포 없음. 커뮤니티 규칙 미사용 |
+| Agentic Radar | 비교 도구 | 0.14.1 | [Apache-2.0](https://github.com/splx-ai/agentic-radar/blob/v0.14.1/LICENSE) | 무수정 실행. 결과 수치만 기록 |
+| FlowSentry | 비교 도구 | 0.1.0 (PyPI sdist) | Apache-2.0: PyPI sdist의 `LICENSE`. GitHub 저장소에는 LICENSE가 감지되지 않음 | 무수정 실행. 결과 수치만 기록 |
+| n8n-flowguard | 비교 도구 | 0.1.1 (npm) | [AGPL-3.0](https://github.com/MohibShaikh/FlowGuard/blob/main/LICENSE), npm `AGPL-3.0-only` | 무수정 독립 실행만. 링크·수정·서비스 통합 없음 |
+| n8n `audit` | 비교 기준선 | 2.42.6 | 위 팀장 기준 환경의 Sustainable Use License | 로컬 비상업 실행. 바이너리·소스 미포함 |
