@@ -5,6 +5,21 @@ Refs #48, #49, #61. `OBJECT_OWNERSHIP`과 노드 연결/비대칭/잘못된 참�
 이 PR은 입력과 공개 resolver를 제공한다. **main의 `analyze()`는 아직 binding을 연결하지 않는다.**
 #61 소비자 변경과 리뷰를 거쳐야 한다. 정책 위반 판정, 주체 인증, JS 의미 해석은 포함하지 않는다.
 
+## #59 위의 통합 준비 — 2026-10-28
+
+#84의 base는 `feat/48-pipeline-runner`(#59, `ea608a6a4c5d58d8c45f25939f35f481e445c0dc`)다.
+#58 → #59 → #84 순서로 검토·병합해야 한다. #58/#59 및 A(#61) branch는 변경하지 않았다.
+충돌한 refresh 도구에서 InputRecord·PolicyBindings schema를 `refresh_schemas()`에 모두
+보존하고 `--schemas-only` 회귀 테스트를 추가했다.
+
+통합 코드로 기존 profile 해시/expected.json을 유지한 등록 주문의 실제 n8n before/after
+실행 및 독립 정상 업무 검사 18개를 다시 수행했다. 생성한 summary/verification을 그대로
+복사하고 README를 그 값으로 생성했다. [실제 실행 예제](../examples/module-outputs/profiled-runner/README.md)를
+참고한다. 이 실행은 binding 없는 정상 주문이다. 아래 #61 정책 모듈 조합은 별도로 재검증했다.
+정책 조합의 analysis/plan ID와 해시는 통합 전과 같았다. 실제 analyze 자동 소비는 여전히 후속이다.
+
+draft는 계약 version/pointer/subject 범위의 소비자 검토와 선행 PR의 최신 재승인까지 유지한다.
+
 ## 위치와 버전·호환성
 
 `policy.json`의 선택적 `bindings` 필드는 `{ "version": "1.0.0", "bindings": [...] }`다.
