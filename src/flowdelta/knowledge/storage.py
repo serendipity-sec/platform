@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 
+from pydantic import JsonValue
 from sqlalchemy import Connection, Engine, text
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -18,7 +19,9 @@ _TRANSACTION_STATE_KEY = "flowdelta_knowledge_storage_transaction"
 _BLOB_LOCK_SQL = "SELECT pg_advisory_lock(hashtextextended(:checksum, 0))"
 _BLOB_UNLOCK_SQL = "SELECT pg_advisory_unlock(hashtextextended(:checksum, 0))"
 _BLOB_REFERENCE_SQL = text(
-    "SELECT EXISTS (SELECT 1 FROM knowledge.source_revision WHERE sha256=:checksum)"
+    """SELECT EXISTS (SELECT 1 FROM knowledge.source_revision WHERE sha256=:checksum)
+        OR EXISTS (SELECT 1 FROM knowledge.sync_failure
+                   WHERE sha256=:checksum AND raw_path IS NOT NULL)"""
 )
 
 
@@ -63,6 +66,44 @@ def storage_transaction(engine: Engine) -> Iterator[Connection]:
 def save_raw(root: Path, payload: bytes) -> tuple[str, str]:
     relative, checksum, _, _ = _write_raw(root, payload)
     return relative, checksum
+
+
+def save_raw_for_transaction(connection: Connection, root: Path, payload: bytes) -> tuple[str, str]:
+    """Write a raw blob whose lifetime is tied to the current storage transaction."""
+    state = connection.info.get(_TRANSACTION_STATE_KEY)
+    if not isinstance(state, _StorageTransactionState) or not connection.in_transaction():
+        raise InputError("KNOWLEDGE_STORAGE_TRANSACTION_REQUIRED")
+
+    checksum = digest(payload)
+    if checksum not in state.locked_checksums:
+        connection.execute(text(_BLOB_LOCK_SQL), {"checksum": checksum}).scalar_one()
+        state.locked_checksums.add(checksum)
+
+    relative, checksum, created, target = _write_raw(root, payload)
+    if created:
+        state.created_files[target] = (root.resolve(), checksum)
+    return relative, checksum
+
+
+def read_raw(root: Path, relative: str, checksum: str) -> bytes:
+    """Read and verify a content-addressed raw file without following symlinks."""
+    if (
+        len(checksum) != 64
+        or any(char not in "0123456789abcdef" for char in checksum)
+        or relative != f"{checksum[:2]}/{checksum}.json"
+    ):
+        raise InputError("KNOWLEDGE_RAW_PATH_INVALID")
+    root = root.resolve()
+    target = root / relative
+    if target.is_symlink() or not target.resolve().is_relative_to(root):
+        raise InputError("KNOWLEDGE_RAW_PATH_INVALID")
+    try:
+        payload = target.read_bytes()
+    except OSError:
+        raise InputError("KNOWLEDGE_RAW_STORAGE_FAILED") from None
+    if digest(payload) != checksum:
+        raise InputError("KNOWLEDGE_RAW_INTEGRITY_MISMATCH")
+    return payload
 
 
 def _write_raw(root: Path, payload: bytes) -> tuple[str, str, bool, Path]:
@@ -120,25 +161,27 @@ def save_record(
     root: Path,
     source: str,
     external_id: str,
-    raw_payload: bytes,
+    document: dict[str, JsonValue] | bytes,
     *,
+    raw_payload: bytes | None = None,
     modified_at: str | None = None,
+    allow_untimestamped_replacement: bool = True,
 ) -> str:
     state = connection.info.get(_TRANSACTION_STATE_KEY)
     if not isinstance(state, _StorageTransactionState) or not connection.in_transaction():
         raise InputError("KNOWLEDGE_STORAGE_TRANSACTION_REQUIRED")
 
-    document = parse_json(raw_payload)
-    payload = raw_payload
+    if isinstance(document, bytes):
+        normalized_document = parse_json(document)
+        payload = document if raw_payload is None else raw_payload
+    else:
+        normalized_document = document
+        payload = json_bytes(normalized_document) if raw_payload is None else raw_payload
+    if raw_payload is not None:
+        parse_json(payload)
     parsed_modified_at = _parse_modified_at(modified_at)
     checksum = digest(payload)
-    if checksum not in state.locked_checksums:
-        connection.execute(text(_BLOB_LOCK_SQL), {"checksum": checksum}).scalar_one()
-        state.locked_checksums.add(checksum)
-
-    path, checksum, created, target = _write_raw(root, payload)
-    if created:
-        state.created_files[target] = (root.resolve(), checksum)
+    path, checksum = save_raw_for_transaction(connection, root, payload)
     values = {
         "source": source,
         "external_id": external_id,
@@ -146,7 +189,7 @@ def save_record(
         "path": path,
         "size": len(payload),
         "modified": parsed_modified_at,
-        "document": json_bytes(document).decode("utf-8"),
+        "document": json_bytes(normalized_document).decode("utf-8"),
     }
     connection.execute(
         text("""
@@ -156,6 +199,7 @@ def save_record(
     """),
         values,
     )
+    # Retry callers disable replacing a row when neither revision has a timestamp.
     result = connection.execute(
         text("""
         INSERT INTO knowledge.source_record(source, external_id, sha256, modified_at, document)
@@ -163,11 +207,27 @@ def save_record(
                 CAST(:document AS jsonb))
         ON CONFLICT (source, external_id) DO UPDATE SET
             sha256=EXCLUDED.sha256, modified_at=EXCLUDED.modified_at, document=EXCLUDED.document
-        WHERE source_record.modified_at IS NULL
-           OR EXCLUDED.modified_at >= source_record.modified_at
+        WHERE (
+                EXCLUDED.modified_at IS NOT NULL
+                AND (
+                    source_record.modified_at IS NULL
+                    OR EXCLUDED.modified_at >= source_record.modified_at
+                )
+              )
+           OR (
+                EXCLUDED.modified_at IS NULL
+                AND source_record.modified_at IS NULL
+                AND (
+                    :allow_untimestamped_replacement
+                    OR EXCLUDED.sha256 = source_record.sha256
+                )
+              )
         RETURNING sha256
     """),
-        values,
+        {
+            **values,
+            "allow_untimestamped_replacement": allow_untimestamped_replacement,
+        },
     ).scalar_one_or_none()
     if result is None:
         raise InputError("KNOWLEDGE_SOURCE_RECORD_STALE")

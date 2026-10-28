@@ -58,6 +58,7 @@ uv run --frozen --extra baseline python -m flowdelta.cli conformance --out var/n
 - [팀 구현 계획과 현재 착수 명세](https://github.com/serendipity-sec/docs/blob/main/plans/team-implementation.md#current-start)
 - [준비된 코드·실행 근거·남은 한계](https://github.com/serendipity-sec/docs/blob/main/plans/current-readiness.md)
 - 함수 계약: [interfaces.py](src/flowdelta/interfaces.py), 데이터 계약: [입력 계약](docs/INPUT_CONTRACT_04.md)
+- A 분석 결과(`analysis.json`) 읽는 법: [docs/ANALYSIS.md](docs/ANALYSIS.md)
 
 `examples/contracts/`의 분석·계획은 **CONTRACT_EXAMPLE**입니다. 실제 모듈 출력이 아닙니다.
 실제 출력은 `flowdelta check-pipeline <bundle>`로 파일 연결을 확인합니다.

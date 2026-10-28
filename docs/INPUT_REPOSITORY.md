@@ -5,6 +5,13 @@
 고정 profile 검사를 통과한 입력의 원문, case, snapshot, obligation, source artifact 참조를
 기존 Handoff 형태로 저장하고 정확한 기록으로 읽는다.
 
+두 adapter의 허용 입력은 같다. profile 검사 외에도 공통 `write_handoff` → `read_handoff`
+왕복 검사를 통과해야 저장된다. 생성 파일명·ID 충돌, 정규화 후 문서 깊이/파일 크기,
+원문과 생성 파일을 합친 bundle 용량 제한을 같은 오류 코드로 거부한다.
+메모리 adapter도 저장 전에 임시 디렉터리에서 이 검사를 수행하므로 임시 디스크 공간과
+쓰기 권한이 필요하다. 검사 뒤 임시 파일을 지우며, 실패한 입력은 어느 adapter에서도 ID를
+예약하지 않는다. 조회용 메모리 모델 전체에 추가 JSON 깊이 제한을 적용하지는 않는다.
+
 ```python
 from pathlib import Path
 from flowdelta.graph import analyze

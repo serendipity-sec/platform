@@ -4,6 +4,7 @@ from flowdelta.contracts import Handoff
 from flowdelta.ingestion import InputError
 from flowdelta.knowledge.cards import _KnowledgeSnapshot
 from flowdelta.knowledge.retrieval import (
+    analysis_retrieval_context,
     author,
     context_fingerprint,
     exclusion_reason,
@@ -59,11 +60,15 @@ def _compose_snapshot(
     ):
         raise InputError("RETRIEVAL_CONTEXT_MISMATCH")
     profile, node_types, fields, tokens = search_context(handoff, analysis)
+    analysis_context, impacted_node_types, impact_tokens, impact_path_signals = (
+        analysis_retrieval_context(handoff, analysis)
+    )
     expected_query = {
         "task_id": handoff.task.task_id,
         "runtime_profile": profile,
         "node_types": [str(value) for value in node_types],
         "changed_fields": [str(value) for value in fields],
+        "analysis_context": analysis_context,
         "rules_version": producer,
         "context_fingerprint": context_fingerprint(handoff, analysis, catalog, producer),
     }
@@ -118,7 +123,14 @@ def _compose_snapshot(
             raise InputError("RETRIEVAL_INELIGIBLE_CARD")
     for hit in retrieval.hits:
         card = by_card[(hit.card_id, hit.card_version)]
-        score, applicability, reason = hit_details(card, node_type_set, tokens)
+        score, applicability, reason = hit_details(
+            card,
+            node_type_set,
+            tokens,
+            impacted_node_types=impacted_node_types,
+            impact_tokens=impact_tokens,
+            impact_path_signals=impact_path_signals,
+        )
         if hit.applicability != applicability:
             raise InputError("RETRIEVAL_INELIGIBLE_CARD")
         if hit.score != score or hit.reason != reason:
@@ -186,6 +198,7 @@ def _compose_snapshot(
             "rules_version": producer,
             "retrieval_empty": not retrieval.hits,
             "selection": "ranked-card" if retrieval.hits else "registered-normal-fallback",
+            "analysis_context": analysis_context,
             "security_outcome": None,
         },
     )

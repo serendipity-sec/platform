@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -156,15 +157,64 @@ def test_record_schema_matches_export():
     assert path.read_bytes() == json_bytes(InputRecord.model_json_schema())
 
 
-def test_memory_accepts_valid_per_document_depth(bundle, tmp_path):
+def test_adapters_accept_valid_per_document_depth(repository, bundle, tmp_path):
     nested = "leaf"
     for _ in range(62):
         nested = {"n": nested}
     edit_document(bundle, "task.json", lambda v: v.update(extensions={"test.deep": nested}))
     profile, checksum = setup_profile(bundle, tmp_path)
-    repo = MemoryInputRepository()
-    record = repo.save(bundle, profile, expected_profile_sha256=checksum)
-    assert repo.get(record).task.extensions["test.deep"] == nested
+    record = repository.save(bundle, profile, expected_profile_sha256=checksum)
+    assert repository.get(record).task.extensions["test.deep"] == nested
+
+
+@pytest.mark.parametrize("invalid", ["generated_path", "normalized_depth", "bundle_size"])
+def test_adapters_reject_unstorable_handoffs_without_reserving_id(
+    repository, bundle, tmp_path, invalid
+):
+    if invalid == "generated_path":
+        (bundle / "environment.json").rename(bundle / "semantics.json")
+        manifest_path = bundle / "manifest.json"
+        manifest = json.loads(manifest_path.read_bytes())
+        for ref in manifest["artifacts"]:
+            if ref["path"] == "environment.json":
+                ref["path"] = "semantics.json"
+        manifest_path.write_bytes(json_bytes(manifest))
+        edit_document(bundle, "case.json", lambda v: v.update(environment_ref="semantics.json"))
+        error = "GENERATED_PATH_COLLISION"
+    elif invalid == "normalized_depth":
+        nested = "leaf"
+        for _ in range(63):
+            nested = {"n": nested}
+        # Normalization wraps unknown top-level fields in opaque_fields, adding a level.
+        edit_document(bundle, "workflow/after.json", lambda v: v.update(deep=nested))
+        error = "JSON_DEPTH_LIMIT"
+    else:
+        for side in ("before", "after"):
+            edit_document(
+                bundle, f"workflow/{side}.json", lambda v: v.update(padding="x" * 7_900_000)
+            )
+        edit_document(
+            bundle,
+            "state/initial.json",
+            lambda v: v.update(extensions={"test.padding": "x" * 2_000_000}),
+        )
+        error = "BUNDLE_SIZE_LIMIT"
+    profile, checksum = setup_profile(bundle, tmp_path)
+    original_bytes = {p.relative_to(bundle): p.read_bytes() for p in bundle.rglob("*.json")}
+    # Freeze/load accepts the source; serialization/read-back must reject it on both adapters.
+    for _ in range(2):
+        with pytest.raises(InputError, match=f"^{error}$"):
+            repository.save(bundle, profile, expected_profile_sha256=checksum)
+    assert original_bytes == {p.relative_to(bundle): p.read_bytes() for p in bundle.rglob("*.json")}
+    if isinstance(repository, FileInputRepository):
+        assert not repository.root.exists() or not list(repository.root.iterdir())
+    else:
+        assert not repository._entries
+    if invalid == "normalized_depth":
+        # Candidate-only repair retains the same profile and case namespace.
+        edit_document(bundle, "workflow/after.json", lambda v: v.pop("deep"))
+        record = repository.save(bundle, profile, expected_profile_sha256=checksum)
+        assert repository.get(record).case.case_id == record.case_id
 
 
 def test_file_checks_readability_before_publication(bundle, tmp_path, monkeypatch):
