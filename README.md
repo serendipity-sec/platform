@@ -7,6 +7,9 @@ A의 첫 구조 분석, B의 로컬 카드 검색·계획, C의 등록 주문 �
 
 **현재 계약: 0.4.0** · [입력 계약과 이전 방법](docs/INPUT_CONTRACT_04.md)
 
+Workflow만 바꾸는 MVP 비교에는 [고정 profile 검사](docs/FIXED_PROFILE.md)를 사용합니다.
+기준 입력의 해시를 별도로 고정하고 후보의 환경·정책·의존성·모델 설정 변경을 거부합니다.
+
 설계·개발 계획·준비 현황은 [팀 문서 저장소](https://github.com/serendipity-sec/docs)에서 관리합니다.
 이 저장소는 코드·Schema·예제·실행 환경과 해당 버전의 사용 설명을 함께 제공합니다.
 
@@ -55,6 +58,7 @@ uv run --frozen --extra baseline python -m flowdelta.cli conformance --out var/n
 - [팀 구현 계획과 현재 착수 명세](https://github.com/serendipity-sec/docs/blob/main/plans/team-implementation.md#current-start)
 - [준비된 코드·실행 근거·남은 한계](https://github.com/serendipity-sec/docs/blob/main/plans/current-readiness.md)
 - 함수 계약: [interfaces.py](src/flowdelta/interfaces.py), 데이터 계약: [입력 계약](docs/INPUT_CONTRACT_04.md)
+- A 분석 결과(`analysis.json`) 읽는 법: [docs/ANALYSIS.md](docs/ANALYSIS.md)
 
 `examples/contracts/`의 분석·계획은 **CONTRACT_EXAMPLE**입니다. 실제 모듈 출력이 아닙니다.
 실제 출력은 `flowdelta check-pipeline <bundle>`로 파일 연결을 확인합니다.

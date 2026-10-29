@@ -1,0 +1,8 @@
+{
+  "passed_count": 21,
+  "returncode": 0,
+  "scope": "UPSTREAM_ASSERTIONS_ONLY",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "fcb117278e639a8c585f10bde5f0bbd72de5b5a7e3cdc05e2ae57f2daeff7d22",
+  "total_count": 21
+}

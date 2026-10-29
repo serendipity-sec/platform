@@ -85,6 +85,19 @@
 |---|---|---|---|
 | ibam28/customer-support-ai-automation-n8n | `71fee7067364e9ac139a55bca3683c15b5ec2c16` | [원본](https://github.com/ibam28/customer-support-ai-automation-n8n/tree/71fee7067364e9ac139a55bca3683c15b5ec2c16), [MIT LICENSE](https://github.com/ibam28/customer-support-ai-automation-n8n/blob/71fee7067364e9ac139a55bca3683c15b5ec2c16/LICENSE) | 선택한 workflow JSON·정상 입력 예시·업무 설명을 무수정 보존. Copyright (c) 2026 Bambang Saputra Jaya와 허가문을 함께 배포. 파일별 SHA-256·획득 URL 기록. 실행·배포 실적은 독립 확인하지 않음 |
 
+## n8n-claw 기억 삭제 연구 자료 — 2026-10-19
+
+- 원본: [freddy-schuetz/n8n-claw](https://github.com/freddy-schuetz/n8n-claw).
+  원본 commit·파일 URL·SHA-256은 `experiments/n8n-claw-memory/sources.json`에 고정한다.
+- `fe57d162023e0e2b5f56fb75ea5990b48a635d1e`의 루트 tree를 확인했으며 별도 LICENSE 파일이
+  없었다. [같은 commit README](https://github.com/freddy-schuetz/n8n-claw/blob/fe57d162023e0e2b5f56fb75ea5990b48a635d1e/README.md)
+  끝에는 MIT라고 선언돼 있다. 완전한 허가문·저작권 고지의 별도 확인은 미완료다.
+- 원본 workflow·저자 테스트·추출 코드는 이 저장소나 패키지에 재배포하지 않는다.
+  원본 테스트 제목이 섞인 stdout도 로컬에만 두며 공유본은 성공 수/전체 수/해시로 제한한다.
+  팀원은 고정 URL에서 원문을 직접 받아 로컬 `var/`에 보관하고 해시를 검증한다.
+  저장소에는 원본 참조, 직접 작성한 합성 모형/harness, 정제한 관측 결과만 둔다.
+- 실행 환경은 위에서 기록한 n8n 2.42.6 공식 이미지의 고정 digest를 사용한다.
+  원본 코드는 네트워크 없는 제한된 컨테이너에서만 부분 실행하며 전체 배포 재현으로 보지 않는다.
 ## B 지식 저장 기반 — 2026-10-17
 
 도입 전에 아래 공식 라이선스 원문을 확인했다. 라이브러리는 무수정 패키지로 사용하며

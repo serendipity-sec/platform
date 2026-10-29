@@ -131,6 +131,31 @@ def test_postgres_migration_and_transaction(tmp_path):
     engine = engine_for(settings)
     migration_engine = engine_for(settings, migration=True)
     try:
+        with migration_engine.connect() as connection:
+            assert (
+                connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
+                == "kb_0003"
+            )
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT count(*) FROM information_schema.tables "
+                        "WHERE table_schema='knowledge' AND table_name IN "
+                        "('b_kb_snapshot', 'b_retrieval', 'b_test_plan')"
+                    )
+                ).scalar_one()
+                == 3
+            )
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT count(*) FROM information_schema.columns "
+                        "WHERE table_schema='knowledge' AND table_name='sync_failure' "
+                        "AND column_name IN ('raw_path', 'raw_external_id', 'modified_at')"
+                    )
+                ).scalar_one()
+                == 3
+            )
         with engine.connect() as connection:
             is_superuser = connection.execute(
                 text("SELECT rolsuper FROM pg_roles WHERE rolname = current_user")
@@ -185,15 +210,44 @@ def test_postgres_migration_and_transaction(tmp_path):
                 ).scalar_one()
                 == 0
             )
+        raw_payload = b'{"source_revision":1, "original": "kept"}'
         with storage_transaction(engine) as connection:
             first = save_record(
-                connection, tmp_path, "test", "fixture", json_bytes({"revision": 1})
+                connection,
+                tmp_path,
+                "test",
+                "fixture",
+                {"normalized_revision": 1},
+                raw_payload=raw_payload,
             )
+            raw_row = (
+                connection.execute(
+                    text(
+                        "SELECT raw_path, sha256, size_bytes FROM knowledge.source_revision "
+                        "WHERE source='test' AND external_id='fixture'"
+                    )
+                )
+                .mappings()
+                .one()
+            )
+            assert (tmp_path / raw_row["raw_path"]).read_bytes() == raw_payload
+            assert raw_row["sha256"] == first
+            assert raw_row["size_bytes"] == len(raw_payload)
             assert first == save_record(
-                connection, tmp_path, "test", "fixture", json_bytes({"revision": 1})
+                connection,
+                tmp_path,
+                "test",
+                "fixture",
+                {"normalized_revision": 1},
+                raw_payload=raw_payload,
             )
             second = save_record(
-                connection, tmp_path, "test", "fixture", json_bytes({"revision": 2})
+                connection,
+                tmp_path,
+                "test",
+                "fixture",
+                {"normalized_revision": 2},
+                raw_payload=b'{"source_revision":2}',
             )
             assert first != second
             count = connection.execute(
