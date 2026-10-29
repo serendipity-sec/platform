@@ -40,9 +40,13 @@
             {
               "evidence_key": "static_analysis",
               "selector": {
+                "json_pointer": "/versions/1/findings/0",
                 "version": "feature",
                 "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
-                "node_id": "tool-memory-delete"
+                "node_id": "tool-memory-delete",
+                "code_pointer": "/nodes/29/parameters/jsCode",
+                "line": 7,
+                "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0"
               }
             }
           ]
@@ -54,6 +58,7 @@
             {
               "evidence_key": "observations",
               "selector": {
+                "json_pointer": "/observations/3",
                 "version": "feature",
                 "relationship": "foreign",
                 "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
@@ -63,6 +68,12 @@
         }
       ],
       "cve": "NOT_IDENTIFIED",
+      "cve_applicability": {
+        "status": "UNKNOWN",
+        "scope": "CVE/advisory applicability for the pinned Memory Delete workflow revision in an assessed built/deployed runtime",
+        "reason": "The evidence pins a workflow source revision and file hash but does not identify the exact ecosystem/package or product version included in an assessed runtime, or map this source commit to that runtime. Advisory applicability cannot be determined.",
+        "date": "2026-10-29"
+      },
       "evidence": {
         "observations": {
           "artifact": "experiments/n8n-claw-memory/evidence/observations.json",
@@ -149,6 +160,7 @@
       "unknowns_and_limits": [
         "The harness ran selected tool JavaScript against a fixed synthetic receiver and context; it did not run the full n8n plus LLM agent or a real database.",
         "The actual deployed workflow revision, Supabase role and row-level security, caller access controls, and production exposure are unknown.",
+        "The upstream workflow bytes are pinned by commit, path, and SHA-256 but are not locally available in this checkout; no source-code location was added without independent verification.",
         "This card covers direct memory_long row deletion only. Optional entity/relation cascade behavior is not claimed by this observation.",
         "The passing harness flag means the observation matched that harness version's expectation; it does not mean the deletion was safe.",
         "No CVE or CWE is identified by the reviewed source materials.",

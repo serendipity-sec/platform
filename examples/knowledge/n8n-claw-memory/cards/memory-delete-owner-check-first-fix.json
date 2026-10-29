@@ -41,9 +41,12 @@
             {
               "evidence_key": "static_analysis",
               "selector": {
+                "json_pointer": "/versions/3",
                 "version": "first-fix",
                 "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
-                "node_id": "tool-memory-delete"
+                "node_id": "tool-memory-delete",
+                "status": "SUCCEEDED",
+                "findings": []
               }
             }
           ]
@@ -55,6 +58,7 @@
             {
               "evidence_key": "observations",
               "selector": {
+                "json_pointer": "/observations/9",
                 "version": "first-fix",
                 "relationship": "foreign",
                 "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
@@ -63,6 +67,7 @@
             {
               "evidence_key": "observations",
               "selector": {
+                "json_pointer": "/observations/10",
                 "version": "first-fix",
                 "relationship": "own",
                 "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
@@ -71,6 +76,7 @@
             {
               "evidence_key": "observations",
               "selector": {
+                "json_pointer": "/observations/11",
                 "version": "first-fix",
                 "relationship": "admin",
                 "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
@@ -80,6 +86,12 @@
         }
       ],
       "cve": "NOT_IDENTIFIED",
+      "cve_applicability": {
+        "status": "UNKNOWN",
+        "scope": "CVE/advisory applicability for the pinned Memory Delete workflow revision in an assessed built/deployed runtime",
+        "reason": "The evidence pins a workflow source revision and file hash but does not identify the exact ecosystem/package or product version included in an assessed runtime, or map this source commit to that runtime. Advisory applicability cannot be determined.",
+        "date": "2026-10-29"
+      },
       "evidence": {
         "observations": {
           "artifact": "experiments/n8n-claw-memory/evidence/observations.json",
@@ -179,6 +191,7 @@
         "The later reverted workflow has the same content hash as the pre-fix workflow and again deleted a foreign synthetic row. Verify the exact workflow hash instead of assuming the first fix persists.",
         "Team-scope and optional entity/relation cascade behavior are not established by the cited replay cases.",
         "Actual deployed version, Supabase permissions, caller authentication, and production exposure are unknown.",
+        "The upstream workflow bytes are pinned by commit, path, and SHA-256 but are not locally available in this checkout; no source-code location was added without independent verification.",
         "No CVE or CWE is identified by the reviewed source materials.",
         "정적 분석은 지원 코드 노드에 한정된다. toolWorkflow와 telegramTool 등 미지원 노드는 TARGET_TYPE_NOT_SUPPORTED로 남으며 finding 부재는 안전성 증명이 아니다."
       ],

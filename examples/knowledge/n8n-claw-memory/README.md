@@ -18,8 +18,10 @@ These team-authored cards summarize exact upstream revisions and the evidence re
 
 ## Evidence types and execution status
 
-Each claim has `evidence_refs` selecting the supporting source revision, observation, or static
-summary record. The evidence types remain separate:
+Each claim has `evidence_refs` to a pinned source artifact, observation, or static summary record.
+The replay and static selectors are pinned to supporting artifact records where those records are
+available. Source-code claim locations remain unverified because the upstream bytes are not present
+in this checkout. The evidence types remain separate:
 
 - **Source inspection** covers the exact upstream commit and workflow hash named by each card.
 - **Static analysis** references
@@ -39,20 +41,46 @@ summary record. The evidence types remain separate:
 - **Full n8n plus LLM agent execution: `NOT_RUN`. Real database execution: `NOT_RUN`.** The
   replay did not reproduce a deployed workflow or verify actual database permissions.
 
+### Mapping to technology-neutral evidence layers
+
+| General evidence layer | This case's n8n-specific record | Status and boundary |
+|---|---|---|
+| Source inspection | `source` entry in each card's `flowdelta.case_evidence.evidence` map: upstream workflow commit, path, and file SHA-256 | Pinned source revision identified. The source bytes are not checked into this checkout, so source-code claim locations cannot be independently inspected here. |
+| Static analysis | `static_analysis` entry referencing `experiments/n8n-claw-c/evidence/semgrep-summary.json` | `SUCCEEDED` with Semgrep 1.181.0 and the recorded rule version. Only scanned node IDs are covered; unsupported node types remain listed, and `security_outcome` is null. |
+| Bounded/component replay | `selected_tool_js_synthetic_replay` and `observations.json` | `COMPLETED` for selected original tool JavaScript against synthetic caller context and a synthetic HTTP receiver. This is component replay, not a deployed workflow or actual service effect. |
+| Integrated workflow/system execution | `full_n8n_llm_agent` | `NOT_RUN`; the full n8n plus LLM path was not executed. |
+| Backing-service effects | `real_database` | `NOT_RUN`; no actual database or its permissions were exercised. The synthetic receiver observation remains part of bounded replay. |
+
+For each relevant layer, record status, scope, tool/configuration versions, artifact reference,
+coverage, and limits; leave unavailable details explicit. A layer that does not apply can be omitted;
+one that was not executed is `NOT_RUN`. Claims stay within the recorded layer and its boundary.
+
 The observation artifact's `passed` flag means its expected harness observation matched; it does
 not mean the behavior was safe. The cards retain `cve: NOT_IDENTIFIED`: the pinned workflow
 revisions and limited replay reviewed on 2026-10-29 contain no CVE ID. No matching repository or
 package advisory identity, package ecosystem/version, or product/version is established, so
 GHSA/OSV/NVD applicability lookup was not performed and no CVE is claimed. No CWE is identified
-either.
+either. This records ID discovery only. Each card separately records
+`cve_applicability.status=UNKNOWN`, scoped to advisory applicability for the pinned workflow in an
+assessed built/deployed runtime, because the evidence does not identify an exact package/product
+version in that runtime or map the source commit to it. `runtime_profile=core-local-v1` is the
+temporary analysis adapter profile, and `node_types` identifies an n8n node class; neither is the
+runtime's installed package/product version. A workflow commit alone is not a runtime identity.
 
 ## Current B behavior and C registration
 
-The cards use the `ScenarioCard` 0.4.0 contract and can be loaded from this directory. Current
-keyword retrieval filters on task, runtime profile, and node type, then searches card title and
-summary for changed field names. The summaries include `jsCode` and `description`; a match only
-ranks evidence for review. It does not assess ownership or safety. Retrieval does not search the
-extension evidence, impact paths, or policy bindings.
+The cards use the `ScenarioCard` 0.4.0 contract and can be loaded from this directory. The contract's
+generic `extensions` field does not enforce the semantics of
+`extensions.flowdelta.case_evidence.claims[].evidence_refs`: it does not resolve a claim's key only
+within that card's evidence map, check artifact hashes, or verify that a selector points to
+supporting content. Current `load_cards()` validates the card structure, duplicate card versions,
+and an optional `source_ref`; it does not resolve these extension references or require human review
+and promotion. Those semantic evidence-reference checks belong to future #82 draft validation.
+
+The current keyword retrieval filters on task, runtime profile, and node type, then searches card
+title and summary for changed field names. The summaries include `jsCode` and `description`; a match
+only ranks evidence for review. It does not assess ownership or safety. Retrieval does not search
+the extension evidence, impact paths, or policy bindings.
 
 With the local test catalog stub matching the proposed template, both cards appear for both
 generated A comparison pairs. Retrieval does not use the exact source revision or case ID, so the
