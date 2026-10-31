@@ -1,4 +1,4 @@
-// Team-written synthetic tool. The owner is the one turned away; a non-owner reaches the write.
+// 팀이 작성한 합성 도구. 주인을 돌려보내고 비소유자는 지운다
 async function __n8n_tool(query) {
   const input = JSON.parse(query);
   const rows = await helpers.httpRequest({ method: 'GET', url: `https://example.invalid/notes?id=eq.${input.id}` });

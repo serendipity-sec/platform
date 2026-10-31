@@ -15,7 +15,8 @@ template을 받지 않는다는 점도 테스트로 고정했다.
   (`executes_target_code: false`, `network: NONE`).
 - 결과는 `STATIC_CONDITION`이다. 실제 정책 위반 효과가 아니며 `outcome`은 항상 `null`이다.
 - 소유권 규칙의 finding은 "지원 guard로 비소유자 차단을 확인하지 못함"이다. 비교 구문이 있는지가
-  아니라, 그 비교가 쓰기 전에 `return`·`throw`로 막는지를 본다. finding이 없다는 것도 "지원 guard를
+  아니라, 도구가 읽어 온 대상 행의 소유자를 다른 노드에서 읽은 요청자와 비교하고 그 조건 전체가 쓰기 전에
+  `return`·`throw`로 비소유자를 막는지를 본다. 모델 입력과의 비교나 `불일치 && 다른조건`은 인정하지 않는다. finding이 없다는 것도 "지원 guard를
   찾음"까지이며 실제 권한 강제를 보인 것이 아니다(`experiments/n8n-claw-c/README.md`).
 - 지원 범위 밖의 노드는 건너뛰지 않고 `unsupported`에 이유와 함께 남긴다.
 
@@ -25,7 +26,7 @@ template을 받지 않는다는 점도 테스트로 고정했다.
 |---|---|---|
 | `template_id` / `version` | `static-agent-tool-ownership` / `0.1.0` | plan이 가리킬 이름 |
 | `mode` | `STATIC_SCAN` | 정상 실행 template과 구분 |
-| `tool` | semgrep `1.181.0`, 규칙 `0.4.0`, 규칙 파일 경로·SHA-256 | 같은 도구·규칙으로만 실행 |
+| `tool` | semgrep `1.181.0`, 규칙 `0.5.0`, 규칙 파일 경로·SHA-256 | 같은 도구·규칙으로만 실행 |
 | `targets` | `toolCode@1.2`의 `jsCode`, `ai_tool`로 `agent@3.1`에 연결된 것 | 허용 입력 |
 | `result_kinds` | `static-findings`, `static-raw-report` | obligation이 요구할 수 있는 자료 |
 | `timeout_seconds` | 120 | plan의 상한 |

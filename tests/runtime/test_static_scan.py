@@ -147,16 +147,21 @@ def test_rule_on_team_written_cases(tmp_path: Path) -> None:
     )
     report = json.loads(result.stdout)
     assert report["errors"] == []
-    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 12
+    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 19
     flagged = sorted(Path(item["path"]).name for item in report["results"])
-    # A comparison alone is not a guard: only a branch that stops a non-owner before the
-    # write (return/throw) or that alone holds the write is excluded. The "known_" cases are
-    # documented limitations (false positives are reported, false negatives are missed).
+    # known_ 사례는 문서에 적은 오탐이다
     assert flagged == [
         "known_false_positive_helper.js",
         "known_false_positive_reversed_operands.js",
+        "unenforced_admin_from_input.js",
+        "unenforced_and_condition.js",
         "unenforced_comparison_only.js",
+        "unenforced_method_variable.js",
         "unenforced_mismatch_logs.js",
+        "unenforced_model_requester.js",
+        "unenforced_model_requester_alias.js",
+        "unenforced_negated_condition.js",
+        "unenforced_non_admin_conjunct.js",
         "unenforced_wrong_branch.js",
         "vulnerable.js",
     ]

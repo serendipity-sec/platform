@@ -1,4 +1,4 @@
-// Team-written synthetic tool. The record owner is compared with the caller before the write.
+// 팀이 작성한 합성 도구. 주인이 아니면 쓰기 전에 return한다
 async function __n8n_tool(query) {
   const input = JSON.parse(query);
   const rows = await helpers.httpRequest({ method: 'GET', url: `https://example.invalid/notes?id=eq.${input.id}` });

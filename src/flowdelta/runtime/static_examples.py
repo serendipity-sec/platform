@@ -196,8 +196,8 @@ def example_runs(repo: Path) -> list[StaticScanRun]:
                 51,
             ),
         ],
-        "4fc523a552f3fdab64585bb6c517c16e5583370ea62520965e0d3f9357cb376c",
-        5544,
+        "d3f3e59d7f3964ae736440fb8aa3159bb1b54e60a4a0b80ac622441c0bfd6acd",
+        5889,
     )
     after = _run(
         repo,
@@ -205,8 +205,8 @@ def example_runs(repo: Path) -> list[StaticScanRun]:
         "snapshot-example-claw-eb6d7bc",
         AFTER_SHA,
         [],
-        "cbfd1ed7af41ba773577db1d4e9eda6ca1e586a9e4677e9cca673c0537067653",
-        3607,
+        "c399b1391ad019a80fb3dd23476e4fc7d878854fbc7b3048c5e18eaa57ca0012",
+        3229,
     )
     return [before, after]
 

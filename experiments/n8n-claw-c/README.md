@@ -34,7 +34,7 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 | Agentic Radar 0.14.1 | SplxAI(Zscaler) | 표시(ACE) | 없음 | 결과 동일 |
 | FlowSentry 0.1.0 | 개인 | 없음 | 없음 | 결과 동일 |
 | n8n-flowguard 0.1.1 | 개인 | 없음 | 없음 | 결과 동일 |
-| **Semgrep 1.181.0 + 팀 규칙 0.4.0** | Semgrep 엔진 | 표시 | **Delete·Update** | **구분됨** |
+| **Semgrep 1.181.0 + 팀 규칙 0.5.0** | Semgrep 엔진 | 표시 | **Delete·Update** | **구분됨** |
 
 - 공개 도구 4개는 노드 **종류·연결·설정**만 보고 `toolCode` 안의 코드 논리는 읽지 않는다.
   n8n audit의 위험 노드 목록에는 `toolCode`가 없다. Agentic Radar는 `toolCode`를 모두
@@ -64,23 +64,33 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 
 1. source: 모델이 쓴 도구 입력 `query`.
 2. sink: `helpers.httpRequest`의 method가 `DELETE`/`PATCH`/`PUT`일 때의 `url`.
-3. 제외: sink보다 앞(최상위 또는 일반 블록 안)에 **비소유자를 막는 지원 guard**가 있음.
-   - 소유자 필드(`owner_user_id` 등 9개)의 불일치(`!==`·`!=`)가 참일 때 `return`·`throw`하는 분기
-   - 일치 비교를 담은 변수가 거짓일 때(`!own`) `return`·`throw`하는 분기 — n8n-claw 보완 코드의 형태
-   - 쓰기가 일치(`===`·`==`) 분기 안에만 있음
+3. 제외: sink보다 앞(최상위 또는 일반 블록 안)에 아래 세 가지가 모두 있음.
+   - **대상 행:** 도구가 `helpers.httpRequest`로 읽어 온 결과의 원소(`rows[0]`) 또는 그 원소를 담은 변수
+   - **요청자:** 다른 n8n 노드 출력에서 읽은 값(`$('노드').first().json.키` 등, `try` 안 대입과 `|| null` 허용).
+     모델이 쓴 입력값이나 그 값을 담은 변수는 요청자로 인정하지 않는다.
+   - **비소유자를 막는 조건:** 대상 행의 소유자 필드(`owner_user_id` 등 9개)와 요청자를 비교하고, 조건 전체가
+     비소유자를 막는 형태
+     - 불일치(`!==`·`!=`)이면 `return`·`throw`. `불일치 || X`처럼 막는 조건이 늘어나는 것은 허용
+     - 일치 변수가 거짓(`!own`)이면 `return`·`throw` — n8n-claw 보완 코드의 형태
+     - 관리자 예외: `!own && !admin`처럼 이름에 `admin`이 들어간 변수·함수 호출만 `&&`로 붙일 수 있다.
+       `input.adminOverride` 같은 속성 접근은 인정하지 않는다
+     - 쓰기가 일치(`===`·`==`) 분기 안에만 있음
 
-**비교 구문 존재 ≠ 권한 강제 확인.** 0.4.0부터 비교식이 있다는 것만으로는 제외하지 않는다. 비교를
-계산만 하거나, 불일치 때 로그만 남기거나, 소유자를 오히려 돌려보내는 코드는 경고한다. 따라서 경고는
-"지원 guard로 비소유자 차단을 확인하지 못했다"는 뜻이고, "비교 코드가 없다"는 뜻이 아니다. 경고가 없는
-것도 "정적으로 지원 guard를 찾았다"까지이며 실제 차단이나 정책 준수를 보인 것은 아니다.
+**비교 구문 존재 ≠ 권한 강제 확인.** 비교식이 있다는 것만으로는 제외하지 않는다. 비교를 계산만 하거나,
+불일치 때 로그만 남기거나, 소유자를 오히려 돌려보내거나, `불일치 && 다른조건`처럼 비소유자가 빠져나갈
+수 있거나, 모델 입력과 비교하는 코드는 경고한다. 따라서 경고는 "지원 guard로 비소유자 차단을 확인하지
+못했다"는 뜻이고, "비교 코드가 없다"는 뜻이 아니다. 경고가 없는 것도 "정적으로 지원 guard를 찾았다"까지이며
+실제 차단이나 정책 준수를 보인 것은 아니다.
 
-사례 이름·노드 이름·테이블 이름은 규칙에 없다. 개발 중 세 번 고쳤다.
+사례 이름·노드 이름·테이블 이름은 규칙에 없다. 개발 중 네 번 고쳤다.
 - 0.1.0: 아무 필드 비교나 검사로 오인해 Update 누락
 - 0.2.0: 블록 안의 검사를 못 봐 보완된 Update 오탐
 - 0.3.0 → 0.4.0: 비교식만 있어도 제외하던 미탐(PR #69 리뷰). 지원 차단 형태로만 제외하도록 좁혔다.
+- 0.4.0 → 0.5.0: 복합 조건 속 비교와 모델 입력 비교도 guard로 인정하던 미탐(PR #83 리뷰). 요청자·대상 행의
+  출처와 조건 전체의 형태를 함께 보도록 Semgrep 규칙 문법(`match`/`taint`의 `not`·`where`)을 바꿨다.
 
 이 7개 버전에 맞춰 고쳤으므로 위 표는 **개발셋 결과**이며 일반화 성능 주장에 쓰지 않는다.
-0.4.0에서도 7개 버전 결과는 0.3.0과 같다(노드·줄 동일, `evidence/semgrep-summary.json`).
+0.5.0에서도 7개 버전 결과는 0.3.0·0.4.0과 같다(노드·줄 동일, `evidence/semgrep-summary.json`).
 
 팀이 직접 쓴 합성 코드(`tests/runtime/static_cases/`)로 고정한 동작과 알려진 한계:
 
@@ -90,11 +100,19 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 | 비교값만 계산하고 DELETE (`unenforced_comparison_only.js`) | 경고 |
 | 불일치 때 `console.log`만 하고 DELETE (`unenforced_mismatch_logs.js`) | 경고 |
 | 소유자를 돌려보내고 비소유자는 DELETE (`unenforced_wrong_branch.js`) | 경고 |
-| 불일치 때 `return` / `throw`, `!own`이면 `return`, 일치 분기 안에서만 쓰기 (`guarded*.js`) | 경고 없음 |
+| 조건을 다시 부정(`if (!(owner !== caller)) return`) (`unenforced_negated_condition.js`) | 경고 |
+| `불일치 && 모델입력`이면 return (`unenforced_and_condition.js`) | 경고 |
+| `!own && !모델입력`이면 return (`unenforced_non_admin_conjunct.js`) | 경고 |
+| 소유자를 모델 입력과 비교 (`unenforced_model_requester.js`, `_alias.js`) | 경고 |
+| method를 변수에 담아 DELETE (`unenforced_method_variable.js`) | 경고 |
+| `!own && !input.adminOverride`처럼 모델 입력 속성을 관리자 예외로 씀 (`unenforced_admin_from_input.js`) | 경고 |
+| 불일치 때 `return` / `throw`, `!own`이면 `return`, `불일치 || X`, 관리자 예외, 일치 분기 안에서만 쓰기 (`guarded*.js`) | 경고 없음 |
 | 소유자 검사를 별도 함수로 분리 (`known_false_positive_helper.js`) | 오탐(판단 불가를 경고로 남김) |
-| method를 변수에 담음 (`known_false_negative_method_variable.js`) | 미탐 |
 | 비교식 피연산자 순서 반대(`caller !== row.owner_user_id`) (`known_false_positive_reversed_operands.js`) | 오탐(지원 형태가 아님) |
-| 조건을 다시 부정(`if (!(owner !== caller)) return`) (`known_false_negative_negated_condition.js`) | 미탐(조건 안의 비교만 보고 극성은 따지지 않음) |
+| 요청자를 `$json`·함수 인자 등 다른 경로로 받음, 조건 안에서 `$('노드')`를 바로 씀 | 오탐(지원 형태가 아님) |
+| 관리자 예외 변수의 이름에 `admin`이 들어가지만 값은 모델 입력(`const admin = input.x`) | 미탐(이름만 본다) |
+| `ctx.isAdmin`처럼 속성으로 된 실제 관리자 확인 | 오탐(속성 접근은 인정하지 않음) |
+| 요청자 값 자체가 위조 가능한지(`qualifiedUserId`의 인증 경계) | 보지 못함 |
 | `POST` 기반 쓰기, 모델이 method를 고르는 범용 HTTP Tool | 범위 밖 |
 | 다른 노드·하위 workflow·DB 정책(RLS)의 검사 | 보지 못함 |
 
