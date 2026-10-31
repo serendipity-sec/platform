@@ -320,6 +320,23 @@ def test_changed_workflow_bytes_and_output_outside_var_are_refused(setup: Setup)
     assert not setup.out.exists()
 
 
+def test_output_folder_that_cannot_be_created_is_an_input_error(setup: Setup) -> None:
+    # A plain file where a parent folder of the output must go: mkdir fails.
+    blocker = setup.repo / "var" / "blocker"
+    blocker.write_text("x", encoding="utf-8")
+    setup.out = blocker / "scan"
+    calls: list[list[str]] = []
+    inner = fake_semgrep()
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        calls.append(arguments)
+        return inner(arguments, timeout)
+
+    with pytest.raises(InputError, match="STATIC_OUTPUT_WRITE_FAILED"):
+        setup.run(runner)
+    assert calls == []  # The tool never started.
+
+
 @pytest.mark.skipif(shutil.which("semgrep") is None, reason="semgrep is not installed")
 def test_registered_rule_through_the_adapter(setup: Setup) -> None:
     before, after = setup.run(semgrep_runner)

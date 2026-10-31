@@ -373,7 +373,12 @@ def run_static_plan(
     """
     checked = static_preflight(handoff, plan, catalog, handoff_root, repo.resolve(strict=True))
     target = check_fresh_output(output, repo)
-    target.mkdir(parents=True)
+    try:
+        target.mkdir(parents=True)
+    except OSError as exc:
+        # The output folder cannot be created (a file in the way, no permission, full disk).
+        # Nothing was scanned, so this is an input error and not a tool result.
+        raise InputError("STATIC_OUTPUT_WRITE_FAILED") from exc
     context = _Context(
         plan=plan,
         case_id=handoff.case.case_id,

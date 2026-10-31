@@ -104,8 +104,8 @@ uv run --frozen --extra baseline --extra knowledge python -m flowdelta.runtime.s
 | Ctrl+C (side 검사 중) | 진행 중 side `INTERRUPTED`, 남은 side `NOT_RUN` | `STATIC_INTERRUPTED` / `PREVIOUS_SIDE_INTERRUPTED` |
 
 side의 run 파일은 그 side가 끝나는 즉시 쓴다. 뒤 side에서 오류나 중단이 나도 앞 side 기록은 남는다.
-검사하는 workflow는 1단계에서 해시를 확인한 바이트 그대로다(파일을 다시 읽지 않음). 출력 폴더 자체에
-쓸 수 없으면 도구 결과가 아니라 입력 오류 `STATIC_OUTPUT_WRITE_FAILED`로 멈춘다.
+검사하는 workflow는 1단계에서 해시를 확인한 바이트 그대로다(파일을 다시 읽지 않음). 출력 폴더를 만들
+수 없거나 그 안에 쓸 수 없으면 도구 결과가 아니라 입력 오류 `STATIC_OUTPUT_WRITE_FAILED`로 멈춘다.
 
 `SUCCEEDED`가 아니면 finding은 비어 있다. 어떤 경우에도 "경고 없음"이 "안전"을 뜻하지 않는다.
 
