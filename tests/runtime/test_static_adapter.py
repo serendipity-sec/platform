@@ -2,6 +2,7 @@ import json
 import shutil
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -130,8 +131,6 @@ def fake_semgrep(
     exit_code: int = 0,
     raise_on_scan: BaseException | None = None,
 ) -> Callable[[list[str], int], tuple[int, bytes]]:
-    """Stands in for Semgrep: flags each target file whose text `flag` accepts, at line 3."""
-
     def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
         if arguments == ["--version"]:
             return 0, f"{version}\n".encode()
@@ -243,6 +242,58 @@ def test_unreadable_report_fails(setup: Setup) -> None:
     assert {run.error_code for run in setup.run(runner)} == {"STATIC_RAW_REPORT_INVALID"}
 
 
+def _first_hit(report: dict[str, Any]) -> dict[str, Any]:
+    hit = report["results"][0]
+    assert isinstance(hit, dict)
+    return hit
+
+
+BROKEN_REPORTS: list[tuple[str, Callable[[dict[str, Any]], object]]] = [
+    ("results-object", lambda r: r | {"results": {}}),
+    ("results-string", lambda r: r | {"results": ""}),
+    ("results-null", lambda r: r | {"results": None}),
+    ("results-missing", lambda r: {k: v for k, v in r.items() if k != "results"}),
+    ("errors-null", lambda r: r | {"errors": None}),
+    ("errors-object", lambda r: r | {"errors": {}}),
+    ("paths-not-object", lambda r: r | {"paths": []}),
+    ("scanned-string", lambda r: r | {"paths": {"scanned": "a.js"}}),
+    ("scanned-item-not-string", lambda r: r | {"paths": {"scanned": [1]}}),
+    ("report-array", lambda r: [r]),
+    ("result-not-object", lambda r: r | {"results": ["x"]}),
+    ("line-missing", lambda r: _first_hit(r).update(start={}) or r),
+    ("line-string", lambda r: _first_hit(r).update(start={"line": "3"}) or r),
+    ("line-bool", lambda r: _first_hit(r).update(start={"line": True}) or r),
+    ("line-zero", lambda r: _first_hit(r).update(start={"line": 0}) or r),
+    ("severity-unknown", lambda r: _first_hit(r).update(extra={"severity": "LOW"}) or r),
+    ("check-id-not-string", lambda r: _first_hit(r).update(check_id=1) or r),
+    ("path-not-extracted", lambda r: _first_hit(r).update(path="/elsewhere/x.js") or r),
+]
+
+
+@pytest.mark.parametrize(("name", "change"), BROKEN_REPORTS)
+def test_wrongly_shaped_report_is_invalid_not_empty(
+    setup: Setup, name: str, change: Callable[[dict[str, Any]], object]
+) -> None:
+    inner = fake_semgrep(lambda text: True)
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        code, out = inner(arguments, timeout)
+        if arguments == ["--version"]:
+            return code, out
+        return code, json.dumps(change(json.loads(out))).encode()
+
+    runs = setup.run(runner)
+    assert [(run.status, run.error_code, run.findings) for run in runs] == [
+        ("FAILED", "STATIC_RAW_REPORT_INVALID", [])
+    ] * 2
+    assert [saved(setup, side).status for side in ("before", "after")] == ["FAILED"] * 2
+
+
+def test_well_shaped_report_without_hits_still_succeeds(setup: Setup) -> None:
+    runs = setup.run(fake_semgrep(lambda text: False))
+    assert [(run.status, run.findings) for run in runs] == [("SUCCEEDED", [])] * 2
+
+
 def test_plan_timeout_is_given_to_the_tool(setup: Setup) -> None:
     seen: list[int] = []
     inner = fake_semgrep()
@@ -288,7 +339,6 @@ def test_bad_plan_is_refused_before_anything_is_written(
 
 
 def test_static_scan_cannot_claim_a_runtime_obligation(setup: Setup) -> None:
-    # order-lookup obligations need responses and state, which a static scan does not produce.
     obligation = setup.handoff.case.obligations[0].obligation_id
     with pytest.raises(InputError, match="STATIC_OBLIGATION_NOT_COVERABLE"):
         setup.run(
@@ -321,7 +371,6 @@ def test_changed_workflow_bytes_and_output_outside_var_are_refused(setup: Setup)
 
 
 def test_output_folder_that_cannot_be_created_is_an_input_error(setup: Setup) -> None:
-    # A plain file where a parent folder of the output must go: mkdir fails.
     blocker = setup.repo / "var" / "blocker"
     blocker.write_text("x", encoding="utf-8")
     setup.out = blocker / "scan"
@@ -334,7 +383,7 @@ def test_output_folder_that_cannot_be_created_is_an_input_error(setup: Setup) ->
 
     with pytest.raises(InputError, match="STATIC_OUTPUT_WRITE_FAILED"):
         setup.run(runner)
-    assert calls == []  # The tool never started.
+    assert calls == []
 
 
 @pytest.mark.skipif(shutil.which("semgrep") is None, reason="semgrep is not installed")
@@ -346,18 +395,16 @@ def test_registered_rule_through_the_adapter(setup: Setup) -> None:
 
 
 def test_plan_type_is_the_shared_test_plan() -> None:
-    # B hands over the shared TestPlan; the adapter adds no plan type of its own.
     assert Plan.__name__ == "TestPlan"
 
 
 def test_file_replaced_after_the_check_is_not_scanned(setup: Setup) -> None:
-    # #51 review P1: the bytes checked against the handoff are the bytes scanned.
     path = setup.root / setup.handoff.snapshots.snapshots[0].workflow_ref.path
     inner = fake_semgrep()
 
     def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
         if arguments == ["--version"]:
-            path.write_bytes(workflow(GUARDED))  # Swap the file between check and scan.
+            path.write_bytes(workflow(GUARDED))
         return inner(arguments, timeout)
 
     before, _ = setup.run(runner)
@@ -370,7 +417,6 @@ def test_file_replaced_after_the_check_is_not_scanned(setup: Setup) -> None:
 
 
 def test_tool_start_error_on_after_keeps_before(setup: Setup) -> None:
-    # #51 review P2: a later tool error must not lose the side that already finished.
     inner = fake_semgrep()
     scans: list[str] = []
 
@@ -422,7 +468,6 @@ def test_output_write_failure_is_not_a_tool_result(setup: Setup) -> None:
 
     def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
         if arguments != ["--version"]:
-            # A plain file where the run folder must go: the output folder is broken.
             (Path(arguments[-1]).parents[1] / "runs").write_text("x", encoding="utf-8")
         return inner(arguments, timeout)
 

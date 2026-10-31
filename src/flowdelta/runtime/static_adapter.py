@@ -1,19 +1,3 @@
-"""Run a registered static template for a plan, before and after (#51).
-
-The adapter takes the plan, the C static catalog and the handoff A and B used. It checks all
-of them before reading any workflow code, extracts the code each side's template reads, runs
-the pinned tool once per side with the plan's time limit, and writes one `StaticScanRun` per
-side. Nothing from the target is executed and no request is sent.
-
-What is recorded instead of hidden:
-- a side with no supported target is `NOT_RUN` with `NO_SUPPORTED_TARGET`, not "no finding";
-- a tool error, an unreadable report or a target the tool did not read is `FAILED`;
-- the time limit is `TIMED_OUT`, Ctrl+C is `INTERRUPTED` (a side not started is `NOT_RUN`);
-- each side's run file is written as soon as that side ends.
-Only `SUCCEEDED` runs carry findings. Raw reports contain original code and stay in the
-output folder under `var/`.
-"""
-
 import json
 import os
 import subprocess
@@ -39,7 +23,6 @@ from flowdelta.runtime.static_scan import (
 )
 from flowdelta.runtime.static_targets import CodeTarget, find_targets
 
-# One line is added before the code so the tool parses a tool body (`return` at top level).
 WRAPPER_PREFIX = "async function __n8n_tool(query) {\n"
 WRAPPER_SUFFIX = "\n}\n"
 WRAPPER_LINE_OFFSET = 1
@@ -55,12 +38,10 @@ class ToolTimeout(Exception):
     """The tool did not finish within the plan's time limit."""
 
 
-# (arguments, timeout seconds) -> (exit code, stdout). Raises FileNotFoundError or ToolTimeout.
 ToolRunner = Callable[[list[str], int], tuple[int, bytes]]
 
 
 def semgrep_runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
-    # No version check or metrics: both are network calls, and the scan must work offline.
     env = {**os.environ, "SEMGREP_ENABLE_VERSION_CHECK": "0", "SEMGREP_SEND_METRICS": "off"}
     try:
         done = subprocess.run(
@@ -82,8 +63,6 @@ class StaticSide:
     snapshot_id: str
     workflow_path: Path
     workflow_sha256: str
-    # The bytes checked against the handoff. They are scanned as-is; the file is not read
-    # again, so a file replaced after the check cannot be scanned under the recorded hash.
     workflow_bytes: bytes
 
 
@@ -103,7 +82,7 @@ def static_preflight(
 ) -> StaticPreflight:
     """Every check that can fail without reading workflow code. Nothing is written here."""
     case = handoff.case
-    before, after = handoff.snapshots.snapshots  # read_handoff guarantees before, after.
+    before, after = handoff.snapshots.snapshots
     if plan.case_id != case.case_id:
         raise InputError("STATIC_CASE_ID_MISMATCH")
     if (plan.before_snapshot_id, plan.after_snapshot_id) != (
@@ -113,9 +92,6 @@ def static_preflight(
         raise InputError("STATIC_SNAPSHOT_ID_MISMATCH")
     template = validate_static_plan(plan, catalog, repo)
 
-    # Every case obligation is either bound or explicitly uncovered. A static scan can only
-    # bind an obligation whose required evidence it actually produces; obligations that need
-    # runtime state (for example final-state) stay uncovered instead of being claimed.
     required = {item.obligation_id: item for item in case.obligations}
     bound = {item.obligation_id for item in plan.obligation_bindings}
     if bound | set(plan.uncovered_obligation_ids) != set(required):
@@ -124,7 +100,6 @@ def static_preflight(
         if not set(required[obligation_id].required_artifacts).issubset(template.result_kinds):
             raise InputError("STATIC_OBLIGATION_NOT_COVERABLE")
 
-    # Read each workflow once and keep the bytes that match the handoff (same hash and size).
     root = handoff_root.resolve(strict=True)
     sides = []
     for snapshot in (before, after):
@@ -210,6 +185,61 @@ def _tool_version_error(context: _Context) -> str | None:
     return None
 
 
+Severity = Literal["ERROR", "WARNING", "INFO"]
+SEVERITIES: tuple[Severity, ...] = ("ERROR", "WARNING", "INFO")
+
+
+@dataclass(frozen=True)
+class _Hit:
+    check_id: str
+    path: str
+    line: int
+    severity: Severity
+
+
+@dataclass(frozen=True)
+class _Report:
+    errors: list[object]
+    hits: list[_Hit]
+    scanned: list[str]
+
+
+def _parse_report(stdout: bytes) -> _Report | None:
+    try:
+        report = json.loads(stdout)
+    except ValueError:
+        return None
+    if not isinstance(report, dict):
+        return None
+    errors = report.get("errors")
+    results = report.get("results")
+    paths = report.get("paths")
+    if not isinstance(errors, list) or not isinstance(results, list):
+        return None
+    if not isinstance(paths, dict):
+        return None
+    scanned = paths.get("scanned")
+    if not isinstance(scanned, list) or not all(isinstance(item, str) for item in scanned):
+        return None
+    hits = []
+    for item in results:
+        if not isinstance(item, dict):
+            return None
+        check_id, path = item.get("check_id"), item.get("path")
+        start, extra = item.get("start"), item.get("extra")
+        if not isinstance(check_id, str) or not isinstance(path, str):
+            return None
+        if not isinstance(start, dict) or not isinstance(extra, dict):
+            return None
+        line, severity = start.get("line"), extra.get("severity")
+        if type(line) is not int or line < 1:
+            return None
+        if severity not in SEVERITIES:
+            return None
+        hits.append(_Hit(check_id, path, line, severity))
+    return _Report(errors=errors, hits=hits, scanned=scanned)
+
+
 def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     template = context.template
     targets = find_targets(side.workflow_bytes, template)
@@ -265,7 +295,6 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     arguments = [
         "--metrics=off",
         "--disable-version-check",
-        # Inside a git checkout Semgrep reads only tracked files; var/ is untracked.
         "--no-git-ignore",
         "--quiet",
         "--json",
@@ -282,8 +311,6 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     except FileNotFoundError:
         return failed("FAILED", "STATIC_TOOL_NOT_FOUND")
     except OSError:
-        # The tool could not be started (for example permission denied). The output folder
-        # is fine, so this is a tool failure, not an output write failure.
         return failed("FAILED", "STATIC_TOOL_START_FAILED")
     finished = context.clock()
 
@@ -291,44 +318,38 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     raw_path.write_bytes(stdout)
     if exit_code not in (0, 1):
         return failed("FAILED", "STATIC_TOOL_FAILED")
-    try:
-        report = json.loads(stdout)
-        errors = report["errors"]
-        results = report["results"]
-        read = {Path(item).resolve() for item in report["paths"]["scanned"]}
-    except (ValueError, KeyError, TypeError):
+    report = _parse_report(stdout)
+    if report is None:
         return failed("FAILED", "STATIC_RAW_REPORT_INVALID")
-    if errors:
+    if report.errors:
         return failed("FAILED", "STATIC_TOOL_ERROR")
+    read = {Path(item).resolve() for item in report.scanned}
     if set(by_file) - read:
-        # A file the tool did not read cannot count as "no finding".
         return failed("FAILED", "STATIC_SCAN_INCOMPLETE")
 
     findings = []
-    try:
-        for hit in results:
-            if not str(hit["check_id"]).endswith(template.tool.rule_id):
-                return failed("FAILED", "STATIC_UNEXPECTED_RULE")
-            target = by_file[Path(hit["path"]).resolve()]
-            line = int(hit["start"]["line"]) - WRAPPER_LINE_OFFSET
-            severity = str(hit["extra"]["severity"])
-            findings.append(
-                StaticFinding(
-                    finding_id=f"finding-{side.side}-{digest(f'{target.node_id}:{line}'.encode())[:16]}",
-                    rule_id=template.tool.rule_id,
-                    rule_version=template.tool.rule_version,
-                    node_id=target.node_id,
-                    node_name=target.node_name,
-                    node_type=target.node_type,
-                    type_version=target.type_version,
-                    code_pointer=target.code_pointer,
-                    code_sha256=target.code_sha256,
-                    line=max(line, 1),
-                    severity=severity,  # type: ignore[arg-type]
-                )
+    for hit in report.hits:
+        if not hit.check_id.endswith(template.tool.rule_id):
+            return failed("FAILED", "STATIC_UNEXPECTED_RULE")
+        source = by_file.get(Path(hit.path).resolve())
+        if source is None:
+            return failed("FAILED", "STATIC_RAW_REPORT_INVALID")
+        line = hit.line - WRAPPER_LINE_OFFSET
+        findings.append(
+            StaticFinding(
+                finding_id=f"finding-{side.side}-{digest(f'{source.node_id}:{line}'.encode())[:16]}",
+                rule_id=template.tool.rule_id,
+                rule_version=template.tool.rule_version,
+                node_id=source.node_id,
+                node_name=source.node_name,
+                node_type=source.node_type,
+                type_version=source.type_version,
+                code_pointer=source.code_pointer,
+                code_sha256=source.code_sha256,
+                line=max(line, 1),
+                severity=hit.severity,
             )
-    except (KeyError, TypeError, ValueError):
-        return failed("FAILED", "STATIC_RAW_REPORT_INVALID")
+        )
     unique = {item.finding_id: item for item in findings}
 
     data = raw_path.read_bytes()
@@ -362,22 +383,12 @@ def run_static_plan(
     runner: ToolRunner = semgrep_runner,
     clock: Callable[[], str] = _now,
 ) -> list[StaticScanRun]:
-    """Scan before and after with the same template and write `runs/<side>-1.static-run.json`.
 
-    Raises InputError before anything is written when the inputs disagree. After that, each
-    side's run file is written as soon as that side ends, so a later error or Ctrl+C never
-    loses an earlier result. Ctrl+C during the tool version check marks both sides
-    INTERRUPTED; during a side it marks that side INTERRUPTED and the rest NOT_RUN, and
-    KeyboardInterrupt is re-raised after the files are written. A failure to write into the
-    output folder itself is STATIC_OUTPUT_WRITE_FAILED (InputError), not a tool result.
-    """
     checked = static_preflight(handoff, plan, catalog, handoff_root, repo.resolve(strict=True))
     target = check_fresh_output(output, repo)
     try:
         target.mkdir(parents=True)
     except OSError as exc:
-        # The output folder cannot be created (a file in the way, no permission, full disk).
-        # Nothing was scanned, so this is an input error and not a tool result.
         raise InputError("STATIC_OUTPUT_WRITE_FAILED") from exc
     context = _Context(
         plan=plan,
@@ -420,7 +431,6 @@ def run_static_plan(
             interrupted = True
             run = _record(context, side, "INTERRUPTED", error_code="STATIC_INTERRUPTED")
         except OSError as exc:
-            # Writing extracted code or the raw report into the output folder failed.
             raise InputError("STATIC_OUTPUT_WRITE_FAILED") from exc
         keep(run)
     if interrupted:

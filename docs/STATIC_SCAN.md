@@ -98,7 +98,7 @@ uv run --frozen --extra baseline --extra knowledge python -m flowdelta.runtime.s
 | 도구를 시작할 수 없음(권한 등) | `FAILED` | `STATIC_TOOL_START_FAILED` |
 | 시간 초과 | `TIMED_OUT` | `STATIC_TOOL_TIMEOUT` |
 | 도구 오류·비정상 종료 | `FAILED` | `STATIC_TOOL_ERROR` / `STATIC_TOOL_FAILED` |
-| 보고서를 읽을 수 없음 / 다른 규칙 결과 | `FAILED` | `STATIC_RAW_REPORT_INVALID` / `STATIC_UNEXPECTED_RULE` |
+| 보고서를 읽을 수 없거나 형식이 다름 / 다른 규칙 결과 | `FAILED` | `STATIC_RAW_REPORT_INVALID` / `STATIC_UNEXPECTED_RULE` |
 | 추출한 파일을 도구가 읽지 않음 | `FAILED` | `STATIC_SCAN_INCOMPLETE` |
 | Ctrl+C (도구 버전 확인 중) | 두 side 모두 `INTERRUPTED` | `STATIC_INTERRUPTED` |
 | Ctrl+C (side 검사 중) | 진행 중 side `INTERRUPTED`, 남은 side `NOT_RUN` | `STATIC_INTERRUPTED` / `PREVIOUS_SIDE_INTERRUPTED` |
@@ -106,6 +106,11 @@ uv run --frozen --extra baseline --extra knowledge python -m flowdelta.runtime.s
 side의 run 파일은 그 side가 끝나는 즉시 쓴다. 뒤 side에서 오류나 중단이 나도 앞 side 기록은 남는다.
 검사하는 workflow는 1단계에서 해시를 확인한 바이트 그대로다(파일을 다시 읽지 않음). 출력 폴더를 만들
 수 없거나 그 안에 쓸 수 없으면 도구 결과가 아니라 입력 오류 `STATIC_OUTPUT_WRITE_FAILED`로 멈춘다.
+
+보고서는 JSON으로 읽히는 것만으로 받지 않는다. 최상위가 객체이고 `errors`·`results`·`paths.scanned`가
+배열이며, 각 결과에 문자열 `check_id`·`path`, 1 이상의 정수 `start.line`, 알려진 `extra.severity`가 있고
+결과가 추출한 파일을 가리켜야 한다. 하나라도 어긋나면 `STATIC_RAW_REPORT_INVALID`다(`results={}`,
+`errors=null` 같은 보고서가 "경고 없음"으로 바뀌지 않게).
 
 `SUCCEEDED`가 아니면 finding은 비어 있다. 어떤 경우에도 "경고 없음"이 "안전"을 뜻하지 않는다.
 
