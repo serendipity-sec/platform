@@ -100,11 +100,14 @@ uv run --frozen --extra baseline --extra knowledge python -m flowdelta.runtime.s
 | 도구 오류·비정상 종료 | `FAILED` | `STATIC_TOOL_ERROR` / `STATIC_TOOL_FAILED` |
 | 보고서를 읽을 수 없거나 형식이 다름 / 다른 규칙 결과 | `FAILED` | `STATIC_RAW_REPORT_INVALID` / `STATIC_UNEXPECTED_RULE` |
 | 추출한 파일을 도구가 읽지 않음 | `FAILED` | `STATIC_SCAN_INCOMPLETE` |
+| 실행 전후 규칙 사본이 기록된 해시와 다름 | `FAILED` | `STATIC_RULE_CHANGED` |
 | Ctrl+C (도구 버전 확인 중) | 두 side 모두 `INTERRUPTED` | `STATIC_INTERRUPTED` |
 | Ctrl+C (side 검사 중) | 진행 중 side `INTERRUPTED`, 남은 side `NOT_RUN` | `STATIC_INTERRUPTED` / `PREVIOUS_SIDE_INTERRUPTED` |
 
 side의 run 파일은 그 side가 끝나는 즉시 쓴다. 뒤 side에서 오류나 중단이 나도 앞 side 기록은 남는다.
-검사하는 workflow는 1단계에서 해시를 확인한 바이트 그대로다(파일을 다시 읽지 않음). 출력 폴더를 만들
+검사하는 workflow는 1단계에서 해시를 확인한 바이트 그대로다(파일을 다시 읽지 않음). 규칙도 1단계에서
+catalog의 `rule_sha256`과 같은지 확인한 바이트를 출력 폴더의 `rule/`에 사본으로 두고, before·after 모두
+그 사본으로 실행한다. 실행 전후에 사본의 해시를 다시 확인한다. 출력 폴더를 만들
 수 없거나 그 안에 쓸 수 없으면 도구 결과가 아니라 입력 오류 `STATIC_OUTPUT_WRITE_FAILED`로 멈춘다.
 
 보고서는 JSON으로 읽히는 것만으로 받지 않는다. 최상위가 객체이고 `errors`·`results`·`paths.scanned`가

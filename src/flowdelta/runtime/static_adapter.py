@@ -71,6 +71,7 @@ class StaticPreflight:
     template: StaticScanTemplate
     sides: tuple[StaticSide, StaticSide]
     timeout_seconds: int
+    rule_bytes: bytes
 
 
 def static_preflight(
@@ -80,7 +81,6 @@ def static_preflight(
     handoff_root: Path,
     repo: Path,
 ) -> StaticPreflight:
-    """Every check that can fail without reading workflow code. Nothing is written here."""
     case = handoff.case
     before, after = handoff.snapshots.snapshots
     if plan.case_id != case.case_id:
@@ -91,6 +91,12 @@ def static_preflight(
     ):
         raise InputError("STATIC_SNAPSHOT_ID_MISMATCH")
     template = validate_static_plan(plan, catalog, repo)
+    try:
+        rule_bytes = (repo / template.tool.rule_path).read_bytes()
+    except OSError as exc:
+        raise InputError("STATIC_RULE_UNREADABLE") from exc
+    if digest(rule_bytes) != template.tool.rule_sha256:
+        raise InputError("STATIC_RULE_MISMATCH")
 
     required = {item.obligation_id: item for item in case.obligations}
     bound = {item.obligation_id for item in plan.obligation_bindings}
@@ -116,7 +122,7 @@ def static_preflight(
                 workflow_bytes=data,
             )
         )
-    return StaticPreflight(template, (sides[0], sides[1]), plan.timeout_seconds)
+    return StaticPreflight(template, (sides[0], sides[1]), plan.timeout_seconds, rule_bytes)
 
 
 def _now() -> str:
@@ -133,6 +139,7 @@ class _Context:
     output: Path
     runner: ToolRunner
     clock: Callable[[], str]
+    rule_copy: Path
 
 
 def _record(
@@ -240,6 +247,14 @@ def _parse_report(stdout: bytes) -> _Report | None:
     return _Report(errors=errors, hits=hits, scanned=scanned)
 
 
+def _rule_unchanged(context: _Context) -> bool:
+    try:
+        data = context.rule_copy.read_bytes()
+    except OSError:
+        return False
+    return digest(data) == context.template.tool.rule_sha256
+
+
 def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     template = context.template
     targets = find_targets(side.workflow_bytes, template)
@@ -291,7 +306,9 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
             finished_at=context.clock(),
         )
 
-    rule = context.repo / template.tool.rule_path
+    # 실행 전후로 규칙 사본이 기록된 해시와 같은지 확인한다
+    if not _rule_unchanged(context):
+        return failed("FAILED", "STATIC_RULE_CHANGED")
     arguments = [
         "--metrics=off",
         "--disable-version-check",
@@ -301,7 +318,7 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
         "--timeout",
         str(context.plan.timeout_seconds),
         "--config",
-        str(rule),
+        str(context.rule_copy),
         str(code_dir),
     ]
     try:
@@ -313,6 +330,8 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     except OSError:
         return failed("FAILED", "STATIC_TOOL_START_FAILED")
     finished = context.clock()
+    if not _rule_unchanged(context):
+        return failed("FAILED", "STATIC_RULE_CHANGED")
 
     raw_path = folder / "static-raw-report.json"
     raw_path.write_bytes(stdout)
@@ -390,6 +409,13 @@ def run_static_plan(
         target.mkdir(parents=True)
     except OSError as exc:
         raise InputError("STATIC_OUTPUT_WRITE_FAILED") from exc
+    # 저장소 규칙 파일이 실행 중 바뀌어도 검증한 바이트로만 검사한다
+    rule_copy = target / "rule" / Path(checked.template.tool.rule_path).name
+    try:
+        rule_copy.parent.mkdir()
+        rule_copy.write_bytes(checked.rule_bytes)
+    except OSError as exc:
+        raise InputError("STATIC_OUTPUT_WRITE_FAILED") from exc
     context = _Context(
         plan=plan,
         case_id=handoff.case.case_id,
@@ -399,6 +425,7 @@ def run_static_plan(
         output=target,
         runner=runner,
         clock=clock,
+        rule_copy=rule_copy,
     )
     runs: list[StaticScanRun] = []
 

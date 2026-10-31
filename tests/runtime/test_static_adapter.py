@@ -473,3 +473,92 @@ def test_output_write_failure_is_not_a_tool_result(setup: Setup) -> None:
 
     with pytest.raises(InputError, match="STATIC_OUTPUT_WRITE_FAILED"):
         setup.run(runner)
+
+
+def _config(arguments: list[str]) -> Path:
+    return Path(arguments[arguments.index("--config") + 1])
+
+
+def test_rule_changed_in_repo_during_run_is_not_used(setup: Setup) -> None:
+    rule = setup.repo / static_rules.RULE_PATH
+    original = rule.read_bytes()
+    configs: list[Path] = []
+    inner = fake_semgrep()
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        if arguments == ["--version"]:
+            rule.write_bytes(original.replace(b"pattern: query", b"pattern: never_used"))
+        else:
+            configs.append(_config(arguments))
+            assert configs[-1].read_bytes() == original
+        return inner(arguments, timeout)
+
+    before, after = setup.run(runner)
+    assert (before.status, after.status) == ("SUCCEEDED", "SUCCEEDED")
+    assert [item.node_id for item in before.findings] == ["memory-delete"]
+    assert configs[0] == configs[1] and configs[0].is_relative_to(setup.out)
+    assert before.tool.rule_sha256 == digest(original) == digest(configs[0].read_bytes())
+    assert digest(rule.read_bytes()) != before.tool.rule_sha256
+
+
+def test_rule_copy_changed_before_scan_fails(setup: Setup) -> None:
+    inner = fake_semgrep()
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        if arguments == ["--version"]:
+            copy = next((setup.out / "rule").iterdir())
+            copy.write_bytes(copy.read_bytes() + b"\n# changed\n")
+        return inner(arguments, timeout)
+
+    runs = setup.run(runner)
+    assert [(run.status, run.error_code, run.findings) for run in runs] == [
+        ("FAILED", "STATIC_RULE_CHANGED", [])
+    ] * 2
+
+
+def test_rule_copy_changed_during_scan_fails(setup: Setup) -> None:
+    inner = fake_semgrep()
+    scans: list[str] = []
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        if arguments != ["--version"]:
+            scans.append(arguments[-1])
+            if len(scans) == 1:
+                copy = _config(arguments)
+                copy.write_bytes(copy.read_bytes() + b"\n# changed\n")
+        return inner(arguments, timeout)
+
+    before, after = setup.run(runner)
+    assert (before.status, before.error_code, before.findings) == (
+        "FAILED",
+        "STATIC_RULE_CHANGED",
+        [],
+    )
+    assert (after.status, after.error_code) == ("FAILED", "STATIC_RULE_CHANGED")
+    assert len(scans) == 1
+
+
+def test_rule_not_matching_the_catalog_is_refused_before_anything_is_written(
+    setup: Setup,
+) -> None:
+    rule = setup.repo / static_rules.RULE_PATH
+    rule.write_bytes(rule.read_bytes() + b"\n")
+    with pytest.raises(InputError, match="STATIC_RULE_MISMATCH"):
+        setup.run(fake_semgrep())
+    assert not setup.out.exists()
+
+
+@pytest.mark.skipif(shutil.which("semgrep") is None, reason="semgrep is not installed")
+def test_rule_changed_in_repo_during_real_semgrep_run(setup: Setup) -> None:
+    rule = setup.repo / static_rules.RULE_PATH
+    original = rule.read_bytes()
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        if arguments == ["--version"]:
+            rule.write_bytes(original.replace(b"pattern: query", b"pattern: never_used"))
+        return semgrep_runner(arguments, timeout)
+
+    before, after = setup.run(runner)
+    assert [item.node_id for item in before.findings] == ["memory-delete"]
+    assert after.findings == []
+    assert before.tool.rule_sha256 == digest(original)
