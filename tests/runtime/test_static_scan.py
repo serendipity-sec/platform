@@ -97,7 +97,7 @@ def test_catalog_entry_must_match_registration() -> None:
 
 
 def test_shared_template_catalog_does_not_accept_static_templates_yet() -> None:
-    # The shared contract is unchanged in this PR; merging the modes is agreed with #48/#50.
+    # 공유 계약은 이 PR에서 바꾸지 않는다. mode 병합은 #48/#50과 합의한 뒤 진행한다.
     value = registered_catalog(REPO).model_dump(mode="json")
     with pytest.raises(ValidationError):
         TemplateCatalog.model_validate(value)
@@ -124,8 +124,8 @@ def test_run_records_keep_status_and_findings_apart() -> None:
 
 @pytest.mark.skipif(shutil.which("semgrep") is None, reason="semgrep is not installed")
 def test_rule_on_team_written_cases(tmp_path: Path) -> None:
-    # Inside a git checkout Semgrep skips untracked files and tests/, so scan a copy and
-    # check that every case was actually read before trusting an empty result.
+    # git 저장소 안에서는 Semgrep이 추적되지 않는 파일과 tests/를 건너뛰므로, 복사본을 검사하고
+    # 빈 결과를 믿기 전에 모든 사례를 실제로 읽었는지 확인한다.
     cases = Path(shutil.copytree(CASES, tmp_path / "cases"))
     env = {**os.environ, "SEMGREP_ENABLE_VERSION_CHECK": "0", "SEMGREP_SEND_METRICS": "off"}
     result = subprocess.run(

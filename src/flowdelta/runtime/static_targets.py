@@ -1,9 +1,7 @@
-"""Find the code a static template reads in one workflow, without running anything (#51).
+"""workflow에서 정적 템플릿이 읽을 코드를 찾는다. 아무것도 실행하지 않는다 (#51).
 
-A target is a code node that an AI Agent can call as a tool (`ai_tool` connection). Every other
-node connected to an agent as a tool is listed as unsupported with a reason, so a node the
-template cannot read is never silently treated as "no finding". The code is returned with its
-JSON Pointer and hash in the original workflow, so a finding points back to the exact source.
+대상은 AI Agent가 `ai_tool` 연결로 호출하는 코드 노드다. 같은 agent에 연결됐지만 지원하지 않는
+노드는 이유와 함께 `unsupported`에 남긴다. 읽지 못한 노드를 "경고 없음"으로 바꾸지 않기 위해서다.
 """
 
 import json
@@ -19,7 +17,7 @@ class CodeTarget:
     node_name: str
     node_type: str
     type_version: str
-    code_pointer: str  # JSON Pointer in the original workflow file.
+    code_pointer: str  # 원본 workflow 파일 안의 JSON Pointer.
     code: str
     code_sha256: str
 
@@ -35,7 +33,7 @@ def _pointer_token(value: str) -> str:
 
 
 def find_targets(workflow: bytes, template: StaticScanTemplate) -> WorkflowTargets:
-    """Split the agent tools of one workflow into code to scan and unsupported nodes."""
+    """한 workflow의 agent tool을 검사할 코드와 미지원 노드로 나눈다."""
     try:
         document = json.loads(workflow)
         nodes = document["nodes"]
@@ -47,7 +45,7 @@ def find_targets(workflow: bytes, template: StaticScanTemplate) -> WorkflowTarge
         raise InputError("STATIC_WORKFLOW_INVALID") from exc
 
     agent_types = {target.agent_node_type for target in template.targets}
-    edges: list[tuple[str, str]] = []  # (tool name, agent name)
+    edges: list[tuple[str, str]] = []  # (도구 이름, agent 이름)
     try:
         for source, outputs in connections.items():
             for group in outputs.get("ai_tool", []):
@@ -64,7 +62,7 @@ def find_targets(workflow: bytes, template: StaticScanTemplate) -> WorkflowTarge
         index, tool = by_name[tool_name]
         _, agent = by_name[agent_name]
         if agent.get("type") not in agent_types:
-            continue  # Not an agent tool connection this template is about.
+            continue
         node_id = str(tool.get("id") or tool_name)
         if node_id in scanned or node_id in unsupported:
             continue

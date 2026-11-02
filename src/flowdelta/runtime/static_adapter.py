@@ -35,7 +35,7 @@ RUN_AUTHOR = Authorship(
 
 
 class ToolTimeout(Exception):
-    """The tool did not finish within the plan's time limit."""
+    """도구가 plan의 시간 제한 안에 끝나지 않았다."""
 
 
 ToolRunner = Callable[[list[str], int], tuple[int, bytes]]
@@ -102,9 +102,13 @@ def static_preflight(
     bound = {item.obligation_id for item in plan.obligation_bindings}
     if bound | set(plan.uncovered_obligation_ids) != set(required):
         raise InputError("STATIC_OBLIGATION_SET_MISMATCH")
-    for obligation_id in bound:
-        if not set(required[obligation_id].required_artifacts).issubset(template.result_kinds):
+    for binding in plan.obligation_bindings:
+        expected = set(required[binding.obligation_id].required_artifacts)
+        if not expected.issubset(template.result_kinds):
             raise InputError("STATIC_OBLIGATION_NOT_COVERABLE")
+        # 계획이 주장한 증거가 case의 obligation 요구와 정확히 같아야 한다.
+        if set(binding.required_artifact_kinds) != expected:
+            raise InputError("STATIC_OBLIGATION_EVIDENCE_MISMATCH")
 
     root = handoff_root.resolve(strict=True)
     sides = []

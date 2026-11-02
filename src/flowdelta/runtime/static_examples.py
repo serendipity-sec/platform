@@ -1,9 +1,8 @@
-"""Write the static-scan reference files B and reviewers read (`examples/static-scan/`).
+"""B와 리뷰어가 읽을 정적 검사 예시 파일(`examples/static-scan/`)을 만든다.
 
-The catalog is generated from the registered templates. The plan, invalid plans and runs are
-hand-written contract examples for the n8n-claw first-fix pair (4d1b1b7 -> eb6d7bc). Finding
-values come from the tool-fit run in `experiments/n8n-claw-c`; raw reports contain original
-code and stay under local `var/`, so only their hash and size appear here.
+catalog는 등록된 template에서 생성한다. plan, 잘못된 plan, run은 n8n-claw 첫 수정 쌍
+(4d1b1b7 -> eb6d7bc)을 위해 손으로 쓴 계약 예시다. finding 값은 `experiments/n8n-claw-c`의
+도구 적합성 실행 결과다. 원시 보고서에는 원본 코드가 있어 `var/`에만 두고 해시와 크기만 적는다.
 """
 
 from pathlib import Path
@@ -28,7 +27,7 @@ EXAMPLE_AUTHOR = Authorship(
     note="C가 작성한 기대 입출력 예시. B가 생성한 plan이나 실제 C 실행 기록이 아니다.",
 )
 
-# Pinned n8n-claw originals (sources in experiments/n8n-claw-c/sources.json).
+# 고정한 n8n-claw 원본 해시 (출처: experiments/n8n-claw-c/sources.json).
 BEFORE_SHA = "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"  # 4d1b1b7
 AFTER_SHA = "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"  # eb6d7bc
 
@@ -57,7 +56,7 @@ UNSUPPORTED = [
     ("tool-workflow-builder", "@n8n/n8n-nodes-langchain.toolWorkflow"),
 ]
 
-# Plan fields each invalid example changes, and the error the check must return.
+# 잘못된 plan 예시가 바꾸는 필드와 기대 오류 코드.
 INVALID_PLAN_PATCHES: list[tuple[str, dict[str, JsonValue], str]] = [
     ("catalog-mismatch", {"catalog_id": "other-catalog"}, "STATIC_CATALOG_ID_MISMATCH"),
     ("unknown-template", {"template_version": "9.9.9"}, "STATIC_TEMPLATE_NOT_FOUND"),

@@ -1,11 +1,10 @@
-"""Run a static plan from the repository root (#51).
+"""저장소 루트에서 정적 plan을 실행한다 (#51).
 
     python -m flowdelta.runtime.static_cli --handoff <handoff-dir> --plan <plan.json> \
         --catalog <static-scan-catalog.json> --out var/<new-dir>
 
-`<handoff-dir>` is the folder `flowdelta snapshot` wrote (the same one A analyzed). The output
-folder must be new and under `var/`, because raw reports contain the target's code.
-Exit codes: 0 every side succeeded, 2 input error or a side did not succeed, 130 interrupted.
+출력 폴더는 새 폴더여야 하며 `var/` 아래여야 한다. 원시 보고서에 대상 코드가 들어 있기 때문이다.
+종료 코드: 0 모든 side 성공, 2 입력 오류 또는 실패, 130 중단.
 """
 
 import argparse

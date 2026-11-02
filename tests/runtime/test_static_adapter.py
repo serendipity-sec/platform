@@ -27,7 +27,7 @@ REFERENCE = REPO / "examples/contracts/order-lookup/input"
 AGENT = "@n8n/n8n-nodes-langchain.agent"
 TOOL_CODE = "@n8n/n8n-nodes-langchain.toolCode"
 
-# Team-written synthetic tool bodies (not from any public workflow).
+# 팀이 작성한 합성 도구 코드다. 공개 workflow에서 가져온 것이 아니다.
 UNGUARDED = """const input = JSON.parse(query);
 await helpers.httpRequest({ method: 'DELETE', url: `https://db.invalid/n?id=${input.id}` });
 return 'deleted';"""
@@ -57,7 +57,7 @@ def workflow(code: str | None, agent_version: float = 3.1) -> bytes:
         node("agent", "Agent", AGENT, agent_version),
         node("memory-delete", "Memory Delete", TOOL_CODE, 1.2, jsCode=code),
         node("sub-flow", "Sub Flow", "@n8n/n8n-nodes-langchain.toolWorkflow", 2.2),
-        node("helper", "Helper", TOOL_CODE, 1.2, jsCode=UNGUARDED),  # Not an agent tool.
+        node("helper", "Helper", TOOL_CODE, 1.2, jsCode=UNGUARDED),
     ]
     if code is None:
         nodes[1]["parameters"] = {}
@@ -70,7 +70,7 @@ def workflow(code: str | None, agent_version: float = 3.1) -> bytes:
 
 
 class Setup:
-    """A repo copy with the rule, a handoff whose workflows are replaced, and a matching plan."""
+    """규칙을 복사한 저장소, workflow를 바꾼 handoff, 맞는 plan을 준비한다."""
 
     def __init__(self, root: Path, before: bytes, after: bytes) -> None:
         self.repo = root / "repo"
@@ -170,7 +170,7 @@ def test_targets_are_agent_tools_and_others_are_listed() -> None:
     assert [item.node_id for item in found.scanned] == ["memory-delete"]
     assert found.scanned[0].code_pointer == "/nodes/1/parameters/jsCode"
     assert found.scanned[0].code_sha256 == digest(UNGUARDED.encode())
-    # The plain Code helper is not an agent tool; the sub-workflow tool is reported.
+    # 일반 Code 노드 helper는 agent tool이 아니므로 제외하고, 하위 workflow tool은 보고한다.
     assert [(item.node_id, item.reason) for item in found.unsupported] == [
         ("sub-flow", "TARGET_TYPE_NOT_SUPPORTED")
     ]
@@ -192,7 +192,7 @@ def test_before_and_after_are_scanned_with_the_same_template(setup: Setup) -> No
     assert before.tool == after.tool == setup.catalog.templates[0].tool
     assert before.workflow_sha256 == digest(workflow(UNGUARDED))
     assert [(item.node_id, item.line, item.code_pointer) for item in before.findings] == [
-        ("memory-delete", 2, "/nodes/1/parameters/jsCode")  # File line 3 minus the wrapper.
+        ("memory-delete", 2, "/nodes/1/parameters/jsCode")  # 래퍼를 뺀 파일 3번째 줄.
     ]
     assert after.findings == []
     assert before.scanned_node_ids == ["memory-delete"]
@@ -354,6 +354,39 @@ def test_static_scan_cannot_claim_a_runtime_obligation(setup: Setup) -> None:
                 if item.obligation_id != obligation
             ],
         )
+    assert not setup.out.exists()
+
+
+@pytest.mark.parametrize(
+    ("claimed", "code"),
+    [
+        (["static-findings"], None),
+        (["static-findings", "static-raw-report"], "STATIC_OBLIGATION_EVIDENCE_MISMATCH"),
+        (["static-raw-report"], "STATIC_OBLIGATION_EVIDENCE_MISMATCH"),
+    ],
+)
+def test_binding_must_claim_exactly_the_evidence_the_case_requires(
+    setup: Setup, claimed: list[str], code: str | None
+) -> None:
+    # 정적 검사로 충족 가능한 obligation을 하나 만들어 계획의 주장만 바꿔 본다.
+    first, *rest = setup.handoff.case.obligations
+    case = setup.handoff.case.model_copy(
+        update={
+            "obligations": [
+                first.model_copy(update={"required_artifacts": ["static-findings"]}),
+                *rest,
+            ]
+        }
+    )
+    setup.handoff = setup.handoff.model_copy(update={"case": case})
+    binding = ObligationBinding(obligation_id=first.obligation_id, required_artifact_kinds=claimed)
+    uncovered = [item.obligation_id for item in rest]
+    if code is None:
+        setup.run(fake_semgrep(), obligation_bindings=[binding], uncovered_obligation_ids=uncovered)
+        assert saved(setup, "after").status == "SUCCEEDED"
+        return
+    with pytest.raises(InputError, match=code):
+        setup.run(fake_semgrep(), obligation_bindings=[binding], uncovered_obligation_ids=uncovered)
     assert not setup.out.exists()
 
 
