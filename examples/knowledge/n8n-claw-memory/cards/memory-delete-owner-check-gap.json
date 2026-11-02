@@ -105,7 +105,7 @@
         "redistribution": "REFERENCES_ONLY",
         "static_analysis": {
           "type": "STATIC_ANALYSIS",
-          "artifact": "experiments/n8n-claw-c/evidence/semgrep-summary.json",
+          "artifact": "experiments/n8n-claw-c/evidence/semgrep-summary-0.4.0.json",
           "sha256": "afa1ea124fc82d6742f33c0408fd4728e6be49aa01765cd3f21605c42c89fd60",
           "tool": {
             "name": "Semgrep",

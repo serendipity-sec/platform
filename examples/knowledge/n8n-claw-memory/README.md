@@ -25,7 +25,7 @@ in this checkout. The evidence types remain separate:
 
 - **Source inspection** covers the exact upstream commit and workflow hash named by each card.
 - **Static analysis** references
-  `experiments/n8n-claw-c/evidence/semgrep-summary.json`, SHA-256
+  `experiments/n8n-claw-c/evidence/semgrep-summary-0.4.0.json`, SHA-256
   `afa1ea124fc82d6742f33c0408fd4728e6be49aa01765cd3f21605c42c89fd60`. The run used Semgrep
   1.181.0 and `flowdelta.n8n.agent-tool-write-without-ownership-check@0.4.0`, with
   `basis=STATIC_CONDITION` and `security_outcome=null`. The feature result includes findings for
@@ -46,7 +46,7 @@ in this checkout. The evidence types remain separate:
 | General evidence layer | This case's n8n-specific record | Status and boundary |
 |---|---|---|
 | Source inspection | `source` entry in each card's `flowdelta.case_evidence.evidence` map: upstream workflow commit, path, and file SHA-256 | Pinned source revision identified. The source bytes are not checked into this checkout, so source-code claim locations cannot be independently inspected here. |
-| Static analysis | `static_analysis` entry referencing `experiments/n8n-claw-c/evidence/semgrep-summary.json` | `SUCCEEDED` with Semgrep 1.181.0 and the recorded rule version. Only scanned node IDs are covered; unsupported node types remain listed, and `security_outcome` is null. |
+| Static analysis | `static_analysis` entry referencing `experiments/n8n-claw-c/evidence/semgrep-summary-0.4.0.json` | `SUCCEEDED` with Semgrep 1.181.0 and the recorded rule version. Only scanned node IDs are covered; unsupported node types remain listed, and `security_outcome` is null. |
 | Bounded/component replay | `selected_tool_js_synthetic_replay` and `observations.json` | `COMPLETED` for selected original tool JavaScript against synthetic caller context and a synthetic HTTP receiver. This is component replay, not a deployed workflow or actual service effect. |
 | Integrated workflow/system execution | `full_n8n_llm_agent` | `NOT_RUN`; the full n8n plus LLM path was not executed. |
 | Backing-service effects | `real_database` | `NOT_RUN`; no actual database or its permissions were exercised. The synthetic receiver observation remains part of bounded replay. |
