@@ -390,6 +390,82 @@ def test_binding_must_claim_exactly_the_evidence_the_case_requires(
     assert not setup.out.exists()
 
 
+@pytest.mark.parametrize(
+    ("claimed", "code"),
+    [
+        ([], "STATIC_OBLIGATION_EVIDENCE_MISMATCH"),
+        (["static-findings"], "STATIC_OBLIGATION_EVIDENCE_MISMATCH"),
+        (["static-raw-report"], "STATIC_OBLIGATION_EVIDENCE_MISMATCH"),
+    ],
+)
+def test_missing_or_partial_evidence_is_refused(
+    setup: Setup, claimed: list[str], code: str
+) -> None:
+    # case가 두 증거를 모두 요구할 때 계획이 일부만 주장하거나 비워 두면 거부한다.
+    first, *rest = setup.handoff.case.obligations
+    case = setup.handoff.case.model_copy(
+        update={
+            "obligations": [
+                first.model_copy(
+                    update={"required_artifacts": ["static-findings", "static-raw-report"]}
+                ),
+                *rest,
+            ]
+        }
+    )
+    setup.handoff = setup.handoff.model_copy(update={"case": case})
+    binding = ObligationBinding(obligation_id=first.obligation_id, required_artifact_kinds=claimed)
+    with pytest.raises(InputError, match=code):
+        setup.run(
+            fake_semgrep(),
+            obligation_bindings=[binding],
+            uncovered_obligation_ids=[item.obligation_id for item in rest],
+        )
+    assert not setup.out.exists()
+
+
+def test_each_run_records_the_obligations_it_was_planned_for(setup: Setup) -> None:
+    first, *rest = setup.handoff.case.obligations
+    case = setup.handoff.case.model_copy(
+        update={
+            "obligations": [
+                first.model_copy(update={"required_artifacts": ["static-findings"]}),
+                *rest,
+            ]
+        }
+    )
+    setup.handoff = setup.handoff.model_copy(update={"case": case})
+    binding = ObligationBinding(
+        obligation_id=first.obligation_id, required_artifact_kinds=["static-findings"]
+    )
+    before, after = setup.run(
+        fake_semgrep(),
+        obligation_bindings=[binding],
+        uncovered_obligation_ids=[item.obligation_id for item in rest],
+    )
+    assert before.obligation_ids == [first.obligation_id]
+    assert after.obligation_ids == [first.obligation_id]
+
+
+def test_obligation_missing_from_plan_is_refused(setup: Setup) -> None:
+    # 바인딩에도 uncovered에도 없는 obligation은 빠진 것이므로 거부한다.
+    first, *rest = setup.handoff.case.obligations
+    case = setup.handoff.case.model_copy(
+        update={
+            "obligations": [
+                first.model_copy(
+                    update={"required_artifacts": ["static-findings", "static-raw-report"]}
+                ),
+                *rest,
+            ]
+        }
+    )
+    setup.handoff = setup.handoff.model_copy(update={"case": case})
+    with pytest.raises(InputError, match="STATIC_OBLIGATION_SET_MISMATCH"):
+        setup.run(fake_semgrep(), obligation_bindings=[], uncovered_obligation_ids=[])
+    assert not setup.out.exists()
+
+
 def test_changed_workflow_bytes_and_output_outside_var_are_refused(setup: Setup) -> None:
     path = setup.root / setup.handoff.snapshots.snapshots[1].workflow_ref.path
     original = path.read_bytes()

@@ -324,6 +324,16 @@
           ],
           "title": "Finished At"
         },
+        "obligation_ids": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "title": "Obligation Ids",
+          "type": "array"
+        },
         "outcome": {
           "default": null,
           "title": "Outcome",
@@ -440,6 +450,7 @@
         "comparison_run_id",
         "case_id",
         "plan_id",
+        "obligation_ids",
         "side",
         "snapshot_id",
         "authorship",

@@ -164,6 +164,7 @@ def _record(
         comparison_run_id=context.comparison_run_id,
         case_id=context.case_id,
         plan_id=context.plan.plan_id,
+        obligation_ids=[item.obligation_id for item in context.plan.obligation_bindings],
         side=side.side,
         snapshot_id=side.snapshot_id,
         authorship=RUN_AUTHOR,

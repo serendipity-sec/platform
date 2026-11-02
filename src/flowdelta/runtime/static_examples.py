@@ -146,6 +146,7 @@ def _run(
         comparison_run_id="comparison-example-claw-first-fix",
         case_id="n8n-claw-memory-first-fix",
         plan_id="plan-example-claw-first-fix-static",
+        obligation_ids=["owner-check-before-write"],
         side=side,
         snapshot_id=snapshot_id,
         authorship=EXAMPLE_AUTHOR,
