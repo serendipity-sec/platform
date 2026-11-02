@@ -29,4 +29,4 @@ examples/public-sources/** -text
 # Preserve recorded harness and observation bytes on every OS.
 experiments/n8n-claw-memory/** -text
 # Preserve referenced static-analysis summaries byte-for-byte on every OS.
-experiments/n8n-claw-c/evidence/semgrep-summary*.json -text
+experiments/n8n-claw-c/evidence/semgrep-summary*.json text eol=lf
