@@ -131,13 +131,27 @@ def rewrite_member(root, relative, change):
     return {"sha256": digest(path.read_bytes()), "size_bytes": path.stat().st_size}
 
 
-@pytest.mark.parametrize("field,value", [("resource_id", "OTHER"), ("outcome", "DENIED")])
-def test_semantically_wrong_events_fail_even_with_consistent_hashes(options, field, value):
+@pytest.mark.parametrize(
+    "location,field,value",
+    [
+        ("event", "resource_id", "OTHER"),
+        ("event", "outcome", "DENIED"),
+        ("document", "run_id", "run-another-execution"),
+        ("document", "run_id", None),
+        ("document", "collection_status", "INCOMPLETE"),
+        ("document", "collection_status", None),
+    ],
+)
+def test_semantically_wrong_events_fail_even_with_consistent_hashes(
+    options, location, field, value
+):
     run_pipeline(**options, execute=True, runner=OrderDocker(), sleep=lambda _: None)
     root = options["output"] / "bundle"
     event_name = "runs/before-1/events.json"
     event_ref = rewrite_member(
-        root, event_name, lambda doc: doc["events"][0].update({field: value})
+        root,
+        event_name,
+        lambda doc: (doc if location == "document" else doc["events"][0]).update({field: value}),
     )
     run_name = "runs/before-1.run.json"
     run_ref = rewrite_member(
@@ -157,6 +171,30 @@ def test_semantically_wrong_events_fail_even_with_consistent_hashes(options, fie
             for ref in doc["artifacts"]
             if ref["path"] in (event_name, run_name)
         ],
+    )
+    rewrite_member(
+        options["output"],
+        "summary.json",
+        lambda doc: doc.update(
+            bundle_manifest_sha256=digest((root / "manifest.json").read_bytes())
+        ),
+    )
+    with pytest.raises(InputError, match="NORMAL_BUSINESS_CHECK_FAILED"):
+        verify_profiled_order(options["output"], REPO)
+
+
+@pytest.mark.parametrize(
+    "patch", [{"phase": "RUNNING"}, {"phase": "FINALIZING", "finished_at": None}]
+)
+def test_unfinished_run_fails_even_with_consistent_hashes(options, patch):
+    run_pipeline(**options, execute=True, runner=OrderDocker(), sleep=lambda _: None)
+    root = options["output"] / "bundle"
+    run_name = "runs/before-1.run.json"
+    run_ref = rewrite_member(root, run_name, lambda doc: doc.update(patch))
+    rewrite_member(
+        root,
+        "manifest.json",
+        lambda doc: [ref.update(run_ref) for ref in doc["artifacts"] if ref["path"] == run_name],
     )
     rewrite_member(
         options["output"],

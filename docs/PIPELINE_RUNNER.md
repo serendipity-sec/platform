@@ -47,7 +47,10 @@ C의 기존 preflight·등록 template·원본 해시·환경 검사를 그대�
 `analysis_graph_limits`는 A의 `flowdelta.graph.limits`를 그대로 전달하며 미제공 시 null입니다.
 
 독립적인 정상 업무 검사는 manifest와 실행 기록을 먼저 검증한 뒤 artifact kind 참조로 관측을
-읽습니다. 응답·초기 상태·정리 외에 주문 ID와 `RETURNED` 여부도 확인합니다.
+읽습니다. 응답·초기 상태·정리 외에 주문 ID와 `RETURNED` 여부도 확인합니다. 이벤트 문서
+최상위의 `run_id`와 `collection_status=COMPLETE`를 실행 기록과 대조하고, 실행이
+`phase=FINISHED`이며 종료 시각이 있어야 통과합니다. 파일 해시를 다시 맞춰도 다른 실행의
+이벤트 문서·미완료 수집·종료 전 실행을 정상 업무 성공으로 받지 않습니다.
 
 ```powershell
 uv run --frozen --extra baseline --extra knowledge python tools/check_profiled_order.py var/pipeline-execute --out var/normal-checks.json
