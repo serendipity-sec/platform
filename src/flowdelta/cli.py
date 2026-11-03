@@ -7,12 +7,14 @@ import typer
 
 from flowdelta import SCHEMA_VERSION, __version__
 from flowdelta.contracts import Handoff
+from flowdelta.graph.cli import app as analysis_db_app
 from flowdelta.handoff import build_handoff, write_handoff
 from flowdelta.ingestion import InputError, json_bytes, load_case
 from flowdelta.knowledge.cli import app as knowledge_app
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 app.add_typer(knowledge_app, name="knowledge")
+app.add_typer(analysis_db_app, name="analysis-db")
 
 
 @app.command()
