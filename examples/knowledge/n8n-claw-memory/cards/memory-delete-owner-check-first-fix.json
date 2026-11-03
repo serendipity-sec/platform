@@ -22,14 +22,76 @@
       "claims": [
         {
           "basis": "SOURCE_INSPECTION",
-          "statement": "첫 보완 JS는 삭제 전에 대상 행의 scope와 owner_user_id를 읽고 qualifiedUserId 및 memory_admins를 이용해 허용 여부를 확인한다."
+          "statement": "첫 보완 JS는 삭제 전에 대상 행의 scope와 owner_user_id를 읽고 qualifiedUserId 및 memory_admins를 이용해 허용 여부를 확인한다.",
+          "evidence_refs": [
+            {
+              "evidence_key": "source",
+              "selector": {
+                "commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+                "path": "workflows/n8n-claw-agent.json",
+                "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+              }
+            }
+          ]
+        },
+        {
+          "basis": "STATIC_ANALYSIS",
+          "statement": "Semgrep tool-fit 요약은 first-fix revision에서 finding이 없다고 기록했다. 이는 안전성 증명이 아니다.",
+          "evidence_refs": [
+            {
+              "evidence_key": "static_analysis",
+              "selector": {
+                "json_pointer": "/versions/3",
+                "version": "first-fix",
+                "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+                "node_id": "tool-memory-delete",
+                "status": "SUCCEEDED",
+                "findings": []
+              }
+            }
+          ]
         },
         {
           "basis": "LIMITED_REPLAY",
-          "statement": "foreign personal 행은 OWNERSHIP_DENIED로 남고 DELETE가 발생하지 않았다. own personal 및 admin 조건에서는 합성 행 삭제가 관측됐다."
+          "statement": "foreign personal 행은 OWNERSHIP_DENIED로 남고 DELETE가 발생하지 않았다. own personal 및 admin 조건에서는 합성 행 삭제가 관측됐다.",
+          "evidence_refs": [
+            {
+              "evidence_key": "observations",
+              "selector": {
+                "json_pointer": "/observations/9",
+                "version": "first-fix",
+                "relationship": "foreign",
+                "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+              }
+            },
+            {
+              "evidence_key": "observations",
+              "selector": {
+                "json_pointer": "/observations/10",
+                "version": "first-fix",
+                "relationship": "own",
+                "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+              }
+            },
+            {
+              "evidence_key": "observations",
+              "selector": {
+                "json_pointer": "/observations/11",
+                "version": "first-fix",
+                "relationship": "admin",
+                "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+              }
+            }
+          ]
         }
       ],
       "cve": "NOT_IDENTIFIED",
+      "cve_applicability": {
+        "status": "UNKNOWN",
+        "scope": "CVE/advisory applicability for the pinned Memory Delete workflow revision in an assessed built/deployed runtime",
+        "reason": "The evidence pins a workflow source revision and file hash but does not identify the exact ecosystem/package or product version included in an assessed runtime, or map this source commit to that runtime. Advisory applicability cannot be determined.",
+        "date": "2026-10-29"
+      },
       "evidence": {
         "observations": {
           "artifact": "experiments/n8n-claw-memory/evidence/observations.json",
@@ -77,7 +139,45 @@
           "size_bytes": 110981,
           "url": "https://github.com/freddy-schuetz/n8n-claw/blob/eb6d7bc185eaecdf96885b3e17ef1f8dac93a852/workflows/n8n-claw-agent.json"
         },
-        "redistribution": "REFERENCES_ONLY"
+        "redistribution": "REFERENCES_ONLY",
+        "static_analysis": {
+          "type": "STATIC_ANALYSIS",
+          "artifact": "experiments/n8n-claw-c/evidence/semgrep-summary-0.4.0.json",
+          "sha256": "afa1ea124fc82d6742f33c0408fd4728e6be49aa01765cd3f21605c42c89fd60",
+          "tool": {
+            "name": "Semgrep",
+            "version": "1.181.0"
+          },
+          "rule": {
+            "id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+            "version": "0.4.0"
+          },
+          "basis": "STATIC_CONDITION",
+          "security_outcome": null,
+          "selector": {
+            "version": "first-fix",
+            "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+          },
+          "scope": {
+            "node_id": "tool-memory-delete",
+            "scanned": true
+          },
+          "recorded": {
+            "status": "SUCCEEDED",
+            "summary_findings_count": 0,
+            "memory_delete_findings": [],
+            "unsupported_node_ids": [
+              "tool-agent-library",
+              "tool-browser-use",
+              "tool-expert-agent",
+              "tool-library-manager",
+              "mcp-builder-tool",
+              "tool-reminder-wf",
+              "tool-telegram-status",
+              "tool-workflow-builder"
+            ]
+          }
+        }
       },
       "required_permissions": [
         "The configured Supabase credential still needs permission to delete the selected memory_long row; the replay used a synthetic receiver.",
@@ -91,8 +191,19 @@
         "The later reverted workflow has the same content hash as the pre-fix workflow and again deleted a foreign synthetic row. Verify the exact workflow hash instead of assuming the first fix persists.",
         "Team-scope and optional entity/relation cascade behavior are not established by the cited replay cases.",
         "Actual deployed version, Supabase permissions, caller authentication, and production exposure are unknown.",
-        "No CVE or CWE is identified by the reviewed source materials."
-      ]
+        "The upstream workflow bytes are pinned by commit, path, and SHA-256 but are not locally available in this checkout; no source-code location was added without independent verification.",
+        "No CVE or CWE is identified by the reviewed source materials.",
+        "정적 분석은 지원 코드 노드에 한정된다. toolWorkflow와 telegramTool 등 미지원 노드는 TARGET_TYPE_NOT_SUPPORTED로 남으며 finding 부재는 안전성 증명이 아니다."
+      ],
+      "cve_reason": "2026-10-29에 검토한 고정 workflow revisions와 제한 replay에서 CVE ID를 확인하지 못했다. matching repository/package advisory identity나 package ecosystem/version 또는 product/version이 확정되지 않아 GHSA/OSV/NVD 적용성 조회를 수행하지 않았으며 CVE를 주장하지 않는다.",
+      "execution_status": {
+        "selected_tool_js_synthetic_replay": {
+          "scope": "SELECTED_NODE_ONLY",
+          "status": "COMPLETED"
+        },
+        "full_n8n_llm_agent": "NOT_RUN",
+        "real_database": "NOT_RUN"
+      }
     }
   },
   "license_identifier": null,
