@@ -22,7 +22,8 @@ uv run --frozen --extra knowledge flowdelta analysis-db get <analysis_id> --out 
 |---|---|
 | 불변 | 같은 ID·같은 내용은 아무 일도 하지 않는다. 같은 ID·다른 내용은 `ANALYSIS_ID_CONFLICT`로 거부한다 |
 | 수정·삭제 금지 | 앱 역할에는 UPDATE·DELETE 권한이 없다. trigger가 migration 역할의 UPDATE·DELETE·TRUNCATE도 막는다 |
-| 무결성 | 저장한 바이트의 SHA-256을 함께 두고, 읽을 때마다 다시 확인한다(`ANALYSIS_INTEGRITY_MISMATCH`) |
+| 무결성 | 읽기와 같은 ID의 재저장 모두 기존 payload의 SHA-256·문서 형식·analysis ID를 검증한다. 손상된 기존 행을 저장 성공으로 반환하지 않는다(`ANALYSIS_INTEGRITY_MISMATCH` 또는 문서 파싱 오류) |
+| 동일 내용 확인 | 기존 행을 검증한 뒤 저장 요청과 바이트 단위로 비교한다. 다른 바이트는 `ANALYSIS_ID_CONFLICT`이며 기존 행을 덮어쓰지 않는다 |
 | 다시 읽을 수 있는 것만 저장 | 저장 전에 한 번 다시 읽어 본다. 읽을 수 없는 분석(예: `JSON_DEPTH_LIMIT`)은 저장하지 않는다 |
 | 정확한 조회 | `get(analysis_id)` 또는 `find(case_id, before_snapshot_id, after_snapshot_id)`의 정확한 일치뿐이다. "그 case의 최신 분석"은 고르지 않는다 |
 

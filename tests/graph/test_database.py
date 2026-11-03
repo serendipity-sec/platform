@@ -10,7 +10,7 @@ from typer.testing import CliRunner
 
 from flowdelta.cli import app
 from flowdelta.graph import analyze
-from flowdelta.ingestion import InputError, json_bytes
+from flowdelta.ingestion import InputError, digest, json_bytes
 from flowdelta.pipeline_contracts import AnalysisBundle
 from flowdelta.pipeline_io import read_handoff
 
@@ -191,6 +191,68 @@ def test_changed_payload_is_detected(engine: object) -> None:
     with pytest.raises(InputError) as error:
         store.get(bundle.analysis_id)  # type: ignore[attr-defined]
     assert error.value.code == "ANALYSIS_INTEGRITY_MISMATCH"
+    with pytest.raises(InputError, match="ANALYSIS_INTEGRITY_MISMATCH"):
+        store.save(bundle)  # type: ignore[attr-defined]
+
+
+@needs_database
+@pytest.mark.parametrize(
+    ("corruption", "code"),
+    [
+        ("identity", "ANALYSIS_INTEGRITY_MISMATCH"),
+        ("invalid-json", "INVALID_JSON"),
+        ("different-content", "ANALYSIS_ID_CONFLICT"),
+        ("different-bytes", "ANALYSIS_ID_CONFLICT"),
+    ],
+)
+def test_save_checks_existing_payload_even_with_a_matching_stored_hash(
+    engine: object, corruption: str, code: str
+) -> None:
+    from pydantic import SecretStr
+    from sqlalchemy import text
+
+    from flowdelta.knowledge.database import engine_for
+    from flowdelta.knowledge.settings import KnowledgeSettings
+
+    bundle = unique(analysis("order-lookup"), "stored-payload")
+    store = repository(engine)
+    store.save(bundle)  # type: ignore[attr-defined]
+    changed = bundle.model_dump(mode="json")
+    if corruption == "identity":
+        changed["analysis_id"] = "analysis-another-record"
+    elif corruption == "different-content":
+        changed["limitations"] = [*bundle.limitations, "different stored content"]
+    payload = json_bytes(changed)
+    if corruption == "invalid-json":
+        payload = b"{"
+    elif corruption == "different-bytes":
+        payload += b" "
+    migration = os.environ.get("FLOWDELTA_KB_TEST_MIGRATION_URL", DATABASE_URL or "")
+    admin = engine_for(
+        KnowledgeSettings(database_url=SecretStr(migration), migration_url=SecretStr(migration)),
+        migration=True,
+    )
+    try:
+        with admin.begin() as connection:
+            connection.execute(text("ALTER TABLE graph.analysis DISABLE TRIGGER USER"))
+            connection.execute(
+                text(
+                    "UPDATE graph.analysis SET payload = :payload, sha256 = :checksum "
+                    "WHERE analysis_id = :id"
+                ),
+                {"id": bundle.analysis_id, "payload": payload, "checksum": digest(payload)},
+            )
+            connection.execute(text("ALTER TABLE graph.analysis ENABLE TRIGGER USER"))
+        with pytest.raises(InputError, match=code):
+            store.save(bundle)  # type: ignore[attr-defined]
+        with admin.connect() as connection:
+            stored = connection.execute(
+                text("SELECT payload FROM graph.analysis WHERE analysis_id = :id"),
+                {"id": bundle.analysis_id},
+            ).scalar_one()
+        assert bytes(stored) == payload
+    finally:
+        admin.dispose()
 
 
 @needs_database

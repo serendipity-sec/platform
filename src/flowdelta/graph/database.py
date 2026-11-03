@@ -80,12 +80,14 @@ class DatabaseAnalysisRepository:
         try:
             with self._engine.begin() as connection:
                 if connection.execute(_INSERT, values).first() is None:
-                    # Another save holds the ID; the same content is a no-op, other is refused.
+                    # A no-op must still be readable and contain the exact requested bytes.
                     stored = connection.execute(
-                        text("SELECT sha256 FROM graph.analysis WHERE analysis_id = :id"),
+                        text("SELECT payload, sha256 FROM graph.analysis WHERE analysis_id = :id"),
                         {"id": analysis_id},
-                    ).scalar_one()
-                    if stored != checksum:
+                    ).one()
+                    stored_payload = bytes(stored.payload)
+                    _verified(analysis_id, stored_payload, stored.sha256)
+                    if stored_payload != payload:
                         raise InputError("ANALYSIS_ID_CONFLICT", location=analysis_id)
         except SQLAlchemyError:
             raise InputError("ANALYSIS_DATABASE_UNAVAILABLE") from None
