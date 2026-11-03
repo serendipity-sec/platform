@@ -1,11 +1,14 @@
 {
-  "bundle_manifest_sha256": "6c415e39b0623e031b69bfe1cc57b9716b4abf450a665c9e5a26c4d03fc05bc7",
+  "bundle_manifest_sha256": "bf575559841a50c3aecde9620c8cf005b5380c6540111d4f0bb2dfa6480b3730",
   "n8n_claw_full_runtime_verified": false,
   "observations": [
     {
       "checks": {
         "cleanup_complete": true,
         "collection_complete": true,
+        "event_collection_complete": true,
+        "event_document_owned": true,
+        "execution_finished": true,
         "execution_succeeded": true,
         "expected_input": true,
         "expected_response": true,
@@ -14,13 +17,16 @@
         "one_owned_read": true,
         "orders_unchanged": true
       },
-      "run_id": "run-818177041015429886afd690a52381f0",
+      "run_id": "run-d891c9041a2e4d4da2f43725b41fbef8",
       "side": "after"
     },
     {
       "checks": {
         "cleanup_complete": true,
         "collection_complete": true,
+        "event_collection_complete": true,
+        "event_document_owned": true,
+        "execution_finished": true,
         "execution_succeeded": true,
         "expected_input": true,
         "expected_response": true,
@@ -29,7 +35,7 @@
         "one_owned_read": true,
         "orders_unchanged": true
       },
-      "run_id": "run-c7ad0660f1e34f04b5311cc6ec2fd322",
+      "run_id": "run-8ce395f8b223497d84b79f9d40c8af64",
       "side": "before"
     }
   ],
@@ -37,6 +43,6 @@
   "preexisting_expected_sha256": "36a79fc4cd6e93f2d32c0e6393557a6da3b27277f12acf5c1c40446b72dd1cde",
   "scope": "REGISTERED_SYNTHETIC_ORDER_LOOKUP_ONLY",
   "security_outcome": null,
-  "summary_sha256": "e9fa3a0f5d922c1de01cc71430c4aaf58faa3a649adf93fa7e415b60ebc2ce5a",
-  "verification_source_sha256": "eb703f51cfda1f7607708319144540d5ab5169bdc44d6d40f3cc4acb5e3dd44b"
+  "summary_sha256": "93cc52889760c27553fed04f8b7e4f8b6fa327c1f728097623e4cd9cf2e7be2d",
+  "verification_source_sha256": "105850a1e90a9e65daf8fd648ea4831c39cf28095c73014f7f8bbadac6d2fd04"
 }

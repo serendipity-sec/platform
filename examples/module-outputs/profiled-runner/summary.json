@@ -2,12 +2,12 @@
   "allocated_runs": [
     {
       "attempt_number": 1,
-      "run_id": "run-818177041015429886afd690a52381f0",
+      "run_id": "run-d891c9041a2e4d4da2f43725b41fbef8",
       "side": "after"
     },
     {
       "attempt_number": 1,
-      "run_id": "run-c7ad0660f1e34f04b5311cc6ec2fd322",
+      "run_id": "run-8ce395f8b223497d84b79f9d40c8af64",
       "side": "before"
     }
   ],
@@ -34,7 +34,7 @@
   ],
   "analysis_origin": "MODULE_OUTPUT",
   "bundle": "bundle",
-  "bundle_manifest_sha256": "6c415e39b0623e031b69bfe1cc57b9716b4abf450a665c9e5a26c4d03fc05bc7",
+  "bundle_manifest_sha256": "bf575559841a50c3aecde9620c8cf005b5380c6540111d4f0bb2dfa6480b3730",
   "case_id": "order-lookup-demo-001",
   "catalog_sha256": "286f926b92802ccec32e9800bdfba6cea9d16f3f6d71f2e6a304311e5b464bde",
   "contract_validation": {
@@ -68,7 +68,7 @@
   },
   "kb_sha256": "d0668162282dc7181e64f6c6e25314cf4753d044053fc078160504583607c2fb",
   "mode": "EXECUTE_REGISTERED",
-  "orchestration_id": "pipeline-50061b4b3d6c44f78a3057aec2638e02",
+  "orchestration_id": "pipeline-c1f0cf6e29c74e18a00b98fbb5504854",
   "plan_id": "plan-5b3ae5357be46a6b0577f7c7",
   "plan_origin": "MODULE_OUTPUT",
   "producer_version": "0.1.0",
@@ -83,7 +83,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-c7ad0660f1e34f04b5311cc6ec2fd322",
+      "run_id": "run-8ce395f8b223497d84b79f9d40c8af64",
       "side": "before"
     },
     {
@@ -93,7 +93,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-818177041015429886afd690a52381f0",
+      "run_id": "run-d891c9041a2e4d4da2f43725b41fbef8",
       "side": "after"
     }
   ],
@@ -134,7 +134,7 @@
     "runtime/readiness-evidence/order/after.json": "96b8f25846136bbed683d29e98c270f40f5b5e2dfdb0657c69239dc20ced7c87",
     "runtime/readiness-evidence/order/before.json": "e886ce74d525d4a7e74b165c4c5e4e66a0395e7ac9bc72297cb92f9d51304cb6",
     "runtime/readiness-evidence/summary.json": "971b2551d3c8120a80831a9a1554217a355f85ec0630d6c36f42359139bc1edd",
-    "runtime/static-scan/rules/agent-tool-write-without-ownership-check.yaml": "33aa37f9784868226943346d0794643a90498bcc5ebc14d665c44046f8acf034",
+    "runtime/static-scan/rules/agent-tool-write-without-ownership-check.yaml": "7c519af6b0b66ed970ed0cad741dd6f9c8d0c89b20726704b56f3e9f3c87d440",
     "src/flowdelta/__init__.py": "2988aa5796d713f98c18524ee1fd06dcf3a8957f8d6e93a9f923cfdbeb6bc923",
     "src/flowdelta/additional_examples.py": "1e12e232ec45859135c23084387c5481a8684fb72d574668d71ead1ec24ea439",
     "src/flowdelta/artifact_io.py": "41f0d556b684c8ed17f589210903b040c43f2597904b58b991f60c275d9cd50c",
@@ -142,7 +142,7 @@
     "src/flowdelta/baseline/fixture.py": "2c617e668da723ac4eccd6c31be6e4ea8ecf5f3815b6d8f7476105efa143236f",
     "src/flowdelta/baseline/manual.py": "cefd18811e1b312872f88a8a357d77cc18bb40601f3e3c03a8481e829931d1e8",
     "src/flowdelta/baseline/probe.py": "c1733a25d93f814c644e246184a26a8dc0795e3c45ef25fcf8c5547a9c342d23",
-    "src/flowdelta/cli.py": "ab6ee0a7294ddf6087f9ed6a8695b6dcba07034d49e0d5e6aea09c9707a3f189",
+    "src/flowdelta/cli.py": "a2b13989748258291e0c41be4db5b773b39ea57119e950cce91777eb57996486",
     "src/flowdelta/conformance/__init__.py": "ecad297032b750b711a751d37edd4474940455b2fba8edd47e6274ac8130f674",
     "src/flowdelta/conformance/compare.py": "8830e3de4b3bdde85b08565549c93ebd5bf93271427200b3eae634a2693d7048",
     "src/flowdelta/conformance/lab.py": "fcbee59118bfbf5ae887f62893cb96b0003dbebdfef9aa372c4011a23b225a68",
@@ -159,11 +159,15 @@
     "src/flowdelta/graph/__init__.py": "ab8663bc8ed4c596338a04379cd5d2b9f9434fa6c8d7cfcfb719ab6b25837930",
     "src/flowdelta/graph/analyze.py": "d84a506e1da888fa7df26a615167304555f76ff5831354c8de2ddc8168b69a21",
     "src/flowdelta/graph/changes.py": "5d41ddca6a77360f8dad8b1e28428897c0874c10a4d774ddaf7ea7c230341342",
+    "src/flowdelta/graph/cli.py": "6c36409cd2b10f8363307a9e68ed9e897a387eb7b4b0c9d1147779278e48ebf2",
     "src/flowdelta/graph/control.py": "a7f1093645175e1ac07eda3c0a2deb3b82316f83aae2597f469124aeef681f3b",
     "src/flowdelta/graph/data_flow.py": "fa2c95b299b1699e0f1ae6dc07aac13583ca6ed8c5665cd94ada34937e84c97c",
+    "src/flowdelta/graph/database.py": "10285525190a24332433d8c3588fd2f21bdf77e3e22051fe5170c02b3640a89d",
     "src/flowdelta/graph/impact.py": "3d2bfe8a6b08a8e49b2f47699d9668c82f17c8c2749ab39a980b49d3847a02b5",
     "src/flowdelta/graph/limits.py": "9f9ba4fa7afea8b49dd0c168962add420a2f1483e8ad754546cbcba4615d0778",
     "src/flowdelta/graph/matching.py": "2eaa609bd0e02df09e92366f814e56cabecdd66b7270a46beff8bedfd50cc373",
+    "src/flowdelta/graph/migrations/env.py": "55686bb1cebbb651bbb90c8754fae09684c9f49fa138e68b8d4d8b2dc685ad5a",
+    "src/flowdelta/graph/migrations/versions/graph_0001_analyses.py": "400fb4cc51586512cca48367ff9999f891bc3df397137d0953864cbb93fa2ea5",
     "src/flowdelta/graph/references.py": "9bc51a5b0512da2cadb69bb6f1923bc91465022393205b6a28d15c58e635dd5a",
     "src/flowdelta/graph/repository.py": "adbff6edaf97a2408d604d5ee13cf50c657e8205dfdf85be0e277e4dc99ad02a",
     "src/flowdelta/handoff.py": "93098b4de253d1ae9275ca027fd370ccd5c3d8759537822877b4c5fee9bb10f0",
@@ -192,7 +196,7 @@
     "src/flowdelta/migration.py": "8ee6ca06228a9efafedddef85629dc22b09b3783fbbc9f061865341aef5aab86",
     "src/flowdelta/module_outputs.py": "27ec908eef46b3dfc744434243b7f8ee8e4e7b7d2fd4a9947b3bf16578910dcd",
     "src/flowdelta/normalize.py": "78e53b89997f6c8571a8ac2a918c4a392b22ed27eb48c4ea33e5b9e572aed254",
-    "src/flowdelta/order_verification.py": "eb703f51cfda1f7607708319144540d5ab5169bdc44d6d40f3cc4acb5e3dd44b",
+    "src/flowdelta/order_verification.py": "105850a1e90a9e65daf8fd648ea4831c39cf28095c73014f7f8bbadac6d2fd04",
     "src/flowdelta/pipeline_bundle.py": "04759c93e718421681afed5b0451df86668c5d8e2a76ff38d9a063a354b0f086",
     "src/flowdelta/pipeline_contracts.py": "f45771cec67d70c5689a9d963e273a305b04b66468ff0646a5c65103e200172a",
     "src/flowdelta/pipeline_io.py": "46deae8aa4cb69144f5b93a3f775d8ddb2d460827c6d8f281c58ddeb9575717f",
@@ -202,16 +206,19 @@
     "src/flowdelta/runtime/executor.py": "c76144c4f840dbd4f54219edcae08a9e71300ec1a37b91c54039d2f65183609c",
     "src/flowdelta/runtime/order_lookup.py": "76a32cbf06a5cf5f23f2f94418e058135c11b764480b74ccfb13bb8c6b2b948d",
     "src/flowdelta/runtime/preflight.py": "f0a961a6c86926e43acafeb31472cf832118433580d9bab65a1ba6117267a9f4",
-    "src/flowdelta/runtime/static_examples.py": "c5e46d0dd6dc554e91c604420899c312f0c874336d2168adb5cc833cbb9a0c3f",
-    "src/flowdelta/runtime/static_rules.py": "10f7a115bc20e0c1cea556a3a588d0f48b1c7eab5b8c13809942258d57cd8883",
-    "src/flowdelta/runtime/static_scan.py": "87daf0481d3e15f65290c35035465a0d51b1c71d667b2bd1491cd0e9a98c31c0",
+    "src/flowdelta/runtime/static_adapter.py": "4746752bf7012f192e8e38483a5bd760f6767b9e5640741d29daf8e62ee87f44",
+    "src/flowdelta/runtime/static_cli.py": "3ecc2f884d398041e1e2b4cf6c74bdee9343ab1e36aacf44d7082fe046e19f3c",
+    "src/flowdelta/runtime/static_examples.py": "876b1eb8318c76219bc137148de5d06562bf9fc5dc94188ac9676d86663c38e2",
+    "src/flowdelta/runtime/static_rules.py": "55691a482d529eb88c844c319a52657a23af3f9f8489dee271134796e89f4b8a",
+    "src/flowdelta/runtime/static_scan.py": "5833618eaa98929dcce180c31db35c71deb1d8ea3c3644a5df21755b5f527d9a",
+    "src/flowdelta/runtime/static_targets.py": "f1c776faefe3003decfa526d2731550dccaf8eaa233bc13b54d8bae731b51855",
     "src/flowdelta/runtime/templates.py": "9777af7038d352ebf41e6d2d806d9a8013f3365c452b0a6c924e2fabb28fe2de",
     "src/flowdelta/semantics.py": "f5f224dab71a16c75fd5ddde95724074f278d8ead9359ba7f2a3cf8a132cc1c4",
     "src/flowdelta/snapshots.py": "bd4d90a064de1f3f018553f4537e1c60a27c9ee7d8acec47bcf836a59d05dda2",
     "tools/check_profiled_order.py": "1c7efd70290b29a0797d8cfaef3b2a37b4c88157f50d1087a90b1c61874f29f3",
     "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
   },
-  "source_tree_sha256": "2ade705061749c2272a22ca065a43c6eff8c668ca49d4d64713b318259b36b5b",
+  "source_tree_sha256": "a0985971fb8148497289b89915dcbd1958ef1f3102599e2af07b62ff2f05bc40",
   "stages": {
     "analysis": "SUCCEEDED",
     "bundle": "SUCCEEDED",
