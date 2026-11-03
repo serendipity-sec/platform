@@ -36,16 +36,20 @@ plan을 마지막에 기록한다. 강제 종료에 대한 원자적 디렉터�
 2. runtime profile과 등록 템플릿의 업무/profile이 맞지 않으면 제외한다.
    handoff의 정상 입력이 템플릿 입력 스키마와 맞지 않아도 제외한다.
 3. node type이 지정됐지만 전후 workflow의 node type과 겹치지 않으면 제외한다.
-4. 점수는 node type 교집합 수와 변경 필드 키워드의 제목/요약 일치 수의 합이다.
-   업무는 catalog의 task_id로 확인한다. 변경 필드 전용 카드 속성은 추가하지 않는다.
+4. 점수는 전후 workflow의 node type·변경 필드 일치와 A 영향 경로에 연결된 node type·필드
+   일치를 합산한다. 영향 경로는 `change_id`에서 실제 before/after node type을 찾는다.
+   `support`와 limitation은 점수를 안전 판정으로 바꾸지 않고 계획의 불확실성으로 보존한다.
+   업무와 template은 catalog의 task_id로 확인한다.
 5. 점수 내림차순, card ID와 version 오름차순으로 정렬하고 첫 카드의 템플릿을 선택한다.
 6. 검색 결과가 없으면 업무/profile과 정상 입력에 맞는 등록 정상 템플릿을 ID/version 순으로 선택한다.
    업무/profile 후보가 없으면 `TEMPLATE_NOT_FOUND`, 후보가 모두 입력과 맞지 않으면
    `TEMPLATE_INPUT_INVALID`다. 검색 결과 없음은 안전 판정이 아니다.
 
-검색 방법은 `KEYWORD`, 모델 버전은 null이다. 알고리즘 버전은 query와 planner_metadata에
-기록한다. 점수는 위험 확률이나 보안 성능이 아니다. node type 중첩은 후보 검색 근거이며
-카드의 주장 전체가 적용된다는 증명은 아니다.
+검색 방법은 `KEYWORD`, 모델 버전은 null이다. 알고리즘 버전은
+`flowdelta.knowledge/1.2.0`으로 query와 planner_metadata에 기록한다. retrieval과 plan에는
+case/snapshot/analysis ID, 분석 생산자와 정규 JSON 해시, 영향 path·edge·change 출처,
+path support·limitations, `flowdelta.graph.limits`를 보존한다. 점수는 위험 확률이나 보안
+성능이 아니다. node type 중첩은 후보 검색 근거이며 카드의 주장 전체가 적용된다는 증명은 아니다.
 
 모든 obligation은 템플릿의 자료 종류로 연결하거나 uncovered 목록에 남긴다.
 정상 입력과 초기 상태·snapshot 참조는 handoff에서 가져오고 `validate_pipeline()`으로 검사한다.

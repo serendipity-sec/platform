@@ -5,9 +5,15 @@ import pytest
 from typer.testing import CliRunner
 
 from flowdelta.cli import app
+from flowdelta.graph.analyze import analyze
 from flowdelta.ingestion import InputError, json_bytes, parse_file_model, parse_json
 from flowdelta.knowledge import load_cards, make_plan, retrieve, write_plan
-from flowdelta.pipeline_contracts import AnalysisBundle, RetrievalResult, TemplateCatalog
+from flowdelta.pipeline_contracts import (
+    AnalysisBundle,
+    ImpactPath,
+    RetrievalResult,
+    TemplateCatalog,
+)
 from flowdelta.pipeline_io import read_handoff, validate_pipeline, verify_ref
 
 ROOT = Path(__file__).resolve().parents[2] / "examples/contracts/order-lookup"
@@ -52,6 +58,98 @@ def test_profile_exclusion():
     result = retrieve(handoff, analysis, cards, catalog)
     assert not result.hits
     assert set(result.excluded_reasons.values()) == {"RUNTIME_PROFILE_MISMATCH"}
+
+
+def test_impact_path_evidence_guides_retrieval_and_is_preserved():
+    handoff, analysis, cards, catalog = inputs()
+    cards[0].title = "responseBody order evidence"
+    baseline = retrieve(handoff, analysis, cards, catalog)
+    analysis.impact_paths = [
+        ImpactPath(
+            path_id="impact-response-body",
+            side="after",
+            change_ids=["change-response-body"],
+            edge_ids=[],
+            task_ids=[handoff.task.task_id],
+            policy_rule_ids=[],
+            support="UNKNOWN",
+            limitations=["response node semantics are not observed"],
+        )
+    ]
+    analysis.extensions["flowdelta.graph.limits"] = {
+        "truncated": True,
+        "reasons": ["IMPACT_PATH_LIMIT"],
+        "impact_paths": {"computed": 21, "total": 27, "kept": 20},
+    }
+
+    result = retrieve(handoff, analysis, cards, catalog)
+    hit = next(hit for hit in result.hits if hit.card_id == cards[0].card_id)
+    baseline_hit = next(hit for hit in baseline.hits if hit.card_id == cards[0].card_id)
+    assert hit.score > baseline_hit.score
+    assert "impact-response-body(support=UNKNOWN)" in hit.reason
+    context = result.query["analysis_context"]
+    assert context["analysis_id"] == analysis.analysis_id
+    assert context["case_id"] == analysis.case_id
+    assert context["before_snapshot_id"] == analysis.before_snapshot_id
+    assert context["after_snapshot_id"] == analysis.after_snapshot_id
+    assert context["analysis_producer"] == analysis.authorship.producer
+    assert len(context["analysis_content_sha256"]) == 64
+    assert context["analysis_hash_basis"] == "canonical-json-v1"
+    assert context["impact_paths"][0]["change_ids"] == ["change-response-body"]
+    assert context["impact_paths"][0]["edge_ids"] == []
+    assert context["impact_paths"][0]["policy_rule_ids"] == []
+    assert context["impact_paths"][0]["limitations"] == ["response node semantics are not observed"]
+    assert context["uncertain_impact_path_ids"] == ["impact-response-body"]
+    assert context["graph_limits"] == analysis.extensions["flowdelta.graph.limits"]
+
+    plan = make_plan(handoff, analysis, cards, catalog)
+    assert plan.planner_metadata["analysis_context"] == context
+
+
+def test_impact_path_edge_endpoints_guide_retrieval():
+    handoff, analysis, cards, catalog = inputs()
+    card = next(card for card in cards if card.card_id == "normal-order-response")
+    baseline = retrieve(handoff, analysis, [card], catalog)
+    analysis.impact_paths = [
+        ImpactPath(
+            path_id="impact-response-edge",
+            side="after",
+            change_ids=[],
+            edge_ids=["control-lookup-response"],
+            task_ids=[handoff.task.task_id],
+            policy_rule_ids=[],
+            support="UNKNOWN",
+            limitations=[],
+        )
+    ]
+
+    result = retrieve(handoff, analysis, [card], catalog)
+    hit = result.hits[0]
+    baseline_hit = baseline.hits[0]
+    assert hit.score == baseline_hit.score + 2
+    assert (
+        "impact_node_types=['n8n-nodes-base.httpRequest', 'n8n-nodes-base.respondToWebhook']"
+    ) in hit.reason
+
+
+def test_actual_analysis_output_flows_into_persisted_b_outputs(tmp_path):
+    handoff, _, cards, catalog = inputs()
+    analysis = analyze(handoff)
+    assert analysis.authorship.origin == "MODULE_OUTPUT"
+    assert analysis.impact_paths
+
+    plan = write_plan(handoff, analysis, cards, catalog, tmp_path / "plan.json")
+    retrieval = parse_file_model(
+        RetrievalResult,
+        parse_json((tmp_path / plan.retrieval_ref.path).read_bytes()),
+    )
+    context = retrieval.query["analysis_context"]
+    assert context["analysis_id"] == analysis.analysis_id
+    assert [path["path_id"] for path in context["impact_paths"]] == [
+        path.path_id for path in analysis.impact_paths
+    ]
+    assert plan.planner_metadata["analysis_context"] == context
+    assert retrieval.query["rules_version"] == "flowdelta.knowledge/1.2.0"
 
 
 @pytest.mark.parametrize("version", ["9.0.0", "missing"])

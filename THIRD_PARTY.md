@@ -85,6 +85,19 @@
 |---|---|---|---|
 | ibam28/customer-support-ai-automation-n8n | `71fee7067364e9ac139a55bca3683c15b5ec2c16` | [원본](https://github.com/ibam28/customer-support-ai-automation-n8n/tree/71fee7067364e9ac139a55bca3683c15b5ec2c16), [MIT LICENSE](https://github.com/ibam28/customer-support-ai-automation-n8n/blob/71fee7067364e9ac139a55bca3683c15b5ec2c16/LICENSE) | 선택한 workflow JSON·정상 입력 예시·업무 설명을 무수정 보존. Copyright (c) 2026 Bambang Saputra Jaya와 허가문을 함께 배포. 파일별 SHA-256·획득 URL 기록. 실행·배포 실적은 독립 확인하지 않음 |
 
+## n8n-claw 기억 삭제 연구 자료 — 2026-10-19
+
+- 원본: [freddy-schuetz/n8n-claw](https://github.com/freddy-schuetz/n8n-claw).
+  원본 commit·파일 URL·SHA-256은 `experiments/n8n-claw-memory/sources.json`에 고정한다.
+- `fe57d162023e0e2b5f56fb75ea5990b48a635d1e`의 루트 tree를 확인했으며 별도 LICENSE 파일이
+  없었다. [같은 commit README](https://github.com/freddy-schuetz/n8n-claw/blob/fe57d162023e0e2b5f56fb75ea5990b48a635d1e/README.md)
+  끝에는 MIT라고 선언돼 있다. 완전한 허가문·저작권 고지의 별도 확인은 미완료다.
+- 원본 workflow·저자 테스트·추출 코드는 이 저장소나 패키지에 재배포하지 않는다.
+  원본 테스트 제목이 섞인 stdout도 로컬에만 두며 공유본은 성공 수/전체 수/해시로 제한한다.
+  팀원은 고정 URL에서 원문을 직접 받아 로컬 `var/`에 보관하고 해시를 검증한다.
+  저장소에는 원본 참조, 직접 작성한 합성 모형/harness, 정제한 관측 결과만 둔다.
+- 실행 환경은 위에서 기록한 n8n 2.42.6 공식 이미지의 고정 digest를 사용한다.
+  원본 코드는 네트워크 없는 제한된 컨테이너에서만 부분 실행하며 전체 배포 재현으로 보지 않는다.
 ## B 지식 저장 기반 — 2026-10-17
 
 도입 전에 아래 공식 라이선스 원문을 확인했다. 라이브러리는 무수정 패키지로 사용하며
@@ -116,3 +129,18 @@ DB 이미지는 로컬 개발용이며 실제 pull한 digest를 runtime 설정�
 
 ⬜ 미정. 재사용할 엔진들의 라이선스를 확인한 뒤 결정합니다.
 (Apache-2.0 계열 엔진을 링크할 경우 Apache-2.0이 무난하고, 특허 조항이 있어 팀에도 유리합니다.)
+
+## C 정적 검사 도구 적합성 — 2026-10-25
+
+#51 n8n-claw 사례의 도구 비교(`experiments/n8n-claw-c`)와 C 정적 검사 template에 사용했다. 각 LICENSE
+원문을 직접 확인했다. 도구는 무수정 실행만 했으며 소스·규칙을 저장소에 복사하거나 vendor하지 않았다.
+팀 규칙(`runtime/static-scan/rules/`)은 팀이 직접 작성했다. 분석 대상 n8n-claw 원본은 LICENSE 파일이
+없어 재배포하지 않고 고정 URL·해시만 기록한다.
+
+| 구성요소 | 용도 | 고정 버전 | 직접 확인한 LICENSE | 적용 사항 |
+|---|---|---|---|---|
+| Semgrep CE | C 정적 검사 엔진(등록 template) | 1.181.0 | [LGPL-2.1](https://github.com/semgrep/semgrep/blob/v1.181.0/LICENSE) | 무수정 CLI 실행. 링크·수정·재배포 없음. 커뮤니티 규칙 미사용 |
+| Agentic Radar | 비교 도구 | 0.14.1 | [Apache-2.0](https://github.com/splx-ai/agentic-radar/blob/v0.14.1/LICENSE) | 무수정 실행. 결과 수치만 기록 |
+| FlowSentry | 비교 도구 | 0.1.0 (PyPI sdist) | Apache-2.0: PyPI sdist의 `LICENSE`. GitHub 저장소에는 LICENSE가 감지되지 않음 | 무수정 실행. 결과 수치만 기록 |
+| n8n-flowguard | 비교 도구 | 0.1.1 (npm) | [AGPL-3.0](https://github.com/MohibShaikh/FlowGuard/blob/main/LICENSE), npm `AGPL-3.0-only` | 무수정 독립 실행만. 링크·수정·서비스 통합 없음 |
+| n8n `audit` | 비교 기준선 | 2.42.6 | 위 팀장 기준 환경의 Sustainable Use License | 로컬 비상업 실행. 바이너리·소스 미포함 |

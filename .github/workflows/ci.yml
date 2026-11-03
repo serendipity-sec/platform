@@ -31,6 +31,8 @@ jobs:
       - run: uv run --frozen --extra baseline --extra knowledge ruff check src tests
       - run: uv run --frozen --extra baseline --extra knowledge ruff format --check src tests
       - run: uv run --frozen --extra baseline --extra knowledge mypy
+      - run: uv run --frozen --extra baseline --extra knowledge ruff check experiments/n8n-claw-memory
+      - run: uv run --frozen --extra baseline --extra knowledge ruff format --check experiments/n8n-claw-memory
       - run: uv run --frozen --extra baseline --extra knowledge pytest
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta inspect-case examples/order-lookup
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-examples examples/contracts/order-lookup

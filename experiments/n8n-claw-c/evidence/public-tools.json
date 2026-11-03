@@ -1,0 +1,356 @@
+{
+  "schema": "flowdelta-public-tool-fit-v1",
+  "note": "공개 도구는 workflow JSON 원본에 실행했다. 결과에는 노드 이름·규칙 ID·건수만 남기고 원본 코드는 넣지 않는다.",
+  "environment": "Linux x86_64 격리 작업 환경, 2026-10-19~2026-10-24 실행. 원본은 sources.json 해시와 일치 확인.",
+  "tools": {
+    "flowsentry": {
+      "version": "0.1.0",
+      "license": "Apache-2.0",
+      "source": "https://pypi.org/project/flowsentry/0.1.0/",
+      "command": "flowsentry scan --fail-on never --json <out> <workflow.json>",
+      "vulnerable_equals_fixed": true
+    },
+    "n8n-flowguard": {
+      "version": "0.1.1",
+      "license": "AGPL-3.0",
+      "source": "https://www.npmjs.com/package/n8n-flowguard/v/0.1.1",
+      "command": "flowguard scan <workflow.json> --json",
+      "vulnerable_equals_fixed": true
+    },
+    "n8n-audit": {
+      "version": "n8n 2.42.6 (runtime/order-lookup/runtime.lock.toml와 같은 버전, npm 설치)",
+      "license": "Sustainable Use License",
+      "source": "https://docs.n8n.io/hosting/securing/security-audit/",
+      "command": "버전마다 새 N8N_USER_FOLDER에 import:workflow 후 n8n audit",
+      "notes": [
+        "원본에 workflow id가 없어 id·name만 추가한 사본을 import했다. 노드는 바꾸지 않았다.",
+        "import만 하고 활성화하지 않아 인증 없는 webhook 검사는 해당되지 않는다.",
+        "api.n8n.io에 접속할 수 없어 최신 버전 검사는 건너뛰었다."
+      ],
+      "vulnerable_equals_fixed": true
+    },
+    "agentic-radar": {
+      "version": "0.14.1",
+      "license": "Apache-2.0",
+      "source": "https://pypi.org/project/agentic-radar/0.14.1/",
+      "command": "agentic-radar scan n8n -i <폴더> -o <report.html> (그래프 JSON에 같은 mapper를 적용해 집계)",
+      "vulnerable_equals_fixed": true
+    }
+  },
+  "versions": {
+    "before-feature": {
+      "flowsentry": {
+        "findings": 18,
+        "rules": [
+          "FS006",
+          "FS010",
+          "FS011",
+          "FS013",
+          "FS014",
+          "FS017"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-flowguard": {
+        "findings": 6,
+        "rules": [
+          "insecure-credential-usage",
+          "missing-input-validation",
+          "unrestricted-code-exec"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-audit": {
+        "sections": {
+          "database: Unused \"Query Parameters\" fields in SQL nodes": 8,
+          "nodes: Official risky nodes": 9,
+          "instance: Security settings": 0
+        },
+        "memory_tool_findings": []
+      },
+      "agentic-radar": {
+        "tools_with_findings": 19,
+        "memory_tool_findings": []
+      }
+    },
+    "feature": {
+      "flowsentry": {
+        "findings": 18,
+        "rules": [
+          "FS006",
+          "FS010",
+          "FS011",
+          "FS013",
+          "FS014",
+          "FS017"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-flowguard": {
+        "findings": 6,
+        "rules": [
+          "insecure-credential-usage",
+          "missing-input-validation",
+          "unrestricted-code-exec"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-audit": {
+        "sections": {
+          "database: Unused \"Query Parameters\" fields in SQL nodes": 8,
+          "nodes: Official risky nodes": 9,
+          "instance: Security settings": 0
+        },
+        "memory_tool_findings": []
+      },
+      "agentic-radar": {
+        "tools_with_findings": 21,
+        "memory_tool_findings": [
+          [
+            "Memory Delete",
+            "Arbitrary Code Execution (ACE)"
+          ],
+          [
+            "Memory Update",
+            "Arbitrary Code Execution (ACE)"
+          ]
+        ]
+      }
+    },
+    "before-fix": {
+      "flowsentry": {
+        "findings": 19,
+        "rules": [
+          "FS006",
+          "FS010",
+          "FS011",
+          "FS012",
+          "FS013",
+          "FS014",
+          "FS017"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-flowguard": {
+        "findings": 9,
+        "rules": [
+          "excessive-data-exposure",
+          "insecure-credential-usage",
+          "missing-input-validation",
+          "unrestricted-code-exec",
+          "unsafe-output-handling"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-audit": {
+        "sections": {
+          "database: Unused \"Query Parameters\" fields in SQL nodes": 7,
+          "nodes: Official risky nodes": 13,
+          "instance: Security settings": 0
+        },
+        "memory_tool_findings": []
+      },
+      "agentic-radar": {
+        "tools_with_findings": 27,
+        "memory_tool_findings": [
+          [
+            "Memory Delete",
+            "Arbitrary Code Execution (ACE)"
+          ],
+          [
+            "Memory Update",
+            "Arbitrary Code Execution (ACE)"
+          ]
+        ]
+      }
+    },
+    "first-fix": {
+      "flowsentry": {
+        "findings": 19,
+        "rules": [
+          "FS006",
+          "FS010",
+          "FS011",
+          "FS012",
+          "FS013",
+          "FS014",
+          "FS017"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-flowguard": {
+        "findings": 9,
+        "rules": [
+          "excessive-data-exposure",
+          "insecure-credential-usage",
+          "missing-input-validation",
+          "unrestricted-code-exec",
+          "unsafe-output-handling"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-audit": {
+        "sections": {
+          "database: Unused \"Query Parameters\" fields in SQL nodes": 7,
+          "nodes: Official risky nodes": 13,
+          "instance: Security settings": 0
+        },
+        "memory_tool_findings": []
+      },
+      "agentic-radar": {
+        "tools_with_findings": 27,
+        "memory_tool_findings": [
+          [
+            "Memory Delete",
+            "Arbitrary Code Execution (ACE)"
+          ],
+          [
+            "Memory Update",
+            "Arbitrary Code Execution (ACE)"
+          ]
+        ]
+      }
+    },
+    "reverted": {
+      "flowsentry": {
+        "findings": 19,
+        "rules": [
+          "FS006",
+          "FS010",
+          "FS011",
+          "FS012",
+          "FS013",
+          "FS014",
+          "FS017"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-flowguard": {
+        "findings": 9,
+        "rules": [
+          "excessive-data-exposure",
+          "insecure-credential-usage",
+          "missing-input-validation",
+          "unrestricted-code-exec",
+          "unsafe-output-handling"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-audit": {
+        "sections": {
+          "database: Unused \"Query Parameters\" fields in SQL nodes": 7,
+          "nodes: Official risky nodes": 13,
+          "instance: Security settings": 0
+        },
+        "memory_tool_findings": []
+      },
+      "agentic-radar": {
+        "tools_with_findings": 27,
+        "memory_tool_findings": [
+          [
+            "Memory Delete",
+            "Arbitrary Code Execution (ACE)"
+          ],
+          [
+            "Memory Update",
+            "Arbitrary Code Execution (ACE)"
+          ]
+        ]
+      }
+    },
+    "before-september": {
+      "flowsentry": {
+        "findings": 20,
+        "rules": [
+          "FS006",
+          "FS010",
+          "FS011",
+          "FS012",
+          "FS013",
+          "FS014",
+          "FS017"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-flowguard": {
+        "findings": 15,
+        "rules": [
+          "excessive-data-exposure",
+          "insecure-credential-usage",
+          "missing-input-validation",
+          "unrestricted-code-exec",
+          "unsafe-output-handling"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-audit": {
+        "sections": {
+          "database: Unused \"Query Parameters\" fields in SQL nodes": 7,
+          "nodes: Official risky nodes": 14,
+          "instance: Security settings": 0
+        },
+        "memory_tool_findings": []
+      },
+      "agentic-radar": {
+        "tools_with_findings": 28,
+        "memory_tool_findings": [
+          [
+            "Memory Delete",
+            "Arbitrary Code Execution (ACE)"
+          ],
+          [
+            "Memory Update",
+            "Arbitrary Code Execution (ACE)"
+          ]
+        ]
+      }
+    },
+    "september": {
+      "flowsentry": {
+        "findings": 21,
+        "rules": [
+          "FS006",
+          "FS010",
+          "FS011",
+          "FS012",
+          "FS013",
+          "FS014",
+          "FS017"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-flowguard": {
+        "findings": 17,
+        "rules": [
+          "excessive-data-exposure",
+          "insecure-credential-usage",
+          "missing-input-validation",
+          "unrestricted-code-exec",
+          "unsafe-output-handling"
+        ],
+        "memory_tool_findings": []
+      },
+      "n8n-audit": {
+        "sections": {
+          "database: Unused \"Query Parameters\" fields in SQL nodes": 7,
+          "nodes: Official risky nodes": 15,
+          "instance: Security settings": 0
+        },
+        "memory_tool_findings": []
+      },
+      "agentic-radar": {
+        "tools_with_findings": 29,
+        "memory_tool_findings": [
+          [
+            "Memory Delete",
+            "Arbitrary Code Execution (ACE)"
+          ],
+          [
+            "Memory Update",
+            "Arbitrary Code Execution (ACE)"
+          ]
+        ]
+      }
+    }
+  }
+}

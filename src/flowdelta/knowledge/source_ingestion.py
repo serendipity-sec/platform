@@ -601,11 +601,19 @@ def retry_quarantined_records(
                 rows = (
                     connection.execute(
                         text("""
-                        SELECT external_id, sha256, raw_path, raw_external_id, modified_at
-                        FROM knowledge.sync_failure
-                        WHERE source=:source AND raw_path IS NOT NULL
-                            AND raw_external_id IS NOT NULL
-                        ORDER BY recorded_at, external_id, sha256
+                        SELECT failure.external_id, failure.sha256, failure.raw_path,
+                            failure.raw_external_id, failure.modified_at,
+                            (
+                                SELECT count(*)
+                                FROM knowledge.sync_failure AS revision
+                                WHERE revision.source=failure.source
+                                    AND revision.external_id=failure.external_id
+                                    AND revision.modified_at IS NULL
+                            ) AS untimestamped_revision_count
+                        FROM knowledge.sync_failure AS failure
+                        WHERE failure.source=:source AND failure.raw_path IS NOT NULL
+                            AND failure.raw_external_id IS NOT NULL
+                        ORDER BY failure.recorded_at, failure.external_id, failure.sha256
                         LIMIT :limit FOR UPDATE
                     """),
                         {"source": source, "limit": limit},
@@ -654,6 +662,17 @@ def retry_quarantined_records(
                         failed += 1
                         continue
 
+                    if row["modified_at"] is None and row["untimestamped_revision_count"] > 1:
+                        _update_failure_code(
+                            connection,
+                            source,
+                            row["external_id"],
+                            checksum,
+                            "KNOWLEDGE_SOURCE_REVISION_ORDER_UNKNOWN",
+                        )
+                        failed += 1
+                        continue
+
                     normalized, modified_at, error_code = _prepare_raw(
                         raw_payload, adapter, row["modified_at"]
                     )
@@ -679,6 +698,7 @@ def retry_quarantined_records(
                                 normalized,
                                 raw_payload=raw_payload,
                                 modified_at=modified_at,
+                                allow_untimestamped_replacement=False,
                             )
                     except InputError as exc:
                         _update_failure_code(
