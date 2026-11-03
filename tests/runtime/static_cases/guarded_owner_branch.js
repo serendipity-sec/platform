@@ -1,4 +1,4 @@
-// Team-written synthetic tool. The write runs only inside the branch an owner reaches.
+// 팀이 작성한 합성 도구. 쓰기가 주인 일치 분기 안에만 있다
 async function __n8n_tool(query) {
   const input = JSON.parse(query);
   const rows = await helpers.httpRequest({ method: 'GET', url: `https://example.invalid/notes?id=eq.${input.id}` });

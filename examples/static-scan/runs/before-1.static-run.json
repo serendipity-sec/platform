@@ -16,15 +16,15 @@
       "code_pointer": "/nodes/27/parameters/jsCode",
       "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
       "extensions": {},
-      "finding_id": "finding-before-tool-memory-delete",
+      "finding_id": "finding-before-tool-memory-delete-7",
       "line": 7,
       "node_id": "tool-memory-delete",
       "node_name": "Memory Delete",
       "node_type": "@n8n/n8n-nodes-langchain.toolCode",
       "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
-      "rule_version": "0.4.0",
+      "rule_version": "0.6.0",
       "schema_version": "0.4.0",
-      "severity": "ERROR",
+      "severity": "WARNING",
       "type_version": "1.2"
     },
     {
@@ -32,19 +32,22 @@
       "code_pointer": "/nodes/28/parameters/jsCode",
       "code_sha256": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db",
       "extensions": {},
-      "finding_id": "finding-before-tool-memory-update",
+      "finding_id": "finding-before-tool-memory-update-51",
       "line": 51,
       "node_id": "tool-memory-update",
       "node_name": "Memory Update",
       "node_type": "@n8n/n8n-nodes-langchain.toolCode",
       "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
-      "rule_version": "0.4.0",
+      "rule_version": "0.6.0",
       "schema_version": "0.4.0",
-      "severity": "ERROR",
+      "severity": "WARNING",
       "type_version": "1.2"
     }
   ],
-  "finished_at": "2026-10-25T08:00:05Z",
+  "finished_at": "2026-11-03T22:17:42.144536+00:00",
+  "obligation_ids": [
+    "owner-check-before-write"
+  ],
   "outcome": null,
   "plan_id": "plan-example-claw-first-fix-static",
   "raw_report": {
@@ -54,8 +57,8 @@
     "media_type": "application/json",
     "path": "runs/before-1/static-raw-report.json",
     "schema_version": "0.4.0",
-    "sha256": "4fc523a552f3fdab64585bb6c517c16e5583370ea62520965e0d3f9357cb376c",
-    "size_bytes": 5544
+    "sha256": "c0146e4f32a1b4363750f22569b055ae69483dee04a27124abd8940ca8626b12",
+    "size_bytes": 4796
   },
   "run_id": "static-run-example-before-1",
   "scanned_node_ids": [
@@ -75,7 +78,7 @@
   "schema_version": "0.4.0",
   "side": "before",
   "snapshot_id": "snapshot-example-claw-4d1b1b7",
-  "started_at": "2026-10-25T08:00:00Z",
+  "started_at": "2026-11-03T22:17:36.749810+00:00",
   "status": "SUCCEEDED",
   "template_id": "static-agent-tool-ownership",
   "template_version": "0.1.0",
@@ -84,8 +87,8 @@
     "name": "semgrep",
     "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
     "rule_path": "runtime/static-scan/rules/agent-tool-write-without-ownership-check.yaml",
-    "rule_sha256": "33aa37f9784868226943346d0794643a90498bcc5ebc14d665c44046f8acf034",
-    "rule_version": "0.4.0",
+    "rule_sha256": "7c519af6b0b66ed970ed0cad741dd6f9c8d0c89b20726704b56f3e9f3c87d440",
+    "rule_version": "0.6.0",
     "schema_version": "0.4.0",
     "version": "1.181.0"
   },
