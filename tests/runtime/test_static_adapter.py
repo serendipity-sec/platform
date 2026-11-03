@@ -294,6 +294,42 @@ def test_well_shaped_report_without_hits_still_succeeds(setup: Setup) -> None:
     assert [(run.status, run.findings) for run in runs] == [("SUCCEEDED", [])] * 2
 
 
+@pytest.mark.parametrize("field", ["scanned", "finding"])
+@pytest.mark.parametrize("bad_path", ["invalid\x00path.js", "unresolvable-report-path"])
+def test_invalid_report_paths_record_failure_for_each_side(
+    setup: Setup, monkeypatch: pytest.MonkeyPatch, field: str, bad_path: str
+) -> None:
+    original_resolve = Path.resolve
+
+    def resolve(path: Path, *args: Any, **kwargs: Any) -> Path:
+        if str(path) == "unresolvable-report-path":
+            raise ValueError("invalid report path")
+        return original_resolve(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "resolve", resolve)
+    inner = fake_semgrep(flag=lambda _: True)
+
+    def runner(arguments: list[str], timeout: int) -> tuple[int, bytes]:
+        code, raw = inner(arguments, timeout)
+        if arguments == ["--version"]:
+            return code, raw
+        report = json.loads(raw)
+        if field == "scanned":
+            report["paths"]["scanned"].append(bad_path)
+        else:
+            report["results"][0]["path"] = bad_path
+        return code, json.dumps(report).encode()
+
+    before, after = setup.run(runner)
+    for run in (before, after):
+        assert (run.status, run.error_code, run.findings) == (
+            "FAILED",
+            "STATIC_RAW_REPORT_INVALID",
+            [],
+        )
+        assert saved(setup, run.side) == run
+
+
 def test_plan_timeout_is_given_to_the_tool(setup: Setup) -> None:
     seen: list[int] = []
     inner = fake_semgrep()
@@ -500,7 +536,7 @@ def test_registered_rule_through_the_adapter(setup: Setup) -> None:
     before, after = setup.run(semgrep_runner)
     assert (before.status, after.status) == ("SUCCEEDED", "SUCCEEDED")
     assert [item.node_id for item in before.findings] == ["memory-delete"]
-    assert after.findings == []
+    assert [item.node_id for item in after.findings] == ["memory-delete"]
 
 
 def test_plan_type_is_the_shared_test_plan() -> None:
@@ -669,5 +705,5 @@ def test_rule_changed_in_repo_during_real_semgrep_run(setup: Setup) -> None:
 
     before, after = setup.run(runner)
     assert [item.node_id for item in before.findings] == ["memory-delete"]
-    assert after.findings == []
+    assert [item.node_id for item in after.findings] == ["memory-delete"]
     assert before.tool.rule_sha256 == digest(original)

@@ -54,7 +54,9 @@ def test_committed_rule_is_the_generated_rule() -> None:
 def test_edited_rule_is_refused(tmp_path: Path) -> None:
     rule = tmp_path / static_rules.RULE_PATH
     rule.parent.mkdir(parents=True)
-    rule.write_text(static_rules.rule_yaml().replace("owner_user_id", "owner"), encoding="utf-8")
+    rule.write_text(
+        static_rules.rule_yaml().replace("pattern: query", "pattern: other_input"), encoding="utf-8"
+    )
     with pytest.raises(InputError, match="STATIC_RULE_MISMATCH"):
         registered_templates(tmp_path)
     with pytest.raises(InputError, match="STATIC_RULE_UNREADABLE"):
@@ -106,7 +108,13 @@ def test_shared_template_catalog_does_not_accept_static_templates_yet() -> None:
 def test_run_records_keep_status_and_findings_apart() -> None:
     before, after = example_runs(REPO)
     assert [f.node_id for f in before.findings] == ["tool-memory-delete", "tool-memory-update"]
-    assert after.findings == []
+    assert [(f.node_id, f.line) for f in after.findings] == [
+        ("tool-memory-delete", 24),
+        ("tool-memory-delete", 31),
+        ("tool-memory-delete", 32),
+        ("tool-memory-update", 67),
+    ]
+    assert all(f.severity == "WARNING" for run in (before, after) for f in run.findings)
     assert before.outcome is None and after.outcome is None
 
     value = before.model_dump(mode="json")
@@ -147,10 +155,16 @@ def test_rule_on_team_written_cases(tmp_path: Path) -> None:
     )
     report = json.loads(result.stdout)
     assert report["errors"] == []
-    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 19
+    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 25
     flagged = sorted(Path(item["path"]).name for item in report["results"])
-    # known_ 사례는 문서에 적은 오탐이다
+    # 인증된 주체/역할의 근거가 없으므로 guard 구문만으로 쓰기 경고를 숨기지 않는다.
     assert flagged == [
+        "guarded.js",
+        "guarded_admin_exception.js",
+        "guarded_in_block.js",
+        "guarded_or_condition.js",
+        "guarded_owner_branch.js",
+        "guarded_throw.js",
         "known_false_positive_helper.js",
         "known_false_positive_reversed_operands.js",
         "unenforced_admin_from_input.js",
@@ -163,5 +177,8 @@ def test_rule_on_team_written_cases(tmp_path: Path) -> None:
         "unenforced_negated_condition.js",
         "unenforced_non_admin_conjunct.js",
         "unenforced_wrong_branch.js",
+        "untrusted_admin_variable.js",
+        "untrusted_requester_fallback.js",
+        "untrusted_webhook_requester.js",
         "vulnerable.js",
     ]

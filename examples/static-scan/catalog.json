@@ -44,8 +44,8 @@
         "name": "semgrep",
         "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
         "rule_path": "runtime/static-scan/rules/agent-tool-write-without-ownership-check.yaml",
-        "rule_sha256": "05a180954465f717ba7e95aba3a6f16dab892c44260b5959e555a2ac3c1fe63f",
-        "rule_version": "0.5.0",
+        "rule_sha256": "7c519af6b0b66ed970ed0cad741dd6f9c8d0c89b20726704b56f3e9f3c87d440",
+        "rule_version": "0.6.0",
         "schema_version": "0.4.0",
         "version": "1.181.0"
       },

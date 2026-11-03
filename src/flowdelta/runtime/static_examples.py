@@ -116,9 +116,17 @@ def example_plan(catalog_id: str) -> TestPlan:
     )
 
 
-def _finding(node: str, name: str, pointer: str, code_sha: str, line: int) -> StaticFinding:
+def _finding(
+    node: str,
+    name: str,
+    pointer: str,
+    code_sha: str,
+    line: int,
+    *,
+    side: Literal["before", "after"] = "before",
+) -> StaticFinding:
     return StaticFinding(
-        finding_id=f"finding-before-{node}",
+        finding_id=f"finding-{side}-{node}-{line}",
         rule_id="flowdelta.n8n.agent-tool-write-without-ownership-check",
         rule_version=static_rules.RULE_VERSION,
         node_id=node,
@@ -128,7 +136,7 @@ def _finding(node: str, name: str, pointer: str, code_sha: str, line: int) -> St
         code_pointer=pointer,
         code_sha256=code_sha,
         line=line,
-        severity="ERROR",
+        severity="WARNING",
     )
 
 
@@ -140,6 +148,8 @@ def _run(
     findings: list[StaticFinding],
     report_sha256: str,
     report_size: int,
+    started_at: str,
+    finished_at: str,
 ) -> StaticScanRun:
     return StaticScanRun(
         run_id=f"static-run-example-{side}-1",
@@ -168,8 +178,8 @@ def _run(
             size_bytes=report_size,
             kind="generated",
         ),
-        started_at="2026-10-25T08:00:00Z",
-        finished_at="2026-10-25T08:00:05Z",
+        started_at=started_at,
+        finished_at=finished_at,
         error_code=None,
     )
 
@@ -187,6 +197,7 @@ def example_runs(repo: Path) -> list[StaticScanRun]:
                 "/nodes/27/parameters/jsCode",
                 "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
                 7,
+                side="before",
             ),
             _finding(
                 "tool-memory-update",
@@ -194,19 +205,57 @@ def example_runs(repo: Path) -> list[StaticScanRun]:
                 "/nodes/28/parameters/jsCode",
                 "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db",
                 51,
+                side="before",
             ),
         ],
-        "d3f3e59d7f3964ae736440fb8aa3159bb1b54e60a4a0b80ac622441c0bfd6acd",
-        5889,
+        "c0146e4f32a1b4363750f22569b055ae69483dee04a27124abd8940ca8626b12",
+        4796,
+        "2026-11-03T22:17:36.749810+00:00",
+        "2026-11-03T22:17:42.144536+00:00",
     )
     after = _run(
         repo,
         "after",
         "snapshot-example-claw-eb6d7bc",
         AFTER_SHA,
-        [],
-        "c399b1391ad019a80fb3dd23476e4fc7d878854fbc7b3048c5e18eaa57ca0012",
-        3229,
+        [
+            _finding(
+                "tool-memory-delete",
+                "Memory Delete",
+                "/nodes/27/parameters/jsCode",
+                "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+                24,
+                side="after",
+            ),
+            _finding(
+                "tool-memory-delete",
+                "Memory Delete",
+                "/nodes/27/parameters/jsCode",
+                "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+                31,
+                side="after",
+            ),
+            _finding(
+                "tool-memory-delete",
+                "Memory Delete",
+                "/nodes/27/parameters/jsCode",
+                "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+                32,
+                side="after",
+            ),
+            _finding(
+                "tool-memory-update",
+                "Memory Update",
+                "/nodes/28/parameters/jsCode",
+                "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763",
+                67,
+                side="after",
+            ),
+        ],
+        "40b795421baac2399293567d6a2dc178ee6a4a8ce1081f62a802d77b7d1753be",
+        7260,
+        "2026-11-03T22:17:42.149784+00:00",
+        "2026-11-03T22:17:47.552988+00:00",
     )
     return [before, after]
 

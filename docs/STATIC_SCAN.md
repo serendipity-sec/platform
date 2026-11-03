@@ -14,10 +14,12 @@ template을 받지 않는다는 점도 테스트로 고정했다.
 - workflow 파일만 읽는다. n8n을 띄우거나 대상 코드를 실행하거나 요청을 보내지 않는다
   (`executes_target_code: false`, `network: NONE`).
 - 결과는 `STATIC_CONDITION`이다. 실제 정책 위반 효과가 아니며 `outcome`은 항상 `null`이다.
-- 소유권 규칙의 finding은 "지원 guard로 비소유자 차단을 확인하지 못함"이다. 비교 구문이 있는지가
-  아니라, 도구가 읽어 온 대상 행의 소유자를 다른 노드에서 읽은 요청자와 비교하고 그 조건 전체가 쓰기 전에
-  `return`·`throw`로 비소유자를 막는지를 본다. 모델 입력과의 비교나 `불일치 && 다른조건`은 인정하지 않는다. finding이 없다는 것도 "지원 guard를
-  찾음"까지이며 실제 권한 강제를 보인 것이 아니다(`experiments/n8n-claw-c/README.md`).
+- 규칙 0.6.0은 모델 입력이 `DELETE`·`PATCH`·`PUT` 요청의 URL에 영향을 주면 권한 검토가
+  필요한 `WARNING`을 남긴다. 현재 입력 계약에는 인증된 요청자·역할 출처를 검증할 근거가 없다.
+  다른 노드의 출력, fallback, 소유자 비교, `admin` 변수·함수명으로 finding을 숨기지 않는다.
+  따라서 실제로 올바르게 인증·인가하는 코드에도 경고가 남을 수 있다. 신뢰 출처를 연결하는
+  후속 계약과 검증 전까지는 검토가 필요한 범위로 보존한다. finding 부재도 권한 준수를 뜻하지
+  않는다(`experiments/n8n-claw-c/README.md`).
 - 지원 범위 밖의 노드는 건너뛰지 않고 `unsupported`에 이유와 함께 남긴다.
 
 ## 등록 template (`catalog.json`)
@@ -26,7 +28,7 @@ template을 받지 않는다는 점도 테스트로 고정했다.
 |---|---|---|
 | `template_id` / `version` | `static-agent-tool-ownership` / `0.1.0` | plan이 가리킬 이름 |
 | `mode` | `STATIC_SCAN` | 정상 실행 template과 구분 |
-| `tool` | semgrep `1.181.0`, 규칙 `0.5.0`, 규칙 파일 경로·SHA-256 | 같은 도구·규칙으로만 실행 |
+| `tool` | semgrep `1.181.0`, 규칙 `0.6.0`, 규칙 파일 경로·SHA-256 | 같은 도구·규칙으로만 실행 |
 | `targets` | `toolCode@1.2`의 `jsCode`, `ai_tool`로 `agent@3.1`에 연결된 것 | 허용 입력 |
 | `result_kinds` | `static-findings`, `static-raw-report` | obligation이 요구할 수 있는 자료 |
 | `timeout_seconds` | 120 | plan의 상한 |
@@ -84,6 +86,8 @@ uv run --frozen --extra baseline --extra knowledge python -m flowdelta.runtime.s
 2. **obligation**: 정적 검사는 `static-findings`·`static-raw-report`만 만든다. case obligation이 다른
    자료(예: `final-state`)를 요구하면 bind할 수 없고 uncovered로 둬야 한다
    (`STATIC_OBLIGATION_NOT_COVERABLE`). n8n-claw 사례의 `owner-scoped-memory-change`가 이 경우다.
+   각 binding의 `required_artifact_kinds`는 해당 case의 `required_artifacts`와 정확히 같아야
+   한다(`STATIC_OBLIGATION_EVIDENCE_MISMATCH`). 각 run에는 연결된 `obligation_ids`를 기록한다.
 3. **대상 추출** (`static_targets.py`): agent에 `ai_tool`로 연결된 노드만 본다. 지원 노드의 코드는
    원본 JSON Pointer·코드 해시와 함께 `var/<out>/<side>/targets/`에 쓰고, 나머지는 이유와 함께
    `unsupported`에 남긴다(`TARGET_TYPE_NOT_SUPPORTED`, `AGENT_VERSION_NOT_SUPPORTED`,
@@ -115,6 +119,8 @@ catalog의 `rule_sha256`과 같은지 확인한 바이트를 출력 폴더의 `r
 배열이며, 각 결과에 문자열 `check_id`·`path`, 1 이상의 정수 `start.line`, 알려진 `extra.severity`가 있고
 결과가 추출한 파일을 가리켜야 한다. 하나라도 어긋나면 `STATIC_RAW_REPORT_INVALID`다(`results={}`,
 `errors=null` 같은 보고서가 "경고 없음"으로 바뀌지 않게).
+경로는 빈 문자열과 NUL 문자를 거부하며, 경로 해석의 `ValueError`·`OSError`도 같은 오류로
+기록한다. 잘못된 보고서 때문에 side 기록 없이 중단하지 않고 before·after의 실패를 각각 남긴다.
 
 `SUCCEEDED`가 아니면 finding은 비어 있다. 어떤 경우에도 "경고 없음"이 "안전"을 뜻하지 않는다.
 

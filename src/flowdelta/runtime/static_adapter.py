@@ -231,7 +231,9 @@ def _parse_report(stdout: bytes) -> _Report | None:
     if not isinstance(paths, dict):
         return None
     scanned = paths.get("scanned")
-    if not isinstance(scanned, list) or not all(isinstance(item, str) for item in scanned):
+    if not isinstance(scanned, list) or not all(
+        isinstance(item, str) and bool(item) and "\x00" not in item for item in scanned
+    ):
         return None
     hits = []
     for item in results:
@@ -240,6 +242,8 @@ def _parse_report(stdout: bytes) -> _Report | None:
         check_id, path = item.get("check_id"), item.get("path")
         start, extra = item.get("start"), item.get("extra")
         if not isinstance(check_id, str) or not isinstance(path, str):
+            return None
+        if not path or "\x00" in path:
             return None
         if not isinstance(start, dict) or not isinstance(extra, dict):
             return None
@@ -347,7 +351,10 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
         return failed("FAILED", "STATIC_RAW_REPORT_INVALID")
     if report.errors:
         return failed("FAILED", "STATIC_TOOL_ERROR")
-    read = {Path(item).resolve() for item in report.scanned}
+    try:
+        read = {Path(item).resolve() for item in report.scanned}
+    except (OSError, ValueError):
+        return failed("FAILED", "STATIC_RAW_REPORT_INVALID")
     if set(by_file) - read:
         return failed("FAILED", "STATIC_SCAN_INCOMPLETE")
 
@@ -355,7 +362,10 @@ def _scan_side(context: _Context, side: StaticSide) -> StaticScanRun:
     for hit in report.hits:
         if not hit.check_id.endswith(template.tool.rule_id):
             return failed("FAILED", "STATIC_UNEXPECTED_RULE")
-        source = by_file.get(Path(hit.path).resolve())
+        try:
+            source = by_file.get(Path(hit.path).resolve())
+        except (OSError, ValueError):
+            return failed("FAILED", "STATIC_RAW_REPORT_INVALID")
         if source is None:
             return failed("FAILED", "STATIC_RAW_REPORT_INVALID")
         line = hit.line - WRAPPER_LINE_OFFSET
