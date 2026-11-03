@@ -1,8 +1,12 @@
 # n8n-claw 소유권 누락 — C 정적 검사 도구 적합성
 
 Refs #51. 대상 사례는 #48에서 선정하고 PR #57에 공유한 n8n-claw Memory Delete/Update의
-소유권 확인 누락이다. 이 폴더는 **어떤 정적 검사 도구가 이 문제를 실제로 구분하는지**를 확인한
-기록과 재현 절차다.
+소유권 확인 누락이다. 이 폴더는 정적 검사 도구의 개발셋 실행 기록과 재현 절차다.
+
+**현재 규칙은 0.6.0이다.** 인증된 요청자·역할의 출처를 입력 계약으로 증명할 수 없어,
+노드 출력이나 `admin` 변수 이름을 근거로 경고를 없애던 0.5.0의 억제를 제거했다.
+0.6.0의 경고는 모델 입력이 고정 쓰기 요청의 URL에 도달하므로 권한 확인을 검토해야 한다는 뜻이다.
+정상적인 권한 검사가 있어도 경고할 수 있으며, 첫 보완 전후의 안전성을 구분하는 규칙으로 쓰지 않는다.
 
 정적 탐지는 "정적 조건 성립"까지만 말한다. agent가 도구를 고르는지, 타인의 기록이 실제로
 바뀌는지는 확인하지 않는다. PR #57의 도구 JS 부분 실행과도 별개이며 서로 대신하지 않는다.
@@ -12,7 +16,7 @@ Refs #51. 대상 사례는 #48에서 선정하고 PR #57에 공유한 n8n-claw M
 원본은 `sources.json`의 고정 commit 7개다(PR #57 `888de5d`의 sources.json과 같은 commit·해시).
 원본 저장소에 LICENSE가 없어 원본·추출 코드·원시 Semgrep 결과는 `var/`에만 둔다.
 
-| 비교 | 쌍 | case_id(#64와 같음) | 기대 |
+| 비교 | 쌍 | case_id(#64와 같음) | 0.5.0 개발 당시 기대 |
 |---|---|---|---|
 | 기능 추가 | `9ebf36b` → `63a7f2e` | `n8n-claw-memory-feature-add` | 추가 후 탐지 |
 | 첫 보완 | `4d1b1b7` → `eb6d7bc` | `n8n-claw-memory-first-fix` | 보완 전 탐지, 보완 후 미탐지 |
@@ -23,10 +27,33 @@ Refs #51. 대상 사례는 #48에서 선정하고 PR #57에 공유한 n8n-claw M
 Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATCH`를 보내며, 보완 전에는
 대상 행의 `owner_user_id`와 요청자를 비교하지 않는다. 원저자의 첫 보완도 두 도구에 함께 검사를 넣었다.
 
-## 결과
+## 현재 결과 — 규칙 0.6.0
 
-판정 기준: Memory Delete/Update에 대한 결과가 **취약 버전과 보완 버전에서 달라야** 쓸 수 있다.
-무관한 일반 경고는 탐지로 세지 않는다.
+2026-11-04 KST에 고정 원본 7개를 해시 검증한 뒤 Semgrep 1.181.0으로 다시 정적 검사했다.
+네트워크를 끈 컨테이너에서 추출 JS 80개를 모두 읽었으며, 대상 workflow·JS는 실행하지 않았다.
+7개 버전 모두 `SUCCEEDED`, Semgrep 오류 0개다. 결과는
+[`evidence/semgrep-summary-0.6.0.json`](evidence/semgrep-summary-0.6.0.json)에 고정했고,
+`evidence/semgrep-summary.json`은 같은 바이트의 현재 버전 별칭이다.
+
+| 버전 | 검사 노드 | 미지원 | 경고(노드, jsCode 안의 줄) |
+|---|---|---|---|
+| before-feature | 9 | 7 | 없음 (전용 쓰기 도구 부재) |
+| feature | 11 | 7 | Memory Delete 7, Memory Update 43 |
+| before-fix | 12 | 8 | Memory Delete 7, Memory Update 51 |
+| first-fix | 12 | 8 | Memory Delete 24·31·32, Memory Update 67 |
+| reverted | 12 | 8 | Memory Delete 7, Memory Update 51 |
+| before-september | 12 | 8 | Memory Delete 24·31·32, Memory Update 67 |
+| september | 12 | 8 | Memory Delete 58·65·66, Memory Update 100 |
+
+첫 보완 후에는 같은 Delete 노드의 여러 쓰기 요청이 각각 경고다. 경고 수를 취약점 수로 세지 않는다.
+`basis=STATIC_CONDITION`, `security_outcome=null`이며 실제 침해·차단·정책 준수를 판정하지 않는다.
+`examples/static-scan/runs/`의 finding·원시 보고서 해시·크기는 같은 규칙으로 두 버전을 별도 검사한
+실제 출력에서 갱신했다. 이 파일의 run/plan 식별자는 여전히 수동 계약 예시다.
+
+## 과거 도구 비교 — 규칙 0.5.0
+
+당시에는 Memory Delete/Update의 보완 전후 경고 차이를 적합성 기준으로 삼았다.
+아래는 과거 결과이며, 신뢰 근거 없는 억제가 발견되었으므로 현재 탐지 성능의 근거로 사용하지 않는다.
 
 | 도구 | 공신력 | 기능 추가 후 새 도구 표시 | 소유권 누락 탐지 | 취약(`4d1b1b7`) vs 보완(`eb6d7bc`) |
 |---|---|---|---|---|
@@ -34,13 +61,15 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 | Agentic Radar 0.14.1 | SplxAI(Zscaler) | 표시(ACE) | 없음 | 결과 동일 |
 | FlowSentry 0.1.0 | 개인 | 없음 | 없음 | 결과 동일 |
 | n8n-flowguard 0.1.1 | 개인 | 없음 | 없음 | 결과 동일 |
-| **Semgrep 1.181.0 + 팀 규칙 0.4.0** | Semgrep 엔진 | 표시 | **Delete·Update** | **구분됨** |
+| **Semgrep 1.181.0 + 팀 규칙 0.5.0** | Semgrep 엔진 | 표시 | **Delete·Update** | **구분됨** |
 
 - 공개 도구 4개는 노드 **종류·연결·설정**만 보고 `toolCode` 안의 코드 논리는 읽지 않는다.
   n8n audit의 위험 노드 목록에는 `toolCode`가 없다. Agentic Radar는 `toolCode`를 모두
   `code_interpreter`로 분류해 같은 "Arbitrary Code Execution" 경고를 붙인다.
   상세 수치는 `evidence/public-tools.json`.
-- 팀 규칙은 7개 버전 모두 기대와 일치했다(`evidence/semgrep-summary.json`).
+- 0.5.0은 당시 7개 버전의 기대와 일치했다
+  ([`evidence/semgrep-summary-0.5.0.json`](evidence/semgrep-summary-0.5.0.json)).
+  0.4.0의 원본 기록도 [`evidence/semgrep-summary-0.4.0.json`](evidence/semgrep-summary-0.4.0.json)에 보존한다.
 
 | 버전 | 검사 노드 | 미지원 | 경고(노드, jsCode 안의 줄) |
 |---|---|---|---|
@@ -64,23 +93,24 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 
 1. source: 모델이 쓴 도구 입력 `query`.
 2. sink: `helpers.httpRequest`의 method가 `DELETE`/`PATCH`/`PUT`일 때의 `url`.
-3. 제외: sink보다 앞(최상위 또는 일반 블록 안)에 **비소유자를 막는 지원 guard**가 있음.
-   - 소유자 필드(`owner_user_id` 등 9개)의 불일치(`!==`·`!=`)가 참일 때 `return`·`throw`하는 분기
-   - 일치 비교를 담은 변수가 거짓일 때(`!own`) `return`·`throw`하는 분기 — n8n-claw 보완 코드의 형태
-   - 쓰기가 일치(`===`·`==`) 분기 안에만 있음
+3. 소유자 비교·노드 출력·변수 이름을 이용한 억제는 없다. 경고 수준은 `WARNING`이다.
 
-**비교 구문 존재 ≠ 권한 강제 확인.** 0.4.0부터 비교식이 있다는 것만으로는 제외하지 않는다. 비교를
-계산만 하거나, 불일치 때 로그만 남기거나, 소유자를 오히려 돌려보내는 코드는 경고한다. 따라서 경고는
-"지원 guard로 비소유자 차단을 확인하지 못했다"는 뜻이고, "비교 코드가 없다"는 뜻이 아니다. 경고가 없는
-것도 "정적으로 지원 guard를 찾았다"까지이며 실제 차단이나 정책 준수를 보인 것은 아니다.
+**비교 구문 존재 ≠ 권한 강제 확인.** Webhook 출력도 공격자가 쓸 수 있고, `|| input.caller` 같은
+fallback이나 `const admin = input.x`도 신뢰된 주체·역할이 아니다. 현재 계약에는 인증 출처를 보장하는
+정보가 없으므로 이들을 구문 모양만으로 구별하지 않는다. 경고 없음도 안전 판정이 아니다.
+규칙 ID는 기록 연결을 위해 유지하지만, 현재 의미는 "소유권 검토가 필요한 쓰기 경로"다.
 
-사례 이름·노드 이름·테이블 이름은 규칙에 없다. 개발 중 세 번 고쳤다.
+사례 이름·노드 이름·테이블 이름은 규칙에 없다. 변경 이력:
 - 0.1.0: 아무 필드 비교나 검사로 오인해 Update 누락
 - 0.2.0: 블록 안의 검사를 못 봐 보완된 Update 오탐
 - 0.3.0 → 0.4.0: 비교식만 있어도 제외하던 미탐(PR #69 리뷰). 지원 차단 형태로만 제외하도록 좁혔다.
+- 0.4.0 → 0.5.0: 복합 조건 속 비교와 모델 입력 비교도 guard로 인정하던 미탐(PR #83 리뷰). 요청자·대상 행의
+  출처와 조건 전체의 형태를 함께 보도록 Semgrep 규칙 문법(`match`/`taint`의 `not`·`where`)을 바꿨다.
+- 0.5.0 → 0.6.0: 노드 출력·fallback·관리자 변수 이름을 신뢰하던 미탐(PR #83 리뷰).
+  인증 출처 계약 없이 안전성을 증명할 수 없어 억제를 제거했다. 첫 보완 버전도 경고한다.
 
-이 7개 버전에 맞춰 고쳤으므로 위 표는 **개발셋 결과**이며 일반화 성능 주장에 쓰지 않는다.
-0.4.0에서도 7개 버전 결과는 0.3.0과 같다(노드·줄 동일, `evidence/semgrep-summary.json`).
+이 7개 버전에 맞춰 고쳤으므로 모든 표는 **개발셋 결과**이며 일반화 성능 주장에 쓰지 않는다.
+0.5.0은 0.3.0·0.4.0과 노드·줄이 같았지만 0.6.0에서는 경고의 의미와 결과가 달라졌다.
 
 팀이 직접 쓴 합성 코드(`tests/runtime/static_cases/`)로 고정한 동작과 알려진 한계:
 
@@ -90,13 +120,25 @@ Memory Update**. 모델이 넘긴 `id`로 서비스 키를 써서 `DELETE`/`PATC
 | 비교값만 계산하고 DELETE (`unenforced_comparison_only.js`) | 경고 |
 | 불일치 때 `console.log`만 하고 DELETE (`unenforced_mismatch_logs.js`) | 경고 |
 | 소유자를 돌려보내고 비소유자는 DELETE (`unenforced_wrong_branch.js`) | 경고 |
-| 불일치 때 `return` / `throw`, `!own`이면 `return`, 일치 분기 안에서만 쓰기 (`guarded*.js`) | 경고 없음 |
+| 조건을 다시 부정(`if (!(owner !== caller)) return`) (`unenforced_negated_condition.js`) | 경고 |
+| `불일치 && 모델입력`이면 return (`unenforced_and_condition.js`) | 경고 |
+| `!own && !모델입력`이면 return (`unenforced_non_admin_conjunct.js`) | 경고 |
+| 소유자를 모델 입력과 비교 (`unenforced_model_requester.js`, `_alias.js`) | 경고 |
+| method를 변수에 담아 DELETE (`unenforced_method_variable.js`) | 경고 |
+| `!own && !input.adminOverride`처럼 모델 입력 속성을 관리자 예외로 씀 (`unenforced_admin_from_input.js`) | 경고 |
+| 불일치 때 `return` / `throw`, `!own`이면 `return`, `불일치 || X`, 관리자 예외, 일치 분기 안에서만 쓰기 (`guarded*.js`) | 경고(인증 출처 판단 불가) |
 | 소유자 검사를 별도 함수로 분리 (`known_false_positive_helper.js`) | 오탐(판단 불가를 경고로 남김) |
-| method를 변수에 담음 (`known_false_negative_method_variable.js`) | 미탐 |
 | 비교식 피연산자 순서 반대(`caller !== row.owner_user_id`) (`known_false_positive_reversed_operands.js`) | 오탐(지원 형태가 아님) |
-| 조건을 다시 부정(`if (!(owner !== caller)) return`) (`known_false_negative_negated_condition.js`) | 미탐(조건 안의 비교만 보고 극성은 따지지 않음) |
+| 요청자를 `$json`·함수 인자 등 다른 경로로 받음, 조건 안에서 `$('노드')`를 바로 씀 | 오탐(지원 형태가 아님) |
+| 위조 가능한 Webhook 요청자, 모델 입력 fallback, 모델 입력을 담은 `admin` 변수 (`untrusted_*.js`) | 경고 |
+| `ctx.isAdmin`처럼 속성으로 된 실제 관리자 확인 | 오탐(속성 접근은 인정하지 않음) |
+| 요청자 값 자체가 위조 가능한지(`qualifiedUserId`의 인증 경계) | 보지 못함 |
 | `POST` 기반 쓰기, 모델이 method를 고르는 범용 HTTP Tool | 범위 밖 |
 | 다른 노드·하위 workflow·DB 정책(RLS)의 검사 | 보지 못함 |
+| GET 요청, URL이 고정이고 모델 입력은 body에만 있음, 로컬 결과만 반환 (`non_*.js`) | 경고 없음 |
+
+현재 합성 코드 25개 중 쓰기 경로 22개가 경고하고 위 음성 대조군 3개는 경고하지 않는다.
+합법적인 guard가 있는 표본의 경고는 알려진 오탐이며, 인증 출처 계약 없이 이를 줄였다고 주장하지 않는다.
 
 ## 재현
 

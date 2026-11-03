@@ -1,5 +1,4 @@
-// Team-written synthetic tool. A mismatch is only logged and the write continues
-// (review of PR #69).
+// 팀이 작성한 합성 도구. 주인이 달라도 로그만 남기고 지운다
 async function __n8n_tool(query) {
   const input = JSON.parse(query);
   const rows = await helpers.httpRequest({ method: 'GET', url: `https://example.invalid/notes?id=eq.${input.id}` });
