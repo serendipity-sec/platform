@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from conftest import edit_document
@@ -98,3 +99,129 @@ def test_write_failure_does_not_publish_manifest(bundle: Path, tmp_path: Path, m
         write_handoff(loaded, handoff, output)
     assert not (output / "manifest.json").exists()
     assert not list(tmp_path.glob(".flowdelta-*"))
+
+
+def test_shared_plan_uses_vector_planner_and_persists_outputs(tmp_path, monkeypatch):
+    from flowdelta.knowledge import planner, repository
+    from flowdelta.knowledge.embedding_settings import EmbeddingSettings
+
+    root = Path(__file__).resolve().parents[1] / "examples/contracts/order-lookup"
+    out = tmp_path / "plan.json"
+    engine = SimpleNamespace(dispose=lambda: disposed.append(True))
+    provider = object()
+    disposed = []
+    planned = []
+    persisted = []
+
+    def write_vector_plan(handoff, analysis, catalog, output, *, engine, provider, limit=50):
+        planned.append((analysis.analysis_id, catalog.model_dump(mode="json"), engine, provider))
+        output.write_bytes(b"exact-plan-output")
+        return SimpleNamespace(plan_id="plan-shared-exact")
+
+    monkeypatch.setenv("FLOWDELTA_KB_DATABASE_URL", "postgresql+psycopg://app:secret@db/kb")
+    monkeypatch.setattr(planner, "write_vector_plan", write_vector_plan)
+    monkeypatch.setattr(
+        planner, "write_plan", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError())
+    )
+    monkeypatch.setattr(
+        planner, "load_cards", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError())
+    )
+    monkeypatch.setattr("flowdelta.knowledge.database.engine_for", lambda settings: engine)
+    monkeypatch.setattr(EmbeddingSettings, "provider", lambda self: provider)
+    monkeypatch.setattr(
+        repository,
+        "store_b_outputs",
+        lambda actual_engine, path: persisted.append((actual_engine, path, path.read_bytes())),
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "plan",
+            str(root),
+            "--catalog",
+            str(root / "template-catalog.json"),
+            "--out",
+            str(out),
+            "--shared-cards",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert json.loads(result.stdout)["database_status"] == "STORED"
+    assert json.loads(result.stdout)["plan_id"] == "plan-shared-exact"
+    assert planned and planned[0][0] == "analysis-order-lookup-example"
+    assert planned[0][2:] == (engine, provider)
+    assert persisted == [(engine, out, b"exact-plan-output")]
+    assert disposed == [True]
+
+
+def test_shared_plan_failure_does_not_fall_back_or_persist(tmp_path, monkeypatch):
+    from flowdelta.knowledge import planner, repository
+    from flowdelta.knowledge.embedding_settings import EmbeddingSettings
+
+    root = Path(__file__).resolve().parents[1] / "examples/contracts/order-lookup"
+    out = tmp_path / "plan.json"
+    disposed = []
+    stores = []
+    engine = SimpleNamespace(dispose=lambda: disposed.append(True))
+    monkeypatch.setenv("FLOWDELTA_KB_DATABASE_URL", "postgresql+psycopg://app:secret@db/kb")
+    monkeypatch.setattr(
+        planner,
+        "write_vector_plan",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            InputError("CARD_CATALOG_PROFILE_NOT_INDEXED")
+        ),
+    )
+    monkeypatch.setattr(
+        planner, "write_plan", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError())
+    )
+    monkeypatch.setattr("flowdelta.knowledge.database.engine_for", lambda settings: engine)
+    monkeypatch.setattr(EmbeddingSettings, "provider", lambda self: object())
+    monkeypatch.setattr(repository, "store_b_outputs", lambda *args: stores.append(args))
+
+    result = runner.invoke(
+        app,
+        [
+            "plan",
+            str(root),
+            "--catalog",
+            str(root / "template-catalog.json"),
+            "--out",
+            str(out),
+            "--shared-cards",
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert json.loads(result.stderr)["error"] == "CARD_CATALOG_PROFILE_NOT_INDEXED"
+    assert stores == []
+    assert disposed == [True]
+
+
+def test_plan_rejects_both_card_sources_before_database_access(tmp_path, monkeypatch):
+    root = Path(__file__).resolve().parents[1] / "examples/contracts/order-lookup"
+    engine_calls = []
+    monkeypatch.setenv("FLOWDELTA_KB_DATABASE_URL", "postgresql+psycopg://app:secret@db/kb")
+    monkeypatch.setattr(
+        "flowdelta.knowledge.database.engine_for", lambda settings: engine_calls.append(settings)
+    )
+
+    result = runner.invoke(
+        app,
+        [
+            "plan",
+            str(root),
+            "--catalog",
+            str(root / "template-catalog.json"),
+            "--cards",
+            str(root / "cards"),
+            "--out",
+            str(tmp_path / "plan.json"),
+            "--shared-cards",
+        ],
+    )
+
+    assert result.exit_code == 2
+    assert json.loads(result.stderr)["error"] == "PLAN_CARD_SOURCE_CONFLICT"
+    assert engine_calls == []

@@ -347,20 +347,35 @@ def check_examples(bundle: Path) -> None:
 def plan_command(
     bundle: Path,
     catalog: Annotated[Path, typer.Option(help="Registered template catalog JSON.")],
-    cards: Annotated[Path, typer.Option(help="Local card directory.")],
     out: Annotated[Path, typer.Option(help="New plan file at the future bundle root.")],
+    cards: Annotated[Path | None, typer.Option(help="Local card directory.")] = None,
     persist: Annotated[
-        bool, typer.Option(help="Also store the exact B artifacts in configured PostgreSQL.")
+        bool,
+        typer.Option(
+            help="Store local-card output in PostgreSQL; shared-card output is always stored."
+        ),
+    ] = False,
+    shared_cards: Annotated[
+        bool,
+        typer.Option(
+            help="Use shared vector retrieval and always persist exact B outputs to PostgreSQL."
+        ),
     ] = False,
 ) -> None:
-    """Generate B's plan and optionally store its sibling retrieval/KB files in PostgreSQL."""
+    """Generate a local-card or shared-vector plan; shared-card output is always stored."""
     from flowdelta.ingestion import _read_local, parse_file_model, parse_json
     from flowdelta.knowledge import load_cards, write_plan
+    from flowdelta.knowledge.planner import write_vector_plan
     from flowdelta.pipeline_contracts import AnalysisBundle, TemplateCatalog
     from flowdelta.pipeline_io import read_handoff, read_manifest
 
     engine = None
     try:
+        if shared_cards and cards is not None:
+            raise InputError("PLAN_CARD_SOURCE_CONFLICT")
+        if not shared_cards and cards is None:
+            raise InputError("PLAN_CARD_SOURCE_REQUIRED")
+
         root = bundle.resolve()
         _, documents = read_manifest(root)
         if "analysis.json" not in documents:
@@ -369,29 +384,47 @@ def plan_command(
         templates = parse_file_model(
             TemplateCatalog, parse_json(_read_local(catalog.parent.resolve(), catalog.name))
         )
-        if persist:
+
+        if shared_cards or persist:
             from flowdelta.knowledge.database import engine_for
             from flowdelta.knowledge.settings import KnowledgeSettings
 
             engine = engine_for(KnowledgeSettings.from_environment())
-        plan = write_plan(
-            read_handoff(root / "input"),
-            analysis,
-            load_cards(cards, bundle_root=root),
-            templates,
-            out,
-        )
+
+        if shared_cards:
+            from flowdelta.knowledge.embedding_settings import EmbeddingSettings
+
+            assert engine is not None
+            plan = write_vector_plan(
+                read_handoff(root / "input"),
+                analysis,
+                templates,
+                out,
+                engine=engine,
+                provider=EmbeddingSettings.from_environment().provider(),
+            )
+        else:
+            assert cards is not None
+            plan = write_plan(
+                read_handoff(root / "input"),
+                analysis,
+                load_cards(cards, bundle_root=root),
+                templates,
+                out,
+            )
+
         if engine is not None:
             from flowdelta.knowledge.repository import store_b_outputs
 
             store_b_outputs(engine, out)
+        database_status = "STORED" if engine is not None else "NOT_REQUESTED"
         typer.echo(
             json_bytes(
                 {
                     "status": "PLAN_WRITTEN",
                     "plan_id": plan.plan_id,
                     "analysis_origin": analysis.authorship.origin,
-                    "database_status": "STORED" if persist else "NOT_REQUESTED",
+                    "database_status": database_status,
                     "execution_status": "NOT_RUN",
                 }
             ).decode(),

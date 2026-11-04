@@ -103,6 +103,48 @@ def store_plan_command(plan: Path) -> None:
             engine.dispose()
 
 
+@app.command("index-cards")
+def index_cards_command(
+    bundle: Path,
+    cards: Annotated[Path, typer.Option(help="Local card directory to add to the shared catalog.")],
+) -> None:
+    """Index bounded local cards using the exact profile of the running embedding model."""
+    engine = None
+    try:
+        from flowdelta.knowledge.card_catalog import MAX_INDEX_BATCH_SIZE, index_cards
+        from flowdelta.knowledge.cards import load_cards
+        from flowdelta.knowledge.database import engine_for
+        from flowdelta.knowledge.embedding_settings import EmbeddingSettings
+
+        loaded_cards = load_cards(cards, bundle_root=bundle.resolve())
+        embedding_settings = EmbeddingSettings.from_environment()
+        provider = embedding_settings.provider()
+        profile = provider.profile()
+        engine = engine_for(KnowledgeSettings.from_environment())
+        result = index_cards(
+            engine,
+            loaded_cards,
+            provider,
+            profile,
+            batch_size=min(embedding_settings.max_batch_size, MAX_INDEX_BATCH_SIZE),
+        )
+        typer.echo(
+            json_bytes(
+                {"status": "CARDS_INDEXED", "indexed": result.indexed, "reused": result.reused}
+            ).decode("utf-8"),
+            nl=False,
+        )
+    except ModuleNotFoundError as exc:
+        _handle_missing_extra(exc)
+    except InputError as exc:
+        _exit_with_error(exc.code)
+    except OSError:
+        _exit_with_error("CARD_CATALOG_INDEX_FAILED")
+    finally:
+        if engine is not None:
+            engine.dispose()
+
+
 @app.command("export-plan")
 def export_plan_command(
     plan_id: str,

@@ -1,15 +1,24 @@
-"""Offline keyword retrieval; no database or model dependencies."""
+"""Offline keyword retrieval plus a database-backed vector path loaded on demand."""
+
+from __future__ import annotations
 
 import re
 from collections.abc import Set
 from dataclasses import dataclass
-from typing import Literal, cast
+from math import isfinite
+from typing import TYPE_CHECKING, Literal, cast
 
 from pydantic import JsonValue
 
-from flowdelta.contracts import Handoff
+from flowdelta.contracts import Handoff, SourceLocation
 from flowdelta.ingestion import InputError, digest, json_bytes
 from flowdelta.knowledge.cards import KB_SNAPSHOT_FILENAME, _KnowledgeSnapshot
+from flowdelta.knowledge.embedding import (
+    MAX_TEXT_BYTES,
+    EmbeddingProfile,
+    EmbeddingProvider,
+    validate_embedding_batch,
+)
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
     Authorship,
@@ -20,6 +29,14 @@ from flowdelta.pipeline_contracts import (
     TemplateCatalog,
 )
 from flowdelta.pipeline_io import validate_input_fields
+
+if TYPE_CHECKING:
+    from sqlalchemy import Engine
+
+_SENSITIVE_FIELD = re.compile(
+    r"credential|password|passwd|secret|token|api.?key|authorization|private.?key|access.?key",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -73,6 +90,34 @@ def retrieval_identity(
     return f"retrieval-{fingerprint}"
 
 
+def vector_retrieval_identity(
+    producer: str,
+    snapshot: bytes,
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    catalog: TemplateCatalog,
+    profile: dict[str, JsonValue],
+    query_sha256: str,
+    candidates: list[dict[str, JsonValue]],
+    result_fingerprint: str,
+) -> str:
+    fingerprint = digest(
+        json_bytes(
+            {
+                "base_retrieval_id": retrieval_identity(
+                    producer, snapshot, handoff, analysis, catalog
+                ),
+                "method": "VECTOR",
+                "profile": profile,
+                "query_sha256": query_sha256,
+                "candidates": candidates,
+                "result_fingerprint": result_fingerprint,
+            }
+        )
+    )[:24]
+    return f"retrieval-{fingerprint}"
+
+
 def retrieval_content_fingerprint(result: RetrievalResult) -> str:
     """Hash the serialized search result so composition can detect later edits."""
     payload = result.model_dump(mode="json")
@@ -87,11 +132,16 @@ def exclusion_reason(
     templates: dict[tuple[str, str], Template],
     profile: object,
     node_types: Set[str],
+    *,
+    exclude_unregistered_template: bool = False,
+    check_artifacts: bool = False,
 ) -> str | None:
     if card.runtime_profile != profile:
         return "RUNTIME_PROFILE_MISMATCH"
     template = templates.get((card.template_id, card.template_version))
     if template is None:
+        if exclude_unregistered_template:
+            return "TEMPLATE_NOT_REGISTERED"
         raise InputError("TEMPLATE_NOT_FOUND")
     if template.task_id != handoff.task.task_id or template.runtime_profile != profile:
         return "TEMPLATE_CONTEXT_MISMATCH"
@@ -99,6 +149,10 @@ def exclusion_reason(
         validate_input_fields(handoff.task.normal_input, template.input_fields)
     except InputError as exc:
         return exc.code
+    if check_artifacts and not set(card.required_artifact_kinds).issubset(
+        template.required_artifact_kinds
+    ):
+        return "TEMPLATE_ARTIFACTS_INCOMPATIBLE"
     overlap = set(card.node_types) & node_types
     if card.node_types and not overlap:
         return "NODE_TYPE_MISMATCH"
@@ -125,6 +179,96 @@ def search_context(
         {token.casefold() for field in fields for token in re.findall(r"[\w-]+", field)}
     )
     return profile, node_types, fields, tokens
+
+
+def retrieval_query_context(
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    catalog: TemplateCatalog,
+    producer: str,
+) -> dict[str, JsonValue]:
+    profile, node_types, fields, _ = search_context(handoff, analysis)
+    analysis_context, _, _, _ = analysis_retrieval_context(handoff, analysis)
+    return {
+        "task_id": handoff.task.task_id,
+        "runtime_profile": profile,
+        "node_types": [str(value) for value in node_types],
+        "changed_fields": [str(value) for value in fields],
+        "analysis_context": analysis_context,
+        "rules_version": producer,
+        "context_fingerprint": context_fingerprint(handoff, analysis, catalog, producer),
+    }
+
+
+def _redacted_marker(reason: str) -> dict[str, JsonValue]:
+    return {"redacted": True, "reason": reason}
+
+
+def _embedding_safe_value(value: JsonValue, source: SourceLocation | None, kind: str) -> JsonValue:
+    if kind == "CREDENTIAL_CHANGED":
+        return _redacted_marker("CREDENTIAL_CHANGE")
+    if source is not None and _SENSITIVE_FIELD.search(str(source.json_pointer)):
+        return _redacted_marker("SENSITIVE_SOURCE_FIELD")
+    if isinstance(value, dict):
+        safe: dict[str, JsonValue] = {}
+        for key, item in value.items():
+            if _SENSITIVE_FIELD.search(key):
+                safe[key] = _redacted_marker("SENSITIVE_OBJECT_FIELD")
+            else:
+                safe[key] = _embedding_safe_value(item, None, kind)
+        return safe
+    if isinstance(value, list):
+        return [_embedding_safe_value(item, None, kind) for item in value]
+    return value
+
+
+def vector_query_context(
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    catalog: TemplateCatalog,
+    producer: str,
+) -> dict[str, JsonValue]:
+    """Send bounded analysis values to a trusted endpoint; redaction is heuristic."""
+    return {
+        **retrieval_query_context(handoff, analysis, catalog, producer),
+        "change_values": [
+            {
+                "change_id": change.change_id,
+                "kind": change.kind,
+                "node_id": change.node_id,
+                "before_value": _embedding_safe_value(
+                    change.before_value, change.before_source, change.kind
+                ),
+                "after_value": _embedding_safe_value(
+                    change.after_value, change.after_source, change.kind
+                ),
+            }
+            for change in sorted(analysis.changes, key=lambda item: item.change_id)
+        ],
+    }
+
+
+def vector_query_text(query_context: dict[str, JsonValue]) -> str:
+    try:
+        data = json_bytes(query_context)
+        text = data.decode("utf-8")
+    except (TypeError, UnicodeError, ValueError):
+        raise InputError("VECTOR_QUERY_INVALID") from None
+    if not text or len(data) > MAX_TEXT_BYTES:
+        raise InputError("VECTOR_QUERY_TOO_LARGE")
+    return text
+
+
+def embedding_profile_metadata(profile: EmbeddingProfile) -> dict[str, JsonValue]:
+    return {
+        "profile_id": profile.profile_id,
+        "provider": profile.provider,
+        "model": profile.model,
+        "model_digest": profile.model_digest,
+        "dimensions": profile.dimensions,
+        "query_instruction_version": profile.query_instruction_version,
+        "normalized": profile.normalized,
+    }
 
 
 def analysis_retrieval_context(
@@ -344,8 +488,8 @@ def _retrieve_snapshot(
 ) -> RetrievalResult:
     cards = snapshot.cards
     profile, node_types, fields, tokens = search_context(handoff, analysis)
-    analysis_context, impacted_node_types, impact_tokens, impact_path_signals = (
-        analysis_retrieval_context(handoff, analysis)
+    _, impacted_node_types, impact_tokens, impact_path_signals = analysis_retrieval_context(
+        handoff, analysis
     )
     node_type_set = set(node_types)
     templates = {(t.template_id, t.version): t for t in catalog.templates}
@@ -374,15 +518,7 @@ def _retrieve_snapshot(
         kb_snapshot_ref=snapshot.reference,
         method="KEYWORD",
         model_version=None,
-        query={
-            "task_id": handoff.task.task_id,
-            "runtime_profile": profile,
-            "node_types": [str(value) for value in node_types],
-            "changed_fields": [str(value) for value in fields],
-            "analysis_context": analysis_context,
-            "rules_version": producer,
-            "context_fingerprint": context_fingerprint(handoff, analysis, catalog, producer),
-        },
+        query=retrieval_query_context(handoff, analysis, catalog, producer),
         hits=[
             RetrievalHit(
                 card_id=card.card_id,
@@ -398,3 +534,148 @@ def _retrieve_snapshot(
     )
     result.query["result_fingerprint"] = retrieval_content_fingerprint(result)
     return result
+
+
+def _vector_card_hash(card: ScenarioCard) -> str:
+    return digest(json_bytes(card.model_dump(mode="json")))
+
+
+def _vector_hit_reason(score: float) -> str:
+    return f"Profile-scoped cosine similarity={score:.17g}."
+
+
+def retrieve_vector_snapshot(
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    catalog: TemplateCatalog,
+    *,
+    engine: Engine,
+    provider: EmbeddingProvider,
+    limit: int,
+    kb_path: str,
+    producer: str,
+) -> tuple[_KnowledgeSnapshot, RetrievalResult]:
+    from flowdelta.knowledge.card_catalog import (
+        MAX_SEARCH_LIMIT,
+        CardCandidate,
+        search_cards,
+    )
+
+    if type(limit) is not int or not 1 <= limit <= MAX_SEARCH_LIMIT:
+        raise InputError("CARD_CATALOG_SEARCH_LIMIT_INVALID")
+    if not callable(getattr(provider, "embed", None)):
+        raise InputError("EMBEDDING_PROVIDER_INVALID")
+
+    context_query = retrieval_query_context(handoff, analysis, catalog, producer)
+    query_text = vector_query_text(vector_query_context(handoff, analysis, catalog, producer))
+    query_batch = validate_embedding_batch(
+        provider.embed([query_text], "QUERY"), expected_count=1, dimensions=1024
+    )
+    profile, query_vector = query_batch.profile, query_batch.vectors[0]
+    search_candidates = search_cards(engine, query_vector, profile, limit=limit)
+    if not isinstance(search_candidates, list):
+        raise InputError("CARD_CATALOG_SEARCH_RESULT_INVALID")
+
+    checked: list[tuple[ScenarioCard, str, float]] = []
+    seen: set[tuple[str, str]] = set()
+    for candidate in search_candidates:
+        if not isinstance(candidate, CardCandidate) or not isinstance(candidate.card, ScenarioCard):
+            raise InputError("CARD_CATALOG_SEARCH_RESULT_INVALID")
+        card = candidate.card.model_copy(deep=True)
+        identity = (card.card_id, card.version)
+        if identity in seen:
+            raise InputError("CARD_CATALOG_CANDIDATE_DUPLICATE")
+        seen.add(identity)
+        card_hash = _vector_card_hash(card)
+        if candidate.content_sha256 != card_hash:
+            raise InputError("CARD_CATALOG_CARD_INTEGRITY_FAILED")
+        if type(candidate.score) not in {int, float}:
+            raise InputError("RETRIEVAL_SCORE_INVALID")
+        try:
+            score = float(candidate.score)
+        except (OverflowError, ValueError):
+            raise InputError("RETRIEVAL_SCORE_INVALID") from None
+        if not isfinite(score) or not -1.0 <= score <= 1.0:
+            raise InputError("RETRIEVAL_SCORE_INVALID")
+        checked.append((card, card_hash, score))
+
+    checked.sort(key=lambda item: (-item[2], item[0].card_id, item[0].version))
+    snapshot = _KnowledgeSnapshot.prepare([item[0] for item in checked], kb_path)
+    runtime_profile, node_types, _, _ = search_context(handoff, analysis)
+    node_type_set = set(node_types)
+    templates = {(item.template_id, item.version): item for item in catalog.templates}
+    vector_candidates: list[dict[str, JsonValue]] = []
+    excluded: dict[str, str] = {}
+    hits: list[RetrievalHit] = []
+    for rank, (card, card_hash, score) in enumerate(checked, 1):
+        reason = exclusion_reason(
+            card,
+            handoff,
+            templates,
+            runtime_profile,
+            node_type_set,
+            exclude_unregistered_template=True,
+            check_artifacts=True,
+        )
+        card_key = f"{card.card_id}@{card.version}"
+        vector_candidates.append(
+            {
+                "rank": rank,
+                "card_id": card.card_id,
+                "card_version": card.version,
+                "card_sha256": card_hash,
+                "similarity": score,
+                "excluded_reason": reason,
+            }
+        )
+        if reason is not None:
+            excluded[card_key] = reason
+        else:
+            applicability: Literal["MATCH", "PARTIAL"] = (
+                "MATCH" if set(card.node_types).issubset(node_type_set) else "PARTIAL"
+            )
+            hits.append(
+                RetrievalHit(
+                    card_id=card.card_id,
+                    card_version=card.version,
+                    rank=len(hits) + 1,
+                    score=score,
+                    applicability=applicability,
+                    reason=_vector_hit_reason(score),
+                )
+            )
+
+    profile_metadata = embedding_profile_metadata(profile)
+    query_sha256 = digest(query_text.encode("utf-8"))
+    result = RetrievalResult(
+        retrieval_id="retrieval-pending",
+        analysis_id=analysis.analysis_id,
+        authorship=author(analysis, producer),
+        kb_snapshot_ref=snapshot.reference,
+        method="VECTOR",
+        model_version=profile.model_digest,
+        query={
+            **context_query,
+            "vector": {
+                "profile": profile_metadata,
+                "query_sha256": query_sha256,
+                "candidates": cast(JsonValue, vector_candidates),
+            },
+        },
+        hits=hits,
+        excluded_reasons=excluded,
+    )
+    result_fingerprint = retrieval_content_fingerprint(result)
+    result.query["result_fingerprint"] = result_fingerprint
+    result.retrieval_id = vector_retrieval_identity(
+        producer,
+        snapshot.data,
+        handoff,
+        analysis,
+        catalog,
+        profile_metadata,
+        query_sha256,
+        vector_candidates,
+        result_fingerprint,
+    )
+    return snapshot, result
