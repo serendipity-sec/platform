@@ -396,7 +396,7 @@ def test_postgres_card_catalog_reuse_conflicts_profiles_and_search(tmp_path):
     migrate(settings)
     engine = engine_for(settings)
     try:
-        profile = _profile()
+        profile = _profile(model=f"test-model-{uuid.uuid4().hex}")
         provider = _Provider(profile)
         cards = [
             _card(card_id=f"catalog-sort-b-{uuid.uuid4().hex}"),
@@ -483,7 +483,7 @@ def test_postgres_rejects_invalid_document_embedding_batches_before_vector_inser
     migrate(settings)
     engine = engine_for(settings)
     try:
-        profile = _profile()
+        profile = _profile(model=f"test-model-{uuid.uuid4().hex}")
         actual_profile = (
             _profile(model="different-model") if returned_profile == "mismatch" else profile
         )
