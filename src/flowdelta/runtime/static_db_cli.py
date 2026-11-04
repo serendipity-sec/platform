@@ -10,6 +10,7 @@ import typer
 
 from flowdelta.ingestion import MAX_FILE_BYTES, InputError, json_bytes, parse_file_model, parse_json
 from flowdelta.knowledge.settings import KnowledgeSettings
+from flowdelta.runtime.static_report import check_raw_reports
 from flowdelta.runtime.static_scan import StaticScanRun
 
 app = typer.Typer(no_args_is_help=True)
@@ -71,8 +72,11 @@ def store_command(run: Path) -> None:
         from flowdelta.knowledge.database import engine_for
         from flowdelta.runtime.static_database import DatabaseStaticRunRepository
 
+        settings = KnowledgeSettings.from_environment()
         value = _read_run(run)
-        engine = engine_for(KnowledgeSettings.from_environment())
+        # runs/ 바로 위 폴더가 출력 폴더다. 원시 보고서가 기록과 맞을 때만 저장한다.
+        check_raw_reports(run.parent.parent, [value])
+        engine = engine_for(settings)
         try:
             DatabaseStaticRunRepository(engine).save(value)
         finally:
