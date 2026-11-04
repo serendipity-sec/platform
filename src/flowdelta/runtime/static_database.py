@@ -116,11 +116,19 @@ class DatabaseStaticRunRepository:
             raise InputError("STATIC_RUN_NOT_FOUND", location=scan_run_id)
         return _verified(scan_run_id, bytes(row.payload), row.sha256)
 
-    def list_by_plan(self, plan_id: str) -> list[StaticScanRun]:
-        """정확한 plan_id의 실행만 반환한다. 같은 사례의 '최신 결과'를 고르지 않는다."""
+    def list_by_plan(
+        self, plan_id: str, comparison_run_id: str | None = None
+    ) -> list[StaticScanRun]:
+        """정확한 plan_id의 실행만 반환한다. 같은 사례의 '최신 결과'를 고르지 않는다.
+
+        comparison_run_id를 주면 같은 실행 묶음의 결과만 남긴다.
+        """
         try:
             with self._engine.connect() as connection:
                 rows = connection.execute(_SELECT_BY_PLAN, {"plan_id": plan_id}).all()
         except SQLAlchemyError:
             raise InputError("STATIC_DATABASE_UNAVAILABLE") from None
-        return [_verified(row.scan_run_id, bytes(row.payload), row.sha256) for row in rows]
+        runs = [_verified(row.scan_run_id, bytes(row.payload), row.sha256) for row in rows]
+        if comparison_run_id is None:
+            return runs
+        return [run for run in runs if run.comparison_run_id == comparison_run_id]

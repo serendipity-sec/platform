@@ -136,3 +136,30 @@ def test_failed_run_is_stored_with_its_status_and_error(engine: object) -> None:
         "STATIC_TOOL_ERROR",
         [],
     )
+
+
+@needs_database
+def test_listing_can_be_limited_to_one_comparison_run(engine: object) -> None:
+    before, after = example_runs(REPO)
+    token = uuid.uuid4().hex[:12]
+    plan = f"plan-group-{token}"
+    first = before.model_copy(
+        update={
+            "run_id": f"static-g1-{token}",
+            "plan_id": plan,
+            "comparison_run_id": f"cmp-a-{token}",
+        }
+    )
+    second = after.model_copy(
+        update={
+            "run_id": f"static-g2-{token}",
+            "plan_id": plan,
+            "comparison_run_id": f"cmp-b-{token}",
+        }
+    )
+    store = repository(engine)
+    store.save(first)  # type: ignore[attr-defined]
+    store.save(second)  # type: ignore[attr-defined]
+    only_first = store.list_by_plan(plan, f"cmp-a-{token}")  # type: ignore[attr-defined]
+    assert [run.run_id for run in only_first] == [first.run_id]
+    assert len(store.list_by_plan(plan)) == 2  # type: ignore[attr-defined]

@@ -12,11 +12,13 @@ from flowdelta.handoff import build_handoff, write_handoff
 from flowdelta.ingestion import InputError, json_bytes, load_case
 from flowdelta.knowledge.cli import app as knowledge_app
 from flowdelta.runtime.static_db_cli import app as static_db_app
+from flowdelta.runtime.static_report import summarize_command
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 app.add_typer(knowledge_app, name="knowledge")
 app.add_typer(analysis_db_app, name="analysis-db")
 app.add_typer(static_db_app, name="static-db")
+app.command("static-report")(summarize_command)
 
 
 @app.command()

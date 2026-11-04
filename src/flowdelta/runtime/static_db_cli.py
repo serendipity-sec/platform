@@ -121,6 +121,9 @@ def get_command(
 def list_command(
     plan_id: str,
     out: Annotated[Path, typer.Option(help="New JSON file path; the parent folder must exist.")],
+    comparison_run_id: Annotated[
+        str | None, typer.Option(help="Only runs of this comparison run.")
+    ] = None,
 ) -> None:
     """Write every stored run of this exact plan ID as one JSON array.
 
@@ -132,7 +135,7 @@ def list_command(
 
         engine = engine_for(KnowledgeSettings.from_environment())
         try:
-            runs = DatabaseStaticRunRepository(engine).list_by_plan(plan_id)
+            runs = DatabaseStaticRunRepository(engine).list_by_plan(plan_id, comparison_run_id)
         finally:
             engine.dispose()
         _write_new(out, [run.model_dump(mode="json") for run in runs])
