@@ -239,6 +239,23 @@ def test_conflicting_duplicate_identity_is_rejected_before_database_access():
     assert provider.calls == []
 
 
+def test_cards_citing_the_same_cve_are_distinct_catalog_entries():
+    engine = _MemoryCatalogEngine()
+    profile = _profile()
+    provider = _Provider(profile)
+    cards = []
+    for _ in range(2):
+        card = _card()
+        values = card.model_dump(mode="json")
+        values["extensions"] = {"flowdelta.cve": "CVE-2026-0001"}
+        cards.append(ScenarioCard.model_validate(values))
+
+    result = catalog.index_cards(engine, cards, provider, profile)
+
+    assert result == CardIndexResult(indexed=2, reused=0)
+    assert len({card.card_id for card in cards}) == 2
+
+
 def test_memory_db_boundary_reuses_document_vectors_and_rejects_identity_conflicts():
     engine = _MemoryCatalogEngine()
     profile = _profile()

@@ -188,7 +188,8 @@ print(report)
 ## 서버 이전
 
 수집을 중지하고 DB의 일관된 dump와 `FLOWDELTA_KB_RAW_ROOT`를 함께 보관한다.
-새 서버에 같은 PostgreSQL major·pgvector 버전을 준비하고 DB와 원본 파일을 복원한 뒤
+새 서버에 같은 PostgreSQL major·pgvector 버전(공유 카드 검색은 `hnsw.iterative_scan`을
+쓰므로 pgvector 0.8 이상, 기준은 0.8.1)을 준비하고 DB와 원본 파일을 복원한 뒤
 URL·원본 경로를 변경한다. migration/status 및 원본 해시 검증 후 수집을 재개한다.
 비밀번호는 새 서버에서 재발급한다. 자동 destructive downgrade는 제공하지 않는다.
 

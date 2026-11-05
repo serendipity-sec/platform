@@ -196,22 +196,21 @@ def test_postgres_migration_and_transaction(tmp_path):
                         "'knowledge.source_revision', 'DELETE')"
                     )
                 ).scalar_one()
-            for privilege in ("SELECT", "INSERT"):
-                assert connection.execute(
-                    text(
-                        "SELECT has_table_privilege('flowdelta_app', "
-                        "'knowledge.b_scenario_card_embedding', :privilege)"
-                    ),
-                    {"privilege": privilege},
-                ).scalar_one()
-            for privilege in ("UPDATE", "DELETE"):
-                assert not connection.execute(
-                    text(
-                        "SELECT has_table_privilege('flowdelta_app', "
-                        "'knowledge.b_scenario_card_embedding', :privilege)"
-                    ),
-                    {"privilege": privilege},
-                ).scalar_one()
+            for table in (
+                "b_scenario_card",
+                "b_embedding_profile",
+                "b_scenario_card_embedding",
+            ):
+                for privilege in ("SELECT", "INSERT"):
+                    assert connection.execute(
+                        text("SELECT has_table_privilege('flowdelta_app', :table, :privilege)"),
+                        {"table": f"knowledge.{table}", "privilege": privilege},
+                    ).scalar_one(), (table, privilege)
+                for privilege in ("UPDATE", "DELETE"):
+                    assert not connection.execute(
+                        text("SELECT has_table_privilege('flowdelta_app', :table, :privilege)"),
+                        {"table": f"knowledge.{table}", "privilege": privilege},
+                    ).scalar_one(), (table, privilege)
 
         def clear_source(source: str) -> None:
             with migration_engine.begin() as connection:
