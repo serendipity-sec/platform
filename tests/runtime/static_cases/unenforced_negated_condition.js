@@ -1,6 +1,4 @@
-// Team-written synthetic tool. The mismatch test is negated, so the owner is the one turned
-// away, but the rule only looks for the comparison inside the condition: a known false
-// negative of rule 0.4.0.
+// 팀이 작성한 합성 도구. 조건을 다시 뒤집어 주인을 돌려보내고 비소유자는 지운다
 async function __n8n_tool(query) {
   const input = JSON.parse(query);
   const rows = await helpers.httpRequest({ method: 'GET', url: `https://example.invalid/notes?id=eq.${input.id}` });

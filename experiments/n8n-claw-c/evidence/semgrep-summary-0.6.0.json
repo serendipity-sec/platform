@@ -1,0 +1,609 @@
+{
+  "schema": "flowdelta-static-tool-fit-v1",
+  "semgrep_version": "1.181.0",
+  "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+  "rule_version": "0.6.0",
+  "rule_sha256": "7c519af6b0b66ed970ed0cad741dd6f9c8d0c89b20726704b56f3e9f3c87d440",
+  "returncode": 0,
+  "error_count": 0,
+  "raw_report_sha256": "6b1ef645a03ddfa972a6141a9f6a813c9628888f377e58cfd3a84c214cb75c0d",
+  "basis": "STATIC_CONDITION",
+  "security_outcome": null,
+  "versions": [
+    {
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+      "status": "SUCCEEDED",
+      "skipped_files": [],
+      "scanned_node_ids": [
+        "mcp-client-code",
+        "tool-http",
+        "tool-memory-save",
+        "tool-memory-search",
+        "tool-project-manager",
+        "tool-self-modify",
+        "tool-task-manager",
+        "tool-web-reader",
+        "tool-web-search"
+      ],
+      "unsupported": [
+        {
+          "node_id": "tool-agent-library",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-expert-agent",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-library-manager",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "mcp-builder-tool",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-reminder-wf",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-telegram-status",
+          "node_type": "n8n-nodes-base.telegramTool",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-workflow-builder",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+      "status": "SUCCEEDED",
+      "skipped_files": [],
+      "scanned_node_ids": [
+        "mcp-client-code",
+        "tool-http",
+        "tool-memory-delete",
+        "tool-memory-save",
+        "tool-memory-search",
+        "tool-memory-update",
+        "tool-project-manager",
+        "tool-self-modify",
+        "tool-task-manager",
+        "tool-web-reader",
+        "tool-web-search"
+      ],
+      "unsupported": [
+        {
+          "node_id": "tool-agent-library",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-expert-agent",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-library-manager",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "mcp-builder-tool",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-reminder-wf",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-telegram-status",
+          "node_type": "n8n-nodes-base.telegramTool",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-workflow-builder",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        }
+      ],
+      "findings": [
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/29/parameters/jsCode",
+          "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+          "line": 7,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-update",
+          "node_name": "Memory Update",
+          "code_pointer": "/nodes/30/parameters/jsCode",
+          "code_sha256": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797",
+          "line": 43,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        }
+      ]
+    },
+    {
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "status": "SUCCEEDED",
+      "skipped_files": [],
+      "scanned_node_ids": [
+        "mcp-client-code",
+        "tool-entity-manager",
+        "tool-http",
+        "tool-memory-delete",
+        "tool-memory-save",
+        "tool-memory-search",
+        "tool-memory-update",
+        "tool-project-manager",
+        "tool-self-modify",
+        "tool-task-manager",
+        "tool-web-reader",
+        "tool-web-search"
+      ],
+      "unsupported": [
+        {
+          "node_id": "tool-agent-library",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-browser-use",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-expert-agent",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-library-manager",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "mcp-builder-tool",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-reminder-wf",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-telegram-status",
+          "node_type": "n8n-nodes-base.telegramTool",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-workflow-builder",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        }
+      ],
+      "findings": [
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+          "line": 7,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-update",
+          "node_name": "Memory Update",
+          "code_pointer": "/nodes/28/parameters/jsCode",
+          "code_sha256": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db",
+          "line": 51,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        }
+      ]
+    },
+    {
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+      "status": "SUCCEEDED",
+      "skipped_files": [],
+      "scanned_node_ids": [
+        "mcp-client-code",
+        "tool-entity-manager",
+        "tool-http",
+        "tool-memory-delete",
+        "tool-memory-save",
+        "tool-memory-search",
+        "tool-memory-update",
+        "tool-project-manager",
+        "tool-self-modify",
+        "tool-task-manager",
+        "tool-web-reader",
+        "tool-web-search"
+      ],
+      "unsupported": [
+        {
+          "node_id": "tool-agent-library",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-browser-use",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-expert-agent",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-library-manager",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "mcp-builder-tool",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-reminder-wf",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-telegram-status",
+          "node_type": "n8n-nodes-base.telegramTool",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-workflow-builder",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        }
+      ],
+      "findings": [
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+          "line": 24,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+          "line": 31,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+          "line": 32,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-update",
+          "node_name": "Memory Update",
+          "code_pointer": "/nodes/28/parameters/jsCode",
+          "code_sha256": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763",
+          "line": 67,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        }
+      ]
+    },
+    {
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "status": "SUCCEEDED",
+      "skipped_files": [],
+      "scanned_node_ids": [
+        "mcp-client-code",
+        "tool-entity-manager",
+        "tool-http",
+        "tool-memory-delete",
+        "tool-memory-save",
+        "tool-memory-search",
+        "tool-memory-update",
+        "tool-project-manager",
+        "tool-self-modify",
+        "tool-task-manager",
+        "tool-web-reader",
+        "tool-web-search"
+      ],
+      "unsupported": [
+        {
+          "node_id": "tool-agent-library",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-browser-use",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-expert-agent",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-library-manager",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "mcp-builder-tool",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-reminder-wf",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-telegram-status",
+          "node_type": "n8n-nodes-base.telegramTool",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-workflow-builder",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        }
+      ],
+      "findings": [
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+          "line": 7,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-update",
+          "node_name": "Memory Update",
+          "code_pointer": "/nodes/28/parameters/jsCode",
+          "code_sha256": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db",
+          "line": 51,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        }
+      ]
+    },
+    {
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca",
+      "status": "SUCCEEDED",
+      "skipped_files": [],
+      "scanned_node_ids": [
+        "mcp-client-code",
+        "tool-entity-manager",
+        "tool-http",
+        "tool-memory-delete",
+        "tool-memory-save",
+        "tool-memory-search",
+        "tool-memory-update",
+        "tool-project-manager",
+        "tool-self-modify",
+        "tool-task-manager",
+        "tool-web-reader",
+        "tool-web-search"
+      ],
+      "unsupported": [
+        {
+          "node_id": "tool-agent-library",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-browser-use",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-expert-agent",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-library-manager",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "mcp-builder-tool",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-reminder-wf",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-telegram-status",
+          "node_type": "n8n-nodes-base.telegramTool",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-workflow-builder",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        }
+      ],
+      "findings": [
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+          "line": 24,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+          "line": 31,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/27/parameters/jsCode",
+          "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+          "line": 32,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-update",
+          "node_name": "Memory Update",
+          "code_pointer": "/nodes/28/parameters/jsCode",
+          "code_sha256": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763",
+          "line": 67,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        }
+      ]
+    },
+    {
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452",
+      "status": "SUCCEEDED",
+      "skipped_files": [],
+      "scanned_node_ids": [
+        "mcp-client-code",
+        "tool-entity-manager",
+        "tool-http",
+        "tool-memory-delete",
+        "tool-memory-save",
+        "tool-memory-search",
+        "tool-memory-update",
+        "tool-project-manager",
+        "tool-self-modify",
+        "tool-task-manager",
+        "tool-web-reader",
+        "tool-web-search"
+      ],
+      "unsupported": [
+        {
+          "node_id": "tool-agent-library",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-browser-use",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-expert-agent",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-library-manager",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "mcp-builder-tool",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-reminder-wf",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-telegram-status",
+          "node_type": "n8n-nodes-base.telegramTool",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        },
+        {
+          "node_id": "tool-workflow-builder",
+          "node_type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+          "reason": "TARGET_TYPE_NOT_SUPPORTED"
+        }
+      ],
+      "findings": [
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/28/parameters/jsCode",
+          "code_sha256": "76036be51f420234eb6a1610410a86448138353128163f4cf8ed52d0e2c61c55",
+          "line": 58,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/28/parameters/jsCode",
+          "code_sha256": "76036be51f420234eb6a1610410a86448138353128163f4cf8ed52d0e2c61c55",
+          "line": 65,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-delete",
+          "node_name": "Memory Delete",
+          "code_pointer": "/nodes/28/parameters/jsCode",
+          "code_sha256": "76036be51f420234eb6a1610410a86448138353128163f4cf8ed52d0e2c61c55",
+          "line": 66,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        },
+        {
+          "node_id": "tool-memory-update",
+          "node_name": "Memory Update",
+          "code_pointer": "/nodes/29/parameters/jsCode",
+          "code_sha256": "9d9c3563d6f1a90bfe8f0dcbd4363516def4610c37c78a9474d30932f6001ffa",
+          "line": 100,
+          "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+          "rule_version": "0.6.0"
+        }
+      ]
+    }
+  ]
+}
