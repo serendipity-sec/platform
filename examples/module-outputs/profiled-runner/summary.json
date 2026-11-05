@@ -2,12 +2,12 @@
   "allocated_runs": [
     {
       "attempt_number": 1,
-      "run_id": "run-d891c9041a2e4d4da2f43725b41fbef8",
+      "run_id": "run-6e3984c74d5a49828b4fc8295ef7f7b3",
       "side": "after"
     },
     {
       "attempt_number": 1,
-      "run_id": "run-8ce395f8b223497d84b79f9d40c8af64",
+      "run_id": "run-30028ba0029f45699f1de3f7a07aa250",
       "side": "before"
     }
   ],
@@ -34,7 +34,7 @@
   ],
   "analysis_origin": "MODULE_OUTPUT",
   "bundle": "bundle",
-  "bundle_manifest_sha256": "bf575559841a50c3aecde9620c8cf005b5380c6540111d4f0bb2dfa6480b3730",
+  "bundle_manifest_sha256": "04a5b3905436e2a440525d1a6c71e5f16c8e99ed3057b4d291a50aedffc67572",
   "case_id": "order-lookup-demo-001",
   "catalog_sha256": "286f926b92802ccec32e9800bdfba6cea9d16f3f6d71f2e6a304311e5b464bde",
   "contract_validation": {
@@ -68,7 +68,7 @@
   },
   "kb_sha256": "d0668162282dc7181e64f6c6e25314cf4753d044053fc078160504583607c2fb",
   "mode": "EXECUTE_REGISTERED",
-  "orchestration_id": "pipeline-c1f0cf6e29c74e18a00b98fbb5504854",
+  "orchestration_id": "pipeline-b7b2326c69da4f7ca0449a23b88313f6",
   "plan_id": "plan-5b3ae5357be46a6b0577f7c7",
   "plan_origin": "MODULE_OUTPUT",
   "producer_version": "0.1.0",
@@ -83,7 +83,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-8ce395f8b223497d84b79f9d40c8af64",
+      "run_id": "run-30028ba0029f45699f1de3f7a07aa250",
       "side": "before"
     },
     {
@@ -93,7 +93,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-d891c9041a2e4d4da2f43725b41fbef8",
+      "run_id": "run-6e3984c74d5a49828b4fc8295ef7f7b3",
       "side": "after"
     }
   ],
@@ -142,7 +142,7 @@
     "src/flowdelta/baseline/fixture.py": "2c617e668da723ac4eccd6c31be6e4ea8ecf5f3815b6d8f7476105efa143236f",
     "src/flowdelta/baseline/manual.py": "cefd18811e1b312872f88a8a357d77cc18bb40601f3e3c03a8481e829931d1e8",
     "src/flowdelta/baseline/probe.py": "c1733a25d93f814c644e246184a26a8dc0795e3c45ef25fcf8c5547a9c342d23",
-    "src/flowdelta/cli.py": "a2b13989748258291e0c41be4db5b773b39ea57119e950cce91777eb57996486",
+    "src/flowdelta/cli.py": "6990bdd813f507e9579920e1cacb9b29e2f63e3e77ad6d57e43e6be34a944b86",
     "src/flowdelta/conformance/__init__.py": "ecad297032b750b711a751d37edd4474940455b2fba8edd47e6274ac8130f674",
     "src/flowdelta/conformance/compare.py": "8830e3de4b3bdde85b08565549c93ebd5bf93271427200b3eae634a2693d7048",
     "src/flowdelta/conformance/lab.py": "fcbee59118bfbf5ae887f62893cb96b0003dbebdfef9aa372c4011a23b225a68",
@@ -178,7 +178,7 @@
     "src/flowdelta/knowledge/__init__.py": "0fe75793651fcbbc69ca603ec29781ed45cc62f47b5dc07704262ec707699d56",
     "src/flowdelta/knowledge/cards.py": "95a0d9dd33db0086d6948fd1ff391c55b0c9ef48368305494391bb1164c10de8",
     "src/flowdelta/knowledge/cli.py": "a52121b7b882a975ad9d59bac56001aede5463a4688f8c2bf09fae2702d4a9ef",
-    "src/flowdelta/knowledge/composition.py": "6013297a418ba326ce4327e9ca013b8f40bd38dadeb67ebc860ac7729823d558",
+    "src/flowdelta/knowledge/composition.py": "5a4f9d6d617c09ed7a13af4afd1ceb5e743ae06c2a5941638ad771a9535b5f0c",
     "src/flowdelta/knowledge/database.py": "49734ac7a6d64cd9b4d78a5d17048c5548469384a221fcb47a321ca457ec80ce",
     "src/flowdelta/knowledge/embedding.py": "b694abf1afc28c23fd155b8c367333f4eeb050a327ad97ca87c20434ed4f1c6b",
     "src/flowdelta/knowledge/embedding_settings.py": "5e8ea694ee867e6faddf758b8978b741774db30e5d9a5ea553721538caeef340",
@@ -187,9 +187,9 @@
     "src/flowdelta/knowledge/migrations/versions/0002_quarantine_raw.py": "8745f12f74d89d4d90dfce7d96734fb188b03da7c9a9a5397271d030d3f193d1",
     "src/flowdelta/knowledge/migrations/versions/0003_b_outputs.py": "ca1364f9844ee306757565f0145394c37756ebe7f615eeb463c651edcabdf0dd",
     "src/flowdelta/knowledge/output.py": "f4c184f65a4a7f6145530998b126de9c58f10ade924fcd7d45241b370ae0e98d",
-    "src/flowdelta/knowledge/planner.py": "9678b76efc084001089b8504f264269a26d306ec5878b74e09e39160c9e5cfff",
+    "src/flowdelta/knowledge/planner.py": "d30c614f0467e219fb16f9c81489e7a4fd7b4c8b0c4bcfc285a508e133cecb8f",
     "src/flowdelta/knowledge/repository.py": "6d9f1706427b13384adb59bffdf5f1f99e3b00962471875dda7c8b695a956a15",
-    "src/flowdelta/knowledge/retrieval.py": "d174e7c781d6badec5c2b5b255217a611b652f4f048ff1383ac5f35581467606",
+    "src/flowdelta/knowledge/retrieval.py": "f14b7272b7f24bb579ffcdac527ff173cad1634437796da415e57aaa9b2e4cd4",
     "src/flowdelta/knowledge/settings.py": "7fe1b5cc519706f73a46f9ec75177e71234d901772002ac236c86cf7bc37d7b3",
     "src/flowdelta/knowledge/source_ingestion.py": "c342dae8bb4186d3c2388908534319346a74eede825086f8839f920de3ded759",
     "src/flowdelta/knowledge/storage.py": "47960ec8d762d76d941e1b22721b87a309dc5da75cce6a7c65e3fd4133fc9a5a",
@@ -199,7 +199,7 @@
     "src/flowdelta/order_verification.py": "105850a1e90a9e65daf8fd648ea4831c39cf28095c73014f7f8bbadac6d2fd04",
     "src/flowdelta/pipeline_bundle.py": "04759c93e718421681afed5b0451df86668c5d8e2a76ff38d9a063a354b0f086",
     "src/flowdelta/pipeline_contracts.py": "f45771cec67d70c5689a9d963e273a305b04b66468ff0646a5c65103e200172a",
-    "src/flowdelta/pipeline_io.py": "46deae8aa4cb69144f5b93a3f775d8ddb2d460827c6d8f281c58ddeb9575717f",
+    "src/flowdelta/pipeline_io.py": "01086d82b3e5bd63945a2ecd7b8f0d99e6d0298083b5ab8bb75cccd662c02a52",
     "src/flowdelta/pipeline_runner.py": "434256d412c452d4b0feca964442ef74930dbc4714bc8d816c343d4d1075a4f7",
     "src/flowdelta/runtime/__init__.py": "a4da1733ca66b1ab54cd1be8af955444d5a1505599efe2852f977bb08007d460",
     "src/flowdelta/runtime/__main__.py": "af25b0a499a2b07016af6fd7ca75fbfdb7ab03df66b470e05a80e9a542f1d3ee",
@@ -218,7 +218,7 @@
     "tools/check_profiled_order.py": "1c7efd70290b29a0797d8cfaef3b2a37b4c88157f50d1087a90b1c61874f29f3",
     "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
   },
-  "source_tree_sha256": "a0985971fb8148497289b89915dcbd1958ef1f3102599e2af07b62ff2f05bc40",
+  "source_tree_sha256": "6d3ec0b5889eab4a37affb1d1ba922bec5ae66e3cee3d03ab5c2dfb8fcba51be",
   "stages": {
     "analysis": "SUCCEEDED",
     "bundle": "SUCCEEDED",
