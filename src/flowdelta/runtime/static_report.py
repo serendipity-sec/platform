@@ -57,8 +57,18 @@ def check_raw_reports(folder: Path, runs: list[StaticScanRun]) -> None:
             raise InputError("STATIC_RAW_REPORT_MISMATCH")
 
 
+_MARKDOWN_SPECIAL = set("\`*_[]()#<>|!~")
+
+
+def _text(value: object) -> str:
+    """검사 대상 workflow에서 온 문자열을 Markdown 글자로만 보이게 한다."""
+    flat = " ".join(str(value).splitlines())
+    return "".join("\\" + char if char in _MARKDOWN_SPECIAL else char for char in flat)
+
+
 def _row(*cells: object) -> str:
-    return "| " + " | ".join(str(cell) for cell in cells) + " |"
+    cells_text = [_text(cell) if isinstance(cell, str) else str(cell) for cell in cells]
+    return "| " + " | ".join(cells_text) + " |"
 
 
 def render_summary(runs: list[StaticScanRun]) -> str:
@@ -68,9 +78,9 @@ def render_summary(runs: list[StaticScanRun]) -> str:
         "",
         NOTICE,
         "",
-        f"- 계획 ID: `{first.plan_id}`",
-        f"- 사례 ID: `{first.case_id}`",
-        f"- 실행 묶음: `{first.comparison_run_id}`",
+        f"- 계획 ID: {_text(first.plan_id)}",
+        f"- 사례 ID: {_text(first.case_id)}",
+        f"- 실행 묶음: {_text(first.comparison_run_id)}",
         f"- 도구: {first.tool.name} {first.tool.version}, 규칙 {first.tool.rule_id} "
         f"{first.tool.rule_version} (`{first.tool.rule_sha256[:12]}`)",
         "",
@@ -93,7 +103,7 @@ def render_summary(runs: list[StaticScanRun]) -> str:
             )
         )
     for run in runs:
-        lines += ["", f"## {run.side} 경고", ""]
+        lines += ["", f"## {_text(run.side)} 경고", ""]
         if run.status != "SUCCEEDED":
             lines.append(
                 f"검사가 `{run.status}`로 끝났습니다. 경고 목록이 비어 있어도 "
@@ -119,7 +129,9 @@ def render_summary(runs: list[StaticScanRun]) -> str:
         if run.unsupported:
             lines += ["", "미지원 대상 (검사하지 않음):", ""]
             for skipped in sorted(run.unsupported, key=lambda u: u.node_id):
-                lines.append(f"- `{skipped.node_id}` ({skipped.node_type}): {skipped.reason}")
+                node = _text(skipped.node_id)
+                kind = _text(skipped.node_type)
+                lines.append(f"- {node} ({kind}): {_text(skipped.reason)}")
     return "\n".join(lines) + "\n"
 
 
@@ -127,7 +139,12 @@ def summarize_folder(folder: Path) -> Path:
     runs = read_runs(folder)
     check_raw_reports(folder, runs)
     target = folder / SUMMARY_NAME
-    target.write_text(render_summary(runs), encoding="utf-8", newline="\n")
+    # 한 번 만든 요약은 기록이므로 덮어쓰지 않는다. 배타적 생성은 기존 파일과 링크도 거부한다.
+    try:
+        with target.open("x", encoding="utf-8", newline="\n") as file:
+            file.write(render_summary(runs))
+    except FileExistsError:
+        raise InputError("STATIC_SUMMARY_EXISTS") from None
     return target
 
 

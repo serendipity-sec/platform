@@ -128,7 +128,13 @@ class DatabaseStaticRunRepository:
                 rows = connection.execute(_SELECT_BY_PLAN, {"plan_id": plan_id}).all()
         except SQLAlchemyError:
             raise InputError("STATIC_DATABASE_UNAVAILABLE") from None
-        runs = [_verified(row.scan_run_id, bytes(row.payload), row.sha256) for row in rows]
+        runs = []
+        for row in rows:
+            run = _verified(row.scan_run_id, bytes(row.payload), row.sha256)
+            if run.plan_id != plan_id:
+                # 조회 열과 내용이 다른 행은 잘못된 적재이므로 다른 계획의 결과로 돌려주지 않는다.
+                raise InputError("STATIC_RUN_INTEGRITY_MISMATCH", location=row.scan_run_id)
+            runs.append(run)
         if comparison_run_id is None:
             return runs
         return [run for run in runs if run.comparison_run_id == comparison_run_id]

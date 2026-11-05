@@ -163,3 +163,41 @@ def test_listing_can_be_limited_to_one_comparison_run(engine: object) -> None:
     only_first = store.list_by_plan(plan, f"cmp-a-{token}")  # type: ignore[attr-defined]
     assert [run.run_id for run in only_first] == [first.run_id]
     assert len(store.list_by_plan(plan)) == 2  # type: ignore[attr-defined]
+
+
+@needs_database
+def test_row_whose_content_names_another_plan_is_refused(engine: object) -> None:
+    from sqlalchemy import text
+
+    from flowdelta.ingestion import digest, json_bytes
+
+    before, _ = example_runs(REPO)
+    token = uuid.uuid4().hex[:12]
+    other = before.model_copy(
+        update={"run_id": f"static-mix-{token}", "plan_id": f"plan-B-{token}"}
+    )
+    payload = json_bytes(other.model_dump(mode="json"))
+    with engine.begin() as connection:  # type: ignore[attr-defined]
+        connection.execute(
+            text("""
+                INSERT INTO static.scan_run (
+                    scan_run_id, plan_id, case_id, snapshot_id, side, status, error_code,
+                    workflow_sha256, sha256, payload
+                ) VALUES (
+                    :run, :plan, :case, :snap, :side, :status, NULL, :wf, :sha, :payload
+                )
+            """),
+            {
+                "run": other.run_id,
+                "plan": f"plan-A-{token}",  # 조회 열은 A, 내용은 B
+                "case": other.case_id,
+                "snap": other.snapshot_id,
+                "side": other.side,
+                "status": other.status,
+                "wf": other.workflow_sha256,
+                "sha": digest(payload),
+                "payload": payload,
+            },
+        )
+    with pytest.raises(InputError, match="STATIC_RUN_INTEGRITY_MISMATCH"):
+        repository(engine).list_by_plan(f"plan-A-{token}")  # type: ignore[attr-defined]

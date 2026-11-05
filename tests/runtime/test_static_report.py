@@ -78,3 +78,46 @@ def test_folder_without_runs_is_refused(tmp_path: Path) -> None:
     (folder / "runs").mkdir(parents=True)
     with pytest.raises(InputError, match="STATIC_REPORT_NO_RUNS"):
         summarize_folder(folder)
+
+
+def test_existing_summary_is_kept_and_not_overwritten(tmp_path: Path) -> None:
+    before, after = example_runs(REPO)
+    raw = {"before": b"raw-b", "after": b"raw-a"}
+    runs = [with_raw(before, raw["before"]), with_raw(after, raw["after"])]
+    folder = write_folder(tmp_path, runs, raw)
+    first = summarize_folder(folder).read_text(encoding="utf-8")
+    (folder / SUMMARY_NAME).write_text("기록된 요약", encoding="utf-8")
+    with pytest.raises(InputError, match="STATIC_SUMMARY_EXISTS"):
+        summarize_folder(folder)
+    assert (folder / SUMMARY_NAME).read_text(encoding="utf-8") == "기록된 요약"
+    assert first.startswith("# 정적 검사 요약")
+
+
+def test_summary_is_not_written_through_a_link_to_another_file(tmp_path: Path) -> None:
+    before, after = example_runs(REPO)
+    raw = {"before": b"raw-b", "after": b"raw-a"}
+    runs = [with_raw(before, raw["before"]), with_raw(after, raw["after"])]
+    folder = write_folder(tmp_path, runs, raw)
+    outside = tmp_path / "outside.txt"
+    outside.write_text("외부 파일", encoding="utf-8")
+    try:
+        (folder / SUMMARY_NAME).hardlink_to(outside)
+    except OSError:
+        pytest.skip("hard links are not available on this file system")
+    with pytest.raises(InputError, match="STATIC_SUMMARY_EXISTS"):
+        summarize_folder(folder)
+    assert outside.read_text(encoding="utf-8") == "외부 파일"
+
+
+def test_external_names_cannot_break_the_table_or_inject_markdown(tmp_path: Path) -> None:
+    before, after = example_runs(REPO)
+    hostile = "Memory\n\n## INJECTED | x ![pixel](https://example.invalid/p.png)"
+    node = before.findings[0].model_copy(update={"node_name": hostile})
+    crafted = before.model_copy(update={"findings": [node]})
+    text = render_summary([crafted, after])
+    assert "\n## INJECTED" not in text
+    assert "\n![pixel]" not in text
+    assert "\#\# INJECTED" in text
+    assert "\|" in text
+    row = next(line for line in text.splitlines() if "Memory" in line and "tool-memory" in line)
+    assert row.startswith("| ") and row.endswith(" |")
