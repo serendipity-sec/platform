@@ -141,7 +141,8 @@ flowdelta static-report var/<출력 폴더>
 - 원시 보고서의 크기나 해시가 기록과 다르면 `STATIC_RAW_REPORT_MISMATCH`로 거부한다.
 - 한 폴더에 서로 다른 실행 묶음이 있으면 `STATIC_REPORT_MIXED_RUNS`로 거부한다.
 - before 결과와 after 결과가 정확히 한 개씩 있어야 한다. 아니면 `STATIC_REPORT_SIDES_INCOMPLETE`로 거부한다.
-- 원시 보고서가 기록보다 크면(8 MiB 초과) 읽지 않고 `STATIC_RAW_REPORT_TOO_LARGE`로 거부한다.
+- 원시 보고서 파일이 8 MiB를 넘으면 읽지 않고 `STATIC_RAW_REPORT_TOO_LARGE`로 거부한다.
+- 파일 크기가 기록과 다르거나, 읽는 동안 기록 크기를 넘으면 `STATIC_RAW_REPORT_MISMATCH`로 거부한다.
 
 **DB 저장과 조회**
 ```bash

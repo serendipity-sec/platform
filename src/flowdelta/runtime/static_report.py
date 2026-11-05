@@ -5,11 +5,13 @@
 """
 
 import hashlib
+import os
 from pathlib import Path
 from typing import Annotated
 
 import typer
 
+from flowdelta.contracts import ArtifactRef
 from flowdelta.ingestion import MAX_FILE_BYTES, InputError, json_bytes, parse_file_model, parse_json
 from flowdelta.runtime.static_scan import StaticScanRun
 
@@ -46,6 +48,37 @@ def read_runs(folder: Path) -> list[StaticScanRun]:
     return sorted(runs, key=lambda run: run.side)
 
 
+def _check_raw_report(path: Path, expected: ArtifactRef) -> None:
+    """같은 파일 핸들로 크기를 확인하고, 기록된 크기까지만 읽어 해시를 계산한다."""
+    try:
+        stream = path.open("rb")
+    except OSError:
+        raise InputError("STATIC_RAW_REPORT_MISSING") from None
+    with stream:
+        try:
+            size = os.fstat(stream.fileno()).st_size
+        except OSError:
+            raise InputError("STATIC_RAW_REPORT_MISSING") from None
+        # 크기 상한을 먼저 본다. 기록 크기가 상한 안이어도 실제 파일이 크면 여기서 거부된다.
+        if size > RAW_REPORT_MAX_BYTES:
+            raise InputError("STATIC_RAW_REPORT_TOO_LARGE")
+        if size != expected.size_bytes:
+            raise InputError("STATIC_RAW_REPORT_MISMATCH")
+        digester = hashlib.sha256()
+        read = 0
+        while True:
+            # 읽는 중에 파일이 커져도 기록 크기를 1바이트라도 넘으면 즉시 중단한다.
+            chunk = stream.read(min(1 << 20, expected.size_bytes + 1 - read))
+            if not chunk:
+                break
+            read += len(chunk)
+            if read > expected.size_bytes:
+                raise InputError("STATIC_RAW_REPORT_MISMATCH")
+            digester.update(chunk)
+    if digester.hexdigest() != expected.sha256:
+        raise InputError("STATIC_RAW_REPORT_MISMATCH")
+
+
 def check_raw_reports(folder: Path, runs: list[StaticScanRun]) -> None:
     """성공한 실행의 원시 보고서가 기록된 경로·크기·해시와 맞는지 확인한다."""
     root = folder.resolve()
@@ -55,24 +88,7 @@ def check_raw_reports(folder: Path, runs: list[StaticScanRun]) -> None:
         path = (folder / run.raw_report.path).resolve()
         if not path.is_relative_to(root):
             raise InputError("STATIC_RAW_REPORT_OUTSIDE_FOLDER")
-        try:
-            size = path.stat().st_size
-        except OSError:
-            raise InputError("STATIC_RAW_REPORT_MISSING") from None
-        if size != run.raw_report.size_bytes:
-            raise InputError("STATIC_RAW_REPORT_MISMATCH")
-        if size > RAW_REPORT_MAX_BYTES:
-            # 읽기 전에 거부해서 큰 파일을 메모리에 올리지 않는다.
-            raise InputError("STATIC_RAW_REPORT_TOO_LARGE")
-        digester = hashlib.sha256()
-        try:
-            with path.open("rb") as stream:
-                for chunk in iter(lambda: stream.read(1 << 20), b""):
-                    digester.update(chunk)
-        except OSError:
-            raise InputError("STATIC_RAW_REPORT_MISSING") from None
-        if digester.hexdigest() != run.raw_report.sha256:
-            raise InputError("STATIC_RAW_REPORT_MISMATCH")
+        _check_raw_report(path, run.raw_report)
 
 
 _MARKDOWN_SPECIAL = set("\\`*_[]()#<>|!~")
@@ -99,8 +115,9 @@ def render_summary(runs: list[StaticScanRun]) -> str:
         f"- 계획 ID: {_text(first.plan_id)}",
         f"- 사례 ID: {_text(first.case_id)}",
         f"- 실행 묶음: {_text(first.comparison_run_id)}",
-        f"- 도구: {first.tool.name} {first.tool.version}, 규칙 {first.tool.rule_id} "
-        f"{first.tool.rule_version} (`{first.tool.rule_sha256[:12]}`)",
+        f"- 도구: {_text(first.tool.name)} {_text(first.tool.version)}, "
+        f"규칙 {_text(first.tool.rule_id)} {_text(first.tool.rule_version)} "
+        f"(`{first.tool.rule_sha256[:12]}`)",
         "",
         "## 실행 상태",
         "",
@@ -135,13 +152,14 @@ def render_summary(runs: list[StaticScanRun]) -> str:
                 "|---|---|---|---|---|",
             ]
             for item in sorted(run.findings, key=lambda f: (f.node_name, f.line)):
+                # 문자열은 _row가 이스케이프한다. 여기서 역따옴표로 감싸면 표시가 깨진다.
                 lines.append(
                     _row(
-                        f"{item.node_name} (`{item.node_id}`)",
+                        f"{item.node_name} ({item.node_id})",
                         item.node_type,
                         item.line,
-                        f"`{item.code_pointer}`",
-                        f"`{item.code_sha256[:12]}`",
+                        item.code_pointer,
+                        item.code_sha256[:12],
                     )
                 )
         if run.unsupported:

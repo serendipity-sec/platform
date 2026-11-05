@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -157,3 +158,61 @@ def test_oversized_raw_report_is_refused_before_it_is_read(
     monkeypatch.setattr(static_report, "RAW_REPORT_MAX_BYTES", 8)
     with pytest.raises(InputError, match="STATIC_RAW_REPORT_TOO_LARGE"):
         summarize_folder(folder)
+
+
+def test_raw_report_over_the_real_limit_is_refused_as_too_large(tmp_path: Path) -> None:
+    from flowdelta.runtime.static_report import RAW_REPORT_MAX_BYTES
+
+    before, after = example_runs(REPO)
+    big = b"x" * (RAW_REPORT_MAX_BYTES + 1)
+    raw = {"before": big, "after": b"raw-a"}
+    recorded = with_raw(before, b"small")  # 기록 크기는 작지만 실제 파일은 상한을 넘는다
+    folder = write_folder(tmp_path, [recorded, with_raw(after, raw["after"])], raw)
+    with pytest.raises(InputError, match="STATIC_RAW_REPORT_TOO_LARGE"):
+        summarize_folder(folder)
+
+
+def test_raw_report_that_grows_during_the_check_is_stopped_at_the_recorded_size(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from flowdelta.runtime import static_report
+
+    before, after = example_runs(REPO)
+    raw = {"before": b"0123456789", "after": b"raw-a"}
+    runs = [with_raw(before, raw["before"]), with_raw(after, raw["after"])]
+    folder = write_folder(tmp_path, runs, raw)
+    # 크기 확인 때는 기록 크기처럼 보이게 하고, 실제로는 읽는 동안 파일이 커진 상황을 흉내 낸다.
+    real_fstat = os.fstat
+    (folder / "before" / "static-raw-report.json").write_bytes(b"0123456789" + b"EXTRA")
+
+    def fake_fstat(fd: int) -> os.stat_result:
+        result = real_fstat(fd)
+        return os.stat_result(
+            (
+                result.st_mode,
+                result.st_ino,
+                result.st_dev,
+                result.st_nlink,
+                result.st_uid,
+                result.st_gid,
+                10,
+                result.st_atime,
+                result.st_mtime,
+                result.st_ctime,
+            )
+        )
+
+    monkeypatch.setattr(static_report.os, "fstat", fake_fstat)
+    with pytest.raises(InputError, match="STATIC_RAW_REPORT_MISMATCH"):
+        summarize_folder(folder)
+
+
+def test_tool_metadata_and_code_pointer_cannot_inject_markdown(tmp_path: Path) -> None:
+    before, after = example_runs(REPO)
+    hostile_tool = before.tool.model_copy(update={"version": "1.0\n\n## TOOL-INJECT"})
+    finding = before.findings[0].model_copy(update={"code_pointer": "/x`\n## POINTER-INJECT"})
+    crafted = before.model_copy(update={"tool": hostile_tool, "findings": [finding]})
+    text = render_summary([crafted, after])
+    assert "\n## TOOL-INJECT" not in text
+    assert "\n## POINTER-INJECT" not in text
+    assert "TOOL-INJECT" in text

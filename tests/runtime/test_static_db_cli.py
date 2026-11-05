@@ -7,7 +7,7 @@ import pytest
 from typer.testing import CliRunner
 
 from flowdelta.cli import app
-from flowdelta.ingestion import digest
+from flowdelta.ingestion import InputError, digest
 from flowdelta.runtime.static_examples import example_runs
 
 REPO = Path(__file__).resolve().parents[2]
@@ -97,3 +97,13 @@ def test_store_refuses_a_result_file_outside_the_runs_folder(
     result = CliRunner().invoke(app, ["static-db", "store", str(run_file)])
     assert result.exit_code == 2
     assert "STATIC_RUN_NOT_IN_RUNS_FOLDER" in result.output
+
+
+def test_static_cli_refuses_an_oversized_plan_input(tmp_path: Path) -> None:
+    from flowdelta.ingestion import MAX_FILE_BYTES
+    from flowdelta.runtime.static_cli import _read
+
+    big = tmp_path / "plan.json"
+    big.write_bytes(b" " * (MAX_FILE_BYTES + 1))
+    with pytest.raises(InputError, match="FILE_SIZE_LIMIT"):
+        _read(big)
