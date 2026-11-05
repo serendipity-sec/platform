@@ -52,6 +52,15 @@ template이 등록표와 다르면(예: 규칙 해시 변경) `STATIC_TEMPLATE_N
 
 유효 예시는 `plan.json`, 무효 예시 6개와 기대 오류는 `invalid-plans.json`이다.
 
+B의 `flowdelta plan`은 실제 `StaticScanCatalog`를 받아 기존 `TestPlan` schema의 C-consumable
+plan을 만든다. B는 C catalog에서 `result_kinds`와 timeout을 읽고, same-case/snapshot A 분석과
+등록 template을 검사한다. `planner_metadata.analysis_context`에는 모든 impact path와 change가
+보존되고, `selected_path_id`는 지원·target 검증을 통과한 경로의 trace link다. 선택이 모호하면
+`--path-id`로 명시할 수 있다. A의 missing/unsupported/truncated 정보가 있으면 plan에 uncertainty를
+남기며 안전이나 coverage를 주장하지 않는다. B는 plan의 retrieval reference로 retrieval ID를
+잇고, C run은 `plan_id`를 기록한다. 전체 B→C 재현 명령은
+[`examples/knowledge/n8n-claw-memory/README.md`](../examples/knowledge/n8n-claw-memory/README.md)에 있다.
+
 ## 결과 (`runs/*.static-run.json`)
 
 side마다 하나. `workflow_sha256`, 도구·규칙 버전, `scanned_node_ids`, `unsupported`, `findings`,
@@ -124,8 +133,9 @@ catalog의 `rule_sha256`과 같은지 확인한 바이트를 출력 폴더의 `r
 
 `SUCCEEDED`가 아니면 finding은 비어 있다. 어떤 경우에도 "경고 없음"이 "안전"을 뜻하지 않는다.
 
-아직 하지 않은 것: B가 만든 실제 plan으로 다시 확인(공유 catalog 형식 합의 뒤, 아래 1번).
-공용 DB 적용은 #79 설정 뒤에 한다.
+B plan-to-scan 연결과 결과 DB 저장·조회 명령은 구현되어 있다. 공용 DB 적용은 #79 설정
+뒤에 한다. 실행 환경에 Semgrep 1.181.0이 없거나 버전이 다르면 양쪽 run에 `FAILED`와 정확한
+`error_code`를 기록한다.
 
 ## 결과 조회와 요약 (`static-report`, `static-db`)
 

@@ -184,7 +184,7 @@
         "The identity in Merge Input.qualifiedUserId and the memory_admins list must be trustworthy for this guard to enforce the intended ownership policy. Their production authentication and administration are not verified."
       ],
       "security_significance": "The first-fix revision adds an object-level authorization decision before deletion. The evidence supports this exact revision and tested personal-memory cases; it does not establish that later versions retained the guard or that the application is safe overall.",
-      "template_status": "PROPOSED_NOT_REGISTERED",
+      "template_status": "REGISTERED",
       "unknowns_and_limits": [
         "The replay is partial JavaScript execution against synthetic rows, not a real database or full n8n plus LLM run.",
         "The fix commit also changes schema, search, configuration, and other memory behavior; this card attributes only the inspected Memory Delete path.",
@@ -218,8 +218,8 @@
   "source_ref": null,
   "source_revision": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
   "summary": "Memory Delete toolCode의 jsCode와 description 보완에서 qualifiedUserId, owner_user_id, scope, memory_admins를 확인한다. 이 first-fix revision은 foreign personal 행을 거부했지만 이후 revert에서 다시 삭제가 관측됐다.",
-  "template_id": "n8n-claw-memory-static-scan",
-  "template_version": "0.1.0-proposed",
+  "template_id": "static-agent-tool-ownership",
+  "template_version": "0.1.0",
   "title": "Memory Delete jsCode의 소유자·관리자 검사",
   "version": "1.0.0"
 }
