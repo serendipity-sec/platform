@@ -371,10 +371,10 @@ def _select_static_path(
                 raise InputError("STATIC_PATH_NOT_FOUND")
             raise InputError("STATIC_PATH_NOT_ELIGIBLE")
         status = "EXPLICIT_LIMITED" if truncated else "EXPLICIT"
-    elif not paths:
-        status = "MISSING"
     elif truncated:
         status = "TRUNCATED"
+    elif not paths:
+        status = "MISSING"
     elif len(eligible) == 1:
         selected = next(iter(eligible.values()))
         status = "AUTO_SELECTED"
