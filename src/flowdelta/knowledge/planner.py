@@ -23,7 +23,7 @@ from flowdelta.pipeline_contracts import (
 )
 from flowdelta.runtime.static_scan import StaticScanCatalog
 
-PRODUCER = "flowdelta.knowledge/1.2.0"
+PRODUCER = "flowdelta.knowledge/1.2.1"
 __all__ = [
     "compose_plan",
     "kb_bytes",

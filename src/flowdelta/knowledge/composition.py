@@ -316,7 +316,9 @@ def _select_static_path(
     rejected: list[dict[str, JsonValue]] = []
     for path in paths:
         reason = None
-        if path.support != "SUPPORTED" or path.limitations:
+        # A also records explanatory notes on supported paths; preserve them without
+        # treating their presence as an unsupported semantic state.
+        if path.support != "SUPPORTED":
             reason = "PATH_UNSUPPORTED"
         else:
             graph = graphs[path.side]
@@ -380,7 +382,7 @@ def _select_static_path(
         status = "AUTO_SELECTED"
     elif eligible:
         status = "AMBIGUOUS"
-    elif all(path.support != "SUPPORTED" or path.limitations for path in paths):
+    elif all(path.support != "SUPPORTED" for path in paths):
         status = "UNSUPPORTED"
     elif rejected and all(item["reason"] == "NO_C_TARGET_MATCH" for item in rejected):
         status = "NO_C_TARGET_MATCH"

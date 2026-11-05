@@ -7,6 +7,8 @@ from typer.testing import CliRunner
 
 from flowdelta.cli import app
 from flowdelta.graph.analyze import analyze, identified
+from flowdelta.graph.impact import POLICY_NOTE
+from flowdelta.graph.limits import AnalysisLimits
 from flowdelta.ingestion import InputError, digest, json_bytes, parse_file_model
 from flowdelta.knowledge.cards import load_cards
 from flowdelta.knowledge.planner import make_plan, write_plan
@@ -112,14 +114,14 @@ def planning_inputs(tmp_path: Path, *, truncated: bool = False):
             task_ids=[handoff.task.task_id],
             policy_rule_ids=[],
             support="SUPPORTED",
-            limitations=[],
+            limitations=[POLICY_NOTE],
         )
     ]
     if truncated:
         analysis.extensions["flowdelta.graph.limits"] = {
             "truncated": True,
-            "reasons": ["IMPACT_PATH_LIMIT"],
-            "impact_paths": {"complete": False, "total": None, "kept": 1},
+            "reasons": [{"code": "IMPACT_PATH_LIMIT", "count": None, "limit": 1}],
+            "impact_paths": {"computed": True, "complete": False, "total": None, "kept": 1},
         }
     analysis = identified(analysis)
     catalog = registered_catalog(ROOT)
@@ -274,7 +276,10 @@ def test_unique_supported_path_is_selected_and_all_analysis_context_is_kept(
 
     context = plan.planner_metadata["analysis_context"]
     assert plan.planner_metadata["selected_path_id"] == "impact-memory-delete"
+    assert plan.planner_metadata["path_selection"]["status"] == "AUTO_SELECTED"
     assert plan.planner_metadata["path_selection"]["support"] == "SUPPORTED"
+    assert plan.planner_metadata["path_selection"]["limitations"] == [POLICY_NOTE]
+    assert plan.planner_metadata["security_outcome"] is None
     assert context["impact_paths"] == [
         {
             "path_id": path.path_id,
@@ -293,6 +298,59 @@ def test_unique_supported_path_is_selected_and_all_analysis_context_is_kept(
     assert context["analysis_id"] == analysis.analysis_id
     assert context["analysis_content_sha256"]
     assert context == analysis_retrieval_context(handoff, analysis)[0]
+
+
+@pytest.mark.parametrize("case", ["order-lookup", "support-triage"])
+def test_real_a_policy_note_does_not_mark_supported_paths_unsupported(case: str) -> None:
+    handoff_root = ROOT / "examples/contracts" / case / "input"
+    handoff = read_handoff(handoff_root)
+    analysis = analyze(handoff)
+    assert analysis.impact_paths
+    assert all(path.support == "SUPPORTED" for path in analysis.impact_paths)
+    assert all(POLICY_NOTE in path.limitations for path in analysis.impact_paths)
+
+    plan = make_plan(
+        handoff,
+        analysis,
+        [],
+        registered_catalog(ROOT),
+        handoff_root=handoff_root,
+        repo_root=ROOT,
+    )
+
+    selection = plan.planner_metadata["path_selection"]
+    # These genuine A paths contain explanatory notes, but no registered C tool-code target.
+    assert selection["status"] == "NO_C_TARGET_MATCH"
+    assert selection["selected_path_id"] is None
+    assert all(item["reason"] == "NO_C_TARGET_MATCH" for item in selection["rejected_paths"])
+    context = plan.planner_metadata["analysis_context"]
+    assert context == analysis_retrieval_context(handoff, analysis)[0]
+    assert plan.planner_metadata["security_outcome"] is None
+
+
+def test_real_a_node_limit_keeps_uncomputed_paths_truncated() -> None:
+    handoff_root = BUNDLE / "input"
+    handoff = read_handoff(handoff_root)
+    analysis = analyze(handoff, limits=AnalysisLimits(max_workflow_nodes=0))
+    assert analysis.impact_paths == []
+    limits = analysis.extensions["flowdelta.graph.limits"]
+    assert limits["impact_paths"]["computed"] is False
+
+    plan = make_plan(
+        handoff,
+        analysis,
+        [],
+        registered_catalog(ROOT),
+        handoff_root=handoff_root,
+        repo_root=ROOT,
+    )
+
+    selection = plan.planner_metadata["path_selection"]
+    assert selection["status"] == "TRUNCATED"
+    assert selection["selected_path_id"] is None
+    assert selection["graph_limits"] == limits
+    assert plan.planner_metadata["analysis_context"]["graph_limits"] == limits
+    assert plan.planner_metadata["security_outcome"] is None
 
 
 def test_ambiguous_paths_need_an_explicit_path_id(tmp_path: Path) -> None:
@@ -319,6 +377,7 @@ def test_ambiguous_paths_need_an_explicit_path_id(tmp_path: Path) -> None:
     assert unresolved.planner_metadata["path_selection"]["status"] == "AMBIGUOUS"
     assert explicit.planner_metadata["selected_path_id"] == "impact-also"
     assert explicit.planner_metadata["path_selection"]["status"] == "EXPLICIT"
+    assert explicit.planner_metadata["path_selection"]["limitations"] == [POLICY_NOTE]
 
 
 def test_truncated_analysis_keeps_supported_path_uncertain(tmp_path: Path) -> None:
@@ -347,6 +406,7 @@ def test_explicit_supported_path_does_not_clear_truncation(tmp_path: Path) -> No
     assert plan.planner_metadata["selected_path_id"] == "impact-memory-delete"
     assert plan.planner_metadata["path_selection"]["status"] == "EXPLICIT_LIMITED"
     assert plan.planner_metadata["path_selection"]["graph_limits"]["truncated"] is True
+    assert plan.planner_metadata["path_selection"]["limitations"] == [POLICY_NOTE]
     assert plan.planner_metadata["security_outcome"] is None
 
 
@@ -361,10 +421,14 @@ def test_missing_path_stays_uncertain(tmp_path: Path) -> None:
     assert plan.planner_metadata["path_selection"]["status"] == "MISSING"
 
 
-def test_unsupported_path_is_not_selected(tmp_path: Path) -> None:
+@pytest.mark.parametrize("support", ["PARTIAL", "UNKNOWN"])
+@pytest.mark.parametrize("limitations", [[], ["tool semantics are unknown"]])
+def test_unsupported_path_is_not_selected(
+    tmp_path: Path, support: str, limitations: list[str]
+) -> None:
     handoff, analysis, cards, catalog, handoff_root = planning_inputs(tmp_path)
     analysis.impact_paths[0] = analysis.impact_paths[0].model_copy(
-        update={"support": "UNKNOWN", "limitations": ["tool semantics are unknown"]}
+        update={"support": support, "limitations": limitations}
     )
     analysis = identified(analysis)
 
@@ -372,9 +436,19 @@ def test_unsupported_path_is_not_selected(tmp_path: Path) -> None:
 
     assert plan.planner_metadata["selected_path_id"] is None
     assert plan.planner_metadata["path_selection"]["status"] == "UNSUPPORTED"
-    assert plan.planner_metadata["analysis_context"]["impact_paths"][0]["limitations"] == [
-        "tool semantics are unknown"
-    ]
+    assert (
+        plan.planner_metadata["analysis_context"]["impact_paths"][0]["limitations"] == limitations
+    )
+    with pytest.raises(InputError, match="STATIC_PATH_NOT_ELIGIBLE"):
+        make_plan(
+            handoff,
+            analysis,
+            cards,
+            catalog,
+            handoff_root=handoff_root,
+            repo_root=ROOT,
+            selected_path_id="impact-memory-delete",
+        )
 
 
 def test_explicit_path_must_belong_to_the_analysis_and_match_a_c_target(tmp_path: Path) -> None:

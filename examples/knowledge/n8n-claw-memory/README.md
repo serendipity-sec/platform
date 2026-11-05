@@ -123,8 +123,9 @@ The catalog is generated from C's `registered_catalog()` and checks the checked-
 sides, independent of that path. A's first-fix analysis keeps 20 of 44 paths, marks them all
 `UNKNOWN`, and sets `complete=false`; by default B records `path_selection.status=TRUNCATED` and
 leaves `selected_path_id` null. An explicit ID can resolve an ambiguity only when that path itself
-is `SUPPORTED`, has no path limitations, and intersects a target C actually recognizes. Neither a
-successful scan nor an empty finding list proves the workflow safe.
+is `SUPPORTED` and intersects a target C actually recognizes. Explanatory path limitations are
+preserved in the selection and analysis context; their presence does not change the support state.
+Neither a successful scan nor an empty finding list proves the workflow safe.
 
 On 2026-11-05 this command completed both scans with Semgrep 1.181.0 and rule 0.6.0: before had
 two `WARNING` findings, after had four, and each side retained eight unsupported targets. This

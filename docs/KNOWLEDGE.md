@@ -47,8 +47,9 @@ catalog의 timeout을 사용한다. obligation은 template의 `result_kinds`에 
 [n8n-claw A→B→C 재현](../examples/knowledge/n8n-claw-memory/README.md)을 참고한다.
 
 A의 모든 `impact_paths`와 `changes`는 `planner_metadata.analysis_context`에 보존된다. B는
-`SUPPORTED`, path limitation 없음, C가 같은 side workflow에서 실제 인식한 target과 교차하는
-경로만 선택 가능하다. 적격 경로가 하나면 자동 선택하고 여러 개면 `--path-id`를 받아 하나를
+`SUPPORTED`이며 C가 같은 side workflow에서 실제 인식한 target과 교차하는 경로만 선택
+가능하다. 설명용 `limitations`는 지원 상태를 바꾸지 않으며 선택된 경로와 분석 문맥에 그대로
+보존한다. 적격 경로가 하나면 자동 선택하고 여러 개면 `--path-id`를 받아 하나를
 선택한다. 없거나, 지원되지 않거나, 모호하거나, A 그래프가 잘렸으면 경로 선택 상태와 원래
 제한을 기록하고 `selected_path_id`를 비운다. 전체 경로가 잘렸으면 지원 경로가 하나 남아도
 자동으로 유일하다고 보지 않는다. 명시 ID로 선택한 경로도 A의 제한을 없애지 않는다.
@@ -74,7 +75,7 @@ before와 after workflow 양쪽에서 검사한다. C의 `StaticScanRun.run_id`�
    `TEMPLATE_INPUT_INVALID`다. 검색 결과 없음은 안전 판정이 아니다.
 
 검색 방법은 `KEYWORD`, 모델 버전은 null이다. 알고리즘 버전은
-`flowdelta.knowledge/1.2.0`으로 query와 planner_metadata에 기록한다. retrieval과 plan에는
+`flowdelta.knowledge/1.2.1`으로 query와 planner_metadata에 기록한다. retrieval과 plan에는
 case/snapshot/analysis ID, 분석 생산자와 정규 JSON 해시, 영향 path·edge·change 출처,
 path support·limitations, `flowdelta.graph.limits`를 보존한다. 점수는 위험 확률이나 보안
 성능이 아니다. node type 중첩은 후보 검색 근거이며 카드의 주장 전체가 적용된다는 증명은 아니다.
