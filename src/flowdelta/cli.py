@@ -475,5 +475,37 @@ def demo_order_lookup(
         raise typer.Exit(code=2) from None
 
 
+@app.command("run-pipeline")
+def run_pipeline_command(
+    case: Path,
+    profile: Annotated[Path, typer.Option()],
+    profile_sha256: Annotated[str, typer.Option()],
+    catalog: Annotated[Path, typer.Option()],
+    cards: Annotated[Path, typer.Option()],
+    out: Annotated[Path, typer.Option(help="New output directory under var/.")],
+    execute: Annotated[bool, typer.Option(help="Execute only C-registered templates.")] = False,
+) -> None:
+    """Profile gate → stored input → A → B → optional C → verified artifact bundle."""
+    from flowdelta.pipeline_runner import run_pipeline
+
+    try:
+        result = run_pipeline(
+            repo=Path.cwd(),
+            case=case,
+            profile=profile,
+            profile_sha256=profile_sha256,
+            catalog=catalog,
+            cards=cards,
+            output=out,
+            execute=execute,
+        )
+        typer.echo(json_bytes(result).decode(), nl=False)
+        if result["status"] == "INCOMPLETE":
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 if __name__ == "__main__":
     app()
