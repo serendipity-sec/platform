@@ -129,7 +129,7 @@ catalog의 `rule_sha256`과 같은지 확인한 바이트를 출력 폴더의 `r
 
 ## 결과 조회와 요약 (`static-report`, `static-db`)
 
-검사 결과 한 묶음(출력 폴더)은 두 방식으로 읽는다. 둘 다 원시 보고서를 확인한 뒤에만 쓴다.
+검사 결과 한 묶음(출력 폴더)은 두 방식으로 읽는다. 요약(`static-report`)과 저장(`static-db store`)은 원시 보고서가 기록과 맞는지 확인한 뒤에만 쓴다. 조회(`static-db get`, `list`)는 원시 보고서를 보지 않고, 저장된 결과 내용의 해시만 확인한다. 원시 보고서는 검사한 PC의 출력 폴더에 있다.
 
 **요약 보고서**
 ```bash
@@ -140,6 +140,8 @@ flowdelta static-report var/<출력 폴더>
 - 자동으로 만들어지지 않는다. 실행자가 직접 명령을 실행해야 한다.
 - 원시 보고서의 크기나 해시가 기록과 다르면 `STATIC_RAW_REPORT_MISMATCH`로 거부한다.
 - 한 폴더에 서로 다른 실행 묶음이 있으면 `STATIC_REPORT_MIXED_RUNS`로 거부한다.
+- before 결과와 after 결과가 정확히 한 개씩 있어야 한다. 아니면 `STATIC_REPORT_SIDES_INCOMPLETE`로 거부한다.
+- 원시 보고서가 기록보다 크면(8 MiB 초과) 읽지 않고 `STATIC_RAW_REPORT_TOO_LARGE`로 거부한다.
 
 **DB 저장과 조회**
 ```bash
@@ -152,7 +154,7 @@ flowdelta static-db list <plan_id> [--comparison-run-id <묶음ID>] --out <새 �
 - 저장은 실행 ID마다 한 번이며 행을 바꾸거나 지울 수 없다. 같은 ID에 다른 내용을 넣으면 거부한다.
 - 읽을 때마다 저장된 해시를 확인한다.
 - `list`는 정확한 계획 ID의 모든 실행을 반환하며, 최신 결과를 고르지 않는다. 묶음 ID를 주면 같은 실행 묶음만 남긴다.
-- `store`는 원시 보고서가 기록과 맞을 때만 저장한다.
+- `store`는 `runs/` 안의 결과 파일만 받고, 원시 보고서가 기록과 맞을 때만 저장한다.
 
 ## 합의가 필요한 것
 

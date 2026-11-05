@@ -74,7 +74,9 @@ def store_command(run: Path) -> None:
 
         settings = KnowledgeSettings.from_environment()
         value = _read_run(run)
-        # runs/ 바로 위 폴더가 출력 폴더다. 원시 보고서가 기록과 맞을 때만 저장한다.
+        # 출력 폴더는 runs/의 바로 위 폴더다. 원시 보고서가 기록과 맞을 때만 저장한다.
+        if run.parent.name != "runs":
+            raise InputError("STATIC_RUN_NOT_IN_RUNS_FOLDER")
         check_raw_reports(run.parent.parent, [value])
         engine = engine_for(settings)
         try:

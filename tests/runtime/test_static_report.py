@@ -121,3 +121,39 @@ def test_external_names_cannot_break_the_table_or_inject_markdown(tmp_path: Path
     assert "\|" in text
     row = next(line for line in text.splitlines() if "Memory" in line and "tool-memory" in line)
     assert row.startswith("| ") and row.endswith(" |")
+
+
+def test_folder_with_only_a_before_result_is_refused(tmp_path: Path) -> None:
+    before, _ = example_runs(REPO)
+    raw = {"before": b"raw-b"}
+    folder = write_folder(tmp_path, [with_raw(before, raw["before"])], raw)
+    with pytest.raises(InputError, match="STATIC_REPORT_SIDES_INCOMPLETE"):
+        summarize_folder(folder)
+    assert not (folder / SUMMARY_NAME).exists()
+
+
+def test_folder_with_two_after_results_is_refused(tmp_path: Path) -> None:
+    before, after = example_runs(REPO)
+    second_after = after.model_copy(update={"run_id": after.run_id + "-2"})
+    raw = {"before": b"raw-b", "after": b"raw-a"}
+    runs = [with_raw(before, raw["before"]), with_raw(after, raw["after"]), second_after]
+    folder = write_folder(tmp_path, runs, raw)
+    (folder / "runs" / "after-2.static-run.json").write_text(
+        json.dumps(second_after.model_dump(mode="json")), encoding="utf-8"
+    )
+    with pytest.raises(InputError, match="STATIC_REPORT_SIDES_INCOMPLETE"):
+        summarize_folder(folder)
+
+
+def test_oversized_raw_report_is_refused_before_it_is_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from flowdelta.runtime import static_report
+
+    before, after = example_runs(REPO)
+    raw = {"before": b"0123456789" * 4, "after": b"raw-a"}
+    runs = [with_raw(before, raw["before"]), with_raw(after, raw["after"])]
+    folder = write_folder(tmp_path, runs, raw)
+    monkeypatch.setattr(static_report, "RAW_REPORT_MAX_BYTES", 8)
+    with pytest.raises(InputError, match="STATIC_RAW_REPORT_TOO_LARGE"):
+        summarize_folder(folder)

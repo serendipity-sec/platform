@@ -85,3 +85,15 @@ def test_store_refuses_a_run_whose_raw_report_is_missing(
     result = CliRunner().invoke(app, ["static-db", "store", str(run_file)])
     assert result.exit_code == 2
     assert "STATIC_RAW_REPORT_MISSING" in result.output
+
+
+def test_store_refuses_a_result_file_outside_the_runs_folder(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv("FLOWDELTA_KB_DATABASE_URL", "postgresql+psycopg://x:y@127.0.0.1:1/none")
+    before, _ = example_runs(REPO)
+    run_file = tmp_path / "before-1.static-run.json"
+    run_file.write_text(json.dumps(before.model_dump(mode="json")), encoding="utf-8")
+    result = CliRunner().invoke(app, ["static-db", "store", str(run_file)])
+    assert result.exit_code == 2
+    assert "STATIC_RUN_NOT_IN_RUNS_FOLDER" in result.output

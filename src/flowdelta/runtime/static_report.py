@@ -4,15 +4,18 @@
 검사 대상 코드가 들어 있으므로 요약에는 코드 문자열을 넣지 않고 해시만 적는다.
 """
 
+import hashlib
 from pathlib import Path
 from typing import Annotated
 
 import typer
 
-from flowdelta.ingestion import MAX_FILE_BYTES, InputError, digest, parse_file_model, parse_json
+from flowdelta.ingestion import MAX_FILE_BYTES, InputError, json_bytes, parse_file_model, parse_json
 from flowdelta.runtime.static_scan import StaticScanRun
 
 SUMMARY_NAME = "SUMMARY.md"
+# 원시 보고서는 검사 출력 전체라서 결과 JSON과 따로 제한한다.
+RAW_REPORT_MAX_BYTES = MAX_FILE_BYTES
 NOTICE = (
     "> 이 요약은 정적 조건 결과입니다. 실제 보안 판정이나 실행 효과가 아닙니다. "
     "경고가 없다는 것은 안전하다는 뜻이 아닙니다."
@@ -37,6 +40,9 @@ def read_runs(folder: Path) -> list[StaticScanRun]:
     if len({(run.comparison_run_id, run.plan_id) for run in runs}) != 1:
         # 재실행 결과가 섞여 있으면 어떤 결과를 요약할지 정할 수 없다.
         raise InputError("STATIC_REPORT_MIXED_RUNS")
+    if sorted(run.side for run in runs) != ["after", "before"]:
+        # before와 after가 정확히 한 개씩 있어야 비교 요약이 된다.
+        raise InputError("STATIC_REPORT_SIDES_INCOMPLETE")
     return sorted(runs, key=lambda run: run.side)
 
 
@@ -50,14 +56,26 @@ def check_raw_reports(folder: Path, runs: list[StaticScanRun]) -> None:
         if not path.is_relative_to(root):
             raise InputError("STATIC_RAW_REPORT_OUTSIDE_FOLDER")
         try:
-            data = path.read_bytes()
+            size = path.stat().st_size
         except OSError:
             raise InputError("STATIC_RAW_REPORT_MISSING") from None
-        if len(data) != run.raw_report.size_bytes or digest(data) != run.raw_report.sha256:
+        if size != run.raw_report.size_bytes:
+            raise InputError("STATIC_RAW_REPORT_MISMATCH")
+        if size > RAW_REPORT_MAX_BYTES:
+            # 읽기 전에 거부해서 큰 파일을 메모리에 올리지 않는다.
+            raise InputError("STATIC_RAW_REPORT_TOO_LARGE")
+        digester = hashlib.sha256()
+        try:
+            with path.open("rb") as stream:
+                for chunk in iter(lambda: stream.read(1 << 20), b""):
+                    digester.update(chunk)
+        except OSError:
+            raise InputError("STATIC_RAW_REPORT_MISSING") from None
+        if digester.hexdigest() != run.raw_report.sha256:
             raise InputError("STATIC_RAW_REPORT_MISMATCH")
 
 
-_MARKDOWN_SPECIAL = set("\`*_[]()#<>|!~")
+_MARKDOWN_SPECIAL = set("\\`*_[]()#<>|!~")
 
 
 def _text(value: object) -> str:
@@ -155,6 +173,9 @@ def summarize_command(
     try:
         target = summarize_folder(folder)
     except InputError as exc:
-        typer.echo(f'{{"error": "{exc.code}"}}', err=True)
+        typer.echo(json_bytes({"error": exc.code}).decode("utf-8"), err=True, nl=False)
         raise typer.Exit(2) from None
-    typer.echo(f'{{"status": "STATIC_SUMMARY_WRITTEN", "path": "{target.as_posix()}"}}')
+    typer.echo(
+        json_bytes({"status": "STATIC_SUMMARY_WRITTEN", "path": target.as_posix()}).decode("utf-8"),
+        nl=False,
+    )
