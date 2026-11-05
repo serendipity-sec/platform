@@ -173,7 +173,7 @@ def _run(
         status="SUCCEEDED",
         raw_report=ArtifactRef(
             artifact_id=f"static-raw-report-{side}-1",
-            path=f"runs/{side}-1/static-raw-report.json",
+            path=f"{side}/static-raw-report.json",  # 실제 검사 출력과 같은 기준: 출력 폴더 기준
             sha256=report_sha256,
             size_bytes=report_size,
             kind="generated",

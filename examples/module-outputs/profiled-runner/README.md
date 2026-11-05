@@ -13,23 +13,24 @@
 독립 읽기 검사는 다음과 같이 재실행한다. 결과는 새 파일에 쓴다.
 
 ```powershell
-uv run --frozen --extra baseline --extra knowledge python tools/check_profiled_order.py var/issue78-profiled-runner --out var/issue78-profiled-verification.json
+uv run --frozen --extra baseline --extra knowledge python tools/check_profiled_order.py var/pr86-registered-run --out var/pr86-verification.json
 ```
 
 등록된 합성 주문 조회의 확인 결과다. n8n-claw 사례 실행·실제 agent 보안 위반·공용 DB
-완료를 뜻하지 않으며 `security_outcome=null`이다. 2026-11-05에 최신 main `4afbd23`(#58/#59)을
-반영한 통합 코드 `7b5655b` (tree `5d416989`)와 등록된 Docker/n8n 2.42.6으로 변경 전·후
-주문 조회를 실행했다. 두 실행의 실행·수집·정리가 완료됐고, 별도 읽기 검사와 `check-pipeline`을
-통과했다. 비교 기준은 기존 2026-10-24 profile (`order-lookup-review`, SHA-256
-`2853bd8e455062f947af664ef90eb7f6f8c3edfa48eb9c0f685b531c39a1bce4`) 그대로 유지했다.
+완료를 뜻하지 않으며 `security_outcome=null`이다. 2026-11-05에 #86의
+`9740523abfb172bd4253490f02b487cc2df2e4b0` 코드로
+등록된 Docker/n8n 2.42.6의 변경 전·후 주문 조회를 다시 실행했다. 두 실행의 실행·수집·정리가
+완료됐고, 별도 읽기 검사와 `check-pipeline`을 통과했다. 비교 기준은 기존 2026-10-24 profile
+(`order-lookup-review`, SHA-256 `2853bd8e455062f947af664ef90eb7f6f8c3edfa48eb9c0f685b531c39a1bce4`)
+그대로 유지했다.
 
-전체 Python 구현, runtime 설정, pyproject/uv.lock 등 117개 파일의 새 해시와 그 목록의
+전체 Python 구현, runtime 설정, pyproject/uv.lock 등 123개 파일의 해시와 그 목록의
 `source_tree_sha256`으로 실행한 소스를 식별한다. source 목록은 summary/관측 예제 자체를
-포함하지 않는다. 회귀 검사는 기록된 파일의 바이트뿐 아니라 현재 구현 파일 목록의 누락도
+포함하지 않는다. 회귀 테스트는 기록된 파일의 바이트뿐 아니라 현재 구현 파일 목록의 누락도
 검사한다. 구현이 바뀌면 실제 실행·독립 검증을 다시 수행하여 두 JSON을 함께 갱신해야 한다.
 
-이번 기록의 before는 `run-30028ba0029f45699f1de3f7a07aa250`, after는
-`run-6e3984c74d5a49828b4fc8295ef7f7b3`이다. 정상 업무 검사 24개가 통과했고 두 실행 모두
+이번 기록의 before는 `run-6c9ba1d393f44ebd95cb1ff3355c32b5`, after는
+`run-1ade9149835143e3bc30ff9d881016f6`이다. 정상 업무 검사 24개가 통과했고 두 실행 모두
 수집·정리가 COMPLETE이다. 두 JSON은 실제 산출물을 바이트 그대로 복사했다.
-#83 정적 검사 코드가 source 목록에 포함되어도 이 주문 실행이 정적 검사나 n8n+LLM 실행을
+정적 검사·결과 저장 코드가 source 목록에 포함되어도 이 주문 실행이 정적 검사나 n8n+LLM 실행을
 수행했다는 뜻은 아니다. 그 범위의 검증은 별도 기록으로 구분한다.

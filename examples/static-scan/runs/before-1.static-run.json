@@ -55,7 +55,7 @@
     "extensions": {},
     "kind": "generated",
     "media_type": "application/json",
-    "path": "runs/before-1/static-raw-report.json",
+    "path": "before/static-raw-report.json",
     "schema_version": "0.4.0",
     "sha256": "c0146e4f32a1b4363750f22569b055ae69483dee04a27124abd8940ca8626b12",
     "size_bytes": 4796
