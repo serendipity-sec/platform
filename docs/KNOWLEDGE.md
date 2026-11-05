@@ -36,6 +36,8 @@ plan을 마지막에 기록한다. 강제 종료에 대한 원자적 디렉터�
 경로에서도 B는 같은 KB snapshot과 retrieval을 기록하고, `retrieval_ref.artifact_id`에
 `retrieval_id`를 연결한다. `plan_id`는 기존 규칙대로 retrieval ID에서 결정한다. 공유
 `TestPlan` schema는 바꾸지 않는다. C에는 이 `plan.json` 파일을 그대로 전달한다.
+StaticScanCatalog에서는 path-selection 요청도 retrieval ID에 포함하므로, 선택 경로가 다른
+계획은 서로 다른 retrieval/plan ID를 받는다.
 
 StaticScanCatalog 계획은 C가 등록한 template ID/version, 빈 `normal_input`, 한 번의 시도,
 catalog의 timeout을 사용한다. obligation은 template의 `result_kinds`에 맞을 때만 bind하고,

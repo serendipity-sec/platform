@@ -41,9 +41,18 @@ def retrieve(
     catalog: TemplateCatalog | StaticScanCatalog,
     *,
     kb_path: str = KB_SNAPSHOT_FILENAME,
+    selected_path_id: str | None = None,
 ) -> RetrievalResult:
-    """Rank cards against either a normal or the registered static-scan catalog."""
-    return _retrieve_cards(handoff, analysis, cards, catalog, kb_path=kb_path, producer=PRODUCER)
+    """Rank cards and bind static retrieval identity to the requested path ID."""
+    return _retrieve_cards(
+        handoff,
+        analysis,
+        cards,
+        catalog,
+        kb_path=kb_path,
+        producer=PRODUCER,
+        selected_path_id=selected_path_id,
+    )
 
 
 def compose_plan(
@@ -57,7 +66,7 @@ def compose_plan(
     repo_root: Path | None = None,
     selected_path_id: str | None = None,
 ) -> TestPlan:
-    """Consume a fixed search result without repeating retrieval or external I/O."""
+    """Compose a fixed retrieval result whose identity matches the requested static path."""
     return _compose(
         handoff,
         analysis,
@@ -81,8 +90,8 @@ def make_plan(
     repo_root: Path | None = None,
     selected_path_id: str | None = None,
 ) -> TestPlan:
-    """Generate a deterministic plan for a normal or registered static-scan catalog."""
-    retrieval = retrieve(handoff, analysis, cards, catalog)
+    """Generate a deterministic plan bound to its static path-selection request."""
+    retrieval = retrieve(handoff, analysis, cards, catalog, selected_path_id=selected_path_id)
     return compose_plan(
         handoff,
         analysis,
@@ -106,10 +115,17 @@ def write_plan(
     repo_root: Path | None = None,
     selected_path_id: str | None = None,
 ) -> TestPlan:
-    """Publish retrieval, KB snapshot and plan for normal or registered static-scan planning."""
+    """Publish artifacts whose static retrieval identity includes the requested path ID."""
     kb_path, _, _ = validate_output_paths(output)
     snapshot = _KnowledgeSnapshot.prepare(cards, kb_path.name)
-    retrieval = _retrieve(handoff, analysis, snapshot, catalog, producer=PRODUCER)
+    retrieval = _retrieve(
+        handoff,
+        analysis,
+        snapshot,
+        catalog,
+        producer=PRODUCER,
+        selected_path_id=selected_path_id,
+    )
     plan = _compose_snapshot(
         handoff,
         analysis,

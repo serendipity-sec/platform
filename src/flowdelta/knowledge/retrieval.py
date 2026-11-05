@@ -66,14 +66,22 @@ def retrieval_identity(
     handoff: Handoff,
     analysis: AnalysisBundle,
     catalog: Catalog,
+    *,
+    selected_path_id: str | None = None,
 ) -> str:
-    """Derive a stable retrieval ID from the exact planning inputs and KB snapshot."""
+    """Derive retrieval identity, binding static plans to their path-selection request."""
+    selection_identity = (
+        json_bytes({"selected_path_id": selected_path_id})
+        if isinstance(catalog, StaticScanCatalog)
+        else b""
+    )
     fingerprint = digest(
         producer.encode("utf-8")
         + snapshot
         + json_bytes(analysis.model_dump(mode="json"))
         + json_bytes(catalog.model_dump(mode="json"))
         + json_bytes(handoff.model_dump(mode="json"))
+        + selection_identity
     )[:24]
     return f"retrieval-{fingerprint}"
 
@@ -341,10 +349,16 @@ def retrieve(
     *,
     kb_path: str = KB_SNAPSHOT_FILENAME,
     producer: str,
+    selected_path_id: str | None = None,
 ) -> RetrievalResult:
-    """Create a deterministic retrieval result for a normal or static-scan catalog."""
+    """Create a retrieval result whose static identity includes the requested path ID."""
     return _retrieve_snapshot(
-        handoff, analysis, _KnowledgeSnapshot.prepare(cards, kb_path), catalog, producer=producer
+        handoff,
+        analysis,
+        _KnowledgeSnapshot.prepare(cards, kb_path),
+        catalog,
+        producer=producer,
+        selected_path_id=selected_path_id,
     )
 
 
@@ -355,8 +369,9 @@ def _retrieve_snapshot(
     catalog: Catalog,
     *,
     producer: str,
+    selected_path_id: str | None = None,
 ) -> RetrievalResult:
-    """Rank cards against a canonical snapshot and the supplied registered catalog."""
+    """Rank cards and include static path selection in the retrieval artifact identity."""
     cards = snapshot.cards
     profile, node_types, fields, tokens = search_context(handoff, analysis)
     analysis_context, impacted_node_types, impact_tokens, impact_path_signals = (
@@ -383,7 +398,14 @@ def _retrieve_snapshot(
         candidates.append((card, score, applicability, reason))
     candidates.sort(key=lambda item: (-item[1], item[0].card_id, item[0].version))
     result = RetrievalResult(
-        retrieval_id=retrieval_identity(producer, snapshot.data, handoff, analysis, catalog),
+        retrieval_id=retrieval_identity(
+            producer,
+            snapshot.data,
+            handoff,
+            analysis,
+            catalog,
+            selected_path_id=selected_path_id,
+        ),
         analysis_id=analysis.analysis_id,
         authorship=author(analysis, producer),
         kb_snapshot_ref=snapshot.reference,

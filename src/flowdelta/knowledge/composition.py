@@ -76,7 +76,9 @@ def _compose_snapshot(
     repo_root: Path | None = None,
     selected_path_id: str | None = None,
 ) -> TestPlan:
-    """Validate a retrieval result, then compose the selected registered plan contract."""
+    """Validate registered catalog provenance and retrieval before composing its plan."""
+    if isinstance(catalog, StaticScanCatalog) and catalog.authorship.origin != "MODULE_OUTPUT":
+        raise InputError("STATIC_CATALOG_NOT_REGISTERED")
     cards = snapshot.cards
     if retrieval.analysis_id != analysis.analysis_id:
         raise InputError("RETRIEVAL_ANALYSIS_MISMATCH")
@@ -116,7 +118,12 @@ def _compose_snapshot(
     ):
         raise InputError("RETRIEVAL_SNAPSHOT_MISMATCH")
     if retrieval.retrieval_id != retrieval_identity(
-        producer, snapshot.data, handoff, analysis, catalog
+        producer,
+        snapshot.data,
+        handoff,
+        analysis,
+        catalog,
+        selected_path_id=selected_path_id,
     ):
         raise InputError("RETRIEVAL_ID_MISMATCH")
     known = {(card.card_id, card.version) for card in cards}

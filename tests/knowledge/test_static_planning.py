@@ -9,7 +9,7 @@ from flowdelta.cli import app
 from flowdelta.graph.analyze import analyze, identified
 from flowdelta.ingestion import InputError, digest, json_bytes, parse_file_model
 from flowdelta.knowledge.cards import load_cards
-from flowdelta.knowledge.planner import make_plan
+from flowdelta.knowledge.planner import make_plan, write_plan
 from flowdelta.knowledge.retrieval import analysis_retrieval_context, exclusion_reason
 from flowdelta.normalize import normalize
 from flowdelta.pipeline_contracts import ImpactPath, RetrievalResult
@@ -427,4 +427,57 @@ def test_path_without_a_supported_c_target_cannot_be_selected(tmp_path: Path) ->
             handoff_root=handoff_root,
             repo_root=ROOT,
             selected_path_id="impact-memory-delete",
+        )
+
+
+def test_static_path_selection_request_changes_b_artifact_identity(tmp_path: Path) -> None:
+    handoff, analysis, cards, catalog, handoff_root = planning_inputs(tmp_path)
+    analysis.impact_paths.append(
+        analysis.impact_paths[0].model_copy(update={"path_id": "impact-also"})
+    )
+    analysis = identified(analysis)
+    requests = (None, "impact-memory-delete", "impact-also")
+    plans = []
+    plan_bytes = []
+
+    for index, selected_path_id in enumerate(requests):
+        output_dir = tmp_path / f"plan-{index}"
+        output_dir.mkdir()
+        output = output_dir / "plan.json"
+        plan = write_plan(
+            handoff,
+            analysis,
+            cards,
+            catalog,
+            output,
+            handoff_root=handoff_root,
+            repo_root=ROOT,
+            selected_path_id=selected_path_id,
+        )
+        plans.append(plan)
+        plan_bytes.append(output.read_bytes())
+
+    assert len({plan.plan_id for plan in plans}) == len(requests)
+    assert len({plan.retrieval_ref.artifact_id for plan in plans}) == len(requests)
+    assert len(set(plan_bytes)) == len(requests)
+    assert all(
+        plan.plan_id == f"plan-{plan.retrieval_ref.artifact_id.removeprefix('retrieval-')}"
+        for plan in plans
+    )
+
+
+def test_static_catalog_with_contract_example_authorship_is_rejected(tmp_path: Path) -> None:
+    handoff, analysis, cards, catalog, handoff_root = planning_inputs(tmp_path)
+    contract_example_catalog = catalog.model_copy(
+        update={"authorship": catalog.authorship.model_copy(update={"origin": "CONTRACT_EXAMPLE"})}
+    )
+
+    with pytest.raises(InputError, match="STATIC_CATALOG_NOT_REGISTERED"):
+        make_plan(
+            handoff,
+            analysis,
+            cards,
+            contract_example_catalog,
+            handoff_root=handoff_root,
+            repo_root=ROOT,
         )
