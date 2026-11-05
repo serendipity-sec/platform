@@ -88,7 +88,12 @@ def write_module_bundle(
             ):
                 raise InputError("ARTIFACT_PATH_COLLISION", location=name)
             path = _unlinked(path)
-            if "private" in {part.casefold() for part in path.parts}:
+            # Scope privacy to the producer/output workspace, not unrelated ancestors.
+            try:
+                producer_root = Path(os.path.commonpath((path.parent, target.parent)))
+            except ValueError:  # Different Windows drives have no shared ancestor.
+                producer_root = Path(path.anchor)
+            if "private" in {part.casefold() for part in path.relative_to(producer_root).parts}:
                 raise InputError("PRIVATE_ARTIFACT_FORBIDDEN", location=name)
             if not path.is_file():
                 raise InputError("ARTIFACT_SOURCE_MISSING", location=name)
