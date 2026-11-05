@@ -1,12 +1,16 @@
+import json
 from pathlib import Path
 
 import pytest
+from conftest import edit_document
 
 from flowdelta.contracts import Handoff
-from flowdelta.graph import analyze
+from flowdelta.graph import AnalysisLimits, analyze
+from flowdelta.graph.analyze import ANALYSIS_LIMITATIONS
 from flowdelta.graph.impact import POLICY_NOTE
 from flowdelta.graph.policy import PolicyTarget, link_policies
-from flowdelta.ingestion import InputError
+from flowdelta.handoff import build_handoff
+from flowdelta.ingestion import InputError, load_case
 from flowdelta.pipeline_contracts import AnalysisBundle
 from flowdelta.pipeline_io import read_handoff
 
@@ -96,3 +100,71 @@ def test_invalid_targets_are_refused(target: PolicyTarget, code: str) -> None:
     with pytest.raises(InputError) as error:
         link(analyze(load()), [target])
     assert error.value.code == code
+
+
+BINDINGS = ROOT / "examples/policy-bindings-v1/order-bindings.json"
+
+
+def bound(bundle: Path) -> Handoff:
+    """The order example with the shared OBJECT_OWNERSHIP binding (own-order on after/response)."""
+    edit_document(
+        bundle,
+        "policy.json",
+        lambda policy: policy.update(bindings=json.loads(BINDINGS.read_bytes())),
+    )
+    return build_handoff(load_case(bundle))
+
+
+def test_analyze_links_the_bound_rule_and_says_so(bundle: Path) -> None:
+    unbound = analyze(build_handoff(load_case(bundle)))
+    result = analyze(bound(bundle))
+    [path] = result.impact_paths
+    assert path.policy_rule_ids == ["own-order"]
+    assert POLICY_NOTE not in path.limitations
+    assert not any("정책 규칙과는 연결하지 않았다" in item for item in result.limitations)
+    assert any("명시적 binding" in item for item in result.limitations)
+    # The linked content gets its own ID.
+    assert result.analysis_id != unbound.analysis_id
+
+
+def test_unbound_input_keeps_the_earlier_output() -> None:
+    result = analyze(load())
+    assert result.limitations[: len(ANALYSIS_LIMITATIONS)] == ANALYSIS_LIMITATIONS
+    assert all(path.policy_rule_ids == [] for path in result.impact_paths)
+    assert all(POLICY_NOTE in path.limitations for path in result.impact_paths)
+
+
+def test_target_missing_on_its_side_is_noted_once(bundle: Path) -> None:
+    handoff = bound(bundle)
+    binding = handoff.policy.bindings.bindings[0]  # type: ignore[union-attr]
+    target = binding.applies_to[0].model_copy(update={"side": "before", "json_pointer": None})
+    renamed = renamed_response(handoff)
+    # response exists only in before now; the rule targets it on after (missing there).
+    after_target = target.model_copy(update={"side": "after"})
+    policy = handoff.policy.model_copy(
+        update={
+            "bindings": handoff.policy.bindings.model_copy(  # type: ignore[union-attr]
+                update={"bindings": [binding.model_copy(update={"applies_to": [after_target]})]}
+            )
+        }
+    )
+    result = analyze(renamed.model_copy(update={"policy": policy}))
+    note = "규칙 own-order의 대상 노드 response가 after workflow에 없어 경로에 연결하지 않았다."
+    assert result.limitations.count(note) == 1
+    assert all(path.policy_rule_ids == [] for path in result.impact_paths)
+
+
+def test_references_are_checked_when_limits_skip_paths(bundle: Path) -> None:
+    handoff = bound(bundle)
+    binding = handoff.policy.bindings.bindings[0]  # type: ignore[union-attr]
+    wrong = binding.model_copy(
+        update={"applies_to": [binding.applies_to[0].model_copy(update={"node_id": "absent"})]}
+    )
+    policy = handoff.policy.model_copy(
+        update={
+            "bindings": handoff.policy.bindings.model_copy(update={"bindings": [wrong]})  # type: ignore[union-attr]
+        }
+    )
+    with pytest.raises(InputError) as error:
+        analyze(handoff.model_copy(update={"policy": policy}), AnalysisLimits(max_workflow_nodes=1))
+    assert error.value.code == "POLICY_TARGET_NODE_UNKNOWN"

@@ -1,8 +1,8 @@
 """Link impact paths to policy rules through explicit node targets; never from rule text.
 
-The input-side binding format (#48) is still open. Whatever shape it takes is
-converted into `PolicyTarget`s; until then analyze() does not call this and paths
-keep empty `policy_rule_ids` with the reason in their limitations.
+analyze() converts the input's resolved policy bindings (flowdelta.policy_bindings) into
+`PolicyTarget`s. Without bindings it does not call this, and paths keep empty
+`policy_rule_ids` with the reason in their limitations.
 """
 
 from dataclasses import dataclass

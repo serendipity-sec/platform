@@ -16,6 +16,7 @@ from flowdelta.graph.limits import (
     reason_text,
 )
 from flowdelta.graph.matching import match_nodes
+from flowdelta.graph.policy import PolicyTarget, link_policies
 from flowdelta.graph.references import (
     NameReference,
     add_reference_edges,
@@ -24,6 +25,7 @@ from flowdelta.graph.references import (
 )
 from flowdelta.ingestion import InputError, digest, json_bytes
 from flowdelta.pipeline_contracts import AnalysisBundle, Authorship, SemanticGraph
+from flowdelta.policy_bindings import resolve_policy_bindings
 
 PRODUCER = f"flowdelta-graph {__version__}"
 # Placeholder while the content hash for the real ID is computed.
@@ -42,6 +44,20 @@ ANALYSIS_LIMITATIONS = [
     "가능한 모든 경로나 실제 실행 경로의 증거가 아니며, 정책 규칙과는 연결하지 않았다.",
     "보안 위험 판정을 포함하지 않는다.",
 ]
+# With an explicit policy binding the "not linked" clause above is no longer true.
+_UNLINKED = "가능한 모든 경로나 실제 실행 경로의 증거가 아니며, 정책 규칙과는 연결하지 않았다."
+_LINKED = (
+    "가능한 모든 경로나 실제 실행 경로의 증거가 아니다. 정책 규칙은 입력의 명시적 binding이 "
+    "가리키는 대상 노드를 지나는 경로에만 연결했다(policy_rule_ids). 보호 필드·주체·금지 효과·"
+    "예외는 평가하지 않으며 정책 위반을 판정하지 않는다."
+)
+
+
+def _analysis_limitations(bound: bool) -> list[str]:
+    # Unbound inputs keep the exact earlier text, so their analyses and IDs do not change.
+    if not bound:
+        return list(ANALYSIS_LIMITATIONS)
+    return [item.replace(_UNLINKED, _LINKED) for item in ANALYSIS_LIMITATIONS]
 
 
 def _context_ref(handoff: Handoff, path: str) -> ArtifactRef:
@@ -105,6 +121,9 @@ def dependency_graphs(handoff: Handoff, *, field_flow: bool = True) -> dict[str,
 
 def analyze(handoff: Handoff, limits: AnalysisLimits = DEFAULT_LIMITS) -> AnalysisBundle:
     case = handoff.case
+    # Explicit policy references are checked first, even when the limits skip impact paths.
+    resolution = resolve_policy_bindings(handoff)
+    bound = handoff.policy.bindings is not None
     before_snapshot, after_snapshot = handoff.snapshots.snapshots
     facts: dict[Side, dict[str, NodeSemantics]] = {"before": {}, "after": {}}
     for item in handoff.semantics.semantics:
@@ -122,7 +141,7 @@ def analyze(handoff: Handoff, limits: AnalysisLimits = DEFAULT_LIMITS) -> Analys
         before_refs,
         after_refs,
     )
-    limitations = list(ANALYSIS_LIMITATIONS)
+    limitations = _analysis_limitations(bound)
     if handoff.dependency_workflows:
         limitations.append(
             "호출 노드와 고정 하위 workflow 사이의 필드 전달은 연결하지 않았다. "
@@ -175,6 +194,19 @@ def analyze(handoff: Handoff, limits: AnalysisLimits = DEFAULT_LIMITS) -> Analys
             "영향 경로를 계산하지 않았다. 그래프(CONTROL·이름 참조)와 변경 목록은 전체를 담았다."
         )
         record = limits_record(limits, reasons, computed=False, complete=False, total=None, kept=0)
+    if bound:
+        targets = [
+            PolicyTarget(item.rule_id, item.side, item.node_id) for item in resolution.targets
+        ]
+        paths, notes = link_policies(
+            paths,
+            changes,
+            {"before": before_graph, "after": after_graph},
+            targets,
+            {rule.rule_id for rule in handoff.policy.rules},
+        )
+        # One place for targets missing on their side; resolution.limitations says the same.
+        limitations.extend(notes)
     bundle = AnalysisBundle(
         analysis_id=_PENDING_ID,
         case_id=case.case_id,
