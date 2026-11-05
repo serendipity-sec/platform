@@ -155,6 +155,71 @@ def analyze_handoff(
         raise typer.Exit(code=2) from None
 
 
+@app.command("freeze-profile")
+def freeze_profile_command(
+    bundle: Path,
+    out: Annotated[Path, typer.Option(help="New profile JSON; parent must exist.")],
+    profile_id: Annotated[str, typer.Option()],
+    revision: Annotated[str, typer.Option()],
+    fixed_node: Annotated[list[str] | None, typer.Option(help="Additional fixed node ID.")] = None,
+) -> None:
+    """Explicitly establish a workflow-only baseline and print its canonical digest."""
+    from flowdelta.fixed_profile import freeze_profile, profile_digest, write_profile
+
+    try:
+        loaded = load_case(bundle)
+        profile = freeze_profile(
+            loaded,
+            profile_id=profile_id,
+            revision=revision,
+            additional_fixed_node_ids=tuple(fixed_node or []),
+        )
+        write_profile(profile, out, input_root=loaded.root)
+        typer.echo(json_bytes({"profile_sha256": profile_digest(profile)}).decode(), nl=False)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("check-profile")
+def check_profile_command(
+    bundle: Path,
+    profile: Annotated[Path, typer.Option()],
+    profile_sha256: Annotated[str, typer.Option(help="Trusted canonical profile digest.")],
+) -> None:
+    """Check fixed inputs without running the workflow or accepting a new baseline."""
+    from flowdelta.fixed_profile import read_profile, validate_profile
+
+    try:
+        pinned = read_profile(profile, expected_sha256=profile_sha256)
+        result = validate_profile(load_case(bundle), pinned)
+        typer.echo(json_bytes(result.model_dump(mode="json")).decode(), nl=False)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("profile-snapshot")
+def profile_snapshot_command(
+    bundle: Path,
+    profile: Annotated[Path, typer.Option()],
+    profile_sha256: Annotated[str, typer.Option(help="Trusted canonical profile digest.")],
+    out: Annotated[Path, typer.Option(help="New output directory; parent must exist.")],
+) -> None:
+    """Gate captured source bytes, then write an ordinary 0.4.0 handoff for A/B/C."""
+    from flowdelta.fixed_profile import load_profiled_handoff
+
+    try:
+        loaded, handoff, result = load_profiled_handoff(
+            bundle, profile, expected_sha256=profile_sha256
+        )
+        write_handoff(loaded, handoff, out)
+        typer.echo(json_bytes(result.model_dump(mode="json")).decode(), nl=False)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("baseline")
 def baseline(
     out: Annotated[Path, typer.Option(help="New directory below this repository's var/.")],
@@ -282,13 +347,17 @@ def plan_command(
     catalog: Annotated[Path, typer.Option(help="Registered template catalog JSON.")],
     cards: Annotated[Path, typer.Option(help="Local card directory.")],
     out: Annotated[Path, typer.Option(help="New plan file at the future bundle root.")],
+    persist: Annotated[
+        bool, typer.Option(help="Also store the exact B artifacts in configured PostgreSQL.")
+    ] = False,
 ) -> None:
-    """Generate B's plan and sibling retrieval/KB files without running workflows."""
+    """Generate B's plan and optionally store its sibling retrieval/KB files in PostgreSQL."""
     from flowdelta.ingestion import _read_local, parse_file_model, parse_json
     from flowdelta.knowledge import load_cards, write_plan
     from flowdelta.pipeline_contracts import AnalysisBundle, TemplateCatalog
     from flowdelta.pipeline_io import read_handoff, read_manifest
 
+    engine = None
     try:
         root = bundle.resolve()
         _, documents = read_manifest(root)
@@ -298,6 +367,11 @@ def plan_command(
         templates = parse_file_model(
             TemplateCatalog, parse_json(_read_local(catalog.parent.resolve(), catalog.name))
         )
+        if persist:
+            from flowdelta.knowledge.database import engine_for
+            from flowdelta.knowledge.settings import KnowledgeSettings
+
+            engine = engine_for(KnowledgeSettings.from_environment())
         plan = write_plan(
             read_handoff(root / "input"),
             analysis,
@@ -305,12 +379,17 @@ def plan_command(
             templates,
             out,
         )
+        if engine is not None:
+            from flowdelta.knowledge.repository import store_b_outputs
+
+            store_b_outputs(engine, out)
         typer.echo(
             json_bytes(
                 {
                     "status": "PLAN_WRITTEN",
                     "plan_id": plan.plan_id,
                     "analysis_origin": analysis.authorship.origin,
+                    "database_status": "STORED" if persist else "NOT_REQUESTED",
                     "execution_status": "NOT_RUN",
                 }
             ).decode(),
@@ -319,6 +398,18 @@ def plan_command(
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
         raise typer.Exit(code=2) from None
+    except ModuleNotFoundError as exc:
+        if exc.name not in {"alembic", "psycopg", "sqlalchemy"}:
+            raise
+        typer.echo(
+            json_bytes({"error": "KNOWLEDGE_EXTRA_REQUIRED"}).decode("utf-8"),
+            err=True,
+            nl=False,
+        )
+        raise typer.Exit(code=2) from None
+    finally:
+        if engine is not None:
+            engine.dispose()
 
 
 @app.command("bundle")
@@ -376,6 +467,38 @@ def demo_order_lookup(
         summary = run_order_lookup_demo(Path.cwd(), out)
         typer.echo(json_bytes(summary).decode(), nl=False)
         if not summary["all_normal_checks_passed"]:
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("run-pipeline")
+def run_pipeline_command(
+    case: Path,
+    profile: Annotated[Path, typer.Option()],
+    profile_sha256: Annotated[str, typer.Option()],
+    catalog: Annotated[Path, typer.Option()],
+    cards: Annotated[Path, typer.Option()],
+    out: Annotated[Path, typer.Option(help="New output directory under var/.")],
+    execute: Annotated[bool, typer.Option(help="Execute only C-registered templates.")] = False,
+) -> None:
+    """Profile gate → stored input → A → B → optional C → verified artifact bundle."""
+    from flowdelta.pipeline_runner import run_pipeline
+
+    try:
+        result = run_pipeline(
+            repo=Path.cwd(),
+            case=case,
+            profile=profile,
+            profile_sha256=profile_sha256,
+            catalog=catalog,
+            cards=cards,
+            output=out,
+            execute=execute,
+        )
+        typer.echo(json_bytes(result).decode(), nl=False)
+        if result["status"] == "INCOMPLETE":
             raise typer.Exit(code=2)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)

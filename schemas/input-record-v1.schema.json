@@ -1,0 +1,94 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "after_snapshot_id": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "After Snapshot Id",
+      "type": "string"
+    },
+    "before_snapshot_id": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Before Snapshot Id",
+      "type": "string"
+    },
+    "case_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Case Id",
+      "type": "string"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "handoff_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Handoff Sha256",
+      "type": "string"
+    },
+    "profile_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Profile Id",
+      "type": "string"
+    },
+    "profile_revision": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "title": "Profile Revision",
+      "type": "string"
+    },
+    "profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Profile Sha256",
+      "type": "string"
+    },
+    "record_format": {
+      "const": "flowdelta-input-record-v1",
+      "default": "flowdelta-input-record-v1",
+      "title": "Record Format",
+      "type": "string"
+    },
+    "record_id": {
+      "maxLength": 128,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_.-]+$",
+      "title": "Record Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.4.0",
+      "default": "0.4.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Manifest Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "record_id",
+    "profile_id",
+    "profile_revision",
+    "profile_sha256",
+    "case_id",
+    "before_snapshot_id",
+    "after_snapshot_id",
+    "handoff_sha256",
+    "source_manifest_sha256"
+  ],
+  "title": "InputRecord",
+  "type": "object"
+}

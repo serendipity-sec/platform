@@ -1,0 +1,767 @@
+{
+  "$defs": {
+    "ArtifactRef": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Artifact Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "kind": {
+          "enum": [
+            "source",
+            "generated"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "media_type": {
+          "default": "application/json",
+          "enum": [
+            "application/json",
+            "text/plain"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "size_bytes": {
+          "maximum": 8388608,
+          "minimum": 0,
+          "title": "Size Bytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "artifact_id",
+        "path",
+        "sha256",
+        "size_bytes",
+        "kind"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "Authorship": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "note": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Note",
+          "type": "string"
+        },
+        "origin": {
+          "enum": [
+            "CONTRACT_EXAMPLE",
+            "MODULE_OUTPUT",
+            "RUNTIME_OBSERVATION"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "producer": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Producer",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "origin",
+        "producer",
+        "note"
+      ],
+      "title": "Authorship",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "StaticFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "const": "STATIC_CONDITION",
+          "default": "STATIC_CONDITION",
+          "title": "Basis",
+          "type": "string"
+        },
+        "code_pointer": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Code Pointer",
+          "type": "string"
+        },
+        "code_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Code Sha256",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "finding_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "line": {
+          "minimum": 1,
+          "title": "Line",
+          "type": "integer"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_name": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Name",
+          "type": "string"
+        },
+        "node_type": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Type",
+          "type": "string"
+        },
+        "rule_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "rule_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Rule Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "ERROR",
+            "WARNING",
+            "INFO"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "type_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Type Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "rule_id",
+        "rule_version",
+        "node_id",
+        "node_name",
+        "node_type",
+        "type_version",
+        "code_pointer",
+        "code_sha256",
+        "line",
+        "severity"
+      ],
+      "title": "StaticFinding",
+      "type": "object"
+    },
+    "StaticScanCatalog": {
+      "additionalProperties": false,
+      "properties": {
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "catalog_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Catalog Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "templates": {
+          "items": {
+            "$ref": "#/$defs/StaticScanTemplate"
+          },
+          "minItems": 1,
+          "title": "Templates",
+          "type": "array"
+        }
+      },
+      "required": [
+        "catalog_id",
+        "authorship",
+        "templates"
+      ],
+      "title": "StaticScanCatalog",
+      "type": "object"
+    },
+    "StaticScanRun": {
+      "additionalProperties": false,
+      "properties": {
+        "authorship": {
+          "$ref": "#/$defs/Authorship"
+        },
+        "case_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Case Id",
+          "type": "string"
+        },
+        "comparison_run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Comparison Run Id",
+          "type": "string"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "pattern": "^[A-Za-z0-9_.-]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Error Code"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/StaticFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "finished_at": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finished At"
+        },
+        "outcome": {
+          "default": null,
+          "title": "Outcome",
+          "type": "null"
+        },
+        "plan_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "raw_report": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ArtifactRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "run_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Run Id",
+          "type": "string"
+        },
+        "scanned_node_ids": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Scanned Node Ids",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "title": "Side",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "started_at": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Started At"
+        },
+        "status": {
+          "enum": [
+            "NOT_RUN",
+            "SUCCEEDED",
+            "FAILED",
+            "TIMED_OUT",
+            "INTERRUPTED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "template_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Template Id",
+          "type": "string"
+        },
+        "template_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Template Version",
+          "type": "string"
+        },
+        "tool": {
+          "$ref": "#/$defs/StaticScanTool"
+        },
+        "unsupported": {
+          "items": {
+            "$ref": "#/$defs/UnsupportedTarget"
+          },
+          "title": "Unsupported",
+          "type": "array"
+        },
+        "workflow_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Workflow Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "comparison_run_id",
+        "case_id",
+        "plan_id",
+        "side",
+        "snapshot_id",
+        "authorship",
+        "template_id",
+        "template_version",
+        "tool",
+        "workflow_sha256",
+        "scanned_node_ids",
+        "unsupported",
+        "findings",
+        "status",
+        "raw_report",
+        "started_at",
+        "finished_at",
+        "error_code"
+      ],
+      "title": "StaticScanRun",
+      "type": "object"
+    },
+    "StaticScanTarget": {
+      "additionalProperties": false,
+      "description": "Which code the template reads. Anything else in the workflow is reported UNSUPPORTED.",
+      "properties": {
+        "agent_node_type": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Agent Node Type",
+          "type": "string"
+        },
+        "agent_type_versions": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Agent Type Versions",
+          "type": "array"
+        },
+        "code_parameter": {
+          "const": "jsCode",
+          "title": "Code Parameter",
+          "type": "string"
+        },
+        "connection_type": {
+          "const": "ai_tool",
+          "title": "Connection Type",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "node_type": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Type",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "type_versions": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Type Versions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "node_type",
+        "type_versions",
+        "code_parameter",
+        "connection_type",
+        "agent_node_type",
+        "agent_type_versions"
+      ],
+      "title": "StaticScanTarget",
+      "type": "object"
+    },
+    "StaticScanTemplate": {
+      "additionalProperties": false,
+      "properties": {
+        "executes_target_code": {
+          "const": false,
+          "default": false,
+          "title": "Executes Target Code",
+          "type": "boolean"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "mode": {
+          "const": "STATIC_SCAN",
+          "title": "Mode",
+          "type": "string"
+        },
+        "network": {
+          "const": "NONE",
+          "default": "NONE",
+          "title": "Network",
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Purpose",
+          "type": "string"
+        },
+        "result_kinds": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9_.-]+$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Result Kinds",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "targets": {
+          "items": {
+            "$ref": "#/$defs/StaticScanTarget"
+          },
+          "minItems": 1,
+          "title": "Targets",
+          "type": "array"
+        },
+        "template_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Template Id",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 300,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "tool": {
+          "$ref": "#/$defs/StaticScanTool"
+        },
+        "version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "template_id",
+        "version",
+        "mode",
+        "purpose",
+        "tool",
+        "targets",
+        "result_kinds",
+        "timeout_seconds"
+      ],
+      "title": "StaticScanTemplate",
+      "type": "object"
+    },
+    "StaticScanTool": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "name": {
+          "const": "semgrep",
+          "title": "Name",
+          "type": "string"
+        },
+        "rule_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "rule_path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Rule Path",
+          "type": "string"
+        },
+        "rule_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rule Sha256",
+          "type": "string"
+        },
+        "rule_version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Rule Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "version",
+        "rule_id",
+        "rule_version",
+        "rule_path",
+        "rule_sha256"
+      ],
+      "title": "StaticScanTool",
+      "type": "object"
+    },
+    "UnsupportedTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_type": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Type",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Reason",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "node_type",
+        "reason"
+      ],
+      "title": "UnsupportedTarget",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Container used only to publish one JSON Schema for the catalog and run files.",
+  "properties": {
+    "catalog": {
+      "$ref": "#/$defs/StaticScanCatalog"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "runs": {
+      "items": {
+        "$ref": "#/$defs/StaticScanRun"
+      },
+      "title": "Runs",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "0.4.0",
+      "default": "0.4.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "catalog",
+    "runs"
+  ],
+  "title": "StaticScanReference",
+  "type": "object"
+}

@@ -12,6 +12,11 @@ package-lock.json  linguist-generated=true -diff
 pnpm-lock.yaml     linguist-generated=true -diff
 yarn.lock          linguist-generated=true -diff
 uv.lock            linguist-generated=true -diff
+# Source-provenance hashes must identify the same bytes on Windows and Linux.
+uv.lock text eol=lf
+pyproject.toml text eol=lf
+runtime/order-lookup/fixture.Dockerfile text eol=lf
+runtime/order-lookup/evidence/README.md text eol=lf
 schemas/*.json     linguist-generated=true
 examples/**/*.json text eol=lf
 runtime/**/*.json text eol=lf
@@ -20,9 +25,12 @@ runtime/**/*.sh text eol=lf
 runtime/**/*.yaml text eol=lf
 runtime/**/*.toml text eol=lf
 src/**/*.py text eol=lf
+tools/check_profiled_order.py text eol=lf
 tests/**/*.py text eol=lf
 schemas/*.json     text eol=lf
 poetry.lock        linguist-generated=true -diff
 
 # Acquired originals retain the exact bytes recorded in acquisition.json on every OS.
 examples/public-sources/** -text
+# Preserve recorded harness and observation bytes on every OS.
+experiments/n8n-claw-memory/** -text
