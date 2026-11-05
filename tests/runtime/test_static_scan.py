@@ -54,7 +54,9 @@ def test_committed_rule_is_the_generated_rule() -> None:
 def test_edited_rule_is_refused(tmp_path: Path) -> None:
     rule = tmp_path / static_rules.RULE_PATH
     rule.parent.mkdir(parents=True)
-    rule.write_text(static_rules.rule_yaml().replace("owner_user_id", "owner"), encoding="utf-8")
+    rule.write_text(
+        static_rules.rule_yaml().replace("pattern: query", "pattern: other_input"), encoding="utf-8"
+    )
     with pytest.raises(InputError, match="STATIC_RULE_MISMATCH"):
         registered_templates(tmp_path)
     with pytest.raises(InputError, match="STATIC_RULE_UNREADABLE"):
@@ -97,7 +99,7 @@ def test_catalog_entry_must_match_registration() -> None:
 
 
 def test_shared_template_catalog_does_not_accept_static_templates_yet() -> None:
-    # The shared contract is unchanged in this PR; merging the modes is agreed with #48/#50.
+    # 공유 계약은 이 PR에서 바꾸지 않는다. mode 병합은 #48/#50과 합의한 뒤 진행한다.
     value = registered_catalog(REPO).model_dump(mode="json")
     with pytest.raises(ValidationError):
         TemplateCatalog.model_validate(value)
@@ -106,7 +108,13 @@ def test_shared_template_catalog_does_not_accept_static_templates_yet() -> None:
 def test_run_records_keep_status_and_findings_apart() -> None:
     before, after = example_runs(REPO)
     assert [f.node_id for f in before.findings] == ["tool-memory-delete", "tool-memory-update"]
-    assert after.findings == []
+    assert [(f.node_id, f.line) for f in after.findings] == [
+        ("tool-memory-delete", 24),
+        ("tool-memory-delete", 31),
+        ("tool-memory-delete", 32),
+        ("tool-memory-update", 67),
+    ]
+    assert all(f.severity == "WARNING" for run in (before, after) for f in run.findings)
     assert before.outcome is None and after.outcome is None
 
     value = before.model_dump(mode="json")
@@ -124,8 +132,8 @@ def test_run_records_keep_status_and_findings_apart() -> None:
 
 @pytest.mark.skipif(shutil.which("semgrep") is None, reason="semgrep is not installed")
 def test_rule_on_team_written_cases(tmp_path: Path) -> None:
-    # Inside a git checkout Semgrep skips untracked files and tests/, so scan a copy and
-    # check that every case was actually read before trusting an empty result.
+    # git 저장소 안에서는 Semgrep이 추적되지 않는 파일과 tests/를 건너뛰므로, 복사본을 검사하고
+    # 빈 결과를 믿기 전에 모든 사례를 실제로 읽었는지 확인한다.
     cases = Path(shutil.copytree(CASES, tmp_path / "cases"))
     env = {**os.environ, "SEMGREP_ENABLE_VERSION_CHECK": "0", "SEMGREP_SEND_METRICS": "off"}
     result = subprocess.run(
@@ -147,16 +155,30 @@ def test_rule_on_team_written_cases(tmp_path: Path) -> None:
     )
     report = json.loads(result.stdout)
     assert report["errors"] == []
-    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 12
+    assert len(report["paths"]["scanned"]) == len(list(cases.glob("*.js"))) == 25
     flagged = sorted(Path(item["path"]).name for item in report["results"])
-    # A comparison alone is not a guard: only a branch that stops a non-owner before the
-    # write (return/throw) or that alone holds the write is excluded. The "known_" cases are
-    # documented limitations (false positives are reported, false negatives are missed).
+    # 인증된 주체/역할의 근거가 없으므로 guard 구문만으로 쓰기 경고를 숨기지 않는다.
     assert flagged == [
+        "guarded.js",
+        "guarded_admin_exception.js",
+        "guarded_in_block.js",
+        "guarded_or_condition.js",
+        "guarded_owner_branch.js",
+        "guarded_throw.js",
         "known_false_positive_helper.js",
         "known_false_positive_reversed_operands.js",
+        "unenforced_admin_from_input.js",
+        "unenforced_and_condition.js",
         "unenforced_comparison_only.js",
+        "unenforced_method_variable.js",
         "unenforced_mismatch_logs.js",
+        "unenforced_model_requester.js",
+        "unenforced_model_requester_alias.js",
+        "unenforced_negated_condition.js",
+        "unenforced_non_admin_conjunct.js",
         "unenforced_wrong_branch.js",
+        "untrusted_admin_variable.js",
+        "untrusted_requester_fallback.js",
+        "untrusted_webhook_requester.js",
         "vulnerable.js",
     ]

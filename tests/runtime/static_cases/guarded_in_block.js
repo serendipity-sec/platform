@@ -1,4 +1,4 @@
-// Team-written synthetic tool. The owner check sits inside a plain block, as in some tools.
+// 팀이 작성한 합성 도구. 소유자 검사가 일반 블록 안에 있다
 async function __n8n_tool(query) {
   const input = JSON.parse(query);
   {

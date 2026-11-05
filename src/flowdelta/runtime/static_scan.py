@@ -91,6 +91,7 @@ class StaticScanRun(Contract):
     comparison_run_id: Identifier
     case_id: Identifier
     plan_id: Identifier
+    obligation_ids: list[Identifier]
     side: Literal["before", "after"]
     snapshot_id: NonEmpty
     authorship: Authorship

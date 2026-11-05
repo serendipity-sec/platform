@@ -1,5 +1,4 @@
-// Team-written synthetic tool. The method is stored in a variable, which the rule does not
-// follow: a known false negative of rule 0.4.0.
+// 팀이 작성한 합성 도구. method를 변수에 담아 지운다
 async function __n8n_tool(query) {
   const input = JSON.parse(query);
   const method = 'DELETE';

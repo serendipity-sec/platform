@@ -21,14 +21,59 @@
       "claims": [
         {
           "basis": "SOURCE_INSPECTION",
-          "statement": "해당 revision의 Memory Delete JS는 입력 id로 memory_long DELETE를 요청하며 requester, owner_user_id, scope 또는 admin 비교를 하지 않는다."
+          "statement": "해당 revision의 Memory Delete JS는 입력 id로 memory_long DELETE를 요청하며 requester, owner_user_id, scope 또는 admin 비교를 하지 않는다.",
+          "evidence_refs": [
+            {
+              "evidence_key": "source",
+              "selector": {
+                "commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+                "path": "workflows/n8n-claw-agent.json",
+                "sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+              }
+            }
+          ]
+        },
+        {
+          "basis": "STATIC_ANALYSIS",
+          "statement": "Semgrep tool-fit 요약은 feature revision의 Memory Delete에서 STATIC_CONDITION finding을 기록했다. 같은 요약의 Memory Update finding은 이 카드의 범위 밖이다.",
+          "evidence_refs": [
+            {
+              "evidence_key": "static_analysis",
+              "selector": {
+                "json_pointer": "/versions/1/findings/0",
+                "version": "feature",
+                "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+                "node_id": "tool-memory-delete",
+                "code_pointer": "/nodes/29/parameters/jsCode",
+                "line": 7,
+                "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0"
+              }
+            }
+          ]
         },
         {
           "basis": "LIMITED_REPLAY",
-          "statement": "feature 버전 replay에서 foreign personal 행에 DELETE 요청이 기록됐고 합성 수신부가 행 하나를 제거했다."
+          "statement": "feature 버전 replay에서 foreign personal 행에 DELETE 요청이 기록됐고 합성 수신부가 행 하나를 제거했다.",
+          "evidence_refs": [
+            {
+              "evidence_key": "observations",
+              "selector": {
+                "json_pointer": "/observations/3",
+                "version": "feature",
+                "relationship": "foreign",
+                "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+              }
+            }
+          ]
         }
       ],
       "cve": "NOT_IDENTIFIED",
+      "cve_applicability": {
+        "status": "UNKNOWN",
+        "scope": "CVE/advisory applicability for the pinned Memory Delete workflow revision in an assessed built/deployed runtime",
+        "reason": "The evidence pins a workflow source revision and file hash but does not identify the exact ecosystem/package or product version included in an assessed runtime, or map this source commit to that runtime. Advisory applicability cannot be determined.",
+        "date": "2026-10-29"
+      },
       "evidence": {
         "observations": {
           "artifact": "experiments/n8n-claw-memory/evidence/observations.json",
@@ -57,21 +102,79 @@
           "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
           "url": "https://github.com/freddy-schuetz/n8n-claw/commit/eb6d7bc185eaecdf96885b3e17ef1f8dac93a852"
         },
-        "redistribution": "REFERENCES_ONLY"
+        "redistribution": "REFERENCES_ONLY",
+        "static_analysis": {
+          "type": "STATIC_ANALYSIS",
+          "artifact": "experiments/n8n-claw-c/evidence/semgrep-summary-0.4.0.json",
+          "sha256": "afa1ea124fc82d6742f33c0408fd4728e6be49aa01765cd3f21605c42c89fd60",
+          "tool": {
+            "name": "Semgrep",
+            "version": "1.181.0"
+          },
+          "rule": {
+            "id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+            "version": "0.4.0"
+          },
+          "basis": "STATIC_CONDITION",
+          "security_outcome": null,
+          "selector": {
+            "version": "feature",
+            "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+          },
+          "scope": {
+            "node_id": "tool-memory-delete",
+            "scanned": true
+          },
+          "recorded": {
+            "status": "SUCCEEDED",
+            "summary_findings_count": 2,
+            "memory_delete_findings": [
+              {
+                "node_id": "tool-memory-delete",
+                "node_name": "Memory Delete",
+                "code_pointer": "/nodes/29/parameters/jsCode",
+                "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+                "line": 7,
+                "rule_id": "flowdelta.n8n.agent-tool-write-without-ownership-check",
+                "rule_version": "0.4.0"
+              }
+            ],
+            "unsupported_node_ids": [
+              "tool-agent-library",
+              "tool-expert-agent",
+              "tool-library-manager",
+              "mcp-builder-tool",
+              "tool-reminder-wf",
+              "tool-telegram-status",
+              "tool-workflow-builder"
+            ]
+          }
+        }
       },
       "required_permissions": [
         "The workflow's configured Supabase credential must permit DELETE on the target row for this effect to occur; the replay used a synthetic receiver and did not verify database permissions.",
         "The caller must be able to reach the agent/tool path; caller authentication and invocation policy were not evaluated."
       ],
       "security_significance": "The tested revision lacks an object ownership guard before a privileged delete sink. The synthetic foreign-row deletion supports a code-level authorization gap in this revision, not a claim about a deployed instance.",
-      "template_status": "PROPOSED_NOT_REGISTERED",
+      "template_status": "REGISTERED",
       "unknowns_and_limits": [
         "The harness ran selected tool JavaScript against a fixed synthetic receiver and context; it did not run the full n8n plus LLM agent or a real database.",
         "The actual deployed workflow revision, Supabase role and row-level security, caller access controls, and production exposure are unknown.",
+        "The upstream workflow bytes are pinned by commit, path, and SHA-256 but are not locally available in this checkout; no source-code location was added without independent verification.",
         "This card covers direct memory_long row deletion only. Optional entity/relation cascade behavior is not claimed by this observation.",
         "The passing harness flag means the observation matched that harness version's expectation; it does not mean the deletion was safe.",
-        "No CVE or CWE is identified by the reviewed source materials."
-      ]
+        "No CVE or CWE is identified by the reviewed source materials.",
+        "정적 분석은 지원 코드 노드에 한정된다. toolWorkflow와 telegramTool 등 미지원 노드는 TARGET_TYPE_NOT_SUPPORTED로 남으며 finding 부재는 안전성 증명이 아니다."
+      ],
+      "cve_reason": "2026-10-29에 검토한 고정 workflow revisions와 제한 replay에서 CVE ID를 확인하지 못했다. matching repository/package advisory identity나 package ecosystem/version 또는 product/version이 확정되지 않아 GHSA/OSV/NVD 적용성 조회를 수행하지 않았으며 CVE를 주장하지 않는다.",
+      "execution_status": {
+        "selected_tool_js_synthetic_replay": {
+          "scope": "SELECTED_NODE_ONLY",
+          "status": "COMPLETED"
+        },
+        "full_n8n_llm_agent": "NOT_RUN",
+        "real_database": "NOT_RUN"
+      }
     }
   },
   "license_identifier": null,
@@ -86,8 +189,8 @@
   "source_ref": null,
   "source_revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
   "summary": "Memory Delete toolCode의 jsCode 변경에서 요청자 소유권 검사를 확인한다. feature-add replay는 foreign memory_long 행의 삭제를 관측했다. description과 jsCode 변경은 검색 단서이며 안전 판정은 아니다.",
-  "template_id": "n8n-claw-memory-static-scan",
-  "template_version": "0.1.0-proposed",
+  "template_id": "static-agent-tool-ownership",
+  "template_version": "0.1.0",
   "title": "Memory Delete jsCode의 소유권 검사 누락",
   "version": "1.0.0"
 }

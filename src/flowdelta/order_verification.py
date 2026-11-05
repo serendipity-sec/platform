@@ -21,7 +21,10 @@ def normal_checks(
     events = event_document.get("events", [])
     return {
         "execution_succeeded": run.execution_status == "SUCCEEDED",
+        "execution_finished": run.phase == "FINISHED" and bool(run.finished_at),
         "collection_complete": run.artifacts.collection_status == "COMPLETE",
+        "event_document_owned": event_document.get("run_id") == run.run_id,
+        "event_collection_complete": event_document.get("collection_status") == "COMPLETE",
         "cleanup_complete": run.cleanup_status == "COMPLETE",
         "expected_response": response.get("status_code") == 200
         and response.get("body") == expected[f"{run.side}_response"],
