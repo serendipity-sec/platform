@@ -8,6 +8,7 @@ from flowdelta.handoff import build_handoff, write_handoff
 from flowdelta.ingestion import InputError, json_bytes, load_case, parse_file_model, parse_json
 from flowdelta.knowledge import load_cards, write_plan
 from flowdelta.module_outputs import read_module_outputs
+from flowdelta.order_verification import normal_checks
 from flowdelta.pipeline_bundle import write_module_bundle
 from flowdelta.pipeline_contracts import TemplateCatalog
 from flowdelta.pipeline_io import read_handoff
@@ -71,24 +72,9 @@ def run_order_lookup_demo(repo: Path, output: Path) -> dict[str, Any]:
 
         response = document("response.json")
         initial, final = document("initial-state.json"), document("final-state.json")
-        events = document("events.json").get("events", [])
-        checks = {
-            "execution_succeeded": run.execution_status == "SUCCEEDED",
-            "collection_complete": run.artifacts.collection_status == "COMPLETE",
-            "cleanup_complete": run.cleanup_status == "COMPLETE",
-            "expected_response": response.get("status_code") == 200
-            and response.get("body") == expected[f"{run.side}_response"],
-            "fresh_state": initial.get("events") == [] and initial.get("run_id") == run.run_id,
-            "orders_unchanged": "orders" in initial and initial["orders"] == final.get("orders"),
-            "one_owned_read": len(events) == expected["expected_events_per_run"]
-            and all(
-                event.get("event_type") == "ORDER_READ"
-                and event.get("run_id") == run.run_id
-                and event.get("resource_id") == plan.normal_input["order_id"]
-                and event.get("outcome") == "RETURNED"
-                for event in events
-            ),
-        }
+        checks = normal_checks(
+            run, expected, plan.normal_input, response, initial, final, document("events.json")
+        )
         observed.append(
             {"side": run.side, "run_id": run.run_id, "response": response, "checks": checks}
         )
