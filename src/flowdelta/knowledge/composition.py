@@ -1,5 +1,10 @@
 """Pure composition from a fixed retrieval result and canonical card snapshot."""
 
+from pathlib import Path
+from typing import cast
+
+from pydantic import JsonValue
+
 from flowdelta.contracts import Handoff
 from flowdelta.ingestion import InputError
 from flowdelta.knowledge.cards import _KnowledgeSnapshot
@@ -15,26 +20,47 @@ from flowdelta.knowledge.retrieval import (
 )
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
+    ImpactPath,
     ObligationBinding,
     RetrievalResult,
     ScenarioCard,
+    Template,
     TemplateCatalog,
     TestPlan,
 )
-from flowdelta.pipeline_io import validate_input_fields, validate_pipeline
+from flowdelta.pipeline_io import (
+    _validate_pipeline_context,
+    validate_input_fields,
+    validate_pipeline,
+)
+from flowdelta.runtime.static_adapter import StaticPreflight, static_preflight
+from flowdelta.runtime.static_scan import StaticScanCatalog, StaticScanTemplate
+from flowdelta.runtime.static_targets import find_targets
 
 
 def compose_plan(
     handoff: Handoff,
     analysis: AnalysisBundle,
     cards: list[ScenarioCard],
-    catalog: TemplateCatalog,
+    catalog: TemplateCatalog | StaticScanCatalog,
     retrieval: RetrievalResult,
     *,
     producer: str,
+    handoff_root: Path | None = None,
+    repo_root: Path | None = None,
+    selected_path_id: str | None = None,
 ) -> TestPlan:
+    """Compose a normal or registered static-scan plan from a fixed retrieval result."""
     return _compose_snapshot(
-        handoff, analysis, _KnowledgeSnapshot.prepare(cards), catalog, retrieval, producer=producer
+        handoff,
+        analysis,
+        _KnowledgeSnapshot.prepare(cards),
+        catalog,
+        retrieval,
+        producer=producer,
+        handoff_root=handoff_root,
+        repo_root=repo_root,
+        selected_path_id=selected_path_id,
     )
 
 
@@ -42,11 +68,15 @@ def _compose_snapshot(
     handoff: Handoff,
     analysis: AnalysisBundle,
     snapshot: _KnowledgeSnapshot,
-    catalog: TemplateCatalog,
+    catalog: TemplateCatalog | StaticScanCatalog,
     retrieval: RetrievalResult,
     *,
     producer: str,
+    handoff_root: Path | None = None,
+    repo_root: Path | None = None,
+    selected_path_id: str | None = None,
 ) -> TestPlan:
+    """Validate a retrieval result, then compose the selected registered plan contract."""
     cards = snapshot.cards
     if retrieval.analysis_id != analysis.analysis_id:
         raise InputError("RETRIEVAL_ANALYSIS_MISMATCH")
@@ -137,34 +167,55 @@ def _compose_snapshot(
             raise InputError("RETRIEVAL_CONTENT_MISMATCH")
     if retrieval.query.get("result_fingerprint") != retrieval_content_fingerprint(retrieval):
         raise InputError("RETRIEVAL_CONTENT_MISMATCH")
-    eligible = [
-        t
-        for t in catalog.templates
-        if t.task_id == handoff.task.task_id and t.runtime_profile == profile
-    ]
-    if retrieval.hits:
-        card = by_card[(retrieval.hits[0].card_id, retrieval.hits[0].card_version)]
-        eligible = [
+    if isinstance(catalog, StaticScanCatalog):
+        static_candidates = list(catalog.templates)
+        if retrieval.hits:
+            card = by_card[(retrieval.hits[0].card_id, retrieval.hits[0].card_version)]
+            static_candidates = [
+                item
+                for item in static_candidates
+                if (item.template_id, item.version) == (card.template_id, card.template_version)
+            ]
+        if not static_candidates:
+            raise InputError("STATIC_TEMPLATE_NOT_FOUND")
+        static_template = sorted(
+            static_candidates, key=lambda item: (item.template_id, item.version)
+        )[0]
+        template: Template | StaticScanTemplate = static_template
+        normal_input: dict[str, JsonValue] = {}
+        supported_artifact_kinds = static_template.result_kinds
+    else:
+        normal_candidates = [
             t
-            for t in eligible
-            if (t.template_id, t.version) == (card.template_id, card.template_version)
+            for t in catalog.templates
+            if t.task_id == handoff.task.task_id and t.runtime_profile == profile
         ]
-    if not eligible:
-        raise InputError("TEMPLATE_NOT_FOUND")
-    template = None
-    for candidate in sorted(eligible, key=lambda t: (t.template_id, t.version)):
-        try:
-            validate_input_fields(handoff.task.normal_input, candidate.input_fields)
-        except InputError:
-            continue
-        template = candidate
-        break
-    if template is None:
-        raise InputError("TEMPLATE_INPUT_INVALID")
+        if retrieval.hits:
+            card = by_card[(retrieval.hits[0].card_id, retrieval.hits[0].card_version)]
+            normal_candidates = [
+                item
+                for item in normal_candidates
+                if (item.template_id, item.version) == (card.template_id, card.template_version)
+            ]
+        if not normal_candidates:
+            raise InputError("TEMPLATE_NOT_FOUND")
+        normal_template: Template | None = None
+        for candidate in sorted(normal_candidates, key=lambda t: (t.template_id, t.version)):
+            try:
+                validate_input_fields(handoff.task.normal_input, candidate.input_fields)
+            except InputError:
+                continue
+            normal_template = candidate
+            break
+        if normal_template is None:
+            raise InputError("TEMPLATE_INPUT_INVALID")
+        template = normal_template
+        normal_input = handoff.task.normal_input
+        supported_artifact_kinds = template.required_artifact_kinds
     bindings = []
     uncovered = []
     for obligation in sorted(handoff.case.obligations, key=lambda item: item.obligation_id):
-        if set(obligation.required_artifacts).issubset(template.required_artifact_kinds):
+        if set(obligation.required_artifacts).issubset(supported_artifact_kinds):
             bindings.append(
                 ObligationBinding(
                     obligation_id=obligation.obligation_id,
@@ -188,7 +239,7 @@ def _compose_snapshot(
         catalog_id=catalog.catalog_id,
         template_id=template.template_id,
         template_version=template.version,
-        normal_input=handoff.task.normal_input,
+        normal_input=normal_input,
         initial_state_ref=state.model_copy(update={"path": f"input/{state.path}"}),
         obligation_bindings=bindings,
         uncovered_obligation_ids=uncovered,
@@ -197,10 +248,145 @@ def _compose_snapshot(
         planner_metadata={
             "rules_version": producer,
             "retrieval_empty": not retrieval.hits,
-            "selection": "ranked-card" if retrieval.hits else "registered-normal-fallback",
+            "selection": (
+                "ranked-card"
+                if retrieval.hits
+                else "registered-static-fallback"
+                if isinstance(catalog, StaticScanCatalog)
+                else "registered-normal-fallback"
+            ),
             "analysis_context": analysis_context,
             "security_outcome": None,
         },
     )
-    validate_pipeline(handoff, analysis, catalog, plan)
+    if isinstance(catalog, StaticScanCatalog):
+        if handoff_root is None:
+            raise InputError("STATIC_HANDOFF_ROOT_REQUIRED")
+        repo = repo_root or Path(__file__).resolve().parents[3]
+        _validate_pipeline_context(handoff, analysis, plan, catalog.catalog_id)
+        preflight = static_preflight(handoff, plan, catalog, handoff_root, repo)
+        selection = _select_static_path(analysis, preflight, selected_path_id)
+        plan.planner_metadata["selected_path_id"] = selection["selected_path_id"]
+        plan.planner_metadata["path_selection"] = selection
+    else:
+        if selected_path_id is not None:
+            raise InputError("PATH_SELECTION_STATIC_ONLY")
+        validate_pipeline(handoff, analysis, catalog, plan)
     return plan
+
+
+def _select_static_path(
+    analysis: AnalysisBundle,
+    preflight: StaticPreflight,
+    selected_path_id: str | None,
+) -> dict[str, JsonValue]:
+    """Select supported A paths that intersect C targets, preserving incomplete evidence."""
+    paths = analysis.impact_paths
+    path_ids = [path.path_id for path in paths]
+    if len(path_ids) != len(set(path_ids)):
+        raise InputError("ANALYSIS_PATH_ID_DUPLICATE")
+    targets_by_side = {
+        side.side: {
+            item.node_id for item in find_targets(side.workflow_bytes, preflight.template).scanned
+        }
+        for side in preflight.sides
+    }
+    changes_by_id = {change.change_id: change for change in analysis.changes}
+    graphs = {"before": analysis.before_graph, "after": analysis.after_graph}
+    nodes_by_side = {
+        side: (
+            {
+                node.node_id: node.workflow_node_id
+                for node in graph.nodes
+                if node.kind == "WORKFLOW_NODE" and node.workflow_node_id is not None
+            }
+            if graph.nodes
+            else {node_id: node_id for node_id in graph.node_ids}
+        )
+        for side, graph in graphs.items()
+    }
+    eligible: dict[str, ImpactPath] = {}
+    rejected: list[dict[str, JsonValue]] = []
+    for path in paths:
+        reason = None
+        if path.support != "SUPPORTED" or path.limitations:
+            reason = "PATH_UNSUPPORTED"
+        else:
+            graph = graphs[path.side]
+            changes = [changes_by_id.get(change_id) for change_id in path.change_ids]
+            edges_by_id = {edge.edge_id: edge for edge in graph.edges}
+            edges = [edges_by_id.get(edge_id) for edge_id in path.edge_ids]
+            if any(change is None for change in changes):
+                reason = "PATH_CHANGE_NOT_FOUND"
+            elif any(edge is None for edge in edges):
+                reason = "PATH_EDGE_NOT_FOUND"
+            else:
+                workflow_node_ids = set(nodes_by_side[path.side].values())
+                path_nodes = {
+                    change.node_id
+                    for change in changes
+                    if change is not None
+                    and change.node_id is not None
+                    and change.node_id in workflow_node_ids
+                }
+                for edge in edges:
+                    if edge is None:
+                        continue
+                    path_nodes.update(
+                        node_id
+                        for node_id in (
+                            nodes_by_side[path.side].get(edge.source_node_id),
+                            nodes_by_side[path.side].get(edge.target_node_id),
+                        )
+                        if node_id is not None
+                    )
+                if not path_nodes & targets_by_side[path.side]:
+                    reason = "NO_C_TARGET_MATCH"
+        if reason is None:
+            eligible[path.path_id] = path
+        else:
+            rejected.append(
+                {
+                    "path_id": path.path_id,
+                    "reason": reason,
+                    "support": path.support,
+                    "limitations": list(path.limitations),
+                }
+            )
+
+    limits = analysis.extensions.get("flowdelta.graph.limits")
+    truncated = isinstance(limits, dict) and limits.get("truncated") is True
+    selected: ImpactPath | None = None
+    if selected_path_id is not None:
+        selected = eligible.get(selected_path_id)
+        if selected is None:
+            if selected_path_id not in path_ids:
+                raise InputError("STATIC_PATH_NOT_FOUND")
+            raise InputError("STATIC_PATH_NOT_ELIGIBLE")
+        status = "EXPLICIT_LIMITED" if truncated else "EXPLICIT"
+    elif not paths:
+        status = "MISSING"
+    elif truncated:
+        status = "TRUNCATED"
+    elif len(eligible) == 1:
+        selected = next(iter(eligible.values()))
+        status = "AUTO_SELECTED"
+    elif eligible:
+        status = "AMBIGUOUS"
+    elif all(path.support != "SUPPORTED" or path.limitations for path in paths):
+        status = "UNSUPPORTED"
+    elif rejected and all(item["reason"] == "NO_C_TARGET_MATCH" for item in rejected):
+        status = "NO_C_TARGET_MATCH"
+    else:
+        status = "NO_ELIGIBLE_PATH"
+
+    return {
+        "status": status,
+        "selected_path_id": selected.path_id if selected is not None else None,
+        "support": selected.support if selected is not None else None,
+        "limitations": list(selected.limitations) if selected is not None else [],
+        "eligible_path_ids": cast(JsonValue, sorted(eligible)),
+        "rejected_paths": cast(JsonValue, rejected),
+        "graph_limits": limits,
+        "scope": "trace link only; C scans registered supported targets on both workflow sides",
+    }

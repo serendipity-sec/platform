@@ -20,6 +20,9 @@ from flowdelta.pipeline_contracts import (
     TemplateCatalog,
 )
 from flowdelta.pipeline_io import validate_input_fields
+from flowdelta.runtime.static_scan import StaticScanCatalog, StaticScanTemplate
+
+Catalog = TemplateCatalog | StaticScanCatalog
 
 
 @dataclass(frozen=True)
@@ -41,9 +44,10 @@ def author(analysis: AnalysisBundle, producer: str) -> Authorship:
 def context_fingerprint(
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     producer: str,
 ) -> str:
+    """Fingerprint planning inputs with either B's or C's registered catalog contract."""
     return digest(
         json_bytes(
             {
@@ -61,8 +65,9 @@ def retrieval_identity(
     snapshot: bytes,
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
 ) -> str:
+    """Derive a stable retrieval ID from the exact planning inputs and KB snapshot."""
     fingerprint = digest(
         producer.encode("utf-8")
         + snapshot
@@ -84,15 +89,23 @@ def retrieval_content_fingerprint(result: RetrievalResult) -> str:
 def exclusion_reason(
     card: ScenarioCard,
     handoff: Handoff,
-    templates: dict[tuple[str, str], Template],
+    templates: dict[tuple[str, str], Template | StaticScanTemplate],
     profile: object,
     node_types: Set[str],
 ) -> str | None:
+    """Check card fit against normal templates or targets C actually scans."""
     if card.runtime_profile != profile:
         return "RUNTIME_PROFILE_MISMATCH"
     template = templates.get((card.template_id, card.template_version))
     if template is None:
         raise InputError("TEMPLATE_NOT_FOUND")
+    if isinstance(template, StaticScanTemplate):
+        target_types = {target.node_type for target in template.targets}
+        if card.node_types and not (set(card.node_types) & node_types & target_types):
+            return "NODE_TYPE_MISMATCH"
+        if not set(card.required_artifact_kinds).issubset(template.result_kinds):
+            return "TEMPLATE_ARTIFACT_UNSUPPORTED"
+        return None
     if template.task_id != handoff.task.task_id or template.runtime_profile != profile:
         return "TEMPLATE_CONTEXT_MISMATCH"
     try:
@@ -324,11 +337,12 @@ def retrieve(
     handoff: Handoff,
     analysis: AnalysisBundle,
     cards: list[ScenarioCard],
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     *,
     kb_path: str = KB_SNAPSHOT_FILENAME,
     producer: str,
 ) -> RetrievalResult:
+    """Create a deterministic retrieval result for a normal or static-scan catalog."""
     return _retrieve_snapshot(
         handoff, analysis, _KnowledgeSnapshot.prepare(cards, kb_path), catalog, producer=producer
     )
@@ -338,10 +352,11 @@ def _retrieve_snapshot(
     handoff: Handoff,
     analysis: AnalysisBundle,
     snapshot: _KnowledgeSnapshot,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     *,
     producer: str,
 ) -> RetrievalResult:
+    """Rank cards against a canonical snapshot and the supplied registered catalog."""
     cards = snapshot.cards
     profile, node_types, fields, tokens = search_context(handoff, analysis)
     analysis_context, impacted_node_types, impact_tokens, impact_path_signals = (

@@ -185,22 +185,7 @@ def validate_pipeline(
     plan: TestPlan,
 ) -> None:
     """Cross-file contracts, independent of A/B's future generation algorithms."""
-    case = handoff.case
-    before, after = handoff.snapshots.snapshots
-    _same((analysis.case_id, plan.case_id), (case.case_id, case.case_id), "CASE_ID_MISMATCH")
-    expected_snapshots = (before.snapshot_id, after.snapshot_id)
-    _same(
-        (analysis.before_snapshot_id, analysis.after_snapshot_id),
-        expected_snapshots,
-        "SNAPSHOT_ID_MISMATCH",
-    )
-    _same(
-        (plan.before_snapshot_id, plan.after_snapshot_id),
-        expected_snapshots,
-        "SNAPSHOT_ID_MISMATCH",
-    )
-    _same(plan.analysis_id, analysis.analysis_id, "ANALYSIS_ID_MISMATCH")
-    _same(plan.catalog_id, catalog.catalog_id, "CATALOG_ID_MISMATCH")
+    _validate_pipeline_context(handoff, analysis, plan, catalog.catalog_id)
     templates = [
         item
         for item in catalog.templates
@@ -232,6 +217,34 @@ def validate_pipeline(
                     plan.normal_input[input_binding.input_name],
                     "MANUAL_INPUT_BINDING_MISMATCH",
                 )
+    for binding in plan.obligation_bindings:
+        if not set(binding.required_artifact_kinds).issubset(template.required_artifact_kinds):
+            raise InputError("TEMPLATE_ARTIFACT_MISSING")
+
+
+def _validate_pipeline_context(
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    plan: TestPlan,
+    catalog_id: str,
+) -> None:
+    """Validate shared case, reference, obligation, and graph links for any plan catalog."""
+    case = handoff.case
+    before, after = handoff.snapshots.snapshots
+    _same((analysis.case_id, plan.case_id), (case.case_id, case.case_id), "CASE_ID_MISMATCH")
+    expected_snapshots = (before.snapshot_id, after.snapshot_id)
+    _same(
+        (analysis.before_snapshot_id, analysis.after_snapshot_id),
+        expected_snapshots,
+        "SNAPSHOT_ID_MISMATCH",
+    )
+    _same(
+        (plan.before_snapshot_id, plan.after_snapshot_id),
+        expected_snapshots,
+        "SNAPSHOT_ID_MISMATCH",
+    )
+    _same(plan.analysis_id, analysis.analysis_id, "ANALYSIS_ID_MISMATCH")
+    _same(plan.catalog_id, catalog_id, "CATALOG_ID_MISMATCH")
     by_path = {ref.path: ref for ref in handoff.source_manifest.artifacts}
     for actual, path in [
         (analysis.task_ref, case.task_ref),
@@ -250,8 +263,6 @@ def validate_pipeline(
             binding.required_artifact_kinds
         ):
             raise InputError("OBLIGATION_ARTIFACT_MISSING")
-        if not set(binding.required_artifact_kinds).issubset(template.required_artifact_kinds):
-            raise InputError("TEMPLATE_ARTIFACT_MISSING")
     for side, graph, workflow in [
         ("before", analysis.before_graph, handoff.before),
         ("after", analysis.after_graph, handoff.after),

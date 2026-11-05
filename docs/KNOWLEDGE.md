@@ -1,6 +1,6 @@
-# B: 로컬 카드 검색과 정상 계획 생성
+# B: 로컬 카드 검색, 정상 계획과 C 정적 검사 계획
 
-이 구현은 계약 0.4.0의 카드와 등록 템플릿을 읽어 실행 계획을 만든다.
+이 구현은 계약 0.4.0의 카드와 등록 catalog를 읽어 계획을 만든다.
 workflow나 카드에 적힌 코드·URL을 실행하지 않는다. 공개 함수는
 `make_plan(handoff, analysis, cards, catalog) -> TestPlan`이다.
 
@@ -29,6 +29,32 @@ uv run --frozen --extra baseline flowdelta plan examples/contracts/order-lookup 
 팀장 #20 작성기에 파일을 명시적으로 전달하고, input/analysis/catalog도 함께 포함한다.
 기존 파일은 덮어쓰지 않는다. 파일 기록 실패 시 이 호출에서 만든 파일을 제거하고,
 plan을 마지막에 기록한다. 강제 종료에 대한 원자적 디렉터리 게시까지 제공하지는 않는다.
+
+## C 정적 검사 계획
+
+`flowdelta plan`은 `TemplateCatalog`와 별도 C `StaticScanCatalog`를 구분한다. 정적 catalog
+경로에서도 B는 같은 KB snapshot과 retrieval을 기록하고, `retrieval_ref.artifact_id`에
+`retrieval_id`를 연결한다. `plan_id`는 기존 규칙대로 retrieval ID에서 결정한다. 공유
+`TestPlan` schema는 바꾸지 않는다. C에는 이 `plan.json` 파일을 그대로 전달한다.
+
+StaticScanCatalog 계획은 C가 등록한 template ID/version, 빈 `normal_input`, 한 번의 시도,
+catalog의 timeout을 사용한다. obligation은 template의 `result_kinds`에 맞을 때만 bind하고,
+그 밖에는 `uncovered_obligation_ids`에 남긴다. B가 C 등록표와 rule hash를 확인하며, C도 실행
+직전 다시 검증한다. 실제 catalog는 `registered_catalog()`로 생성한다. `examples/static-scan/`
+파일은 `CONTRACT_EXAMPLE`이므로 등록 상태를 나타내는 입력으로 쓰지 않는다. 실제 명령은
+[n8n-claw A→B→C 재현](../examples/knowledge/n8n-claw-memory/README.md)을 참고한다.
+
+A의 모든 `impact_paths`와 `changes`는 `planner_metadata.analysis_context`에 보존된다. B는
+`SUPPORTED`, path limitation 없음, C가 같은 side workflow에서 실제 인식한 target과 교차하는
+경로만 선택 가능하다. 적격 경로가 하나면 자동 선택하고 여러 개면 `--path-id`를 받아 하나를
+선택한다. 없거나, 지원되지 않거나, 모호하거나, A 그래프가 잘렸으면 경로 선택 상태와 원래
+제한을 기록하고 `selected_path_id`를 비운다. 전체 경로가 잘렸으면 지원 경로가 하나 남아도
+자동으로 유일하다고 보지 않는다. 명시 ID로 선택한 경로도 A의 제한을 없애지 않는다.
+
+`selected_path_id`는 trace link다. C는 이 값을 파일 선택자로 쓰지 않고 등록된 지원 target을
+before와 after workflow 양쪽에서 검사한다. C의 `StaticScanRun.run_id`가 #78의 side별
+`scan_id`이며 `plan_id`로 B plan을 찾는다. scan 성공, finding 없음, 또는 경로 선택만으로
+안전 판정을 하지 않는다.
 
 ## 선택 규칙
 
@@ -65,11 +91,10 @@ retrieval은 KB 파일 bytes를, plan은 retrieval 파일 bytes를 참조한다.
 생성 KB가 8 MiB를 넘으면 `KNOWLEDGE_SNAPSHOT_SIZE_LIMIT`으로 기록 전에 거부한다.
 같은 입력과 같은 생성 규칙은 같은 ID를 만들며, 생성 규칙 버전이 바뀌면 ID도 달라진다.
 
-A의 실제 분석이 도착하면 같은 analysis.json 자리에 연결하면 된다.
-CLI의 analysis bundle에는 무결성 검사용 manifest.json과 input/이 필요하다.
-C는 plan의 template ID/version, 정상 입력, 초기 상태, attempts/timeout을 소비한다.
-전체 check-pipeline은 A 실제 생성물과 팀장 bundle 작성기가 연결된 뒤 수행한다.
-현재 예시 분석으로 생성한 B 파일만으로 전체 실제 pipeline 완료를 주장하지 않는다.
+A의 실제 분석은 `flowdelta bundle`로 `input/` handoff와 `analysis.json`을 묶어 B에 전달한다.
+C는 B plan의 template ID/version, 정적 입력 조건, initial-state reference, attempts/timeout을
+검사한다. Semgrep이 없거나 버전이 맞지 않으면 양쪽 scan을 `FAILED`로 기록하고 finding을
+비운다. 통합 절차와 적용 한계는 위 n8n-claw 재현 문서에 있다.
 
 테스트: `uv run --frozen --extra baseline pytest tests/knowledge`.
 전체 코드 검증은 `uv run --frozen --extra baseline sh tools/check-development.sh`로 실행한다.

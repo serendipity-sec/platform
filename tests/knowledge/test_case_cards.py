@@ -4,18 +4,19 @@ from pathlib import Path
 
 from flowdelta.contracts import SourceLocation
 from flowdelta.knowledge import load_cards, retrieve
+from flowdelta.runtime.static_scan import registered_catalog
 
 from .test_planner import inputs
 
 ROOT = Path(__file__).resolve().parents[2]
 CARD_DIRECTORY = ROOT / "examples/knowledge/n8n-claw-memory/cards"
 TOOL_CODE = "@n8n/n8n-nodes-langchain.toolCode"
-TEMPLATE_ID = "n8n-claw-memory-static-scan"
-TEMPLATE_VERSION = "0.1.0-proposed"
+TEMPLATE_ID = "static-agent-tool-ownership"
+TEMPLATE_VERSION = "0.1.0"
 
 
 def test_n8n_claw_cards_load_and_match_memory_delete_analysis_context():
-    handoff, analysis, _, catalog = inputs()
+    handoff, analysis, _, _ = inputs()
     handoff.task.task_id = "n8n-claw-memory"
     handoff.task.normal_input = {}
     handoff.environment.extensions["flowdelta.semantic_profile"] = "core-local-v1"
@@ -43,17 +44,7 @@ def test_n8n_claw_cards_load_and_match_memory_delete_analysis_context():
         )
     ]
 
-    catalog.templates = [
-        catalog.templates[0].model_copy(
-            update={
-                "template_id": TEMPLATE_ID,
-                "version": TEMPLATE_VERSION,
-                "task_id": "n8n-claw-memory",
-                "runtime_profile": "core-local-v1",
-                "input_fields": [],
-            }
-        )
-    ]
+    catalog = registered_catalog(ROOT)
     cards = load_cards(CARD_DIRECTORY)
 
     result = retrieve(handoff, analysis, cards, catalog)
@@ -65,6 +56,10 @@ def test_n8n_claw_cards_load_and_match_memory_delete_analysis_context():
     }
     assert all(hit.applicability == "MATCH" for hit in result.hits)
     assert not result.excluded_reasons
+    assert all(
+        (card.template_id, card.template_version) == (TEMPLATE_ID, TEMPLATE_VERSION)
+        for card in cards
+    )
 
 
 def test_card_provenance_matches_pinned_sources_and_replay_hash():

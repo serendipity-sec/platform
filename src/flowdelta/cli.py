@@ -349,15 +349,19 @@ def plan_command(
     catalog: Annotated[Path, typer.Option(help="Registered template catalog JSON.")],
     cards: Annotated[Path, typer.Option(help="Local card directory.")],
     out: Annotated[Path, typer.Option(help="New plan file at the future bundle root.")],
+    selected_path_id: Annotated[
+        str | None, typer.Option("--path-id", help="Explicit A impact path ID for static planning.")
+    ] = None,
     persist: Annotated[
         bool, typer.Option(help="Also store the exact B artifacts in configured PostgreSQL.")
     ] = False,
 ) -> None:
-    """Generate B's plan and optionally store its sibling retrieval/KB files in PostgreSQL."""
+    """Generate B's normal or C static-scan plan and optionally store its sibling artifacts."""
     from flowdelta.ingestion import _read_local, parse_file_model, parse_json
     from flowdelta.knowledge import load_cards, write_plan
     from flowdelta.pipeline_contracts import AnalysisBundle, TemplateCatalog
     from flowdelta.pipeline_io import read_handoff, read_manifest
+    from flowdelta.runtime.static_scan import StaticScanCatalog
 
     engine = None
     try:
@@ -366,9 +370,19 @@ def plan_command(
         if "analysis.json" not in documents:
             raise InputError("PIPELINE_FILE_MISSING")
         analysis = parse_file_model(AnalysisBundle, documents["analysis.json"])
-        templates = parse_file_model(
-            TemplateCatalog, parse_json(_read_local(catalog.parent.resolve(), catalog.name))
+        catalog_data = parse_json(_read_local(catalog.parent.resolve(), catalog.name))
+        entries = catalog_data.get("templates")
+        is_static_catalog = (
+            isinstance(entries, list)
+            and bool(entries)
+            and isinstance(entries[0], dict)
+            and entries[0].get("mode") == "STATIC_SCAN"
         )
+        templates: TemplateCatalog | StaticScanCatalog
+        if is_static_catalog:
+            templates = parse_file_model(StaticScanCatalog, catalog_data)
+        else:
+            templates = parse_file_model(TemplateCatalog, catalog_data)
         if persist:
             from flowdelta.knowledge.database import engine_for
             from flowdelta.knowledge.settings import KnowledgeSettings
@@ -380,6 +394,9 @@ def plan_command(
             load_cards(cards, bundle_root=root),
             templates,
             out,
+            handoff_root=root / "input",
+            repo_root=Path(__file__).resolve().parents[2],
+            selected_path_id=selected_path_id,
         )
         if engine is not None:
             from flowdelta.knowledge.repository import store_b_outputs
@@ -390,6 +407,10 @@ def plan_command(
                 {
                     "status": "PLAN_WRITTEN",
                     "plan_id": plan.plan_id,
+                    "retrieval_id": (
+                        plan.retrieval_ref.artifact_id if plan.retrieval_ref is not None else None
+                    ),
+                    "selected_path_id": plan.planner_metadata.get("selected_path_id"),
                     "analysis_origin": analysis.authorship.origin,
                     "database_status": "STORED" if persist else "NOT_REQUESTED",
                     "execution_status": "NOT_RUN",
