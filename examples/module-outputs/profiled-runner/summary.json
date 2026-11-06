@@ -2,12 +2,12 @@
   "allocated_runs": [
     {
       "attempt_number": 1,
-      "run_id": "run-67f51c2e443c4e618b942f35e7332017",
+      "run_id": "run-769833e3c2344c0a86c3d5fe6442a7b7",
       "side": "after"
     },
     {
       "attempt_number": 1,
-      "run_id": "run-5ca63fa27b494db4a345b34dd6f239b8",
+      "run_id": "run-902680b6ff3c40b2b22ea58a7b98db4a",
       "side": "before"
     }
   ],
@@ -34,7 +34,7 @@
   ],
   "analysis_origin": "MODULE_OUTPUT",
   "bundle": "bundle",
-  "bundle_manifest_sha256": "1e6b2d23836c5ea78c93187cf887b6407fa5e4eaa671d7f0676d0ce4545e743a",
+  "bundle_manifest_sha256": "9d3135fa9fb1cd454ff3fdb7f95beef46a19bc1b091b4c7bb27be2cddcc88135",
   "case_id": "order-lookup-demo-001",
   "catalog_sha256": "286f926b92802ccec32e9800bdfba6cea9d16f3f6d71f2e6a304311e5b464bde",
   "contract_validation": {
@@ -57,24 +57,24 @@
     "before_snapshot_id": "snapshot-6c2c5c4df1dc8d596b13028ad0c2163ea848b58fbfd5f0f76b7e27b6ac2873c4",
     "case_id": "order-lookup-demo-001",
     "extensions": {},
-    "handoff_sha256": "ce0e1882ce54ae1a6dd50dd01302a95b3ef3447ae2fa34edd437139941eec726",
-    "profile_id": "pr87-review-order",
-    "profile_revision": "1",
-    "profile_sha256": "49f33ced450487df5533b57697593dc1abe834c6e0edd79232e3b02c608904b1",
+    "handoff_sha256": "a5de039ca23a5b2bb978bd7915ce4221c32753348b39039ca389e2c57daff598",
+    "profile_id": "order-lookup-review",
+    "profile_revision": "2026-10-24",
+    "profile_sha256": "2853bd8e455062f947af664ef90eb7f6f8c3edfa48eb9c0f685b531c39a1bce4",
     "record_format": "flowdelta-input-record-v1",
-    "record_id": "input-13f9fb02b2d7da32c159a379bab23fefd3f7fb1812f25e9591fd52ac34cc5221",
+    "record_id": "input-b14254d8d5072275ba131515f545e4a8efc4af4fa12fe0fa1947908ea12b769e",
     "schema_version": "0.4.0",
     "source_manifest_sha256": "994329925aeed388d6bdf26cee9e67a279b601888195376f8b6373228635d444"
   },
   "kb_sha256": "d0668162282dc7181e64f6c6e25314cf4753d044053fc078160504583607c2fb",
   "mode": "EXECUTE_REGISTERED",
-  "orchestration_id": "pipeline-94408d2219e54695b4f16b5aabeb32b3",
-  "plan_id": "plan-ce1966c6f36b9878cc70a92b",
+  "orchestration_id": "pipeline-7076daa2d8be4ae9a0efc52f913906ac",
+  "plan_id": "plan-2a7232a770d492f836301bf9",
   "plan_origin": "MODULE_OUTPUT",
   "producer_version": "0.1.0",
   "record_format": "flowdelta-pipeline-run-v1",
-  "retrieval_id": "retrieval-ce1966c6f36b9878cc70a92b",
-  "retrieval_sha256": "fbc438ca9c9f28b9d2f3f77f06c29b811de9c55ffedb0187a4ab0de2e9fbab40",
+  "retrieval_id": "retrieval-2a7232a770d492f836301bf9",
+  "retrieval_sha256": "d5a5d10035a37a5c6e920edfbc4fc24a7c948b664f9f9934cc1f9e1831faf128",
   "runs": [
     {
       "attempt_number": 1,
@@ -83,7 +83,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-5ca63fa27b494db4a345b34dd6f239b8",
+      "run_id": "run-902680b6ff3c40b2b22ea58a7b98db4a",
       "side": "before"
     },
     {
@@ -93,7 +93,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-67f51c2e443c4e618b942f35e7332017",
+      "run_id": "run-769833e3c2344c0a86c3d5fe6442a7b7",
       "side": "after"
     }
   ],
@@ -113,10 +113,10 @@
     "runtime/knowledge/init-app.sh": "350e02facd6e14cf5da264eb5c54e59581c98ce4d8f9b15daeb7bfc42d4b472c",
     "runtime/order-lookup/approved-inputs.json": "cf97ff12e762ed3e1063a68e0c6b71ac3e1102d8627d046740947eb133f82976",
     "runtime/order-lookup/compose.yaml": "4178631aff8393549a6fdde26fbf22dfd8e1c8e0deae7f0c925383ad1c785033",
-    "runtime/order-lookup/evidence/README.md": "9ebbe8b4df5fbba25935b5a760eb5b4d2856712f03faaa0ce4a70ce5c83b538a",
+    "runtime/order-lookup/evidence/README.md": "81327c88d34f5bcc953e34185332e0e57eaeef0302162425ef2653a3f74f8240",
     "runtime/order-lookup/evidence/local-2026-10-11.json": "a13f17ac949c708544c22a5f77fc6e2f9196506bcbd2149d58311f8526a604e6",
     "runtime/order-lookup/expected.json": "36a79fc4cd6e93f2d32c0e6393557a6da3b27277f12acf5c1c40446b72dd1cde",
-    "runtime/order-lookup/fixture.Dockerfile": "605e4330ee64b0f8f6e11d4447993d268f246eab561eac917280f3861dda9a14",
+    "runtime/order-lookup/fixture.Dockerfile": "cbdf2379d0643aee7fcf21ccafb5e3047f03253c1f5bb683ef41138232cdaec7",
     "runtime/order-lookup/inspect-nodes.js": "83330edd789a814e9953f0e0c4d22e19b5fa7e1da112d55c2371819718f42665",
     "runtime/order-lookup/inspect-readiness-nodes.js": "3ac9b34c7b0a0cbeeca92ffafbfd440605562e5c6dadbce5ba0d88862ab9d158",
     "runtime/order-lookup/node-metadata.json": "0164cdc49b23f77ae6002f6157832e2ad34fc90ab67eb0e879a1c47c055839f9",
@@ -226,9 +226,9 @@
     "src/flowdelta/semantics.py": "f5f224dab71a16c75fd5ddde95724074f278d8ead9359ba7f2a3cf8a132cc1c4",
     "src/flowdelta/snapshots.py": "bd4d90a064de1f3f018553f4537e1c60a27c9ee7d8acec47bcf836a59d05dda2",
     "tools/check_profiled_order.py": "1c7efd70290b29a0797d8cfaef3b2a37b4c88157f50d1087a90b1c61874f29f3",
-    "uv.lock": "d9e65245e406cf19744c49321bfc92092c437c7b3e6532f20bc9e0d44b6605e3"
+    "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
   },
-  "source_tree_sha256": "36119eca928c228c76cb2017eb11f7ab7f17857681a19f200f165de8d3023a36",
+  "source_tree_sha256": "db29c1e9cc97531927975ceebf46bbc3e7e3fea48cdf80fe3e08dce068cecff6",
   "stages": {
     "analysis": "SUCCEEDED",
     "bundle": "SUCCEEDED",
