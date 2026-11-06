@@ -12,6 +12,7 @@ from flowdelta.pipeline_contracts import RetrievalResult
 from flowdelta.pipeline_io import verify_ref
 
 from .test_planner import inputs
+from .test_static_planning import ROOT, planning_inputs
 
 PROFILE = EmbeddingProfile(
     provider="test-provider",
@@ -120,6 +121,57 @@ import flowdelta.knowledge.planner
         [sys.executable, "-c", code], capture_output=True, text=True, check=False
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_vector_static_plan_binds_selection_and_preserves_static_contract(tmp_path, monkeypatch):
+    from flowdelta.graph.analyze import identified
+    from flowdelta.runtime.static_scan import validate_static_plan
+
+    handoff, analysis, cards, catalog, handoff_root = planning_inputs(tmp_path)
+    analysis.impact_paths.append(
+        analysis.impact_paths[0].model_copy(update={"path_id": "impact-also"})
+    )
+    analysis = identified(analysis)
+    _install_search(monkeypatch, cards, [0.75] * len(cards))
+    plans = []
+    for label, selected in [
+        ("unselected", None),
+        ("first", "impact-memory-delete"),
+        ("second", "impact-also"),
+    ]:
+        output = tmp_path / label / "plan.json"
+        output.parent.mkdir()
+        plan = planner.write_vector_plan(
+            handoff,
+            analysis,
+            catalog,
+            output,
+            engine=object(),
+            provider=_Provider(),
+            handoff_root=handoff_root,
+            repo_root=ROOT,
+            selected_path_id=selected,
+        )
+        validate_static_plan(plan, catalog, ROOT)
+        assert plan.planner_metadata["selected_path_id"] == selected
+        assert plan.planner_metadata["security_outcome"] is None
+        plans.append(plan)
+    assert len({plan.plan_id for plan in plans}) == 3
+    assert plans[0].planner_metadata["path_selection"]["status"] == "AMBIGUOUS"
+    retrieval = parse_file_model(
+        RetrievalResult, parse_json((tmp_path / "first" / plans[1].retrieval_ref.path).read_bytes())
+    )
+    with pytest.raises(InputError, match="RETRIEVAL_ID_MISMATCH"):
+        planner.compose_plan(
+            handoff,
+            analysis,
+            cards,
+            catalog,
+            retrieval,
+            handoff_root=handoff_root,
+            repo_root=ROOT,
+            selected_path_id="impact-also",
+        )
 
 
 def test_different_change_values_produce_different_vector_queries_and_plan_ids(

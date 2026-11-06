@@ -156,7 +156,7 @@
         "The caller must be able to reach the agent/tool path; caller authentication and invocation policy were not evaluated."
       ],
       "security_significance": "The tested revision lacks an object ownership guard before a privileged delete sink. The synthetic foreign-row deletion supports a code-level authorization gap in this revision, not a claim about a deployed instance.",
-      "template_status": "PROPOSED_NOT_REGISTERED",
+      "template_status": "REGISTERED",
       "unknowns_and_limits": [
         "The harness ran selected tool JavaScript against a fixed synthetic receiver and context; it did not run the full n8n plus LLM agent or a real database.",
         "The actual deployed workflow revision, Supabase role and row-level security, caller access controls, and production exposure are unknown.",
@@ -189,8 +189,8 @@
   "source_ref": null,
   "source_revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
   "summary": "Memory Delete toolCode의 jsCode 변경에서 요청자 소유권 검사를 확인한다. feature-add replay는 foreign memory_long 행의 삭제를 관측했다. description과 jsCode 변경은 검색 단서이며 안전 판정은 아니다.",
-  "template_id": "n8n-claw-memory-static-scan",
-  "template_version": "0.1.0-proposed",
+  "template_id": "static-agent-tool-ownership",
+  "template_version": "0.1.0",
   "title": "Memory Delete jsCode의 소유권 검사 누락",
   "version": "1.0.0"
 }

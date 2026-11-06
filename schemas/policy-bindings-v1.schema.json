@@ -1,0 +1,286 @@
+{
+  "$defs": {
+    "ObjectOwnershipBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_exceptions": {
+          "items": {
+            "$ref": "#/$defs/PolicyException"
+          },
+          "title": "Allowed Exceptions",
+          "type": "array"
+        },
+        "applies_to": {
+          "items": {
+            "$ref": "#/$defs/PolicyNodeTarget"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Applies To",
+          "type": "array"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/PolicyEvidence"
+          },
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "forbidden_effect": {
+          "$ref": "#/$defs/PolicyEffect"
+        },
+        "policy_kind": {
+          "const": "OBJECT_OWNERSHIP",
+          "title": "Policy Kind",
+          "type": "string"
+        },
+        "protected_resource": {
+          "$ref": "#/$defs/PolicyResource"
+        },
+        "rule_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "subject": {
+          "$ref": "#/$defs/PolicySubject"
+        }
+      },
+      "required": [
+        "rule_id",
+        "policy_kind",
+        "applies_to",
+        "protected_resource",
+        "subject",
+        "forbidden_effect",
+        "allowed_exceptions",
+        "evidence_refs"
+      ],
+      "title": "ObjectOwnershipBinding",
+      "type": "object"
+    },
+    "PolicyEffect": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Condition",
+          "type": "string"
+        },
+        "operation": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Operation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation",
+        "condition"
+      ],
+      "title": "PolicyEffect",
+      "type": "object"
+    },
+    "PolicyEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "RESEARCH_POLICY",
+            "BUSINESS_REQUIREMENT",
+            "PUBLIC_IMPLEMENTATION"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "rationale": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "reference": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Reference",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "reference",
+        "rationale"
+      ],
+      "title": "PolicyEvidence",
+      "type": "object"
+    },
+    "PolicyException": {
+      "additionalProperties": false,
+      "properties": {
+        "condition": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Condition",
+          "type": "string"
+        },
+        "evidence_refs": {
+          "items": {
+            "$ref": "#/$defs/PolicyEvidence"
+          },
+          "minItems": 1,
+          "title": "Evidence Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "condition",
+        "evidence_refs"
+      ],
+      "title": "PolicyException",
+      "type": "object"
+    },
+    "PolicyNodeTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "json_pointer": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Json Pointer"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "title": "Side",
+          "type": "string"
+        }
+      },
+      "required": [
+        "side",
+        "node_id"
+      ],
+      "title": "PolicyNodeTarget",
+      "type": "object"
+    },
+    "PolicyResource": {
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Fields",
+          "type": "array"
+        },
+        "resource": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Resource",
+          "type": "string"
+        }
+      },
+      "required": [
+        "resource",
+        "fields"
+      ],
+      "title": "PolicyResource",
+      "type": "object"
+    },
+    "PolicySubject": {
+      "additionalProperties": false,
+      "properties": {
+        "field_path": {
+          "items": {
+            "maxLength": 4096,
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Field Path",
+          "type": "array"
+        },
+        "json_pointer": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Json Pointer"
+        },
+        "node_id": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Node Id",
+          "type": "string"
+        },
+        "side": {
+          "enum": [
+            "before",
+            "after"
+          ],
+          "title": "Side",
+          "type": "string"
+        }
+      },
+      "required": [
+        "side",
+        "node_id",
+        "field_path"
+      ],
+      "title": "PolicySubject",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bindings": {
+      "items": {
+        "$ref": "#/$defs/ObjectOwnershipBinding"
+      },
+      "maxItems": 128,
+      "minItems": 1,
+      "title": "Bindings",
+      "type": "array"
+    },
+    "version": {
+      "const": "1.0.0",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "bindings"
+  ],
+  "title": "PolicyBindings",
+  "type": "object"
+}

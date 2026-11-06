@@ -65,6 +65,11 @@ uv run --frozen --extra knowledge flowdelta plan <analysis-bundle> \
   --catalog <template-catalog.json> --shared-cards --out <producer-dir>/plan.json
 ```
 
+등록된 `STATIC_SCAN` catalog도 같은 명령으로 소비한다. A의 영향 경로가 여러 개라면
+`--path-id <impact-path-id>`로 선택하며, 선택 요청은 벡터 검색의 retrieval/plan ID에 포함된다.
+다른 경로를 선택한 검색 결과를 재사용하려 하면 거부한다. 경로 미선택·잘림·미지원은 기존 정적
+계획의 불확실성으로 보존하며 `security_outcome=null`을 유지한다.
+
 `index-cards`는 bounded `load_cards()`로 카드를 읽고 bundle root의 source provenance를 확인한다.
 현재 실행 중인 Ollama model digest에서 profile을 메타데이터만으로 해석한 뒤 색인 API에 전달한다.
 색인 명령은 profile 확인을 위해 기존 카드를 다시 임베딩하지 않는다. 같은 `(card_id, version)`에

@@ -29,6 +29,9 @@ from flowdelta.pipeline_contracts import (
     TemplateCatalog,
 )
 from flowdelta.pipeline_io import validate_input_fields
+from flowdelta.runtime.static_scan import StaticScanCatalog, StaticScanTemplate
+
+Catalog = TemplateCatalog | StaticScanCatalog
 
 if TYPE_CHECKING:
     from sqlalchemy import Engine
@@ -58,9 +61,10 @@ def author(analysis: AnalysisBundle, producer: str) -> Authorship:
 def context_fingerprint(
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     producer: str,
 ) -> str:
+    """Fingerprint planning inputs with either B's or C's registered catalog contract."""
     return digest(
         json_bytes(
             {
@@ -78,14 +82,23 @@ def retrieval_identity(
     snapshot: bytes,
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
+    *,
+    selected_path_id: str | None = None,
 ) -> str:
+    """Derive retrieval identity, binding static plans to their path-selection request."""
+    selection_identity = (
+        json_bytes({"selected_path_id": selected_path_id})
+        if isinstance(catalog, StaticScanCatalog)
+        else b""
+    )
     fingerprint = digest(
         producer.encode("utf-8")
         + snapshot
         + json_bytes(analysis.model_dump(mode="json"))
         + json_bytes(catalog.model_dump(mode="json"))
         + json_bytes(handoff.model_dump(mode="json"))
+        + selection_identity
     )[:24]
     return f"retrieval-{fingerprint}"
 
@@ -95,17 +108,24 @@ def vector_retrieval_identity(
     snapshot: bytes,
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     profile: dict[str, JsonValue],
     query_sha256: str,
     candidates: list[dict[str, JsonValue]],
     result_fingerprint: str,
+    *,
+    selected_path_id: str | None = None,
 ) -> str:
     fingerprint = digest(
         json_bytes(
             {
                 "base_retrieval_id": retrieval_identity(
-                    producer, snapshot, handoff, analysis, catalog
+                    producer,
+                    snapshot,
+                    handoff,
+                    analysis,
+                    catalog,
+                    selected_path_id=selected_path_id,
                 ),
                 "method": "VECTOR",
                 "profile": profile,
@@ -129,13 +149,14 @@ def retrieval_content_fingerprint(result: RetrievalResult) -> str:
 def exclusion_reason(
     card: ScenarioCard,
     handoff: Handoff,
-    templates: dict[tuple[str, str], Template],
+    templates: dict[tuple[str, str], Template | StaticScanTemplate],
     profile: object,
     node_types: Set[str],
     *,
     exclude_unregistered_template: bool = False,
     check_artifacts: bool = False,
 ) -> str | None:
+    """Check card fit against normal templates or targets C actually scans."""
     if card.runtime_profile != profile:
         return "RUNTIME_PROFILE_MISMATCH"
     template = templates.get((card.template_id, card.template_version))
@@ -143,6 +164,13 @@ def exclusion_reason(
         if exclude_unregistered_template:
             return "TEMPLATE_NOT_REGISTERED"
         raise InputError("TEMPLATE_NOT_FOUND")
+    if isinstance(template, StaticScanTemplate):
+        target_types = {target.node_type for target in template.targets}
+        if card.node_types and not (set(card.node_types) & node_types & target_types):
+            return "NODE_TYPE_MISMATCH"
+        if not set(card.required_artifact_kinds).issubset(template.result_kinds):
+            return "TEMPLATE_ARTIFACT_UNSUPPORTED"
+        return None
     if template.task_id != handoff.task.task_id or template.runtime_profile != profile:
         return "TEMPLATE_CONTEXT_MISMATCH"
     try:
@@ -184,7 +212,7 @@ def search_context(
 def retrieval_query_context(
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     producer: str,
 ) -> dict[str, JsonValue]:
     profile, node_types, fields, _ = search_context(handoff, analysis)
@@ -225,7 +253,7 @@ def _embedding_safe_value(value: JsonValue, source: SourceLocation | None, kind:
 def vector_query_context(
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     producer: str,
 ) -> dict[str, JsonValue]:
     """Send bounded analysis values to a trusted endpoint; redaction is heuristic."""
@@ -468,13 +496,20 @@ def retrieve(
     handoff: Handoff,
     analysis: AnalysisBundle,
     cards: list[ScenarioCard],
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     *,
     kb_path: str = KB_SNAPSHOT_FILENAME,
     producer: str,
+    selected_path_id: str | None = None,
 ) -> RetrievalResult:
+    """Create a retrieval result whose static identity includes the requested path ID."""
     return _retrieve_snapshot(
-        handoff, analysis, _KnowledgeSnapshot.prepare(cards, kb_path), catalog, producer=producer
+        handoff,
+        analysis,
+        _KnowledgeSnapshot.prepare(cards, kb_path),
+        catalog,
+        producer=producer,
+        selected_path_id=selected_path_id,
     )
 
 
@@ -482,10 +517,12 @@ def _retrieve_snapshot(
     handoff: Handoff,
     analysis: AnalysisBundle,
     snapshot: _KnowledgeSnapshot,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     *,
     producer: str,
+    selected_path_id: str | None = None,
 ) -> RetrievalResult:
+    """Rank cards and include static path selection in the retrieval artifact identity."""
     cards = snapshot.cards
     profile, node_types, fields, tokens = search_context(handoff, analysis)
     _, impacted_node_types, impact_tokens, impact_path_signals = analysis_retrieval_context(
@@ -512,7 +549,14 @@ def _retrieve_snapshot(
         candidates.append((card, score, applicability, reason))
     candidates.sort(key=lambda item: (-item[1], item[0].card_id, item[0].version))
     result = RetrievalResult(
-        retrieval_id=retrieval_identity(producer, snapshot.data, handoff, analysis, catalog),
+        retrieval_id=retrieval_identity(
+            producer,
+            snapshot.data,
+            handoff,
+            analysis,
+            catalog,
+            selected_path_id=selected_path_id,
+        ),
         analysis_id=analysis.analysis_id,
         authorship=author(analysis, producer),
         kb_snapshot_ref=snapshot.reference,
@@ -547,13 +591,14 @@ def _vector_hit_reason(score: float) -> str:
 def retrieve_vector_snapshot(
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: Catalog,
     *,
     engine: Engine,
     provider: EmbeddingProvider,
     limit: int,
     kb_path: str,
     producer: str,
+    selected_path_id: str | None = None,
 ) -> tuple[_KnowledgeSnapshot, RetrievalResult]:
     from flowdelta.knowledge.card_catalog import (
         MAX_SEARCH_LIMIT,
@@ -677,5 +722,6 @@ def retrieve_vector_snapshot(
         query_sha256,
         vector_candidates,
         result_fingerprint,
+        selected_path_id=selected_path_id,
     )
     return snapshot, result

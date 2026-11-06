@@ -77,26 +77,67 @@ supporting content. Current `load_cards()` validates the card structure, duplica
 and an optional `source_ref`; it does not resolve these extension references or require human review
 and promotion. Those semantic evidence-reference checks belong to future #82 draft validation.
 
-The current keyword retrieval filters on task, runtime profile, and node type, then searches card
-title and summary for changed field names. The summaries include `jsCode` and `description`; a match
-only ranks evidence for review. It does not assess ownership or safety. Retrieval does not search
-the extension evidence, impact paths, or policy bindings.
+For a normal `TemplateCatalog`, keyword retrieval filters on task, runtime profile, and node type,
+then searches card title and summary for changed field names. The static-catalog path instead checks
+the card profile, referenced C template, and its declared target type. In both cases a match only
+ranks evidence for review. Retrieval does not assess ownership or safety or search the extension
+evidence, impact paths, or policy bindings.
 
-With the local test catalog stub matching the proposed template, both cards appear for both
-generated A comparison pairs. Retrieval does not use the exact source revision or case ID, so the
-two hits are evidence candidates rather than a version-specific decision.
+The cards now reference C's registered `static-agent-tool-ownership@0.1.0` template. B's static
+catalog path writes the ordinary B `kb-snapshot.json`, `retrieval.json`, and C-consumable
+`plan.json`. The `REGISTERED` card extension means that the C template exists; it does not mean this
+case has a #78 C run. The card's cited 0.4.0 Semgrep report remains independent evidence and is not
+replaced by a B-generated run.
 
-The current `main` [catalog](../../../examples/static-scan/catalog.json) registers the separate
-C-side template `static-agent-tool-ownership@0.1.0`. That does not register the cards' proposed
-`n8n-claw-memory-static-scan@0.1.0-proposed` reference; the cards retain
-`template_status=PROPOSED_NOT_REGISTERED`. B-to-C plan-to-static-scan integration remains
-incomplete under #78. These cards and the standalone tool-fit report are not B-generated C-plan
-execution results.
+## A → B → C reproduction
+
+Python 3.13, `uv`, and the pinned n8n-claw sources are required for A. Run from the repository root:
+
+```bash
+mkdir -p var
+uv run --frozen --extra baseline --extra knowledge python experiments/n8n-claw-a/build_cases.py --out var/claw-a
+uv run --frozen --extra baseline --extra knowledge flowdelta snapshot var/claw-a/first-fix/case --out var/claw-a/first-fix/handoff
+uv run --frozen --extra baseline --extra knowledge flowdelta analyze var/claw-a/first-fix/handoff --out var/claw-a/first-fix/analysis.json
+uv run --frozen --extra baseline flowdelta bundle var/claw-a/first-fix/handoff \
+  --out var/claw-a/first-fix/bundle \
+  --artifact analysis.json=var/claw-a/first-fix/analysis.json
+mkdir -p var/claw-a/first-fix/b-plan
+uv run --frozen --extra baseline --extra knowledge python -c 'from pathlib import Path; from flowdelta.ingestion import json_bytes; from flowdelta.runtime.static_scan import registered_catalog; Path("var/claw-a/static-scan-catalog.json").write_bytes(json_bytes(registered_catalog(Path.cwd()).model_dump(mode="json")))'
+uv run --frozen --extra baseline flowdelta plan var/claw-a/first-fix/bundle \
+  --catalog var/claw-a/static-scan-catalog.json \
+  --cards examples/knowledge/n8n-claw-memory/cards \
+  --out var/claw-a/first-fix/b-plan/plan.json
+uv run --frozen --extra baseline --extra knowledge --with semgrep==1.181.0 python -m flowdelta.runtime.static_cli \
+  --handoff var/claw-a/first-fix/bundle/input \
+  --plan var/claw-a/first-fix/b-plan/plan.json \
+  --catalog var/claw-a/static-scan-catalog.json \
+  --out var/claw-a/first-fix/c-run
+```
+
+The catalog is generated from C's `registered_catalog()` and checks the checked-in rule bytes;
+`examples/static-scan/catalog.json` is a `CONTRACT_EXAMPLE`, not the source for this run. B's
+`plan.retrieval_ref.artifact_id` is the `retrieval_id`, and `plan_id` is derived from it. C's
+`StaticScanRun.run_id` is the #78 `scan_id` for each side, which also references that `plan_id`.
+
+`selected_path_id` is a trace link. C scans every registered supported target in both workflow
+sides, independent of that path. A's first-fix analysis keeps 20 of 44 paths, marks them all
+`UNKNOWN`, and sets `complete=false`; by default B records `path_selection.status=TRUNCATED` and
+leaves `selected_path_id` null. An explicit ID can resolve an ambiguity only when that path itself
+is `SUPPORTED` and intersects a target C actually recognizes. Explanatory path limitations are
+preserved in the selection and analysis context; their presence does not change the support state.
+Neither a successful scan nor an empty finding list proves the workflow safe.
+
+On 2026-11-05 this command completed both scans with Semgrep 1.181.0 and rule 0.6.0: before had
+two `WARNING` findings, after had four, and each side retained eight unsupported targets. This
+rule can flag code that contains ownership checks because the check is a static review condition,
+not a policy evaluator. Both runs have `outcome=null`; the finding count does not establish a
+regression or a safety verdict.
 
 `runtime_profile=core-local-v1` is the temporary A-analysis adapter profile, not a verified
-n8n-claw deployment profile. The cards still declare `required_artifact_kinds: []`; the standalone
-C catalog is not wired into B plan generation for these cards.
-The cards cover direct `memory_long` row deletion only. Optional entity/relation cascade, actual
+n8n-claw deployment profile. The cards still declare `required_artifact_kinds: []`; the actual case
+requires initial/final state evidence, which the static scan cannot provide, so B leaves that
+obligation uncovered. C records unsupported nodes and tool failures instead of treating them as
+clean results. The cards cover direct `memory_long` row deletion only. Optional entity/relation cascade, actual
 service-key permissions, row-level security, caller authentication, and production deployment
 remain outside the available evidence.
 

@@ -113,10 +113,25 @@ def test_shared_plan_uses_vector_planner_and_persists_outputs(tmp_path, monkeypa
     planned = []
     persisted = []
 
-    def write_vector_plan(handoff, analysis, catalog, output, *, engine, provider, limit=50):
+    def write_vector_plan(
+        handoff,
+        analysis,
+        catalog,
+        output,
+        *,
+        engine,
+        provider,
+        limit=50,
+        handoff_root=None,
+        repo_root=None,
+        selected_path_id=None,
+    ):
+        assert handoff_root == root / "input"
+        assert repo_root == root.parents[2]
+        assert selected_path_id is None
         planned.append((analysis.analysis_id, catalog.model_dump(mode="json"), engine, provider))
         output.write_bytes(b"exact-plan-output")
-        return SimpleNamespace(plan_id="plan-shared-exact")
+        return SimpleNamespace(plan_id="plan-shared-exact", retrieval_ref=None, planner_metadata={})
 
     monkeypatch.setenv("FLOWDELTA_KB_DATABASE_URL", "postgresql+psycopg://app:secret@db/kb")
     monkeypatch.setattr(planner, "write_vector_plan", write_vector_plan)

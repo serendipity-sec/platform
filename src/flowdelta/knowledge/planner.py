@@ -26,11 +26,12 @@ from flowdelta.pipeline_contracts import (
     TemplateCatalog,
     TestPlan,
 )
+from flowdelta.runtime.static_scan import StaticScanCatalog
 
 if TYPE_CHECKING:
     from sqlalchemy import Engine
 
-PRODUCER = "flowdelta.knowledge/1.2.0"
+PRODUCER = "flowdelta.knowledge/1.3.0"
 __all__ = [
     "compose_plan",
     "kb_bytes",
@@ -46,32 +47,69 @@ def retrieve(
     handoff: Handoff,
     analysis: AnalysisBundle,
     cards: list[ScenarioCard],
-    catalog: TemplateCatalog,
+    catalog: TemplateCatalog | StaticScanCatalog,
     *,
     kb_path: str = KB_SNAPSHOT_FILENAME,
+    selected_path_id: str | None = None,
 ) -> RetrievalResult:
-    return _retrieve_cards(handoff, analysis, cards, catalog, kb_path=kb_path, producer=PRODUCER)
+    """Rank cards and bind static retrieval identity to the requested path ID."""
+    return _retrieve_cards(
+        handoff,
+        analysis,
+        cards,
+        catalog,
+        kb_path=kb_path,
+        producer=PRODUCER,
+        selected_path_id=selected_path_id,
+    )
 
 
 def compose_plan(
     handoff: Handoff,
     analysis: AnalysisBundle,
     cards: list[ScenarioCard],
-    catalog: TemplateCatalog,
+    catalog: TemplateCatalog | StaticScanCatalog,
     retrieval: RetrievalResult,
+    *,
+    handoff_root: Path | None = None,
+    repo_root: Path | None = None,
+    selected_path_id: str | None = None,
 ) -> TestPlan:
-    """Consume a fixed search result without repeating retrieval or external I/O."""
-    return _compose(handoff, analysis, cards, catalog, retrieval, producer=PRODUCER)
+    """Compose a fixed retrieval result whose identity matches the requested static path."""
+    return _compose(
+        handoff,
+        analysis,
+        cards,
+        catalog,
+        retrieval,
+        producer=PRODUCER,
+        handoff_root=handoff_root,
+        repo_root=repo_root,
+        selected_path_id=selected_path_id,
+    )
 
 
 def make_plan(
     handoff: Handoff,
     analysis: AnalysisBundle,
     cards: list[ScenarioCard],
-    catalog: TemplateCatalog,
+    catalog: TemplateCatalog | StaticScanCatalog,
+    *,
+    handoff_root: Path | None = None,
+    repo_root: Path | None = None,
+    selected_path_id: str | None = None,
 ) -> TestPlan:
+    """Generate a deterministic plan bound to its static path-selection request."""
+    retrieval = retrieve(handoff, analysis, cards, catalog, selected_path_id=selected_path_id)
     return compose_plan(
-        handoff, analysis, cards, catalog, retrieve(handoff, analysis, cards, catalog)
+        handoff,
+        analysis,
+        cards,
+        catalog,
+        retrieval,
+        handoff_root=handoff_root,
+        repo_root=repo_root,
+        selected_path_id=selected_path_id,
     )
 
 
@@ -79,25 +117,50 @@ def write_plan(
     handoff: Handoff,
     analysis: AnalysisBundle,
     cards: list[ScenarioCard],
-    catalog: TemplateCatalog,
+    catalog: TemplateCatalog | StaticScanCatalog,
     output: Path,
+    *,
+    handoff_root: Path | None = None,
+    repo_root: Path | None = None,
+    selected_path_id: str | None = None,
 ) -> TestPlan:
+    """Publish artifacts whose static retrieval identity includes the requested path ID."""
     kb_path, _, _ = validate_output_paths(output)
     snapshot = _KnowledgeSnapshot.prepare(cards, kb_path.name)
-    retrieval = _retrieve(handoff, analysis, snapshot, catalog, producer=PRODUCER)
-    plan = _compose_snapshot(handoff, analysis, snapshot, catalog, retrieval, producer=PRODUCER)
+    retrieval = _retrieve(
+        handoff,
+        analysis,
+        snapshot,
+        catalog,
+        producer=PRODUCER,
+        selected_path_id=selected_path_id,
+    )
+    plan = _compose_snapshot(
+        handoff,
+        analysis,
+        snapshot,
+        catalog,
+        retrieval,
+        producer=PRODUCER,
+        handoff_root=handoff_root,
+        repo_root=repo_root,
+        selected_path_id=selected_path_id,
+    )
     return _write_snapshot(snapshot, retrieval, plan, output)
 
 
 def write_vector_plan(
     handoff: Handoff,
     analysis: AnalysisBundle,
-    catalog: TemplateCatalog,
+    catalog: TemplateCatalog | StaticScanCatalog,
     output: Path,
     *,
     engine: Engine,
     provider: EmbeddingProvider,
     limit: int = 50,
+    handoff_root: Path | None = None,
+    repo_root: Path | None = None,
+    selected_path_id: str | None = None,
 ) -> TestPlan:
     kb_path, _, _ = validate_output_paths(output)
     snapshot, retrieval = retrieve_vector_snapshot(
@@ -109,6 +172,17 @@ def write_vector_plan(
         limit=limit,
         kb_path=kb_path.name,
         producer=PRODUCER,
+        selected_path_id=selected_path_id,
     )
-    plan = _compose_snapshot(handoff, analysis, snapshot, catalog, retrieval, producer=PRODUCER)
+    plan = _compose_snapshot(
+        handoff,
+        analysis,
+        snapshot,
+        catalog,
+        retrieval,
+        producer=PRODUCER,
+        handoff_root=handoff_root,
+        repo_root=repo_root,
+        selected_path_id=selected_path_id,
+    )
     return _write_snapshot(snapshot, retrieval, plan, output)

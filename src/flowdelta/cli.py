@@ -11,10 +11,14 @@ from flowdelta.graph.cli import app as analysis_db_app
 from flowdelta.handoff import build_handoff, write_handoff
 from flowdelta.ingestion import InputError, json_bytes, load_case
 from flowdelta.knowledge.cli import app as knowledge_app
+from flowdelta.runtime.static_db_cli import app as static_db_app
+from flowdelta.runtime.static_report import summarize_command
 
 app = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 app.add_typer(knowledge_app, name="knowledge")
 app.add_typer(analysis_db_app, name="analysis-db")
+app.add_typer(static_db_app, name="static-db")
+app.command("static-report")(summarize_command)
 
 
 @app.command()
@@ -349,6 +353,9 @@ def plan_command(
     catalog: Annotated[Path, typer.Option(help="Registered template catalog JSON.")],
     out: Annotated[Path, typer.Option(help="New plan file at the future bundle root.")],
     cards: Annotated[Path | None, typer.Option(help="Local card directory.")] = None,
+    selected_path_id: Annotated[
+        str | None, typer.Option("--path-id", help="Explicit A impact path ID for static planning.")
+    ] = None,
     persist: Annotated[
         bool,
         typer.Option(
@@ -362,12 +369,13 @@ def plan_command(
         ),
     ] = False,
 ) -> None:
-    """Generate a local-card or shared-vector plan; shared-card output is always stored."""
+    """Generate a normal or static plan; shared-vector output is always stored."""
     from flowdelta.ingestion import _read_local, parse_file_model, parse_json
     from flowdelta.knowledge import load_cards, write_plan
     from flowdelta.knowledge.planner import write_vector_plan
     from flowdelta.pipeline_contracts import AnalysisBundle, TemplateCatalog
     from flowdelta.pipeline_io import read_handoff, read_manifest
+    from flowdelta.runtime.static_scan import StaticScanCatalog
 
     engine = None
     try:
@@ -381,10 +389,19 @@ def plan_command(
         if "analysis.json" not in documents:
             raise InputError("PIPELINE_FILE_MISSING")
         analysis = parse_file_model(AnalysisBundle, documents["analysis.json"])
-        templates = parse_file_model(
-            TemplateCatalog, parse_json(_read_local(catalog.parent.resolve(), catalog.name))
+        catalog_data = parse_json(_read_local(catalog.parent.resolve(), catalog.name))
+        entries = catalog_data.get("templates")
+        is_static_catalog = (
+            isinstance(entries, list)
+            and bool(entries)
+            and isinstance(entries[0], dict)
+            and entries[0].get("mode") == "STATIC_SCAN"
         )
-
+        templates: TemplateCatalog | StaticScanCatalog
+        if is_static_catalog:
+            templates = parse_file_model(StaticScanCatalog, catalog_data)
+        else:
+            templates = parse_file_model(TemplateCatalog, catalog_data)
         if shared_cards or persist:
             from flowdelta.knowledge.database import engine_for
             from flowdelta.knowledge.settings import KnowledgeSettings
@@ -402,6 +419,9 @@ def plan_command(
                 out,
                 engine=engine,
                 provider=EmbeddingSettings.from_environment().provider(),
+                handoff_root=root / "input",
+                repo_root=Path(__file__).resolve().parents[2],
+                selected_path_id=selected_path_id,
             )
         else:
             assert cards is not None
@@ -411,8 +431,10 @@ def plan_command(
                 load_cards(cards, bundle_root=root),
                 templates,
                 out,
+                handoff_root=root / "input",
+                repo_root=Path(__file__).resolve().parents[2],
+                selected_path_id=selected_path_id,
             )
-
         if engine is not None:
             from flowdelta.knowledge.repository import store_b_outputs
 
@@ -423,6 +445,10 @@ def plan_command(
                 {
                     "status": "PLAN_WRITTEN",
                     "plan_id": plan.plan_id,
+                    "retrieval_id": (
+                        plan.retrieval_ref.artifact_id if plan.retrieval_ref is not None else None
+                    ),
+                    "selected_path_id": plan.planner_metadata.get("selected_path_id"),
                     "analysis_origin": analysis.authorship.origin,
                     "database_status": database_status,
                     "execution_status": "NOT_RUN",
@@ -502,6 +528,38 @@ def demo_order_lookup(
         summary = run_order_lookup_demo(Path.cwd(), out)
         typer.echo(json_bytes(summary).decode(), nl=False)
         if not summary["all_normal_checks_passed"]:
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("run-pipeline")
+def run_pipeline_command(
+    case: Path,
+    profile: Annotated[Path, typer.Option()],
+    profile_sha256: Annotated[str, typer.Option()],
+    catalog: Annotated[Path, typer.Option()],
+    cards: Annotated[Path, typer.Option()],
+    out: Annotated[Path, typer.Option(help="New output directory under var/.")],
+    execute: Annotated[bool, typer.Option(help="Execute only C-registered templates.")] = False,
+) -> None:
+    """Profile gate → stored input → A → B → optional C → verified artifact bundle."""
+    from flowdelta.pipeline_runner import run_pipeline
+
+    try:
+        result = run_pipeline(
+            repo=Path.cwd(),
+            case=case,
+            profile=profile,
+            profile_sha256=profile_sha256,
+            catalog=catalog,
+            cards=cards,
+            output=out,
+            execute=execute,
+        )
+        typer.echo(json_bytes(result).decode(), nl=False)
+        if result["status"] == "INCOMPLETE":
             raise typer.Exit(code=2)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)

@@ -19,6 +19,11 @@ flowchart LR
 `policy.json`은 평가할 규칙과 근거를 담고, `task.json`은 정상 업무·입력·성공 조건을 담는다.
 정책 문장을 자동으로 실행 가능한 검사로 바꾸는 기능은 아직 없다. 템플릿과 obligation 연결을 사용한다.
 
+선택적 `policy.bindings` v1의 OBJECT_OWNERSHIP 입력·참조 검증과 #61 노드 연결 인계는
+[정책 binding 계약](POLICY_BINDINGS.md)을 따른다. 기존 binding 없는 입력은 그대로 유지되며,
+새 bound 입력은 이전 strict reader가 거부한다. 현재 main analyze의 자동 소비나 위반 판정 완료를
+뜻하지 않는다. 계약 선택은 소비자 리뷰 전 draft 상태다.
+
 ## 2. 고정하는 것과 변경하는 것
 
 한 case에서는 업무·정책·환경·초기 상태를 같은 파일로 참조한다. before/after workflow와 명시한

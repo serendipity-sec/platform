@@ -11,7 +11,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from flowdelta.ingestion import InputError, json_bytes, parse_file_model, parse_json
+from flowdelta.ingestion import MAX_FILE_BYTES, InputError, json_bytes, parse_file_model, parse_json
 from flowdelta.pipeline_contracts import TestPlan
 from flowdelta.pipeline_io import read_handoff
 from flowdelta.runtime.static_adapter import run_static_plan
@@ -20,9 +20,14 @@ from flowdelta.runtime.static_scan import StaticScanCatalog
 
 def _read(path: Path) -> object:
     try:
-        return parse_json(path.read_bytes())
+        with path.open("rb") as stream:
+            # 다른 입력 파일과 같은 상한을 두고, 넘으면 전부 읽지 않고 거부한다.
+            data = stream.read(MAX_FILE_BYTES + 1)
     except OSError as exc:
         raise InputError("STATIC_INPUT_UNREADABLE") from exc
+    if len(data) > MAX_FILE_BYTES:
+        raise InputError("FILE_SIZE_LIMIT")
+    return parse_json(data)
 
 
 def main(argv: list[str] | None = None) -> int:

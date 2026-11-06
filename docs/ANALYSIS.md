@@ -30,7 +30,7 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 **B는 A에서 추출한 분석 맥락을 보존하고 영향 경로 정보를 검색에 활용한다.**
 - `RetrievalResult.query.analysis_context`와 `TestPlan.planner_metadata.analysis_context`에 경로, 변경과 원본 위치, 제한 및 상한 정보를 보존한다.
 - 검색 점수에는 경로에서 찾은 노드 종류와 변경 필드 키워드를 반영하고, 검색 hit 사유에는 일치한 `path_id`를 남긴다.
-- 계획에는 분석의 경로 맥락이 들어가지만, B가 한 계획에서 검사할 단일 `path_id`를 선택하지는 않는다. `TestPlan`의 상위 계약에 선택 경로 필드가 없고, C의 개별 경로 소비·검증 연결은 아직 구현되지 않았다.
+- 정적 검사 계획은 유일한 eligible path를 선택하거나, 여러 eligible path가 있으면 `--path-id`를 받는다. 선택 경로와 지원·제한 정보는 `planner_metadata`에 있고, `analysis_context`에는 모든 A path가 남는다. `selected_path_id`는 trace link이며 C는 모든 등록 지원 target을 before·after 양쪽에서 검사한다.
 
 ## 원본 위치까지 잇기 (C)
 
@@ -67,9 +67,9 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 
 ### 아직 연결되지 않은 것 (미구현)
 
-- **실행 결과 → 검사한 영향 경로**: B는 `analysis_context`의 모든 경로 참조를 계획에 보존하지만, 한 실행에서 검사할 단일 `path_id`를 선택하지 않는다. 따라서 실행 결과는 어느 경로를 검사했는지 기록하거나 검증하지 못하며, C의 경로별 소비는 아직 연결되지 않았다.
+- **C 결과 → 영향 경로 coverage**: `StaticScanRun.plan_id`로 B plan을 찾고 `planner_metadata.selected_path_id`를 조회할 수 있다. 이 값은 trace link일 뿐이며, C 결과는 selected path만 검사했다는 뜻이 아니다. C는 각 side workflow에서 등록 target 전체를 검사하고, side별 `StaticScanRun.run_id`가 #78의 `scan_id`다.
 - **실행 관측 → 변경 원본 위치**: `ExecutionRun.artifacts`는 실행 산출물이다. 관측한 현상이 어느 변경·노드에서 왔는지 직접 잇는 필드는 없다. 위 순서는 실행이 다룬 분석과 그 분석의 변경을 찾는 것까지다.
-- **경로 → 정책 규칙**: `policy_rule_ids`는 비어 있다(정책 binding 형식 합의 후 #61).
+- **정책 규칙의 내용 평가**: 경로에는 binding 대상 노드를 지나는 규칙 ID만 붙는다. 보호 필드·주체·금지 효과·예외를 평가하거나 정책 위반을 판정하지 않는다.
 
 ## 그래프
 
@@ -104,7 +104,7 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 | `edge_ids` | 시작 노드에서 끝점까지 순서대로. 변경 노드가 곧 끝점이면 빈 목록 |
 | `support` | 시작 노드의 의미 정보가 없거나 지원되지 않으면 `UNKNOWN`, 경로 위 노드가 모두 지원되면 `SUPPORTED`, 그 밖은 `PARTIAL` |
 | `task_ids` | Handoff 업무 ID |
-| `policy_rule_ids` | 지금은 항상 비어 있다. 정책 규칙이 자연어뿐이라 노드와 연결할 근거가 없어서이며, 이유는 경로 `limitations`에 있다 |
+| `policy_rule_ids` | 입력 `policy.json`에 명시적 binding(`bindings`, v1 `OBJECT_OWNERSHIP`)이 있으면, 그 규칙의 대상 노드를 같은 `side`에서 지나는 경로에 규칙 ID를 붙인다. binding이 없으면 비어 있고 이유는 경로 `limitations`에 있다. 대상 노드가 그 `side`에 없으면 분석 `limitations`에 한 번 적는다 |
 
 - 시작점: 노드에 걸린 변경. 연결 변경은 바뀐 연결을 첫 간선으로 삼는다. 이름 변경으로 끊긴 참조는 수정 전 그래프의 그 참조 간선에서, 옛 이름을 다른 노드가 가져간 참조는 수정 후 그래프의 새 참조 간선에서도 출발한다.
 - 끝점: 입력(`receive:`)이 아닌 효과가 있는 노드, 효과를 알 수 없는 노드, 나가는 `CONTROL` 간선이 없는 마지막 노드.
@@ -130,6 +130,6 @@ uv run --frozen --extra baseline flowdelta analyze examples/contracts/support-tr
 ## 아직 하지 않는 것
 
 - 권한·능력, 의존성·보호, 지시 영향 관계. `ai_*` 연결을 이 관계로 나누려면 노드 의미 정보와 검증기 범위 조정이 필요하다.
-- 정책 규칙 연결(`policy_rule_ids`). 정책·자원 대응표 형식이 정해지면 연결한다.
+- 정책 규칙의 필드·주체·효과·예외 평가와 위반 판정. 경로와 규칙의 연결은 binding의 노드 단위까지만 한다(`json_pointer`는 입력 검증에만 쓴다).
 - ID가 바뀐 노드의 구조 대응, `code` 노드 안의 의미, 실제 모델 행동.
 - 공용 DB 저장. 파일·메모리 저장소(`flowdelta.graph.repository`)는 main에 있고, DB adapter는 같은 인터페이스로 따로 붙인다.
