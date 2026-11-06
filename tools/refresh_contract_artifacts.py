@@ -1,5 +1,6 @@
 """Explicitly regenerate owned metadata and reference files after a contract change."""
 
+import argparse
 import json
 import shutil
 import tempfile
@@ -8,7 +9,7 @@ from pathlib import Path
 
 from flowdelta.additional_examples import write_support_examples
 from flowdelta.contract_examples import write_contract_examples
-from flowdelta.contracts import ArtifactRef, Handoff, Manifest
+from flowdelta.contracts import ArtifactRef, Handoff, Manifest, PolicyBindings
 from flowdelta.core_adapters import ADAPTER_VERSION, ENGINE_VERSION, RUNTIME_DEFAULTS, VERSIONS
 from flowdelta.fixed_profile import FixedComparisonProfile
 from flowdelta.ingestion import digest, json_bytes
@@ -23,7 +24,21 @@ def save(path: Path, value: object) -> None:
     path.write_bytes(json_bytes(value))
 
 
+def refresh_schemas() -> None:
+    save(ROOT / "schemas/input-0.4.0.schema.json", Handoff.model_json_schema())
+    save(ROOT / "schemas/pipeline-0.4.0.schema.json", PipelineExamples.model_json_schema())
+    save(ROOT / "schemas/fixed-profile-v1.schema.json", FixedComparisonProfile.model_json_schema())
+    save(ROOT / "schemas/input-record-v1.schema.json", InputRecord.model_json_schema())
+    save(ROOT / "schemas/policy-bindings-v1.schema.json", PolicyBindings.model_json_schema())
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--schemas-only", action="store_true")
+    args = parser.parse_args()
+    refresh_schemas()
+    if args.schemas_only:
+        return
     order = ROOT / "examples/order-lookup"
     case = json.loads((order / "case.json").read_bytes())
     case["dependency_manifest_ref"] = "dependencies.json"
@@ -59,10 +74,6 @@ def main() -> None:
         approved["files"]["examples/order-lookup/" + path] = ""
     approved["files"] = {path: digest((ROOT / path).read_bytes()) for path in approved["files"]}
     save(ROOT / "runtime/order-lookup/approved-inputs.json", approved)
-    save(ROOT / "schemas/input-0.4.0.schema.json", Handoff.model_json_schema())
-    save(ROOT / "schemas/pipeline-0.4.0.schema.json", PipelineExamples.model_json_schema())
-    save(ROOT / "schemas/fixed-profile-v1.schema.json", FixedComparisonProfile.model_json_schema())
-    save(ROOT / "schemas/input-record-v1.schema.json", InputRecord.model_json_schema())
     subsets = {
         "set": "manual assignments; flat output names; explicit constants/current or named fields; optional input preservation",
         "if": "one strict case-sensitive string/number/boolean comparison; true port 0 and false port 1",

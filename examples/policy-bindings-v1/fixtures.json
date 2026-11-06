@@ -1,0 +1,463 @@
+{
+  "after": {
+    "connections": {},
+    "nodes": [
+      {
+        "id": "merge-input",
+        "name": "merge-input",
+        "parameters": {
+          "assignments": {
+            "assignments": []
+          },
+          "options": {}
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      },
+      {
+        "id": "tool-memory-delete",
+        "name": "tool-memory-delete",
+        "parameters": {
+          "assignments": {
+            "assignments": []
+          },
+          "options": {}
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      }
+    ],
+    "settings": {
+      "executionOrder": "v1"
+    }
+  },
+  "before": {
+    "connections": {},
+    "nodes": [
+      {
+        "id": "merge-input",
+        "name": "merge-input",
+        "parameters": {
+          "assignments": {
+            "assignments": []
+          },
+          "options": {}
+        },
+        "position": [
+          0,
+          0
+        ],
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4
+      }
+    ],
+    "settings": {
+      "executionOrder": "v1"
+    }
+  },
+  "cases": [
+    {
+      "expected_error": null,
+      "expected_note_count": 0,
+      "name": "connected",
+      "policy": {
+        "bindings": {
+          "bindings": [
+            {
+              "allowed_exceptions": [],
+              "applies_to": [
+                {
+                  "json_pointer": "/nodes/1/parameters/options",
+                  "node_id": "tool-memory-delete",
+                  "side": "after"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "kind": "RESEARCH_POLICY",
+                  "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+                  "reference": "examples/policy-bindings-v1/README.md#research-policy"
+                }
+              ],
+              "forbidden_effect": {
+                "condition": "A non-owner deletes a personal memory.",
+                "operation": "delete"
+              },
+              "policy_kind": "OBJECT_OWNERSHIP",
+              "protected_resource": {
+                "fields": [
+                  "id",
+                  "scope",
+                  "owner_user_id"
+                ],
+                "resource": "memory_long"
+              },
+              "rule_id": "memory-owner-delete",
+              "subject": {
+                "field_path": [
+                  "qualifiedUserId"
+                ],
+                "json_pointer": "/nodes/0",
+                "node_id": "merge-input",
+                "side": "after"
+              }
+            }
+          ],
+          "version": "1.0.0"
+        },
+        "interpretation": "DECLARED_ONLY",
+        "policy_id": "memory-policy-fixture",
+        "policy_version": "synthetic-1",
+        "provenance_ref": "provenance.json",
+        "rules": [
+          {
+            "condition": "A non-owner deletes a personal memory.",
+            "exceptions": [],
+            "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+            "resource": "memory_long",
+            "rule_id": "memory-owner-delete",
+            "subject": "authenticated requesting user"
+          }
+        ],
+        "schema_version": "0.4.0"
+      }
+    },
+    {
+      "expected_error": null,
+      "expected_note_count": 1,
+      "name": "missing-before",
+      "policy": {
+        "bindings": {
+          "bindings": [
+            {
+              "allowed_exceptions": [],
+              "applies_to": [
+                {
+                  "node_id": "tool-memory-delete",
+                  "side": "before"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "kind": "RESEARCH_POLICY",
+                  "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+                  "reference": "examples/policy-bindings-v1/README.md#research-policy"
+                }
+              ],
+              "forbidden_effect": {
+                "condition": "A non-owner deletes a personal memory.",
+                "operation": "delete"
+              },
+              "policy_kind": "OBJECT_OWNERSHIP",
+              "protected_resource": {
+                "fields": [
+                  "id",
+                  "scope",
+                  "owner_user_id"
+                ],
+                "resource": "memory_long"
+              },
+              "rule_id": "memory-owner-delete",
+              "subject": {
+                "field_path": [
+                  "qualifiedUserId"
+                ],
+                "json_pointer": "/nodes/0",
+                "node_id": "merge-input",
+                "side": "after"
+              }
+            }
+          ],
+          "version": "1.0.0"
+        },
+        "interpretation": "DECLARED_ONLY",
+        "policy_id": "memory-policy-fixture",
+        "policy_version": "synthetic-1",
+        "provenance_ref": "provenance.json",
+        "rules": [
+          {
+            "condition": "A non-owner deletes a personal memory.",
+            "exceptions": [],
+            "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+            "resource": "memory_long",
+            "rule_id": "memory-owner-delete",
+            "subject": "authenticated requesting user"
+          }
+        ],
+        "schema_version": "0.4.0"
+      }
+    },
+    {
+      "expected_error": "POLICY_TARGET_NODE_UNKNOWN",
+      "expected_note_count": 0,
+      "name": "unknown-node",
+      "policy": {
+        "bindings": {
+          "bindings": [
+            {
+              "allowed_exceptions": [],
+              "applies_to": [
+                {
+                  "node_id": "tool-memory-remove",
+                  "side": "after"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "kind": "RESEARCH_POLICY",
+                  "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+                  "reference": "examples/policy-bindings-v1/README.md#research-policy"
+                }
+              ],
+              "forbidden_effect": {
+                "condition": "A non-owner deletes a personal memory.",
+                "operation": "delete"
+              },
+              "policy_kind": "OBJECT_OWNERSHIP",
+              "protected_resource": {
+                "fields": [
+                  "id",
+                  "scope",
+                  "owner_user_id"
+                ],
+                "resource": "memory_long"
+              },
+              "rule_id": "memory-owner-delete",
+              "subject": {
+                "field_path": [
+                  "qualifiedUserId"
+                ],
+                "json_pointer": "/nodes/0",
+                "node_id": "merge-input",
+                "side": "after"
+              }
+            }
+          ],
+          "version": "1.0.0"
+        },
+        "interpretation": "DECLARED_ONLY",
+        "policy_id": "memory-policy-fixture",
+        "policy_version": "synthetic-1",
+        "provenance_ref": "provenance.json",
+        "rules": [
+          {
+            "condition": "A non-owner deletes a personal memory.",
+            "exceptions": [],
+            "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+            "resource": "memory_long",
+            "rule_id": "memory-owner-delete",
+            "subject": "authenticated requesting user"
+          }
+        ],
+        "schema_version": "0.4.0"
+      }
+    },
+    {
+      "expected_error": "POLICY_BINDING_POINTER_MISMATCH",
+      "expected_note_count": 0,
+      "name": "wrong-pointer",
+      "policy": {
+        "bindings": {
+          "bindings": [
+            {
+              "allowed_exceptions": [],
+              "applies_to": [
+                {
+                  "json_pointer": "/nodes/99",
+                  "node_id": "tool-memory-delete",
+                  "side": "after"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "kind": "RESEARCH_POLICY",
+                  "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+                  "reference": "examples/policy-bindings-v1/README.md#research-policy"
+                }
+              ],
+              "forbidden_effect": {
+                "condition": "A non-owner deletes a personal memory.",
+                "operation": "delete"
+              },
+              "policy_kind": "OBJECT_OWNERSHIP",
+              "protected_resource": {
+                "fields": [
+                  "id",
+                  "scope",
+                  "owner_user_id"
+                ],
+                "resource": "memory_long"
+              },
+              "rule_id": "memory-owner-delete",
+              "subject": {
+                "field_path": [
+                  "qualifiedUserId"
+                ],
+                "json_pointer": "/nodes/0",
+                "node_id": "merge-input",
+                "side": "after"
+              }
+            }
+          ],
+          "version": "1.0.0"
+        },
+        "interpretation": "DECLARED_ONLY",
+        "policy_id": "memory-policy-fixture",
+        "policy_version": "synthetic-1",
+        "provenance_ref": "provenance.json",
+        "rules": [
+          {
+            "condition": "A non-owner deletes a personal memory.",
+            "exceptions": [],
+            "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+            "resource": "memory_long",
+            "rule_id": "memory-owner-delete",
+            "subject": "authenticated requesting user"
+          }
+        ],
+        "schema_version": "0.4.0"
+      }
+    },
+    {
+      "expected_error": "POLICY_BINDING_POINTER_MISMATCH",
+      "expected_note_count": 0,
+      "name": "pointer-on-missing-side",
+      "policy": {
+        "bindings": {
+          "bindings": [
+            {
+              "allowed_exceptions": [],
+              "applies_to": [
+                {
+                  "json_pointer": "/nodes/1",
+                  "node_id": "tool-memory-delete",
+                  "side": "before"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "kind": "RESEARCH_POLICY",
+                  "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+                  "reference": "examples/policy-bindings-v1/README.md#research-policy"
+                }
+              ],
+              "forbidden_effect": {
+                "condition": "A non-owner deletes a personal memory.",
+                "operation": "delete"
+              },
+              "policy_kind": "OBJECT_OWNERSHIP",
+              "protected_resource": {
+                "fields": [
+                  "id",
+                  "scope",
+                  "owner_user_id"
+                ],
+                "resource": "memory_long"
+              },
+              "rule_id": "memory-owner-delete",
+              "subject": {
+                "field_path": [
+                  "qualifiedUserId"
+                ],
+                "json_pointer": "/nodes/0",
+                "node_id": "merge-input",
+                "side": "after"
+              }
+            }
+          ],
+          "version": "1.0.0"
+        },
+        "interpretation": "DECLARED_ONLY",
+        "policy_id": "memory-policy-fixture",
+        "policy_version": "synthetic-1",
+        "provenance_ref": "provenance.json",
+        "rules": [
+          {
+            "condition": "A non-owner deletes a personal memory.",
+            "exceptions": [],
+            "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+            "resource": "memory_long",
+            "rule_id": "memory-owner-delete",
+            "subject": "authenticated requesting user"
+          }
+        ],
+        "schema_version": "0.4.0"
+      }
+    },
+    {
+      "expected_error": "POLICY_TARGET_RULE_UNKNOWN",
+      "expected_note_count": 0,
+      "name": "unknown-rule",
+      "policy": {
+        "bindings": {
+          "bindings": [
+            {
+              "allowed_exceptions": [],
+              "applies_to": [
+                {
+                  "json_pointer": "/nodes/1/parameters/options",
+                  "node_id": "tool-memory-delete",
+                  "side": "after"
+                }
+              ],
+              "evidence_refs": [
+                {
+                  "kind": "RESEARCH_POLICY",
+                  "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+                  "reference": "examples/policy-bindings-v1/README.md#research-policy"
+                }
+              ],
+              "forbidden_effect": {
+                "condition": "A non-owner deletes a personal memory.",
+                "operation": "delete"
+              },
+              "policy_kind": "OBJECT_OWNERSHIP",
+              "protected_resource": {
+                "fields": [
+                  "id",
+                  "scope",
+                  "owner_user_id"
+                ],
+                "resource": "memory_long"
+              },
+              "rule_id": "other-case-rule",
+              "subject": {
+                "field_path": [
+                  "qualifiedUserId"
+                ],
+                "json_pointer": "/nodes/0",
+                "node_id": "merge-input",
+                "side": "after"
+              }
+            }
+          ],
+          "version": "1.0.0"
+        },
+        "interpretation": "DECLARED_ONLY",
+        "policy_id": "memory-policy-fixture",
+        "policy_version": "synthetic-1",
+        "provenance_ref": "provenance.json",
+        "rules": [
+          {
+            "condition": "A non-owner deletes a personal memory.",
+            "exceptions": [],
+            "rationale": "Team synthetic ownership policy for contract testing; not an observed vulnerability.",
+            "resource": "memory_long",
+            "rule_id": "memory-owner-delete",
+            "subject": "authenticated requesting user"
+          }
+        ],
+        "schema_version": "0.4.0"
+      }
+    }
+  ],
+  "source_kind": "TEAM_SYNTHETIC"
+}
