@@ -166,7 +166,8 @@ def test_handoff_cannot_substitute_normalized_pointer(bundle: Path, tmp_path: Pa
     ("field", "code"),
     [("policy_rule_ids", "IMPACT_PATH_POLICY_UNKNOWN"), ("task_ids", "IMPACT_PATH_TASK_UNKNOWN")],
 )
-def test_pipeline_refuses_foreign_rule_or_task(field: str, code: str) -> None:
+@pytest.mark.parametrize("catalog_kind", ["normal", "static"])
+def test_pipeline_refuses_foreign_rule_or_task(field: str, code: str, catalog_kind: str) -> None:
     root = ROOT / "examples/contracts/order-lookup"
     handoff = read_handoff(root / "input")
     examples = read_pipeline_examples(root)
@@ -174,7 +175,19 @@ def test_pipeline_refuses_foreign_rule_or_task(field: str, code: str) -> None:
     plan = make_plan(handoff, analysis, load_cards(root / "cards"), examples.catalog)
     analysis.impact_paths[0] = analysis.impact_paths[0].model_copy(update={field: ["foreign-id"]})
     with pytest.raises(InputError, match=code):
-        validate_pipeline(handoff, analysis, examples.catalog, plan)
+        if catalog_kind == "static":
+            from flowdelta.runtime.static_scan import registered_catalog
+
+            make_plan(
+                handoff,
+                analysis,
+                [],
+                registered_catalog(ROOT),
+                handoff_root=root / "input",
+                repo_root=ROOT,
+            )
+        else:
+            validate_pipeline(handoff, analysis, examples.catalog, plan)
 
 
 def test_schema_artifacts_are_current() -> None:
