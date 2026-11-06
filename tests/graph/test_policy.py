@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -9,6 +11,7 @@ from flowdelta.graph import AnalysisLimits, analyze
 from flowdelta.graph.analyze import ANALYSIS_LIMITATIONS
 from flowdelta.graph.impact import POLICY_NOTE
 from flowdelta.graph.policy import PolicyTarget, link_policies
+from flowdelta.graph.repository import FileAnalysisRepository
 from flowdelta.handoff import build_handoff
 from flowdelta.ingestion import InputError, load_case
 from flowdelta.pipeline_contracts import AnalysisBundle
@@ -168,3 +171,34 @@ def test_references_are_checked_when_limits_skip_paths(bundle: Path) -> None:
     with pytest.raises(InputError) as error:
         analyze(handoff.model_copy(update={"policy": policy}), AnalysisLimits(max_workflow_nodes=1))
     assert error.value.code == "POLICY_TARGET_NODE_UNKNOWN"
+
+
+def test_public_analysis_integration_command_preserves_policy_provenance(tmp_path: Path) -> None:
+    output = tmp_path / "policy-integration"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools/verify_policy_binding_integration.py"),
+            "--out",
+            str(output),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=60,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
+    report = json.loads((output / "result.json").read_bytes())
+    assert report["scope"] == "LOCAL_ANALYZE_FILE_REPOSITORY_B_PLAN"
+    assert report["linked_policy_rule_ids"] == ["own-order"]
+    assert report["security_outcome"] is None
+    stored = FileAnalysisRepository(output / "analysis-repository").get(report["analysis_id"])
+    actual = analyze(read_handoff(output / "handoff"))
+    assert stored == actual
+    plan = json.loads((output / "plan.json").read_bytes())
+    context = plan["planner_metadata"]["analysis_context"]
+    assert context["analysis_id"] == actual.analysis_id
+    assert context["analysis_content_sha256"] == report["analysis_sha256"]
+    assert context["impact_paths"][0]["policy_rule_ids"] == ["own-order"]
