@@ -1,24 +1,20 @@
-# 명시적 정책 binding v1 — 검토용 계약
+# 명시적 정책 binding v1
 
 Refs #48, #49, #61. `OBJECT_OWNERSHIP`과 노드 연결/비대칭/잘못된 참조 구분은
 [#48의 10월 26일 결정](https://github.com/serendipity-sec/platform/issues/48#issuecomment-6407090713)을 따른다.
 이 PR은 입력과 공개 resolver를 제공한다. **main의 `analyze()`는 아직 binding을 연결하지 않는다.**
 #61 소비자 변경과 리뷰를 거쳐야 한다. 정책 위반 판정, 주체 인증, JS 의미 해석은 포함하지 않는다.
 
-## #59 위의 통합 준비 — 2026-10-28
+## 입력 계약과 후속 분석 연결
 
-#84의 base는 `feat/48-pipeline-runner`(#59, `ea608a6a4c5d58d8c45f25939f35f481e445c0dc`)다.
-#58 → #59 → #84 순서로 검토·병합해야 한다. #58/#59 및 A(#61) branch는 변경하지 않았다.
-충돌한 refresh 도구에서 InputRecord·PolicyBindings schema를 `refresh_schemas()`에 모두
-보존하고 `--schemas-only` 회귀 테스트를 추가했다.
+#58/#59와 #86/#88이 반영된 main 위에서 입력 계약을 통합했다. 일반 실행 계획과 정적 검사
+계획 모두 공통 검증에서 알 수 없는 policy/task ID를 거부한다. schema 갱신 도구는
+InputRecord와 PolicyBindings를 함께 보존하며 `--schemas-only`를 지원한다.
 
-통합 코드로 기존 profile 해시/expected.json을 유지한 등록 주문의 실제 n8n before/after
-실행 및 독립 정상 업무 검사 18개를 다시 수행했다. 생성한 summary/verification을 그대로
-복사하고 README를 그 값으로 생성했다. [실제 실행 예제](../examples/module-outputs/profiled-runner/README.md)를
-참고한다. 이 실행은 binding 없는 정상 주문이다. 아래 #61 정책 모듈 조합은 별도로 재검증했다.
-정책 조합의 analysis/plan ID와 해시는 통합 전과 같았다. 실제 analyze 자동 소비는 여전히 후속이다.
-
-draft는 계약 version/pointer/subject 범위의 소비자 검토와 선행 PR의 최신 재승인까지 유지한다.
+아래 #61 조합 명령은 resolver와 후속 linker의 소비 계약을 별도로 확인한다. 실제
+`analyze()` 자동 연결은 #61의 변경이며 이 입력 계약만으로 완료되지 않는다.
+[등록 주문 실행 예제](../examples/module-outputs/profiled-runner/README.md)는 binding 없는
+정상 업무 실행이며, 정책 연결이나 위반 판정의 증거가 아니다.
 
 ## 위치와 버전·호환성
 
@@ -39,10 +35,8 @@ draft는 계약 version/pointer/subject 범위의 소비자 검토와 선행 PR�
 | 입력/분석 저장 | policy 원문과 manifest 해시 보존, 새 binding은 새 snapshot/profile/analysis를 요구. DB column/migration 변경 없음 |
 | 공통 schema/예제 | input schema 재생성, 독립 v1 schema와 합성 fixture 추가. pipeline schema와 기존 reference bundle은 의미·bytes 변경 없음 |
 
-**검토할 버전 선택:** 이 PR은 기존 필드를 재해석하지 않는 선택적 기능으로 outer 0.4.0을
-유지하고 inner v1을 고정한다. 전체 input 0.5.0으로 올리는 안도 가능하나 생산자·A/B/C·
-저장/CLI를 동시에 이전해야 한다. 이 선택은 소비자 리뷰 전 확정 배포 계약으로 간주하지 않으며
-draft를 유지한다. 이전 reader로 새 bound 입력을 성공 처리할 수 있다는 호환성을 주장하지 않는다.
+소비자 리뷰에서 선택적 outer 0.4.0 + nested binding v1 계약을 확인했다.
+기존 strict reader는 새 bound 입력을 거부하므로 생산자와 소비자를 함께 갱신해야 한다.
 
 ## 필드와 검증 경계
 
