@@ -2,12 +2,12 @@
   "allocated_runs": [
     {
       "attempt_number": 1,
-      "run_id": "run-15ba379f50c948339fb19969c913aaf2",
+      "run_id": "run-79a4870a3c904eefbfc523c6c69da575",
       "side": "after"
     },
     {
       "attempt_number": 1,
-      "run_id": "run-8328fea976ad427c8ee2aa02102db4e3",
+      "run_id": "run-9e1cd0a89be9478f807502d569a7722c",
       "side": "before"
     }
   ],
@@ -34,7 +34,7 @@
   ],
   "analysis_origin": "MODULE_OUTPUT",
   "bundle": "bundle",
-  "bundle_manifest_sha256": "813b60148c2d3fbff117186f9b4d5ccdd7fe5f989c29a016fc524fe115538b8c",
+  "bundle_manifest_sha256": "d57ff6a2437df44b98056a39c4de3ab758eb42b8b7e872e5d84beabcdcdb9725",
   "case_id": "order-lookup-demo-001",
   "catalog_sha256": "286f926b92802ccec32e9800bdfba6cea9d16f3f6d71f2e6a304311e5b464bde",
   "contract_validation": {
@@ -68,7 +68,7 @@
   },
   "kb_sha256": "d0668162282dc7181e64f6c6e25314cf4753d044053fc078160504583607c2fb",
   "mode": "EXECUTE_REGISTERED",
-  "orchestration_id": "pipeline-9d86a4c13ac14e499e5e80bbaf891f68",
+  "orchestration_id": "pipeline-73f61c801297482fbcb7bedca43478a0",
   "plan_id": "plan-81b3b0242f200ea932dcaac9",
   "plan_origin": "MODULE_OUTPUT",
   "producer_version": "0.1.0",
@@ -83,7 +83,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-8328fea976ad427c8ee2aa02102db4e3",
+      "run_id": "run-9e1cd0a89be9478f807502d569a7722c",
       "side": "before"
     },
     {
@@ -93,7 +93,7 @@
       "error_code": null,
       "execution_status": "SUCCEEDED",
       "failed_phase": null,
-      "run_id": "run-15ba379f50c948339fb19969c913aaf2",
+      "run_id": "run-79a4870a3c904eefbfc523c6c69da575",
       "side": "after"
     }
   ],
@@ -157,7 +157,7 @@
     "src/flowdelta/expressions.py": "ed039861634016fb9e5fea7ea11e6368e29ca98b95fba8f822abb43a29fdf909",
     "src/flowdelta/fixed_profile.py": "2d2dfaf26814b542967170d3e41db29d6d4300e0488fba5089b73d64bfde47ce",
     "src/flowdelta/graph/__init__.py": "ab8663bc8ed4c596338a04379cd5d2b9f9434fa6c8d7cfcfb719ab6b25837930",
-    "src/flowdelta/graph/analyze.py": "d84a506e1da888fa7df26a615167304555f76ff5831354c8de2ddc8168b69a21",
+    "src/flowdelta/graph/analyze.py": "37456499140e62bfd7d208e30fad32814e0c5055df5606543fb4970d4f6ca0bf",
     "src/flowdelta/graph/changes.py": "5d41ddca6a77360f8dad8b1e28428897c0874c10a4d774ddaf7ea7c230341342",
     "src/flowdelta/graph/cli.py": "6c36409cd2b10f8363307a9e68ed9e897a387eb7b4b0c9d1147779278e48ebf2",
     "src/flowdelta/graph/control.py": "a7f1093645175e1ac07eda3c0a2deb3b82316f83aae2597f469124aeef681f3b",
@@ -168,6 +168,7 @@
     "src/flowdelta/graph/matching.py": "2eaa609bd0e02df09e92366f814e56cabecdd66b7270a46beff8bedfd50cc373",
     "src/flowdelta/graph/migrations/env.py": "55686bb1cebbb651bbb90c8754fae09684c9f49fa138e68b8d4d8b2dc685ad5a",
     "src/flowdelta/graph/migrations/versions/graph_0001_analyses.py": "400fb4cc51586512cca48367ff9999f891bc3df397137d0953864cbb93fa2ea5",
+    "src/flowdelta/graph/policy.py": "caad2bddfd35fcace6ee7c75bc212409632b4a52762f05af6c42b1b5ccae32e0",
     "src/flowdelta/graph/references.py": "9bc51a5b0512da2cadb69bb6f1923bc91465022393205b6a28d15c58e635dd5a",
     "src/flowdelta/graph/repository.py": "adbff6edaf97a2408d604d5ee13cf50c657e8205dfdf85be0e277e4dc99ad02a",
     "src/flowdelta/handoff.py": "b699513b9dc91a470d445651dffe3f0e376aa1e4e22fbb2c9b616347e55bad7f",
@@ -225,7 +226,7 @@
     "tools/check_profiled_order.py": "1c7efd70290b29a0797d8cfaef3b2a37b4c88157f50d1087a90b1c61874f29f3",
     "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
   },
-  "source_tree_sha256": "892e7c17b30dd7340d0f0323350ac9ba474d9c5ec5339d01e3abb062469f1366",
+  "source_tree_sha256": "049d93c3df71b1edd4ad4c832f21308e7c03bdc41d42cc7e6b5fff2e3b5e3e6a",
   "stages": {
     "analysis": "SUCCEEDED",
     "bundle": "SUCCEEDED",
