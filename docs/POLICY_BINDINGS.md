@@ -38,6 +38,23 @@ InputRecord와 PolicyBindings를 함께 보존하며 `--schemas-only`를 지원�
 소비자 리뷰에서 선택적 outer 0.4.0 + nested binding v1 계약을 확인했다.
 기존 strict reader는 새 bound 입력을 거부하므로 생산자와 소비자를 함께 갱신해야 한다.
 
+### bound 입력의 소비자 라우팅
+
+`bindings=null`은 모델에서 binding 없음으로 처리하고 직렬화에서는 생략한다.
+바깥 `schema_version`만으로 bound 입력의 호환성을 판단하지 않는다. 생산자·전송 계층은
+원본 `policy`를 보존한 채 다음 기능 조합을 확인한 소비자로만 전달한다.
+
+| 입력 | 필요한 소비자 기능 | 지원하지 않을 때 |
+|---|---|---|
+| `schema_version=0.4.0`, `policy.bindings` 없음 | input 0.4.0 reader | 입력 거부 |
+| `schema_version=0.4.0`, `policy.bindings.version=1.0.0` | input 0.4.0 + policy-bindings 1.0.0 reader/resolver | `bindings`를 제거하거나 unbound로 재시도하지 않고 입력 거부 |
+| 알 수 없는 outer/binding version | 지원 기능 조합 없음 | 계약 검증에서 거부 |
+
+기능 지원은 수신 구현/배포 버전의 계약으로 확인한다. 현재 단일 FlowDelta 배포의
+`load_case`/`read_handoff`가 이 조합을 검증하며, 별도 reader 자동 선택·네트워크 협상 기능은
+없다. B는 이 reader를 통과한 handoff를 사용하고 일반·정적 계획 모두 공통 검증을 수행한다.
+연결된 `policy_rule_ids`까지 필요한 소비자는 #61의 A 분석 기능도 함께 배포해야 한다.
+
 ## 필드와 검증 경계
 
 | 필드 | 의미·검증 |
