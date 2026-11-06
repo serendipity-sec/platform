@@ -62,8 +62,8 @@ def test_bound_policy_survives_source_snapshot_and_handoff(bundle: Path, tmp_pat
     assert actual.policy.bindings.version == "1.0.0"
     assert actual.snapshots != legacy.snapshots
     assert resolve_policy_bindings(actual).targets[0].node_id == "response"
-    # Input resolution alone does not pretend #61 is already wired into main's analyze().
-    assert all(not path.policy_rule_ids for path in analyze(actual).impact_paths)
+    # analyze() links the bound rule to the path through its target node (#61).
+    assert [path.policy_rule_ids for path in analyze(actual).impact_paths] == [["own-order"]]
 
 
 @pytest.mark.parametrize(

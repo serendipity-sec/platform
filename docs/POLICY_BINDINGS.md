@@ -2,19 +2,18 @@
 
 Refs #48, #49, #61. `OBJECT_OWNERSHIP`과 노드 연결/비대칭/잘못된 참조 구분은
 [#48의 10월 26일 결정](https://github.com/serendipity-sec/platform/issues/48#issuecomment-6407090713)을 따른다.
-이 PR은 입력과 공개 resolver를 제공한다. **main의 `analyze()`는 아직 binding을 연결하지 않는다.**
-#61 소비자 변경과 리뷰를 거쳐야 한다. 정책 위반 판정, 주체 인증, JS 의미 해석은 포함하지 않는다.
+입력과 공개 resolver가 참조를 검증하고, `analyze()`가 명시적 대상 노드를 지나는 영향 경로에
+규칙 ID를 연결한다. 정책 위반 판정, 주체 인증, JS 의미 해석은 포함하지 않는다.
 
-## 입력 계약과 후속 분석 연결
+## 입력과 분석의 연결
 
-#58/#59와 #86/#88이 반영된 main 위에서 입력 계약을 통합했다. 일반 실행 계획과 정적 검사
-계획 모두 공통 검증에서 알 수 없는 policy/task ID를 거부한다. schema 갱신 도구는
-InputRecord와 PolicyBindings를 함께 보존하며 `--schemas-only`를 지원한다.
+#84의 입력 binding과 #61의 A 소비를 결합한다. `analyze()`는 경로 생성 상한을 확인하기 전에
+참조를 검증하고, 경로 생성 뒤 정책 연결을 적용한 다음 분석 내용 ID를 계산한다.
+binding이 없는 입력은 이전 분석 결과를 바이트 단위로 유지한다.
 
-아래 #61 조합 명령은 resolver와 후속 linker의 소비 계약을 별도로 확인한다. 실제
-`analyze()` 자동 연결은 #61의 변경이며 이 입력 계약만으로 완료되지 않는다.
-[등록 주문 실행 예제](../examples/module-outputs/profiled-runner/README.md)는 binding 없는
-정상 업무 실행이며, 정책 연결이나 위반 판정의 증거가 아니다.
+[등록 주문 실행 예제](../examples/module-outputs/profiled-runner/README.md)는 binding 없는 정상
+업무 실행이다. 아래 정책 통합 명령은 binding을 포함한 합성 입력의 실제 A 분석과 파일 저장,
+B 근거 소비를 별도로 확인하며 정책 위반이나 C의 정책 집행을 검증하지 않는다.
 
 ## 위치와 버전·호환성
 
@@ -29,14 +28,14 @@ InputRecord와 PolicyBindings를 함께 보존하며 `--schemas-only`를 지원�
 | 새 입력 생산자 | policy.bindings.version을 명시. 정상·예외·근거를 작성하고 manifest/profile을 새 입력으로 고정 |
 | 기존 strict reader | 새 bindings 필드를 extra_forbid로 거부. 새 입력을 구버전에 보내면 실패하며 조용히 연결을 생략하지 않음 |
 | load_case/build_handoff/read_handoff | rule/side/node/pointer/subject 검증. 재조회 시 raw workflow와 normalized의 node/source/parameters도 비교 |
-| #61 A | resolve_policy_bindings → PolicyTarget 변환 → link_policies → 분석 한계·내용 ID 갱신. 아래 인계 필요 |
+| A 소비자 | analyze()가 resolver의 targets를 PolicyTarget으로 변환하고 내용 ID 계산 전에 연결 |
 | B | 연결된 impact_paths.policy_rule_ids 및 analysis_context 보존. 소유권 판정이나 예외 평가 기능은 추가하지 않음 |
 | C | 정책 내용 전달 가능. 실행 허가/정적 finding/보안 판정은 별도 계약이며 이 PR이 승인하지 않음 |
 | 입력/분석 저장 | policy 원문과 manifest 해시 보존, 새 binding은 새 snapshot/profile/analysis를 요구. DB column/migration 변경 없음 |
 | 공통 schema/예제 | input schema 재생성, 독립 v1 schema와 합성 fixture 추가. pipeline schema와 기존 reference bundle은 의미·bytes 변경 없음 |
 
-소비자 리뷰에서 선택적 outer 0.4.0 + nested binding v1 계약을 확인했다.
-기존 strict reader는 새 bound 입력을 거부하므로 생산자와 소비자를 함께 갱신해야 한다.
+기존 필드를 재해석하지 않는 선택적 기능으로 outer 0.4.0을 유지하고 inner v1을 고정한다.
+기존 strict reader는 새 bound 입력을 거부한다. 새 생산자와 소비자는 함께 갱신해야 한다.
 
 ### bound 입력의 소비자 라우팅
 
@@ -80,10 +79,10 @@ node_id가 선언 side에는 없고 반대쪽에는 있는 경우, **pointer를 
 지원 pointer 범위를 node/parameters 외 metadata까지 확대할지, 주체 source의 비대칭도 허용할지는
 별도 검토 사항이다. 현재는 명시적으로 좁은 범위를 거부/허용하며 자동 확장하지 않는다.
 
-## #61 인계
+## A의 소비 순서
 
-소비 대상: `feat/49-policy-linking`의 `7ca11a247f13e401fc08a47a586a9bbf4ecec9aa`.
-이 PR은 해당 브랜치나 `src/flowdelta/graph/`를 수정하지 않는다.
+다음 처리는 `analyze()` 내부에서 수행한다. 호출자가 분석 결과에 다시 연결하거나 내용 ID를
+수동으로 덮어쓰지 않는다.
 
 ```python
 resolution = resolve_policy_bindings(handoff)
@@ -97,28 +96,24 @@ limitations.extend(notes)  # 분석 한 곳. resolution.limitations와 중복 �
 # 이후 bundle을 만든 뒤 identified(bundle); 기존 analysis_id를 재사용하지 않음.
 ```
 
-#61 담당자는 이를 **실제 analyze() 안에서 내용 ID 계산 전에** 연결해야 한다.
+연결은 **실제 analyze() 안에서 내용 ID 계산 전에** 적용한다.
 경로 생성이 상한으로 생략된 경우에도 입력 참조 검증은 실행한다. binding이 없는 입력의
 기존 POLICY_NOTE, 상한·support·STATIC_POSSIBILITY 의미를 보존한다. 연결된 경로에서만
 미연결 문구를 제거하고 분석 전체의 오래된 “정책 규칙과는 연결하지 않았다” 설명을 갱신한다.
 알 수 없는 rule/task ID는 `validate_pipeline()`에서 추가로 거부한다.
 
-후속 완료 조건은 실제 analyze → 정확한 ID의 A 저장/재조회 → B plan 근거 소비다.
+아래 명령으로 실제 analyze → 정확한 ID의 A 저장/재조회 → B plan 근거 소비를 확인한다.
 공용 PostgreSQL 및 실제 C 소비는 이 PR의 파일 저장 통합 검증으로 대체하지 않는다.
 
 ## 재현과 실제 검증 범위
 
-`tools/verify_policy_binding_integration.py`는 검토한 #61 파일 하나를 checksum 확인 후
-임시 import한다. A main 분석 → #61 연결 → A 내용 ID 재계산 → **실제 FileAnalysisRepository**
-save/get → **실제 B write_plan** → validate_pipeline을 수행한다. 정책 ID를 결과에 수동 주입하지 않는다.
-memory 합성 fixture 6개도 같은 #61 함수로 확인한다. 결과에는 `security_outcome=null`을 기록한다.
-
-Git 원문 bytes 그대로 파일을 준비한다(PowerShell `>`의 인코딩 변환을 피한다).
+`tools/verify_policy_binding_integration.py`는 설치된 `analyze()` → **실제 FileAnalysisRepository**
+save/get → **실제 B write_plan** → validate_pipeline을 수행한다. 경로 연결과 내용 ID는 A의
+실제 공개 진입점이 생성하며 스크립트가 다시 계산하지 않는다. memory 합성 fixture 6개는
+별도 resolver/linker 검사로 확인한다. 결과에는 `security_outcome=null`을 기록한다.
 
 ```powershell
-git fetch origin refs/pull/61/head:refs/remotes/origin/review-policy61
-uv run --frozen python -c "import pathlib,subprocess; p=pathlib.Path('var/policy61'); p.mkdir(parents=True,exist_ok=True); (p/'policy.py').write_bytes(subprocess.check_output(['git','show','7ca11a247f13e401fc08a47a586a9bbf4ecec9aa:src/flowdelta/graph/policy.py']))"
-uv run --frozen --extra baseline --extra knowledge python tools/verify_policy_binding_integration.py --policy-module var/policy61/policy.py --policy-sha256 81323ef0899721c5cebfa0c1c9dd3c9351dc91551b933843977c49de215e4c40 --out var/policy-binding-integration
+uv run --frozen --extra baseline --extra knowledge python tools/verify_policy_binding_integration.py --out var/policy-binding-integration
 uv run --frozen --extra baseline --extra knowledge pytest tests/test_policy_bindings.py
 uv run --frozen --extra baseline --extra knowledge python tools/refresh_contract_artifacts.py --schemas-only
 ```
