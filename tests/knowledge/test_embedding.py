@@ -11,6 +11,7 @@ from flowdelta.knowledge.embedding import (
     MAX_TEXT_BYTES,
     MODEL_NAME,
     QUERY_INSTRUCTION,
+    QUERY_INSTRUCTION_VERSION,
     EmbeddingBatch,
     EmbeddingProfile,
     EmbeddingProvider,
@@ -112,6 +113,24 @@ def test_provider_protocol_and_query_document_roles(fake_ollama):
     assert requests[0]["truncate"] is False
     assert requests[0]["dimensions"] == DIMENSIONS
     assert requests[1]["input"] == [f"Instruct: {QUERY_INSTRUCTION}\nQuery: workflow changed"]
+
+
+def test_profile_reads_only_running_model_metadata(fake_ollama):
+    resolved = provider(fake_ollama).profile()
+
+    assert resolved == EmbeddingProfile(
+        "ollama", MODEL_NAME, _DIGEST, DIMENSIONS, QUERY_INSTRUCTION_VERSION, True
+    )
+    assert Handler.requests == [("/api/ps", None)]
+
+
+def test_profile_fails_when_model_is_not_running(fake_ollama):
+    Handler.running_models = {"models": []}
+
+    with pytest.raises(InputError, match="EMBEDDING_MODEL_NOT_FOUND"):
+        provider(fake_ollama).profile()
+
+    assert Handler.requests == [("/api/ps", None)]
 
 
 @pytest.mark.parametrize(

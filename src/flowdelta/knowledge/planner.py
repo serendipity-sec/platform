@@ -1,6 +1,9 @@
 """Compatible B facade over loading, retrieval, composition and publication."""
 
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from flowdelta.contracts import Handoff
 from flowdelta.knowledge.cards import (
@@ -11,9 +14,11 @@ from flowdelta.knowledge.cards import (
 )
 from flowdelta.knowledge.composition import _compose_snapshot
 from flowdelta.knowledge.composition import compose_plan as _compose
+from flowdelta.knowledge.embedding import EmbeddingProvider
 from flowdelta.knowledge.output import _write_snapshot, validate_output_paths
 from flowdelta.knowledge.retrieval import _retrieve_snapshot as _retrieve
 from flowdelta.knowledge.retrieval import retrieve as _retrieve_cards
+from flowdelta.knowledge.retrieval import retrieve_vector_snapshot
 from flowdelta.pipeline_contracts import (
     AnalysisBundle,
     RetrievalResult,
@@ -23,7 +28,10 @@ from flowdelta.pipeline_contracts import (
 )
 from flowdelta.runtime.static_scan import StaticScanCatalog
 
-PRODUCER = "flowdelta.knowledge/1.2.1"
+if TYPE_CHECKING:
+    from sqlalchemy import Engine
+
+PRODUCER = "flowdelta.knowledge/1.3.0"
 __all__ = [
     "compose_plan",
     "kb_bytes",
@@ -31,6 +39,7 @@ __all__ = [
     "make_plan",
     "retrieve",
     "write_plan",
+    "write_vector_plan",
 ]
 
 
@@ -123,6 +132,45 @@ def write_plan(
         analysis,
         snapshot,
         catalog,
+        producer=PRODUCER,
+        selected_path_id=selected_path_id,
+    )
+    plan = _compose_snapshot(
+        handoff,
+        analysis,
+        snapshot,
+        catalog,
+        retrieval,
+        producer=PRODUCER,
+        handoff_root=handoff_root,
+        repo_root=repo_root,
+        selected_path_id=selected_path_id,
+    )
+    return _write_snapshot(snapshot, retrieval, plan, output)
+
+
+def write_vector_plan(
+    handoff: Handoff,
+    analysis: AnalysisBundle,
+    catalog: TemplateCatalog | StaticScanCatalog,
+    output: Path,
+    *,
+    engine: Engine,
+    provider: EmbeddingProvider,
+    limit: int = 50,
+    handoff_root: Path | None = None,
+    repo_root: Path | None = None,
+    selected_path_id: str | None = None,
+) -> TestPlan:
+    kb_path, _, _ = validate_output_paths(output)
+    snapshot, retrieval = retrieve_vector_snapshot(
+        handoff,
+        analysis,
+        catalog,
+        engine=engine,
+        provider=provider,
+        limit=limit,
+        kb_path=kb_path.name,
         producer=PRODUCER,
         selected_path_id=selected_path_id,
     )

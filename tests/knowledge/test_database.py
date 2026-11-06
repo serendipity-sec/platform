@@ -134,7 +134,7 @@ def test_postgres_migration_and_transaction(tmp_path):
         with migration_engine.connect() as connection:
             assert (
                 connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-                == "kb_0003"
+                == "kb_0004"
             )
             assert (
                 connection.execute(
@@ -145,6 +145,29 @@ def test_postgres_migration_and_transaction(tmp_path):
                     )
                 ).scalar_one()
                 == 3
+            )
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT count(*) FROM information_schema.tables "
+                        "WHERE table_schema='knowledge' AND table_name IN "
+                        "('b_scenario_card', 'b_embedding_profile', "
+                        "'b_scenario_card_embedding')"
+                    )
+                ).scalar_one()
+                == 3
+            )
+            assert (
+                connection.execute(
+                    text(
+                        "SELECT count(*) FROM pg_indexes "
+                        "WHERE schemaname='knowledge' "
+                        "AND indexname='b_scenario_card_embedding_hnsw_cosine_idx' "
+                        "AND indexdef ILIKE '%USING hnsw%' "
+                        "AND indexdef ILIKE '%vector_cosine_ops%'"
+                    )
+                ).scalar_one()
+                == 1
             )
             assert (
                 connection.execute(
@@ -173,6 +196,21 @@ def test_postgres_migration_and_transaction(tmp_path):
                         "'knowledge.source_revision', 'DELETE')"
                     )
                 ).scalar_one()
+            for table in (
+                "b_scenario_card",
+                "b_embedding_profile",
+                "b_scenario_card_embedding",
+            ):
+                for privilege in ("SELECT", "INSERT"):
+                    assert connection.execute(
+                        text("SELECT has_table_privilege('flowdelta_app', :table, :privilege)"),
+                        {"table": f"knowledge.{table}", "privilege": privilege},
+                    ).scalar_one(), (table, privilege)
+                for privilege in ("UPDATE", "DELETE"):
+                    assert not connection.execute(
+                        text("SELECT has_table_privilege('flowdelta_app', :table, :privilege)"),
+                        {"table": f"knowledge.{table}", "privilege": privilege},
+                    ).scalar_one(), (table, privilege)
 
         def clear_source(source: str) -> None:
             with migration_engine.begin() as connection:

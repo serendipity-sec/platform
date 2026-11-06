@@ -10,6 +10,7 @@ import re
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Literal, Protocol
 
@@ -63,6 +64,72 @@ class EmbeddingProvider(Protocol):
     """Implementations accept plain texts and return validated vectors with a profile."""
 
     def embed(self, texts: list[str], purpose: EmbeddingPurpose) -> EmbeddingBatch: ...
+
+
+def validate_embedding_profile(profile: object) -> EmbeddingProfile:
+    if not isinstance(profile, EmbeddingProfile) or (
+        any(
+            type(value) is not str or not value or len(value) > 1024
+            for value in (
+                profile.provider,
+                profile.model,
+                profile.model_digest,
+                profile.query_instruction_version,
+            )
+        )
+        or type(profile.dimensions) is not int
+        or type(profile.normalized) is not bool
+    ):
+        raise InputError("EMBEDDING_PROFILE_INVALID")
+    return profile
+
+
+def validate_embedding_vector(
+    vector: Sequence[float], dimensions: int, *, normalized: bool = False
+) -> tuple[float, ...]:
+    if not isinstance(vector, (list, tuple)) or len(vector) != dimensions:
+        raise InputError("EMBEDDING_DIMENSION_MISMATCH")
+    values: list[float] = []
+    for value in vector:
+        if type(value) not in {int, float}:
+            raise InputError("EMBEDDING_VECTOR_INVALID")
+        try:
+            number = float(value)
+        except OverflowError:
+            raise InputError("EMBEDDING_VECTOR_INVALID") from None
+        if not math.isfinite(number):
+            raise InputError("EMBEDDING_VECTOR_INVALID")
+        values.append(number)
+    result = tuple(values)
+    norm = math.hypot(*result)
+    if not math.isfinite(norm) or norm == 0.0:
+        raise InputError("EMBEDDING_VECTOR_INVALID")
+    if normalized and not math.isclose(norm, 1.0, rel_tol=1e-6, abs_tol=1e-6):
+        raise InputError("EMBEDDING_VECTOR_NORMALIZATION_INVALID")
+    return result
+
+
+def validate_embedding_batch(
+    batch: object,
+    *,
+    expected_count: int,
+    expected_profile: EmbeddingProfile | None = None,
+    dimensions: int | None = None,
+) -> EmbeddingBatch:
+    if not isinstance(batch, EmbeddingBatch):
+        raise InputError("EMBEDDING_BATCH_INVALID")
+    if expected_profile is not None and batch.profile != expected_profile:
+        raise InputError("EMBEDDING_PROFILE_MISMATCH")
+    profile = validate_embedding_profile(batch.profile)
+    if dimensions is not None and profile.dimensions != dimensions:
+        raise InputError("EMBEDDING_PROFILE_MISMATCH")
+    if not isinstance(batch.vectors, (list, tuple)) or len(batch.vectors) != expected_count:
+        raise InputError("EMBEDDING_VECTOR_COUNT_INVALID")
+    validated = tuple(
+        validate_embedding_vector(vector, profile.dimensions, normalized=profile.normalized)
+        for vector in batch.vectors
+    )
+    return EmbeddingBatch(profile=profile, vectors=validated)
 
 
 class OllamaEmbeddingProvider:
@@ -132,16 +199,18 @@ class OllamaEmbeddingProvider:
         if not isinstance(raw_vectors, list) or len(raw_vectors) != len(texts):
             raise InputError("EMBEDDING_VECTOR_COUNT_INVALID")
         vectors = tuple(self._validate_vector(item) for item in raw_vectors)
-        model_digest = self._resolve_running_digest()
-        profile = EmbeddingProfile(
+        return EmbeddingBatch(profile=self.profile(), vectors=vectors)
+
+    def profile(self) -> EmbeddingProfile:
+        """Resolve the exact configured profile from the currently running model metadata."""
+        return EmbeddingProfile(
             provider="ollama",
             model=self._model,
-            model_digest=model_digest,
+            model_digest=self._resolve_running_digest(),
             dimensions=self._dimensions,
             query_instruction_version=QUERY_INSTRUCTION_VERSION,
             normalized=True,
         )
-        return EmbeddingBatch(profile=profile, vectors=vectors)
 
     def _resolve_running_digest(self) -> str:
         response = self._request("GET", "/api/ps", None)

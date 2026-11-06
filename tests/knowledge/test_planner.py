@@ -149,7 +149,7 @@ def test_actual_analysis_output_flows_into_persisted_b_outputs(tmp_path):
         path.path_id for path in analysis.impact_paths
     ]
     assert plan.planner_metadata["analysis_context"] == context
-    assert retrieval.query["rules_version"] == "flowdelta.knowledge/1.2.1"
+    assert retrieval.query["rules_version"] == "flowdelta.knowledge/1.3.0"
 
 
 @pytest.mark.parametrize("version", ["9.0.0", "missing"])
