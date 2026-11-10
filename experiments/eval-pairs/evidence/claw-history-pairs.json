@@ -1,0 +1,1421 @@
+{
+  "schema": "flowdelta-eval-pair-candidates-v1",
+  "repository": "https://github.com/freddy-schuetz/n8n-claw",
+  "path": "workflows/n8n-claw-agent.json",
+  "window": [
+    "2026-03-31T00:00:00Z",
+    "2026-07-31T00:00:00Z"
+  ],
+  "redistribution": "REFERENCES_ONLY",
+  "labels": "NONE — candidates only, see docs #28",
+  "pairs": [
+    {
+      "commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+      "parent": "9ebf36b052b73457acab0fcead254e48986cad01",
+      "date": "2026-04-01T17:05:06Z",
+      "title": "feat: add Memory Update and Memory Delete tools",
+      "merge": false,
+      "before_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+      "after_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+      "nodes_before": 48,
+      "nodes_after": 50,
+      "added_nodes": [
+        "Memory Delete",
+        "Memory Update"
+      ],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Search"
+      ],
+      "memory_code_before": {
+        "Memory Delete": null,
+        "Memory Update": null
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        false,
+        true
+      ],
+      "memory_code_changed": true
+    },
+    {
+      "commit": "83df6d3f4ca55d747678340c37de1594ec6dec01",
+      "parent": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+      "date": "2026-04-01T20:30:01Z",
+      "title": "feat: add list, edit, delete for one-time reminders",
+      "merge": false,
+      "before_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+      "after_sha256": "0cf84eb83b12d4cdd444146217fb413c53497daddd4f849907af76f80309bfdc",
+      "nodes_before": 50,
+      "nodes_after": 50,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Reminder"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "9486d1cc2c00824efb81addb9353203752bffb24",
+      "parent": "9bf94a5baa0b1d3fe5983e3eda0b9b8e453f4d7e",
+      "date": "2026-04-03T19:06:42Z",
+      "title": "feat: add File Bridge for binary passthrough between agent tools",
+      "merge": false,
+      "before_sha256": "0cf84eb83b12d4cdd444146217fb413c53497daddd4f849907af76f80309bfdc",
+      "after_sha256": "ee1e9549977861e17005b2ed1b114b32ac89f9f1b4a42158de2496afc0f24b1b",
+      "nodes_before": 50,
+      "nodes_after": 56,
+      "added_nodes": [
+        "Detect File Send",
+        "Download File",
+        "File Router",
+        "Save File Metadata",
+        "Send File to Telegram",
+        "Upload to File Bridge"
+      ],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Normalize Message"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "1905e3e04176fccb3e61e4ae9858227f330f4d91",
+      "parent": "9486d1cc2c00824efb81addb9353203752bffb24",
+      "date": "2026-04-03T19:14:12Z",
+      "title": "fix: connect Save File Metadata to Normalize Message",
+      "merge": false,
+      "before_sha256": "ee1e9549977861e17005b2ed1b114b32ac89f9f1b4a42158de2496afc0f24b1b",
+      "after_sha256": "aa482dd6e2460e69568c343125b4ad0564fbf3817d6b1b86d91a879682b32fae",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "a9a1de150fc8bd352feb2a2ff490e7f55f743630",
+      "parent": "1905e3e04176fccb3e61e4ae9858227f330f4d91",
+      "date": "2026-04-03T19:19:20Z",
+      "title": "fix: remove Save File Metadata -> Normalize Message connection",
+      "merge": false,
+      "before_sha256": "aa482dd6e2460e69568c343125b4ad0564fbf3817d6b1b86d91a879682b32fae",
+      "after_sha256": "0a715754570554d971c26e77cf000a8ef1b5ff567bb76cb20c9aae81947e7e93",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Normalize Message"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "35462d14268acae5370b6fce4402e23301909aa1",
+      "parent": "a9a1de150fc8bd352feb2a2ff490e7f55f743630",
+      "date": "2026-04-03T19:29:56Z",
+      "title": "fix: add Merge node to resolve dead-end parallel branch blocking",
+      "merge": false,
+      "before_sha256": "0a715754570554d971c26e77cf000a8ef1b5ff567bb76cb20c9aae81947e7e93",
+      "after_sha256": "4207a884ad2ad99b54268c71fe54f20c21bd520782b10360b26ed9966cb2f882",
+      "nodes_before": 56,
+      "nodes_after": 57,
+      "added_nodes": [
+        "Merge File Paths"
+      ],
+      "removed_nodes": [],
+      "changed_nodes": [],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "6c86991614632a8c54194f9dcf1c2bb4b522ad0b",
+      "parent": "35462d14268acae5370b6fce4402e23301909aa1",
+      "date": "2026-04-03T19:33:10Z",
+      "title": "fix: correct Merge node parameters for chooseBranch mode",
+      "merge": false,
+      "before_sha256": "4207a884ad2ad99b54268c71fe54f20c21bd520782b10360b26ed9966cb2f882",
+      "after_sha256": "a4d5864f4e07ddc8c687a59ac055b7fc0f838aa3ad9cf8b4ec6137f31c550a53",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Merge File Paths"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "cb7661ba2169ecb011ae83c77dc7c8c35f46c9cc",
+      "parent": "6c86991614632a8c54194f9dcf1c2bb4b522ad0b",
+      "date": "2026-04-03T19:42:50Z",
+      "title": "fix: repair broken JS string literals in Normalize Message",
+      "merge": false,
+      "before_sha256": "a4d5864f4e07ddc8c687a59ac055b7fc0f838aa3ad9cf8b4ec6137f31c550a53",
+      "after_sha256": "d66c9134c9d954e1ce462039dad77e301c0f3e57a2b0204c8f35614ecabaa3fe",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Normalize Message"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "a8c1f97f4516501932d23840a65eef5ce3a6f313",
+      "parent": "0330e2397380a0994a08f13d7bde3dfe1c795677",
+      "date": "2026-04-03T20:02:26Z",
+      "title": "fix: embed file_ref in Normalize Message for documents and photos",
+      "merge": false,
+      "before_sha256": "d66c9134c9d954e1ce462039dad77e301c0f3e57a2b0204c8f35614ecabaa3fe",
+      "after_sha256": "1d81dc49bc56ce377ae2b379232b9fb9bca18ed4bb4b02117719b6712f3ce29a",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Normalize Message"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "9acf38309e2441e253e2459aea1e8af886f10163",
+      "parent": "6d3789ca5054465c1738d075d678653237b727d4",
+      "date": "2026-04-03T21:00:56Z",
+      "title": "fix: Send File to Telegram node uses binaryData instead of document param",
+      "merge": false,
+      "before_sha256": "1d81dc49bc56ce377ae2b379232b9fb9bca18ed4bb4b02117719b6712f3ce29a",
+      "after_sha256": "ca1f9bd114e4de94061baa0c4850f1f52702ef20e9843186b7746cc2303d41c3",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Send File to Telegram"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "d012106b127e216473ef3a63d8a4901724d48aa9",
+      "parent": "9acf38309e2441e253e2459aea1e8af886f10163",
+      "date": "2026-04-03T21:05:13Z",
+      "title": "fix: Send File to Telegram chatId from Build System Prompt (like Telegram Reply)",
+      "merge": false,
+      "before_sha256": "ca1f9bd114e4de94061baa0c4850f1f52702ef20e9843186b7746cc2303d41c3",
+      "after_sha256": "fadbb05d43c2def6d9de64cc3973134f3a5bd46280a94eed9b71246e1f6db546",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Detect File Send",
+        "Send File to Telegram"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "a5e6b56a794543053981feb1d51abfb4fea02786",
+      "parent": "89c741317ef207e59193bf4a406923a3c16bc40d",
+      "date": "2026-04-03T21:36:17Z",
+      "title": "fix: strip [send_file:] markers in Split Long Message node",
+      "merge": false,
+      "before_sha256": "fadbb05d43c2def6d9de64cc3973134f3a5bd46280a94eed9b71246e1f6db546",
+      "after_sha256": "c808c0c22404308272532640e146893ce223b027661ceaef0c797cff3830b6a4",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Split Long Message"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "8fc1cefbaceeaac825fd2ffa9c2b5d6c222abd93",
+      "parent": "10b7be01af599151349f3ae166efd7cc66ea253c",
+      "date": "2026-04-07T05:23:00Z",
+      "title": "feat: add Knowledge System Phase 1+2 (Enriched Memory + Knowledge Graph)",
+      "merge": false,
+      "before_sha256": "c808c0c22404308272532640e146893ce223b027661ceaef0c797cff3830b6a4",
+      "after_sha256": "60d13ca62c9679a1f615d4357d59fa5b4353cbdf74bf4913bc029dce1c3599a8",
+      "nodes_before": 57,
+      "nodes_after": 58,
+      "added_nodes": [
+        "Entity Manager"
+      ],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Save",
+        "Memory Search",
+        "Memory Update"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "7402f9f9b1af3b26693a3cc693e37207a73ce0ae3c249d07f09655443e832797"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": true
+    },
+    {
+      "commit": "0bbe8ff2f295655f58a139694052cfa330dbb0cc",
+      "parent": "cb7e6f3e70b1066a6b7dd43ea0f72bc8c89142e8",
+      "date": "2026-04-07T05:33:02Z",
+      "title": "fix: make entity types and relation types fully open (free text)",
+      "merge": false,
+      "before_sha256": "60d13ca62c9679a1f615d4357d59fa5b4353cbdf74bf4913bc029dce1c3599a8",
+      "after_sha256": "164d53340ef0b8d30499680817aa4a1c8b8d8e1a46a5b304e566a29f3217d649",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Entity Manager"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "55ded9dfa3b995be2b8c93be6fb41b4c713ae8a1",
+      "parent": "0bbe8ff2f295655f58a139694052cfa330dbb0cc",
+      "date": "2026-04-07T05:35:27Z",
+      "title": "fix: add type normalization and consistency guardrails to Entity Manager",
+      "merge": false,
+      "before_sha256": "164d53340ef0b8d30499680817aa4a1c8b8d8e1a46a5b304e566a29f3217d649",
+      "after_sha256": "835c14ed78cfd1aaef8da653540b17cfedc5051436b62f037a12f3719b4a1514",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Entity Manager"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "444b334072aa90f14bb69cd06bf845fbd9118aeb",
+      "parent": "55ded9dfa3b995be2b8c93be6fb41b4c713ae8a1",
+      "date": "2026-04-07T05:37:21Z",
+      "title": "fix: case-insensitive entity name lookups + update search description",
+      "merge": false,
+      "before_sha256": "835c14ed78cfd1aaef8da653540b17cfedc5051436b62f037a12f3719b4a1514",
+      "after_sha256": "a1c6d7052b84e62865b852daf2511a534911397a1d1363f10bb81db180766365",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Entity Manager"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "2626a269a7cb5c53f5ccda235499e3f4512d6855",
+      "parent": "444b334072aa90f14bb69cd06bf845fbd9118aeb",
+      "date": "2026-04-07T05:39:09Z",
+      "title": "fix: case-insensitive entity_name filter + lowercase tag normalization",
+      "merge": false,
+      "before_sha256": "a1c6d7052b84e62865b852daf2511a534911397a1d1363f10bb81db180766365",
+      "after_sha256": "c430c7a284ef920de2cccf44eacaf151b0206139ee2c162726f184baa4fd402f",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Save",
+        "Memory Search",
+        "Memory Update"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "eab6016017192b50ad9484003999d2e29edcc11f8d68db193c01357a88bb3021"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": true
+    },
+    {
+      "commit": "71fe4b5a4cceb5633f0cb0221ac9f821c77c140e",
+      "parent": "2626a269a7cb5c53f5ccda235499e3f4512d6855",
+      "date": "2026-04-07T05:42:00Z",
+      "title": "feat: auto-link KG entities with existing memories",
+      "merge": false,
+      "before_sha256": "c430c7a284ef920de2cccf44eacaf151b0206139ee2c162726f184baa4fd402f",
+      "after_sha256": "fcfa9d0b10b075a59d1225504bf8ea6c05286b77dea8d6d451dc7b9a720ef792",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Entity Manager"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "3437f73d6b8bf9c2267646d94439e7e4d2581a4a",
+      "parent": "c6f34f5ae7aface61e5cd79d8363d0a61955b57e",
+      "date": "2026-04-07T06:45:56Z",
+      "title": "feat: add auto-expiry for memories + nightly cleanup",
+      "merge": false,
+      "before_sha256": "fcfa9d0b10b075a59d1225504bf8ea6c05286b77dea8d6d451dc7b9a720ef792",
+      "after_sha256": "1fce8e6311fbb81ba561e2f03688b9984acd3e37fe760a7e688f612e6a2a66f2",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Save"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "1d49d199bb452b51d105bc82eb382faa5282b794",
+      "parent": "3437f73d6b8bf9c2267646d94439e7e4d2581a4a",
+      "date": "2026-04-07T06:47:41Z",
+      "title": "fix: make tags and entity_name effectively required in Memory Save",
+      "merge": false,
+      "before_sha256": "1fce8e6311fbb81ba561e2f03688b9984acd3e37fe760a7e688f612e6a2a66f2",
+      "after_sha256": "10573b84dcf0acad0d4670a229f3c28ae361cb8adb9867fb99412d29dc4dc1e1",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Save"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "b0d6e31d93e05b7d5ab64f755226b5df283cb031",
+      "parent": "1d49d199bb452b51d105bc82eb382faa5282b794",
+      "date": "2026-04-07T06:48:11Z",
+      "title": "fix: entity_name only when relevant, not forced on every save",
+      "merge": false,
+      "before_sha256": "10573b84dcf0acad0d4670a229f3c28ae361cb8adb9867fb99412d29dc4dc1e1",
+      "after_sha256": "7c887aefdaa9295ce82d268426521ef6535e981087ffff440cf066ab702ab9d2",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Save"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "7d59beccfcaf624c54beb94570c7ea638d815093",
+      "parent": "b0d6e31d93e05b7d5ab64f755226b5df283cb031",
+      "date": "2026-04-07T06:49:48Z",
+      "title": "fix: enforce English lowercase tags + broaden entity_name scope",
+      "merge": false,
+      "before_sha256": "7c887aefdaa9295ce82d268426521ef6535e981087ffff440cf066ab702ab9d2",
+      "after_sha256": "cd8b25d73ed0ec8a20f2c6cb483ac3339052d4598a0f83577110c98dc48aa130",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Save"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "6c1fe4ba36e033cceeab29174baad942ca083ec5",
+      "parent": "2d3c049e65479bd9dfee2a13214fb3c51af2d3a3",
+      "date": "2026-04-07T07:12:36Z",
+      "title": "fix: enforce English lowercase for entity_type and relation_type",
+      "merge": false,
+      "before_sha256": "cd8b25d73ed0ec8a20f2c6cb483ac3339052d4598a0f83577110c98dc48aa130",
+      "after_sha256": "d5ddd142ff4384a999527775116b4ec843b53b090ac7da737500dcb0c75e5556",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Entity Manager"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "2d83bef405f2333141888c689160d5d9ad74852e",
+      "parent": "6c1fe4ba36e033cceeab29174baad942ca083ec5",
+      "date": "2026-04-07T07:30:24Z",
+      "title": "fix: transliterate umlauts in normalize() instead of stripping them",
+      "merge": false,
+      "before_sha256": "d5ddd142ff4384a999527775116b4ec843b53b090ac7da737500dcb0c75e5556",
+      "after_sha256": "2d252f3a3f03aa3eb18d483a2f26b9309958f2eff3fe375c8d0e1f11dc54cca5",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Entity Manager"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "43298b2980579f8baccacea01dbc3973622eadc3",
+      "parent": "2d83bef405f2333141888c689160d5d9ad74852e",
+      "date": "2026-04-07T07:36:48Z",
+      "title": "fix: stronger wording for English-only tags (NEVER German)",
+      "merge": false,
+      "before_sha256": "2d252f3a3f03aa3eb18d483a2f26b9309958f2eff3fe375c8d0e1f11dc54cca5",
+      "after_sha256": "cb0d14b31c66549a70084477e4fa69ee4b5f23a3486ca261aaf3d35ce6bf707b",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Save"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "b61a87ba574ea77a55681548cd775545420bbabd",
+      "parent": "4411efba724b6e6f3a3b4d56ecf6c3814e383e9b",
+      "date": "2026-04-07T08:09:16Z",
+      "title": "fix: replace Postgres nodes with PostgREST for conversation save",
+      "merge": false,
+      "before_sha256": "cb0d14b31c66549a70084477e4fa69ee4b5f23a3486ca261aaf3d35ce6bf707b",
+      "after_sha256": "68ec2e62a6039e786bd3727bc62124102699b27206371e2b1255c7b2df76e259",
+      "nodes_before": 58,
+      "nodes_after": 56,
+      "added_nodes": [
+        "Save Conversation and Log"
+      ],
+      "removed_nodes": [
+        "Prepare Save",
+        "Save Conversation",
+        "Save Daily Log"
+      ],
+      "changed_nodes": [],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "9fb94b092edd401472655427be7de52ec1c98f4e",
+      "parent": "ae9f96a4fc9bbd10386c095e688baf046a99994e",
+      "date": "2026-04-09T04:19:13Z",
+      "title": "feat(memory): hybrid search with RRF, time decay, multi-language",
+      "merge": false,
+      "before_sha256": "68ec2e62a6039e786bd3727bc62124102699b27206371e2b1255c7b2df76e259",
+      "after_sha256": "29052974bdfffca36213f76c831c65f49ea20cc9ebdaef17f7ccf7b678544632",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Search"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "2c234a3d942195dd2df58e276cd49172a1c5bb04",
+      "parent": "b042a1bc7cb27b5a55dbf2c89337f8e2f77f3ab2",
+      "date": "2026-04-09T15:13:19Z",
+      "title": "perf(agent): stop loading full personas into main system prompt (-3.7k tokens)",
+      "merge": false,
+      "before_sha256": "29052974bdfffca36213f76c831c65f49ea20cc9ebdaef17f7ccf7b678544632",
+      "after_sha256": "f14cb4d5bc027bf31968d96bd9c870a8bc3b99417108c2bb1c59f78e7bd9bd1f",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Load Agents Config"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "16083e1cbd432b4c72c65d1de3e6c956e724c2c6",
+      "parent": "dc7192f2eb643e481d6e4293be318fa79fdae1c2",
+      "date": "2026-04-12T21:45:50Z",
+      "title": "fix(llm): raise max output tokens from 4096 to 8192",
+      "merge": false,
+      "before_sha256": "f14cb4d5bc027bf31968d96bd9c870a8bc3b99417108c2bb1c59f78e7bd9bd1f",
+      "after_sha256": "3d5abc8cfa8ce5cb3c944c5facaeef0b046ffb3ef626ebba1e63a62cb6cefa4d",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Claude"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "0ba4004a7e5d63dbdcd7bf6826b5a109dfd53119",
+      "parent": "18125e6aa9ebb128ba35b3fc48487571e03c0e7e",
+      "date": "2026-04-14T06:28:44Z",
+      "title": "feat(mcp-bridge): support external MCP servers via bridge templates",
+      "merge": false,
+      "before_sha256": "3d5abc8cfa8ce5cb3c944c5facaeef0b046ffb3ef626ebba1e63a62cb6cefa4d",
+      "after_sha256": "07db06c5753ac44fca16a00f578576dc084ceb19dbe3e50c2f26fa796685093b",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "MCP Client"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "b0731e66bd9f846c1ac1eb1cf88c19b63deaaebd",
+      "parent": "0868ebfd203c39f59f9620d4f12e61420607fc31",
+      "date": "2026-04-14T08:23:46Z",
+      "title": "feat(mcp-bridge): schema-hint retry for external MCP tool calls",
+      "merge": false,
+      "before_sha256": "07db06c5753ac44fca16a00f578576dc084ceb19dbe3e50c2f26fa796685093b",
+      "after_sha256": "1925a0f03e42f960288d6eb8022f69ab2725ee5d3cda43d66f277d45d0984e36",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "MCP Client"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "12912ccb6f0fb932b625115800eaea2c90e6b8c1",
+      "parent": "4d2fad28a0d3cbfe10baab7bde5632d87939f8c8",
+      "date": "2026-04-17T12:15:45Z",
+      "title": "fix(mcp-client): allow empty strings for required params",
+      "merge": false,
+      "before_sha256": "1925a0f03e42f960288d6eb8022f69ab2725ee5d3cda43d66f277d45d0984e36",
+      "after_sha256": "abbc6e62734daeab48b8d40d51be01d562cc8cbf535676d08511bbbac4127f10",
+      "nodes_before": 56,
+      "nodes_after": 56,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "MCP Client"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "d45e31f9aa2a1a1a7890f2ec3db3ad826c2b56a9",
+      "parent": "a7740db13ecac710f8a2be7a005a97ca97068641",
+      "date": "2026-04-18T14:58:47Z",
+      "title": "feat(agent): preload top-3 insights into system prompt",
+      "merge": false,
+      "before_sha256": "abbc6e62734daeab48b8d40d51be01d562cc8cbf535676d08511bbbac4127f10",
+      "after_sha256": "f117db427aa0348c2b24b81457b8e5bdf99ee5df1b9f19b57c8f4047fcb04559",
+      "nodes_before": 56,
+      "nodes_after": 57,
+      "added_nodes": [
+        "Load Insights"
+      ],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Build System Prompt"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "ad1e1b60f5733d0e5375adcc263b936aaa0d23d5",
+      "parent": "d45e31f9aa2a1a1a7890f2ec3db3ad826c2b56a9",
+      "date": "2026-04-18T15:23:02Z",
+      "title": "fix(agent): suppress [SKIP] heartbeat responses in Save Conversation",
+      "merge": false,
+      "before_sha256": "f117db427aa0348c2b24b81457b8e5bdf99ee5df1b9f19b57c8f4047fcb04559",
+      "after_sha256": "2626056bc806baa22bc0f915cb37d2ea8290f76ec6236f15c590a4cd026b7ea3",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Save Conversation and Log"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "0a37b6eb34fa69329d40be52f7e75a0898d2d451",
+      "parent": "33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7",
+      "date": "2026-04-18T16:04:17Z",
+      "title": "fix(memory_update): add metadata field support (merge, not replace)",
+      "merge": false,
+      "before_sha256": "2626056bc806baa22bc0f915cb37d2ea8290f76ec6236f15c590a4cd026b7ea3",
+      "after_sha256": "e523bc9ef66ec1c30d3ad8a0d7e0695315bf53cabc50c11deb144bd775483008",
+      "nodes_before": 57,
+      "nodes_after": 57,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Update"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "a87e0400e12bdda326b4eb15fd26afc8a0ca18e9f1aee046f719dff04389c50a"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": true
+    },
+    {
+      "commit": "93b7ae3c8ae3770fc837e6279ab488dc48c2b2e0",
+      "parent": "fe940c976c0d1964ff71933c566d6bc0914f50e8",
+      "date": "2026-05-11T19:03:43Z",
+      "title": "feat(browser): wire Browser Use into the agent (workflow + setup + docs)",
+      "merge": false,
+      "before_sha256": "e523bc9ef66ec1c30d3ad8a0d7e0695315bf53cabc50c11deb144bd775483008",
+      "after_sha256": "493c3a6e3f4385b64b744f377f34285b80e234a88997d69b62459d8f2967fcfd",
+      "nodes_before": 57,
+      "nodes_after": 58,
+      "added_nodes": [
+        "Browser Action"
+      ],
+      "removed_nodes": [],
+      "changed_nodes": [],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "adb85c89dde39314eee03bb9a2cd6b6118226dd0",
+      "parent": "09f01d972d9cfb9b8c068f484b9052303b031696",
+      "date": "2026-05-31T16:19:08Z",
+      "title": "fix: rename app table agents -> claw_agents to avoid n8n core Agents collision (#35)",
+      "merge": false,
+      "before_sha256": "493c3a6e3f4385b64b744f377f34285b80e234a88997d69b62459d8f2967fcfd",
+      "after_sha256": "95786aba87281d1b70751e67fb7ba0b02a35e5ab8708be6b2d8648bd9280ba6b",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Load Agents Config"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "65246742dc60a51c20a5ff3b7ee09d577ce80d22",
+      "parent": "b52894a39a5a980c0233d954a401dd72007ca773",
+      "date": "2026-06-22T00:40:25Z",
+      "title": "fix(crawl4ai): set API token so Web Reader can reach crawl4ai >= 0.9.0",
+      "merge": false,
+      "before_sha256": "95786aba87281d1b70751e67fb7ba0b02a35e5ab8708be6b2d8648bd9280ba6b",
+      "after_sha256": "55c79f284c14c65384bd1ef2163e6a67411775078d10893df92877039574f3b4",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Web Reader"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "881af144b91452c481203d96ddf714c9cae4cba6",
+      "parent": "d12a897004f8d53beeb4ab1a8320fa3626bcf649",
+      "date": "2026-07-06T19:00:52Z",
+      "title": "fix(agent): retry AI Agent node on transient LLM errors (Anthropic 529)",
+      "merge": false,
+      "before_sha256": "55c79f284c14c65384bd1ef2163e6a67411775078d10893df92877039574f3b4",
+      "after_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "AI Agent"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "99a2cdb5d35d42846cc67a89779e1ee8d073dab9",
+      "parent": "b48626c7c870e75292483cf599e43d2530a693e3",
+      "date": "2026-07-30T08:36:14Z",
+      "title": "feat(agent): streaming web endpoint + live status events (additive)",
+      "merge": false,
+      "before_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "after_sha256": "2b190a8beaa6182383037a8d233c2e1c8ebf80fa9135d434d30447860c32cd44",
+      "nodes_before": 58,
+      "nodes_after": 62,
+      "added_nodes": [
+        "Format Stream Input",
+        "Read Status",
+        "Status Webhook",
+        "Stream Webhook"
+      ],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "AI Agent",
+        "MCP Client",
+        "Response Router",
+        "Web Reader",
+        "Web Search"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "0796e7de132376389def7ad55869f1871717f804",
+      "parent": "6224e9ad9f433c4e749cca8354abfe71d2c13c82",
+      "date": "2026-07-30T12:16:37Z",
+      "title": "fix(agent): stream router rule reads flag from Merge Input, not tail output",
+      "merge": false,
+      "before_sha256": "2b190a8beaa6182383037a8d233c2e1c8ebf80fa9135d434d30447860c32cd44",
+      "after_sha256": "d13391a4c7d6a3d1b53524c22574b6c0a4828bd89324300437f0adedf8844d4f",
+      "nodes_before": 62,
+      "nodes_after": 62,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Response Router"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "cd26b4eb600bb3027e6fb638cd806b7d48abc4f3",
+      "parent": "1887406e8ab4020c949aab3413b418ed907f3bf8",
+      "date": "2026-07-30T12:28:05Z",
+      "title": "Revert \"fix(agent): stream router rule reads flag from Merge Input, not tail output\"",
+      "merge": false,
+      "before_sha256": "d13391a4c7d6a3d1b53524c22574b6c0a4828bd89324300437f0adedf8844d4f",
+      "after_sha256": "2b190a8beaa6182383037a8d233c2e1c8ebf80fa9135d434d30447860c32cd44",
+      "nodes_before": 62,
+      "nodes_after": 62,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Response Router"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "cf18cd5f008eab798be78761e8ebfd1c2cdd9b16",
+      "parent": "e7604638b83695c3632f88fe27dedd65a38ed376",
+      "date": "2026-07-30T12:28:06Z",
+      "title": "Revert \"feat(agent): streaming web endpoint + live status events (additive)\"",
+      "merge": false,
+      "before_sha256": "2b190a8beaa6182383037a8d233c2e1c8ebf80fa9135d434d30447860c32cd44",
+      "after_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "nodes_before": 62,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [
+        "Format Stream Input",
+        "Read Status",
+        "Status Webhook",
+        "Stream Webhook"
+      ],
+      "changed_nodes": [
+        "AI Agent",
+        "MCP Client",
+        "Response Router",
+        "Web Reader",
+        "Web Search"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+      "parent": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+      "date": "2026-07-30T13:33:06Z",
+      "title": "feat(memory): governance — scope (team/personal), ownership, admin-gated deletes",
+      "merge": false,
+      "before_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "after_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Delete",
+        "Memory Save",
+        "Memory Search",
+        "Memory Update"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_code_after": {
+        "Memory Delete": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "Memory Update": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": true
+    },
+    {
+      "commit": "6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc",
+      "parent": "bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3",
+      "date": "2026-07-30T13:36:17Z",
+      "title": "feat(agent,library): empty-message guard + 10min catalog cache",
+      "merge": false,
+      "before_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+      "after_sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Format Webhook Input"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "Memory Update": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763"
+      },
+      "memory_code_after": {
+        "Memory Delete": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "Memory Update": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "21212cdb429efdde6abefd15e7b0ec735d7c57ec",
+      "parent": "c516fbcd33bcfce35a4baec468f5a6a886c3e0ef",
+      "date": "2026-07-30T13:47:19Z",
+      "title": "Revert \"feat(agent,library): empty-message guard + 10min catalog cache\"",
+      "merge": false,
+      "before_sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f",
+      "after_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Format Webhook Input"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "Memory Update": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763"
+      },
+      "memory_code_after": {
+        "Memory Delete": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "Memory Update": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": false
+    },
+    {
+      "commit": "2c6df444bdc3c31358d4b70c7d36113605654f8c",
+      "parent": "21212cdb429efdde6abefd15e7b0ec735d7c57ec",
+      "date": "2026-07-30T13:47:20Z",
+      "title": "Revert \"feat(memory): governance — scope (team/personal), ownership, admin-gated deletes\"",
+      "merge": false,
+      "before_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+      "after_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "nodes_before": 58,
+      "nodes_after": 58,
+      "added_nodes": [],
+      "removed_nodes": [],
+      "changed_nodes": [
+        "Memory Delete",
+        "Memory Save",
+        "Memory Search",
+        "Memory Update"
+      ],
+      "memory_code_before": {
+        "Memory Delete": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "Memory Update": "51ff74c314772878cb320533a8fbf5c21de22f7bf9475da68b168d8ff639d763"
+      },
+      "memory_code_after": {
+        "Memory Delete": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "Memory Update": "292cab6084a79cf2045765717f30ef843586b07ed3224a5833e2f1b6ea5fa7db"
+      },
+      "memory_tools_present": [
+        true,
+        true
+      ],
+      "memory_code_changed": true
+    }
+  ]
+}
