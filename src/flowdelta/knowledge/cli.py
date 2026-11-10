@@ -145,6 +145,32 @@ def index_cards_command(
             engine.dispose()
 
 
+@app.command("check-evidence")
+def check_evidence_command(
+    cards: Path,
+    root: Annotated[
+        Path, typer.Option(help="Directory that card evidence artifact paths are relative to.")
+    ] = Path("."),
+) -> None:
+    """Check that card claim evidence references resolve, match hashes and support claims.
+
+    Exit 0: no failed reference. Exit 1: at least one FAILED reference. Exit 2: unreadable cards.
+    Pinned upstream sources outside the checkout are reported as SOURCE_UNAVAILABLE.
+    """
+    from flowdelta.knowledge.card_evidence import FAILED, check_cards
+    from flowdelta.knowledge.cards import load_cards
+
+    try:
+        report = check_cards(load_cards(cards, bundle_root=root.resolve()), root)
+        typer.echo(json_bytes(report).decode("utf-8"), nl=False)
+    except InputError as exc:
+        _exit_with_error(exc.code)
+        return
+    totals = report["totals"]
+    if isinstance(totals, dict) and totals.get(FAILED):
+        raise typer.Exit(1)
+
+
 @app.command("export-plan")
 def export_plan_command(
     plan_id: str,
