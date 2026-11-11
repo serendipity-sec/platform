@@ -11,6 +11,7 @@
 | 표본 | 4개 유형 × 11쌍 |
 | 결과 | **11쌍 중 9쌍에서 capability 변화를 놓침** |
 | 종합 보고 | [RESULTS-combined.md](RESULTS-combined.md) |
+| 읽는 범위 (2026-11-11 주석) | SkillSpector 한 도구와 팀이 설계한 합성 11쌍의 결과다. 다른 스캐너나 실제 변경의 탐지율로 일반화하지 않는다. 자세한 내용은 RESULTS-combined.md 첫 주석 |
 
 ---
 
