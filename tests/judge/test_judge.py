@@ -1,8 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from flowdelta.ingestion import digest, json_bytes
-from flowdelta.judge import EvidenceItem, JudgmentInput, judge
+from flowdelta.judge import EvidenceItem, JudgmentInput, judge, record_digest
 
 RUN = "run-001"
 HASH = "a" * 64
@@ -17,7 +16,7 @@ def item(run: str, kind: str, sequence: int, payload: dict[str, object], **owner
         actor=owner.get("actor"),
         target_owner=owner.get("owner"),
         payload=body,  # type: ignore[arg-type]
-        sha256=digest(json_bytes(body)),
+        sha256=record_digest(run, kind, sequence, owner.get("actor"), owner.get("owner"), body),
     )
 
 
@@ -159,3 +158,45 @@ def test_success_or_static_finding_cannot_enter_the_input() -> None:
 def test_unsupported_plan_is_not_judged() -> None:
     result = judge(case(base_evidence(), plan_kind="unknown-plan"))
     assert result.label == "UNSUPPORTED"
+
+
+@pytest.mark.parametrize("status", ["TIMED_OUT", "NOT_RUN", "INTERRUPTED", "CANCELLED"])
+def test_unfinished_run_without_forbidden_effect_is_not_reported_as_no_violation(
+    status: str,
+) -> None:
+    result = judge(case(base_evidence(), execution_status=status))
+    assert result.label == "INCONCLUSIVE"
+    assert result.reasons == ["EXECUTION_NOT_COMPLETE"]
+
+
+@pytest.mark.parametrize("status", ["TIMED_OUT", "INTERRUPTED"])
+def test_unfinished_run_with_observed_forbidden_effect_is_still_a_violation(status: str) -> None:
+    result = judge(case(base_evidence() + [delete(2, "user-a", "user-b")], execution_status=status))
+    assert result.label == "VIOLATION_OBSERVED"
+
+
+@pytest.mark.parametrize("actor, owner", [(None, "user-b"), ("user-a", None)])
+def test_effect_without_actor_or_owner_is_inconclusive(
+    actor: str | None, owner: str | None
+) -> None:
+    effect = item(RUN, "EFFECT", 2, {"deleted": "m1"}, actor=actor, owner=owner)
+    result = judge(case(base_evidence() + [effect]))
+    assert result.label == "INCONCLUSIVE"
+    assert "EFFECT_ATTRIBUTION_MISSING" in result.reasons
+
+
+def test_changing_actor_after_hashing_is_a_hash_mismatch() -> None:
+    # 소유자와 같은 값으로 바꾸면 예전 방식(payload만 해시)에서는 들키지 않았다.
+    original = delete(2, "user-a", "user-b")
+    tampered = EvidenceItem(
+        run_id=original.run_id,
+        kind="EFFECT",
+        sequence=original.sequence,
+        actor="user-b",
+        target_owner="user-b",
+        payload=dict(original.payload),
+        sha256=original.sha256,
+    )
+    result = judge(case(base_evidence() + [tampered]))
+    assert result.label == "INCONCLUSIVE"
+    assert "HASH_MISMATCH" in result.reasons
