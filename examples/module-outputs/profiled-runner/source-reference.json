@@ -1,0 +1,11 @@
+{
+  "record_format": "flowdelta-published-source-reference-v1",
+  "repository": "https://github.com/serendipity-sec/platform",
+  "matching_source_commit": "e8ce3ad9b5589b7f30a78917f96e77ea81e0c29c",
+  "source_tree_sha256": "db29c1e9cc97531927975ceebf46bbc3e7e3fea48cdf80fe3e08dce068cecff6",
+  "source_bytes": "GIT_BLOBS",
+  "receipts": {
+    "summary.json": "f3165015fcc756d4404f903a44935d7f6bd028f3136f13bea4bc8e69ce0f1956",
+    "verification.json": "402b4ed0b52f8ee85dc0fbd730226a8bbf40c421c4b91c368862c2d0a2294e84"
+  }
+}
