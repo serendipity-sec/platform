@@ -4,9 +4,52 @@ Refs docs #52 (#67 1-3). 기존 조사([`final/research-evidence.md`](https://gi
 가장 가까운 외부 비교군으로 꼽은 [0xCD4/n8n-ai-agent-security-lab](https://github.com/0xCD4/n8n-ai-agent-security-lab)의
 동적 검사(release rehearsal)가 우리 파일럿 n8n-claw Memory Delete에 쓰일 수 있는지 확인한다.
 
-**도구를 실행한 결과가 아니다.** 고정 commit의 지원 범위 판정 코드를 읽고, 그 판정 순서를 `classify.py`로 옮겨
-n8n-claw 7개 버전에 적용했다. 실제 도구는 아래 표의 사유보다 먼저 다른 이유로 멈출 수 있다.
-도구 자체 실행은 따로 승인을 받은 뒤 같은 입력으로 재현한다.
+두 가지를 했다.
+
+1. **코드 대조(`classify.py`)**: 고정 commit의 지원 범위 판정 코드를 읽고 그 순서를 옮겨 7개 버전에 적용했다.
+2. **도구 실제 실행(`run_lab.py`)**: 같은 commit의 도구를 네트워크를 끈 컨테이너에서 실행했다.
+   정적 검사(`bin/audit.mjs`)는 7개 버전, 동적 검사(`bin/rehearse.mjs`)는 두 쌍에 돌렸다.
+
+## 도구 실제 실행 — [`evidence/tool-runs.json`](evidence/tool-runs.json)
+
+```bash
+python experiments/n8n-claw-c/collect.py --out var/claw-c
+python experiments/n8n-claw-lab/run_lab.py --out experiments/n8n-claw-lab/evidence/tool-runs.json
+```
+
+- 도구를 `var/n8n-claw-lab/tool`에 고정 commit으로 받고, `node`(digest 고정) 컨테이너에서
+  `--network none`·읽기 전용으로 실행한다. 도구 코드는 호스트에서 돌지 않는다.
+- 원시 출력은 upstream 노드 이름·경로를 담아 `var/n8n-claw-lab/raw`에만 둔다. 커밋한 요약에는
+  종료 코드·점수·finding ID와 심각도·전후 동일 여부·rehearsal 결과와 사유 코드만 있다.
+- rehearsal fixture는 도구의 예제 fixture를 그대로 썼다. 지원 범위 검사에서 먼저 멈추므로 결과에 영향이 없다.
+
+**정적 검사 (2026-11-11)**
+
+| 버전 | 점수 | finding | 기억 도구 언급 |
+|---|---|---|---|
+| before-feature · feature | 46 (D) | 5개 (high 3, medium 1, low 1) | 없음 |
+| before-fix · first-fix · reverted · before-september · september | 24 (F) | 7개 (high 4, medium 2, low 1) | 없음 |
+
+- `before-feature → feature`(기억 삭제·수정 도구 추가)와 `before-fix → first-fix`(소유권 검사 추가)는
+  finding이 **완전히 같다**. 이 도구의 정적 검사도 `n8n-claw-c`의 공개 도구 4개처럼 두 쌍을 구분하지 못한다.
+- finding은 모두 workflow 전체 구조에 대한 것이다(신뢰되지 않은 입력 → 모델, 승인 없는 외부 쓰기,
+  비용 제한 없음, 데이터로 만든 HTTP URL 등). `toolCode` 안의 소유자 비교는 보지 않는다.
+
+**동적 검사 (rehearsal)**
+
+| 쌍 | 종료 코드 | 결과 | 관측한 동작 |
+|---|---|---|---|
+| feature-add | 3 | `BLOCKED_UNSUPPORTED` | 0 (Docker 실행 안 함) |
+| first-fix | 3 | `BLOCKED_UNSUPPORTED` | 0 (Docker 실행 안 함) |
+
+실제 사유 코드에는 `classify.py`가 예측한 6개(`ACTIVE_NODE_LIMIT_EXCEEDED`, `CODE_NODE_BLOCKED`,
+`CREDENTIAL_REFERENCE_PRESENT`, `METHOD_READ_ONLY_UNSUPPORTED`, `NODE_UNSUPPORTED`, `SUBWORKFLOW_UNSUPPORTED`)가
+모두 있고, 옮기지 않은 경로·구조 검사의 사유(`PATH_*`, `ACTION_PARAMETERS_UNSUPPORTED`,
+`STRUCTURAL_VERSION_UNSUPPORTED`, `TRANSFORMATION_FIDELITY_UNPROVEN`)가 더 있다.
+
+## 코드 대조 (`classify.py`)
+
+아래는 도구를 실행하기 전에 한 코드 대조 기록이다. 결론은 위 실제 실행과 같다.
 
 ## 대상
 
@@ -63,7 +106,5 @@ python experiments/n8n-claw-lab/classify.py --out experiments/n8n-claw-lab/evide
   - 우리 사례는 AI 도구 코드가 서비스 키로 남의 기억을 `DELETE`하는 것이다. 노드 종류가 지원되더라도 이 효과는 관측 대상이 아니다.
 - **"Docker 실행 안 함"은 도구가 틀렸다는 뜻이 아니다.** 도구는 범위 밖 입력을 실행 전에 거부하도록 설계됐다.
   비교 실험에서는 이 사례를 이 도구의 "지원 안 함"으로 세고, 점수 비교에서 빼되 지원 표에는 남긴다.
-- **정적 검사(`bin/audit.mjs`)는 아직 돌리지 않았다.** 같은 7개 버전에 돌리면
-  [`n8n-claw-c`](../n8n-claw-c/README.md)의 공개 정적 도구 4개(n8n audit, Agentic Radar, FlowSentry, n8n-flowguard) 표에 한 줄을 더할 수 있다.
 - 옮긴 판정은 HTTP 목적지 검사와 연결 그래프 검사(순환·분리 노드·`main[0]` 경로)를 포함하지 않는다.
   이 사례는 그 전 단계에서 이미 막히므로 결론은 바뀌지 않는다.
