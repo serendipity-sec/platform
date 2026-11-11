@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from flowdelta.ingestion import digest, json_bytes
-from flowdelta.judge import EvidenceItem, JudgmentInput
+from flowdelta.judge import EvidenceItem, JudgmentInput, record_digest
 
 
 class AdapterError(ValueError):
@@ -86,6 +86,7 @@ def build_input(
             continue
         principal = event.get("principal")
         owner = _owner_of(final_doc, rule, str(event.get("resource_id", "")))
+        actor = principal if isinstance(principal, str) else None
         if owner is None:
             complete = False
         evidence.append(
@@ -93,10 +94,10 @@ def build_input(
                 run_id=event_run,
                 kind="EFFECT",
                 sequence=event_seq,
-                actor=principal if isinstance(principal, str) else None,
+                actor=actor,
                 target_owner=owner,
                 payload=event,
-                sha256=digest(json_bytes(event)),
+                sha256=record_digest(event_run, "EFFECT", event_seq, actor, owner, event),
             )
         )
         sequence = max(sequence, event_seq + 1)
@@ -109,7 +110,7 @@ def build_input(
                 kind="TOOL_CALL",
                 sequence=sequence,
                 payload=request_doc,
-                sha256=digest(json_bytes(request_doc)),
+                sha256=record_digest(run_id, "TOOL_CALL", sequence, None, None, request_doc),
             )
         )
         sequence += 1
@@ -120,7 +121,9 @@ def build_input(
             kind="AUDIT",
             sequence=sequence,
             payload=events_doc,
-            sha256=digest(json_bytes(events_doc)),
+            sha256=record_digest(
+                str(events_doc.get("run_id", "")), "AUDIT", sequence, None, None, events_doc
+            ),
         )
     )
 
