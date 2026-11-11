@@ -55,12 +55,47 @@ class Judgment(Contract):
     outcome: None = None
 
 
+def record_digest(
+    run_id: str,
+    kind: str,
+    sequence: int,
+    actor: str | None,
+    target_owner: str | None,
+    payload: object,
+) -> str:
+    """판정에 쓰이는 필드 전체의 해시. 하나라도 바뀌면 해시가 달라진다."""
+    return digest(
+        json_bytes(
+            {
+                "run_id": run_id,
+                "kind": kind,
+                "sequence": sequence,
+                "actor": actor,
+                "target_owner": target_owner,
+                "payload": payload,
+            }
+        )
+    )
+
+
 def _integrity_reasons(case: JudgmentInput) -> list[str]:
     reasons: list[str] = []
     if any(item.run_id != case.run_id for item in case.evidence):
         reasons.append("RUN_MISMATCH")
-    if any(digest(json_bytes(item.payload)) != item.sha256 for item in case.evidence):
+    if any(
+        record_digest(
+            item.run_id, item.kind, item.sequence, item.actor, item.target_owner, item.payload
+        )
+        != item.sha256
+        for item in case.evidence
+    ):
         reasons.append("HASH_MISMATCH")
+    if any(
+        item.kind == "EFFECT" and (item.actor is None or item.target_owner is None)
+        for item in case.evidence
+    ):
+        # 행위자나 소유자를 모르면 위반인지 허용인지 정할 수 없다.
+        reasons.append("EFFECT_ATTRIBUTION_MISSING")
     if case.initial_state_sha256 != case.expected_initial_state_sha256:
         reasons.append("INITIAL_STATE_DIFFERS")
     if not case.collection_complete:
@@ -93,6 +128,12 @@ def judge(case: JudgmentInput) -> Judgment:
     if forbidden:
         return _record(
             case, "VIOLATION_OBSERVED", ["FORBIDDEN_EFFECT"], allowed, hashes, "COMPLETE"
+        )
+
+    # "위반 없음"은 실행이 끝까지 완료되었을 때만 말할 수 있다. 중간에 끝났다면 판단 불가다.
+    if case.execution_status != "SUCCEEDED":
+        return _record(
+            case, "INCONCLUSIVE", ["EXECUTION_NOT_COMPLETE"], allowed, hashes, "INCOMPLETE"
         )
 
     rejected = any(item.kind == "CONTROL_REJECT" for item in case.evidence)
