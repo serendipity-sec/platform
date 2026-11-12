@@ -93,6 +93,46 @@ profile 확인은 현재 실행 중인 1024차원 모델을 요구하며, 차가
 현재 B repository의 exact `plan_id` 조회·복원에 사용한다. 이 데이터를 generic artifact store나
 S3로 옮기는 작업은 구현되어 있지 않으며, 이번 경로가 그런 이전을 약속하지 않는다.
 
+## 카드 근거 참조 검사 (#82)
+
+`load_cards()`는 ScenarioCard 0.4.0 구조와 `source_ref`만 검증한다. 카드의
+`extensions["flowdelta.case_evidence"].claims[].evidence_refs`가 실제 근거를 가리키는지는
+`check-evidence`로 따로 검사한다. DB나 knowledge extra가 필요 없다.
+
+```sh
+uv run --frozen --extra baseline flowdelta knowledge check-evidence <cards-dir> --root <repo-root>
+```
+
+| 상태 | 뜻 |
+|---|---|
+| `VERIFIED` | 같은 카드의 evidence map에서 키를 찾았고, 근거 파일의 SHA-256이 맞고, `json_pointer`가 가리키는 기록(또는 그 기록을 감싼 가장 가까운 상위 기록)의 값이 selector와 같다 |
+| `SOURCE_UNAVAILABLE` | commit·hash로 고정했지만 checkout에 없는 upstream 원본이다. selector의 commit·path·sha256이 evidence 항목과 같은지만 확인했고 내용은 확인하지 못했다 |
+| `FAILED` | 알 수 없는 키, 근거 파일 없음·hash 불일치, pointer 없음·찾지 못함, selector 값 불일치, 검사 대상(`scanned_node_ids`)에 없는 node 등 |
+
+- 실패가 하나라도 있으면 종료 코드 1, 카드를 읽지 못하면 2다.
+- finding 0건을 주장하는 selector(`findings: []`)는 `status`와 `node_id`를 함께 적어야 한다.
+  분석 성공과 대상 coverage를 같이 확인하기 위해서다.
+- 이 검사는 근거가 **있고 가리키는 내용이 맞는지**만 본다. 주장 문장이 근거를 넘지 않는지, 적용성이
+  맞는지는 사람 검토 범위다.
+
+## 카드 초안 생성과 승격 (#82)
+
+```sh
+# 요청 파일 → 결정적 초안. 근거 참조가 하나라도 FAILED면 쓰지 않는다
+uv run --frozen --extra baseline flowdelta knowledge draft-card <request.json> --drafts <drafts-dir> --root <repo-root>
+# 사람이 주장·근거·적용성을 검토한 뒤 활성 카드로 승격
+uv run --frozen --extra baseline flowdelta knowledge promote-card <draft.json> --cards <cards-dir> \
+  --reviewer <github-id> --date <YYYY-MM-DD> --root <repo-root>
+```
+
+- 첫 버전은 외부 LLM을 쓰지 않는다. 출처·이용 조건·CVE 발견/적용성·근거·주장은 요청 파일에서 그대로 옮긴다.
+  제목·요약·전체 `claim_basis`·제한은 고정 템플릿으로 만든다. 근거가 없는 값은 `UNKNOWN`으로 남는다.
+- 초안에는 `extensions["flowdelta.card_review"].status = "DRAFT_UNREVIEWED"`가 붙는다. `load_cards()`는 이 확장이
+  있으면서 `APPROVED`가 아닌 카드를 `CARD_NOT_APPROVED`로 거부한다. 그래서 초안이 검색에 들어가지 않는다.
+  이 확장이 없는 기존 카드는 각자의 PR에서 검토된 카드로 보고 그대로 읽는다.
+- 승격은 근거 참조를 다시 검사하고, 검토자·날짜·초안 파일의 SHA-256을 기록한다. 같은 `(card_id, version)`이
+  이미 있으면 거부한다. `TEAM_AUTHORED`는 작성 주체일 뿐 승인을 뜻하지 않는다.
+
 ## 검증
 
 일반 단위 테스트는 서버를 요구하지 않는다. 실제 DB 검증은 전용 테스트 DB를 만들고

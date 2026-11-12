@@ -75,7 +75,11 @@ generic `extensions` field does not enforce the semantics of
 within that card's evidence map, check artifact hashes, or verify that a selector points to
 supporting content. Current `load_cards()` validates the card structure, duplicate card versions,
 and an optional `source_ref`; it does not resolve these extension references or require human review
-and promotion. Those semantic evidence-reference checks belong to future #82 draft validation.
+and promotion. `flowdelta knowledge check-evidence examples/knowledge/n8n-claw-memory/cards --root .`
+(#82) resolves each key in the card's own evidence map, checks artifact hashes and the selected
+records: on 2026-11-11 the two cards together had 6 `VERIFIED` references, 2 `SOURCE_UNAVAILABLE`
+upstream source references (bytes not in this checkout) and no failure. Draft generation and promotion
+remain future #82 work.
 
 For a normal `TemplateCatalog`, keyword retrieval filters on task, runtime profile, and node type,
 then searches card title and summary for changed field names. The static-catalog path instead checks
