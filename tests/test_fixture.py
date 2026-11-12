@@ -4,7 +4,7 @@ import pytest
 from conftest import EXAMPLE
 from fastapi import HTTPException
 
-from flowdelta.baseline.fixture import OrderStore, authenticate
+from flowdelta.baseline.fixture import OrderStore, app, authenticate
 from flowdelta.pipeline_contracts import EvidenceEvent
 
 
@@ -34,3 +34,10 @@ def test_fixture_fixed_principal_and_credentials(tmp_path: Path) -> None:
             authenticate(actual, "fixture-local-test-value")
         assert invalid.value.status_code == 401
     authenticate("fixture-local-test-value", "fixture-local-test-value")
+
+
+def test_fixture_publishes_no_api_schema_or_docs() -> None:
+    # The unauthenticated OpenAPI schema listed every route (w12 security check).
+    assert app.openapi_url is None
+    assert app.docs_url is None
+    assert app.redoc_url is None
