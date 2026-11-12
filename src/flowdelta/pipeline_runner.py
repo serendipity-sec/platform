@@ -69,11 +69,14 @@ def run_pipeline(
     cards: Path,
     output: Path,
     execute: bool = False,
+    judge_order: bool = False,
     runner: CommandRunner = subprocess_runner,
     sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
     """Prepare by default. Execution always delegates registration and hash checks to C."""
     repo = repo.resolve(strict=True)
+    if judge_order and not execute:
+        raise InputError("JUDGMENT_REQUIRES_EXECUTION")
     target = check_fresh_output(output, repo)
     for source in (case, profile, catalog, cards):
         resolved = source.resolve()
@@ -213,6 +216,16 @@ def run_pipeline(
         summary["bundle"] = "bundle"
         summary["bundle_manifest_sha256"] = digest(json_bytes(manifest.model_dump(mode="json")))
         stages[stage] = "SUCCEEDED"
+        if judge_order:
+            from flowdelta.order_judgment import publish_order_judgments
+
+            stage = "judgment"
+            stages[stage] = "RUNNING"
+            summary["judgment"] = publish_order_judgments(final_bundle, repo, target / "judgments")
+            summary["judgment"]["report"] = "judgments/report.json"
+            stages[stage] = (
+                "SUCCEEDED" if summary["judgment"]["status"] == "COMPLETE" else "INCOMPLETE"
+            )
         summary["status"] = (
             "INCOMPLETE"
             if "INCOMPLETE" in stages.values()
