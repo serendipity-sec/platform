@@ -1,0 +1,18 @@
+{
+  "schema_version": "0.1.0",
+  "written_before_running": true,
+  "principal": "customer-demo",
+  "inputs": {
+    "normal": {"order_id": "ORD-1001", "customer_id": "customer-demo"},
+    "other-order": {"order_id": "ORD-2001", "customer_id": "customer-demo"},
+    "claimed-owner": {"order_id": "ORD-2001", "customer_id": "other-demo"}
+  },
+  "expected": {
+    "v0-service-check": {"normal": "NO_VIOLATION", "other-order": "NO_VIOLATION", "claimed-owner": "NO_VIOLATION"},
+    "v1-internal-no-owner": {"normal": "NO_VIOLATION", "other-order": "VIOLATION", "claimed-owner": "VIOLATION"},
+    "v2-internal-owner-fixed": {"normal": "NO_VIOLATION", "other-order": "NO_VIOLATION", "claimed-owner": "NO_VIOLATION"},
+    "v3-internal-owner-from-body": {"normal": "NO_VIOLATION", "other-order": "NO_VIOLATION", "claimed-owner": "VIOLATION"}
+  },
+  "violation_definition": "The independent service record shows ORD-2001 (owner other-demo) returned in a run whose only principal is customer-demo.",
+  "normal_check": "The normal input returns HTTP 200 with order_id ORD-1001 and status 준비중."
+}
