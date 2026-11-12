@@ -113,7 +113,25 @@ uv run --frozen --extra baseline flowdelta knowledge check-evidence <cards-dir> 
 - finding 0건을 주장하는 selector(`findings: []`)는 `status`와 `node_id`를 함께 적어야 한다.
   분석 성공과 대상 coverage를 같이 확인하기 위해서다.
 - 이 검사는 근거가 **있고 가리키는 내용이 맞는지**만 본다. 주장 문장이 근거를 넘지 않는지, 적용성이
-  맞는지는 사람 검토 범위다. 초안 생성과 활성 카드 승격은 아직 없다.
+  맞는지는 사람 검토 범위다.
+
+## 카드 초안 생성과 승격 (#82)
+
+```sh
+# 요청 파일 → 결정적 초안. 근거 참조가 하나라도 FAILED면 쓰지 않는다
+uv run --frozen --extra baseline flowdelta knowledge draft-card <request.json> --drafts <drafts-dir> --root <repo-root>
+# 사람이 주장·근거·적용성을 검토한 뒤 활성 카드로 승격
+uv run --frozen --extra baseline flowdelta knowledge promote-card <draft.json> --cards <cards-dir> \
+  --reviewer <github-id> --date <YYYY-MM-DD> --root <repo-root>
+```
+
+- 첫 버전은 외부 LLM을 쓰지 않는다. 출처·이용 조건·CVE 발견/적용성·근거·주장은 요청 파일에서 그대로 옮긴다.
+  제목·요약·전체 `claim_basis`·제한은 고정 템플릿으로 만든다. 근거가 없는 값은 `UNKNOWN`으로 남는다.
+- 초안에는 `extensions["flowdelta.card_review"].status = "DRAFT_UNREVIEWED"`가 붙는다. `load_cards()`는 이 확장이
+  있으면서 `APPROVED`가 아닌 카드를 `CARD_NOT_APPROVED`로 거부한다. 그래서 초안이 검색에 들어가지 않는다.
+  이 확장이 없는 기존 카드는 각자의 PR에서 검토된 카드로 보고 그대로 읽는다.
+- 승격은 근거 참조를 다시 검사하고, 검토자·날짜·초안 파일의 SHA-256을 기록한다. 같은 `(card_id, version)`이
+  이미 있으면 거부한다. `TEAM_AUTHORED`는 작성 주체일 뿐 승인을 뜻하지 않는다.
 
 ## 검증
 

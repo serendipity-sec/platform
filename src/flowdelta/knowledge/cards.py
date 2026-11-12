@@ -18,6 +18,10 @@ from flowdelta.pipeline_contracts import ScenarioCard
 from flowdelta.pipeline_io import verify_ref
 
 KB_SNAPSHOT_FILENAME = "kb-snapshot.json"
+# A generated card stays a draft until a reviewer promotes it (#82, docs input-and-data §10).
+REVIEW_EXTENSION = "flowdelta.card_review"
+DRAFT_STATUS = "DRAFT_UNREVIEWED"
+APPROVED_STATUS = "APPROVED"
 
 
 @dataclass(frozen=True)
@@ -62,6 +66,13 @@ def load_cards(directory: Path, *, bundle_root: Path | None = None) -> list[Scen
         if total > MAX_TOTAL_BYTES:
             raise InputError("BUNDLE_SIZE_LIMIT")
         card = parse_file_model(ScenarioCard, parse_json(data))
+        review = card.extensions.get(REVIEW_EXTENSION)
+        if review is not None and (
+            not isinstance(review, dict) or review.get("status") != APPROVED_STATUS
+        ):
+            # A draft or any unapproved generated card must never reach retrieval as active.
+            # Cards without this extension predate #82 and were reviewed in their own PRs.
+            raise InputError("CARD_NOT_APPROVED", location=path.name)
         if card.source_ref is not None:
             if bundle_root is None:
                 raise InputError("CARD_SOURCE_ROOT_REQUIRED")
