@@ -1,0 +1,142 @@
+[
+  {
+    "area": "fixture service",
+    "probe": "no service token",
+    "expected": "401",
+    "actual": "401 {\"detail\":\"unauthorized\"}",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "wrong service token",
+    "expected": "401",
+    "actual": "401 {\"detail\":\"unauthorized\"}",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "control token used as service token",
+    "expected": "401",
+    "actual": "401 {\"detail\":\"unauthorized\"}",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "own order",
+    "expected": "200 own order only",
+    "actual": "200 fields=['order_id', 'status']",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "other tenant's order (IDOR)",
+    "expected": "not returned",
+    "actual": "404 {\"detail\":\"not_found\"}",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "SQL-like order_id",
+    "expected": "422",
+    "actual": "422 {\"detail\":[{\"type\":\"string_pattern_mismatch\",\"loc\":[\"query\",",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "path-like order_id",
+    "expected": "422",
+    "actual": "422 {\"detail\":[{\"type\":\"string_pattern_mismatch\",\"loc\":[\"query\",",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "state without control token",
+    "expected": "401",
+    "actual": "401 {\"detail\":\"unauthorized\"}",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "state with service token",
+    "expected": "401",
+    "actual": "401 {\"detail\":\"unauthorized\"}",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "API docs exposed",
+    "expected": "404",
+    "actual": "404 {\"detail\":\"Not Found\"}",
+    "passed": true
+  },
+  {
+    "area": "fixture service",
+    "probe": "OpenAPI schema exposed",
+    "expected": "404 (not required)",
+    "actual": "200 {\"openapi\":\"3.1.0\",\"info\":{\"title\":\"FlowDelta local order fi",
+    "passed": false
+  },
+  {
+    "area": "fixture service",
+    "probe": "denied lookups are recorded as events",
+    "expected": "events for allowed and denied reads",
+    "actual": "200 2 events ['ORDER_READ:NOT_FOUND', 'ORDER_READ:RETURNED']",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "unmodified case (control)",
+    "expected": "exit 0",
+    "actual": "exit 0 {\n  \"case_id\": \"order-lookup-demo-001\",\n  \"execution_status\": \"NOT_RUN\",\n  \"schema_version\": \"0.4.0\",\n  \"status\": \"HANDOFF_WRITTEN\"\n}",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "manifest path ../outside.json",
+    "expected": "rejected",
+    "actual": "exit 2 {\n  \"error\": \"CONTRACT_INVALID\"\n}",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "manifest absolute path",
+    "expected": "rejected",
+    "actual": "exit 2 {\n  \"error\": \"CONTRACT_INVALID\"\n}",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "artifact changed after hashing",
+    "expected": "rejected",
+    "actual": "exit 2 {\n  \"error\": \"ARTIFACT_INTEGRITY_MISMATCH\"\n}",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "duplicate JSON key",
+    "expected": "rejected",
+    "actual": "exit 2 {\n  \"error\": \"DUPLICATE_JSON_KEY\"\n}",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "NaN constant",
+    "expected": "rejected",
+    "actual": "exit 2 {\n  \"error\": \"NON_FINITE_JSON_NUMBER\"\n}",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "artifact over 8 MiB",
+    "expected": "rejected",
+    "actual": "exit 2 {\n  \"error\": \"CONTRACT_INVALID\"\n}",
+    "passed": true
+  },
+  {
+    "area": "case input",
+    "probe": "artifact through a directory junction",
+    "expected": "rejected",
+    "actual": "exit 2 {\n  \"error\": \"LINK_REFERENCE_REJECTED\"\n}",
+    "passed": true
+  }
+]

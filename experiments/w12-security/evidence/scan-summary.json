@@ -1,0 +1,70 @@
+{
+  "schema": "flowdelta-w12-scan-summary-v1",
+  "date": "2026-11-12",
+  "secrets": {
+    "tool": "trufflehog 3.99.8 (docker, --no-verification, full git history)",
+    "platform": {
+      "findings": 0,
+      "verified": 0,
+      "by_detector_and_file": []
+    },
+    "docs": {
+      "findings": 18,
+      "verified": 0,
+      "by_detector_and_file": [
+        {
+          "detector": "JWT",
+          "file": "archive/research/후보1-바이브코딩보안/evidence/juice-manual-controls.json",
+          "count": 3
+        },
+        {
+          "detector": "JWT",
+          "file": "archive/research/후보1-바이브코딩보안/evidence/zap-auth-api.json",
+          "count": 6
+        },
+        {
+          "detector": "JWT",
+          "file": "research/후보1-바이브코딩보안/evidence/juice-manual-controls.json",
+          "count": 3
+        },
+        {
+          "detector": "JWT",
+          "file": "research/후보1-바이브코딩보안/evidence/zap-auth-api.json",
+          "count": 6
+        }
+      ]
+    },
+    "triage": "All docs findings are JWTs issued by a local OWASP Juice Shop container during the 2026-09 pre-study (built-in admin@juice-sh.op and team test accounts @example.invalid). No real service credential. Token values are not copied here."
+  },
+  "dependencies": {
+    "tool": "pip-audit 2.9.0 on uv export --all-extras",
+    "packages": 38,
+    "vulnerable": 0
+  },
+  "sast": {
+    "tool": "semgrep 1.181.0, p/python + p/security-audit, metrics off",
+    "files": 135,
+    "rules": 222,
+    "findings": [
+      {
+        "rule": "avoid-sqlalchemy-text",
+        "severity": "ERROR",
+        "path": "src/flowdelta/knowledge/card_catalog.py",
+        "line": 329
+      },
+      {
+        "rule": "avoid-sqlalchemy-text",
+        "severity": "ERROR",
+        "path": "src/flowdelta/knowledge/source_ingestion.py",
+        "line": 462
+      },
+      {
+        "rule": "dynamic-urllib-use-detected",
+        "severity": "WARNING",
+        "path": "tools/acquire_public_examples.py",
+        "line": 30
+      }
+    ],
+    "triage": "False positives: SQL text only interpolates bound-parameter placeholder names or a fixed ' FOR UPDATE' suffix; the urllib URL is built from module constants (fixed repository, commit and file list) in an offline acquisition tool."
+  }
+}
