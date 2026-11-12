@@ -26,12 +26,35 @@ uv run --frozen --extra baseline --extra knowledge python tools/check_profiled_o
 
 출처 해시는 `.gitattributes`가 정한 LF 바이트(저장소에 커밋된 내용)를 기준으로 한다.
 줄바꿈이 CRLF로 바뀐 작업 트리에서 실행하면 `uv.lock` 등의 해시와 입력 profile 해시가
-달라져 기존 비교 기준을 재현할 수 없고 회귀 테스트도 실패한다.
+달라져 같은 바이트의 새 실행을 재현할 수 없다. 과거 기록의 소스 식별은 작업 트리의
+줄바꿈 대신 아래 고정 커밋의 Git blob 바이트를 대조한다.
 
 전체 Python 구현, runtime 설정, pyproject/uv.lock 등 127개 파일의 해시와 그 목록의
 `source_tree_sha256`으로 실행한 소스를 식별한다. source 목록은 summary/관측 예제 자체를
-포함하지 않는다. 회귀 테스트는 기록된 파일의 바이트뿐 아니라 현재 구현 파일 목록의 누락도
-검사한다. 구현이 바뀌면 실제 실행·독립 검증을 다시 수행하여 두 JSON을 함께 갱신해야 한다.
+포함하지 않는다. `source-reference.json`은 기존 두 영수증의 해시와, 기록된 127개 소스의
+목록·바이트가 일치하는 커밋 `e8ce3ad9b5589b7f30a78917f96e77ea81e0c29c`를 고정한다.
+이 커밋은 기존 영수증을 사후 대조해 확인한 **소스 일치 참조**다. 실행 당시 checkout의
+HEAD가 이 커밋이었다는 주장이나 새 실행 기록이 아니다. 기존 두 JSON은 수정하지 않았다.
+
+기본 회귀 시험은 두 영수증의 해시, summary/verification의 연결, 기록된 source 목록의
+해시, 독립 검사기·기대값의 소스 해시와 실행 ID를 대조한다. Git과 고정 커밋이 있으면
+그 커밋의 전체 소스 목록과 blob 해시도 검사한다. 현재 소스의 추가·수정·삭제는 과거
+영수증과의 동일성을 요구하지 않는다. Git 부재·sdist처럼 `.git`이 없는 배포본·얕은
+checkout에서 고정 커밋이 없으면 소스 커밋 검사만 사유와 함께 skip하며, 영수증 내부
+무결성 검사는 계속 수행한다. 이때 소스 커밋 대조를 완료했다고 표시하지 않는다.
+
+```powershell
+git fetch origin e8ce3ad9b5589b7f30a78917f96e77ea81e0c29c
+uv run --frozen --extra baseline --extra knowledge pytest tests/test_pipeline_receipts.py -rs
+```
+
+현재 구현의 실제 실행 성공은 [통합 runner 안내](../../../docs/PIPELINE_RUNNER.md)에 따라
+새 출력 디렉터리에서 `run-pipeline --execute`와 독립 정상 업무 검사를 실행해 확인한다.
+새 영수증을 게시할 때는 원본 실행과 검증을 수행한 뒤 source 일치 커밋 참조도 함께 기록한다.
+과거 영수증의 해시를 현재 소스에 맞춰 바꾸는 방식으로 새 실행을 대신하지 않는다.
+이 폴더에는 전체 bundle·manifest 원문·관측 파일이 없으므로 여기의 검사만으로 원본 관측을
+다시 검증할 수 없다. 전체 자료의 변조·누락 검사는 새 실행의 bundle 소비자와 독립 검증기가
+수행한다.
 
 이번 기록의 before는 `run-902680b6ff3c40b2b22ea58a7b98db4a`, after는
 `run-769833e3c2344c0a86c3d5fe6442a7b7`이다. 정상 업무 검사 24개가 통과했고 두 실행 모두

@@ -56,6 +56,13 @@ C의 기존 preflight·등록 template·원본 해시·환경 검사를 그대�
 uv run --frozen --extra baseline --extra knowledge python tools/check_profiled_order.py var/pipeline-execute --out var/normal-checks.json
 ```
 
+게시된 [과거 실행 영수증](../examples/module-outputs/profiled-runner/README.md)은 기록된
+소스와의 일치를 별도로 확인합니다. 기본 테스트는 현재 작업 트리와 과거 영수증의 소스
+동일성을 요구하지 않습니다. 소스 파일을 고쳤다는 이유만으로 과거 실행을 다시 만들 필요는
+없으며, 현재 구현의 실행 성공이 필요한 변경은 위 명령으로 새 실행·검증 결과를 남깁니다.
+Git/고정 커밋이 없는 환경에서는 소스 커밋 대조만 명시적으로 skip하고 영수증 내부 무결성
+검사는 유지합니다. 과거 영수증 검사의 통과는 현재 코드의 Docker 실행 성공이 아닙니다.
+
 Python API는 `runner`와 `sleep`을 주입할 수 있어 실제 C 실행 경로의 성공·실패·정리 실패를
 Docker 명령 대역으로 재현합니다. 이 테스트와 실제 Docker 실행 기록은 구분합니다.
 
