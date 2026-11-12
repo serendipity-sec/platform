@@ -1,0 +1,225 @@
+{
+  "schema": "flowdelta-eval-pair-manifest-v0",
+  "status": "CANDIDATES_UNLABELED",
+  "source": {
+    "repository": "https://github.com/freddy-schuetz/n8n-claw",
+    "path": "workflows/n8n-claw-agent.json",
+    "license": null,
+    "redistribution": "REFERENCES_ONLY"
+  },
+  "origin_class": "PUBLIC_REAL_CHANGE",
+  "family_split": {
+    "n8n-claw": "DEVELOPMENT"
+  },
+  "pairs": [
+    {
+      "id": "R1",
+      "family": "n8n-claw",
+      "candidate_type": "RISK_INTRODUCED",
+      "change": "Memory Delete·Update 도구가 소유자 비교 없이 추가됨",
+      "before": {
+        "commit": "9ebf36b052b73457acab0fcead254e48986cad01",
+        "sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
+      },
+      "after": {
+        "commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+      },
+      "date": "2026-04-01T17:05:06Z",
+      "upstream_title": "feat: add Memory Update and Memory Delete tools",
+      "changed_nodes": [
+        "Memory Search"
+      ],
+      "added_nodes": [
+        "Memory Delete",
+        "Memory Update"
+      ],
+      "removed_nodes": [],
+      "memory_code_changed": true,
+      "independent": true,
+      "duplicate_note": null,
+      "label": "UNLABELED"
+    },
+    {
+      "id": "F1",
+      "family": "n8n-claw",
+      "candidate_type": "FIXED",
+      "change": "원저자가 기억 도구 4개에 소유권·관리자 검사를 넣음",
+      "before": {
+        "commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+      },
+      "after": {
+        "commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+      },
+      "date": "2026-07-30T13:33:06Z",
+      "upstream_title": "feat(memory): governance — scope (team/personal), ownership, admin-gated deletes",
+      "changed_nodes": [
+        "Memory Delete",
+        "Memory Save",
+        "Memory Search",
+        "Memory Update"
+      ],
+      "added_nodes": [],
+      "removed_nodes": [],
+      "memory_code_changed": true,
+      "independent": true,
+      "duplicate_note": null,
+      "label": "UNLABELED"
+    },
+    {
+      "id": "R2",
+      "family": "n8n-claw",
+      "candidate_type": "RISK_INTRODUCED",
+      "change": "F1 검사를 되돌림",
+      "before": {
+        "commit": "21212cdb429efdde6abefd15e7b0ec735d7c57ec",
+        "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+      },
+      "after": {
+        "commit": "2c6df444bdc3c31358d4b70c7d36113605654f8c",
+        "sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+      },
+      "date": "2026-07-30T13:47:20Z",
+      "upstream_title": "Revert \"feat(memory): governance — scope (team/personal), ownership, admin-gated deletes\"",
+      "changed_nodes": [
+        "Memory Delete",
+        "Memory Save",
+        "Memory Search",
+        "Memory Update"
+      ],
+      "added_nodes": [],
+      "removed_nodes": [],
+      "memory_code_changed": true,
+      "independent": false,
+      "duplicate_note": "F1의 역방향. before는 F1 after와, after는 F1 before와 파일 바이트가 같다. 독립 사례로 세지 않는다",
+      "label": "UNLABELED"
+    },
+    {
+      "id": "K1",
+      "family": "n8n-claw",
+      "candidate_type": "RISK_PERSISTS",
+      "change": "AI Agent 노드만 바뀜. 전후 기억 도구 코드가 before-fix(4d1b1b7)와 바이트가 같다",
+      "before": {
+        "commit": "d12a897004f8d53beeb4ab1a8320fa3626bcf649",
+        "sha256": "55c79f284c14c65384bd1ef2163e6a67411775078d10893df92877039574f3b4"
+      },
+      "after": {
+        "commit": "881af144b91452c481203d96ddf714c9cae4cba6",
+        "sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+      },
+      "date": "2026-07-06T19:00:52Z",
+      "upstream_title": "fix(agent): retry AI Agent node on transient LLM errors (Anthropic 529)",
+      "changed_nodes": [
+        "AI Agent"
+      ],
+      "added_nodes": [],
+      "removed_nodes": [],
+      "memory_code_changed": false,
+      "independent": true,
+      "duplicate_note": null,
+      "label": "UNLABELED"
+    },
+    {
+      "id": "K2",
+      "family": "n8n-claw",
+      "candidate_type": "RISK_PERSISTS",
+      "change": "Reminder 노드만 바뀜. 전후 기억 도구 코드가 feature(63a7f2e)와 바이트가 같다",
+      "before": {
+        "commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+      },
+      "after": {
+        "commit": "83df6d3f4ca55d747678340c37de1594ec6dec01",
+        "sha256": "0cf84eb83b12d4cdd444146217fb413c53497daddd4f849907af76f80309bfdc"
+      },
+      "date": "2026-04-01T20:30:01Z",
+      "upstream_title": "feat: add list, edit, delete for one-time reminders",
+      "changed_nodes": [
+        "Reminder"
+      ],
+      "added_nodes": [],
+      "removed_nodes": [],
+      "memory_code_changed": false,
+      "independent": true,
+      "duplicate_note": null,
+      "label": "UNLABELED"
+    },
+    {
+      "id": "K3",
+      "family": "n8n-claw",
+      "candidate_type": "RISK_PERSISTS",
+      "change": "Memory Update 코드만 바뀜(metadata 지원). after의 기억 도구 코드는 before-fix(4d1b1b7)와 바이트가 같고, before의 Update 코드는 정적 검사 기록이 없다",
+      "before": {
+        "commit": "33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7",
+        "sha256": "2626056bc806baa22bc0f915cb37d2ea8290f76ec6236f15c590a4cd026b7ea3"
+      },
+      "after": {
+        "commit": "0a37b6eb34fa69329d40be52f7e75a0898d2d451",
+        "sha256": "e523bc9ef66ec1c30d3ad8a0d7e0695315bf53cabc50c11deb144bd775483008"
+      },
+      "date": "2026-04-18T16:04:17Z",
+      "upstream_title": "fix(memory_update): add metadata field support (merge, not replace)",
+      "changed_nodes": [
+        "Memory Update"
+      ],
+      "added_nodes": [],
+      "removed_nodes": [],
+      "memory_code_changed": true,
+      "independent": true,
+      "duplicate_note": null,
+      "label": "UNLABELED"
+    },
+    {
+      "id": "N1",
+      "family": "n8n-claw",
+      "candidate_type": "NO_NEW_RISK",
+      "change": "F1 검사가 있는 상태에서 Format Webhook Input만 바뀜",
+      "before": {
+        "commit": "bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3",
+        "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+      },
+      "after": {
+        "commit": "6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc",
+        "sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f"
+      },
+      "date": "2026-07-30T13:36:17Z",
+      "upstream_title": "feat(agent,library): empty-message guard + 10min catalog cache",
+      "changed_nodes": [
+        "Format Webhook Input"
+      ],
+      "added_nodes": [],
+      "removed_nodes": [],
+      "memory_code_changed": false,
+      "independent": true,
+      "duplicate_note": null,
+      "label": "UNLABELED"
+    },
+    {
+      "id": "N2",
+      "family": "n8n-claw",
+      "candidate_type": "NO_NEW_RISK",
+      "change": "N1을 되돌림",
+      "before": {
+        "commit": "c516fbcd33bcfce35a4baec468f5a6a886c3e0ef",
+        "sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f"
+      },
+      "after": {
+        "commit": "21212cdb429efdde6abefd15e7b0ec735d7c57ec",
+        "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+      },
+      "date": "2026-07-30T13:47:19Z",
+      "upstream_title": "Revert \"feat(agent,library): empty-message guard + 10min catalog cache\"",
+      "changed_nodes": [
+        "Format Webhook Input"
+      ],
+      "added_nodes": [],
+      "removed_nodes": [],
+      "memory_code_changed": false,
+      "independent": false,
+      "duplicate_note": "N1의 역방향. 독립 사례로 세지 않는다",
+      "label": "UNLABELED"
+    }
+  ]
+}
