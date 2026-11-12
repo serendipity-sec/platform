@@ -1,0 +1,7 @@
+# Apply only to the synthetic ownership evaluation fixture, never the normal C template.
+services:
+  orders-api:
+    image: flowdelta-order-fixture:0.4.0
+    environment:
+      FD_FIXTURE_PROFILE: order-ownership-eval-v1
+      FD_REQUEST_ID: ${FD_REQUEST_ID:?one trusted request identity per fixture run required}

@@ -24,3 +24,21 @@ def test_probe_applies_requested_http_timeout_and_reports_it(monkeypatch, capsys
     )
     probe.main()
     assert json.loads(capsys.readouterr().out) == {"transport_error": "TimeoutError"}
+
+
+@pytest.mark.parametrize("order_id", [None, "../state", "ORD-2001?other=1", "ORD-2001\n", 2001])
+def test_order_probe_rejects_non_order_identifiers(monkeypatch, capsys, order_id):
+    monkeypatch.setattr(
+        probe.sys,
+        "stdin",
+        io.StringIO(
+            json.dumps(
+                {
+                    "operation": "ownership-read",
+                    "order_id": order_id,
+                }
+            )
+        ),
+    )
+    probe.main()
+    assert json.loads(capsys.readouterr().out) == {"transport_error": "InvalidOrderId"}
