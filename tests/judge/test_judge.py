@@ -26,6 +26,7 @@ def case(evidence: list[EvidenceItem], **over: object) -> JudgmentInput:
         "side": "after",
         "attempt_number": 1,
         "plan_kind": "memory-delete",
+        "request_principal": "user-a",
         "execution_status": "SUCCEEDED",
         "collection_complete": True,
         "initial_state_sha256": HASH,
@@ -79,7 +80,11 @@ FIXTURES = {
     ),
     "C-06 삭제 후 복구": (
         lambda: case(
-            base_evidence() + [delete(2, "user-a", "user-b"), delete(3, "user-b", "user-b")]
+            base_evidence()
+            + [
+                delete(2, "user-a", "user-b"),
+                item(RUN, "EFFECT", 3, {"restored": "m1"}, actor="user-a", owner="user-b"),
+            ]
         ),
         "VIOLATION_OBSERVED",
         ["FORBIDDEN_EFFECT"],
@@ -200,3 +205,72 @@ def test_changing_actor_after_hashing_is_a_hash_mismatch() -> None:
     result = judge(case(base_evidence() + [tampered]))
     assert result.label == "INCONCLUSIVE"
     assert "HASH_MISMATCH" in result.reasons
+
+
+def test_validly_hashed_actor_is_still_bound_to_independent_request_principal():
+    result = judge(case(base_evidence() + [delete(2, "user-b", "user-b")]))
+    assert result.label == "INCONCLUSIVE"
+    assert "REQUEST_PRINCIPAL_MISMATCH" in result.reasons
+    assert result.allowed_effects_observed == 0
+
+
+@pytest.mark.parametrize(
+    "owner_tenant,expected",
+    [
+        ("tenant-a", "NOT_OBSERVED_COMPLETE"),
+        ("tenant-b", "VIOLATION_OBSERVED"),
+        (None, "INCONCLUSIVE"),
+    ],
+)
+def test_order_ownership_is_namespaced_by_tenant(owner_tenant, expected):
+    effect = EvidenceItem(
+        run_id=RUN,
+        kind="EFFECT",
+        sequence=2,
+        actor="user-a",
+        target_owner="user-a",
+        actor_tenant="tenant-a",
+        target_tenant=owner_tenant,
+        payload={},
+        sha256=record_digest(
+            RUN,
+            "EFFECT",
+            2,
+            "user-a",
+            "user-a",
+            {},
+            actor_tenant="tenant-a",
+            target_tenant=owner_tenant,
+        ),
+    )
+    result = judge(
+        case(base_evidence() + [effect], plan_kind="order-read", request_tenant="tenant-a")
+    )
+    assert result.label == expected
+
+
+def test_tenant_tampering_is_included_in_record_hash():
+    effect = EvidenceItem(
+        run_id=RUN,
+        kind="EFFECT",
+        sequence=2,
+        actor="user-a",
+        target_owner="user-a",
+        actor_tenant="tenant-a",
+        target_tenant="tenant-a",
+        payload={},
+        sha256=record_digest(
+            RUN,
+            "EFFECT",
+            2,
+            "user-a",
+            "user-a",
+            {},
+            actor_tenant="tenant-a",
+            target_tenant="tenant-b",
+        ),
+    )
+    result = judge(
+        case(base_evidence() + [effect], plan_kind="order-read", request_tenant="tenant-a")
+    )
+    assert result.label == "INCONCLUSIVE" and "HASH_MISMATCH" in result.reasons

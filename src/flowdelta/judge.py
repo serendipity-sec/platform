@@ -15,7 +15,7 @@ from flowdelta.ingestion import digest, json_bytes
 Label = Literal[
     "VIOLATION_OBSERVED", "BLOCKED", "NOT_OBSERVED_COMPLETE", "INCONCLUSIVE", "UNSUPPORTED"
 ]
-SUPPORTED_PLANS = ("memory-delete",)
+SUPPORTED_PLANS = ("memory-delete", "order-read")
 
 
 class EvidenceItem(Contract):
@@ -24,6 +24,8 @@ class EvidenceItem(Contract):
     sequence: int = Field(gt=0)
     actor: NonEmpty | None = None
     target_owner: NonEmpty | None = None
+    actor_tenant: NonEmpty | None = None
+    target_tenant: NonEmpty | None = None
     payload: dict[str, JsonValue] = Field(default_factory=dict)
     sha256: Sha256
 
@@ -33,6 +35,8 @@ class JudgmentInput(Contract):
     side: Literal["before", "after"]
     attempt_number: int = Field(ge=1)
     plan_kind: Identifier
+    request_principal: NonEmpty
+    request_tenant: NonEmpty | None = None
     execution_status: Literal[
         "SUCCEEDED", "FAILED", "TIMED_OUT", "CANCELLED", "INTERRUPTED", "NOT_RUN"
     ]
@@ -62,6 +66,9 @@ def record_digest(
     actor: str | None,
     target_owner: str | None,
     payload: object,
+    *,
+    actor_tenant: str | None = None,
+    target_tenant: str | None = None,
 ) -> str:
     """판정에 쓰이는 필드 전체의 해시. 하나라도 바뀌면 해시가 달라진다."""
     return digest(
@@ -72,6 +79,8 @@ def record_digest(
                 "sequence": sequence,
                 "actor": actor,
                 "target_owner": target_owner,
+                "actor_tenant": actor_tenant,
+                "target_tenant": target_tenant,
                 "payload": payload,
             }
         )
@@ -84,7 +93,14 @@ def _integrity_reasons(case: JudgmentInput) -> list[str]:
         reasons.append("RUN_MISMATCH")
     if any(
         record_digest(
-            item.run_id, item.kind, item.sequence, item.actor, item.target_owner, item.payload
+            item.run_id,
+            item.kind,
+            item.sequence,
+            item.actor,
+            item.target_owner,
+            item.payload,
+            actor_tenant=item.actor_tenant,
+            target_tenant=item.target_tenant,
         )
         != item.sha256
         for item in case.evidence
@@ -96,6 +112,17 @@ def _integrity_reasons(case: JudgmentInput) -> list[str]:
     ):
         # 행위자나 소유자를 모르면 위반인지 허용인지 정할 수 없다.
         reasons.append("EFFECT_ATTRIBUTION_MISSING")
+    attributed = [item for item in case.evidence if item.kind in {"EFFECT", "CONTROL_REJECT"}]
+    if any(item.actor != case.request_principal for item in attributed):
+        reasons.append("REQUEST_PRINCIPAL_MISMATCH")
+    if case.plan_kind == "order-read":
+        if not case.request_tenant or any(
+            not item.actor_tenant or (item.kind == "EFFECT" and not item.target_tenant)
+            for item in attributed
+        ):
+            reasons.append("TENANT_ATTRIBUTION_MISSING")
+        if any(item.actor_tenant != case.request_tenant for item in attributed):
+            reasons.append("REQUEST_TENANT_MISMATCH")
     if case.initial_state_sha256 != case.expected_initial_state_sha256:
         reasons.append("INITIAL_STATE_DIFFERS")
     if not case.collection_complete:
@@ -117,13 +144,22 @@ def judge(case: JudgmentInput) -> Judgment:
     allowed = sum(
         1
         for item in case.evidence
-        if item.kind == "EFFECT" and item.actor is not None and item.actor == item.target_owner
+        if item.kind == "EFFECT"
+        and item.actor is not None
+        and item.actor == item.target_owner
+        and (case.plan_kind != "order-read" or item.actor_tenant == item.target_tenant)
     )
     if reasons:
-        return _record(case, "INCONCLUSIVE", reasons, allowed, hashes, "INCOMPLETE")
+        return _record(case, "INCONCLUSIVE", reasons, 0, hashes, "INCOMPLETE")
 
     forbidden = [
-        item for item in case.evidence if item.kind == "EFFECT" and item.actor != item.target_owner
+        item
+        for item in case.evidence
+        if item.kind == "EFFECT"
+        and (
+            item.actor != item.target_owner
+            or (case.plan_kind == "order-read" and item.actor_tenant != item.target_tenant)
+        )
     ]
     if forbidden:
         return _record(
