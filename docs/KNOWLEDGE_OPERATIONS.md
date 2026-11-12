@@ -93,6 +93,28 @@ profile 확인은 현재 실행 중인 1024차원 모델을 요구하며, 차가
 현재 B repository의 exact `plan_id` 조회·복원에 사용한다. 이 데이터를 generic artifact store나
 S3로 옮기는 작업은 구현되어 있지 않으며, 이번 경로가 그런 이전을 약속하지 않는다.
 
+## 카드 근거 참조 검사 (#82)
+
+`load_cards()`는 ScenarioCard 0.4.0 구조와 `source_ref`만 검증한다. 카드의
+`extensions["flowdelta.case_evidence"].claims[].evidence_refs`가 실제 근거를 가리키는지는
+`check-evidence`로 따로 검사한다. DB나 knowledge extra가 필요 없다.
+
+```sh
+uv run --frozen --extra baseline flowdelta knowledge check-evidence <cards-dir> --root <repo-root>
+```
+
+| 상태 | 뜻 |
+|---|---|
+| `VERIFIED` | 같은 카드의 evidence map에서 키를 찾았고, 근거 파일의 SHA-256이 맞고, `json_pointer`가 가리키는 기록(또는 그 기록을 감싼 가장 가까운 상위 기록)의 값이 selector와 같다 |
+| `SOURCE_UNAVAILABLE` | commit·hash로 고정했지만 checkout에 없는 upstream 원본이다. selector의 commit·path·sha256이 evidence 항목과 같은지만 확인했고 내용은 확인하지 못했다 |
+| `FAILED` | 알 수 없는 키, 근거 파일 없음·hash 불일치, pointer 없음·찾지 못함, selector 값 불일치, 검사 대상(`scanned_node_ids`)에 없는 node 등 |
+
+- 실패가 하나라도 있으면 종료 코드 1, 카드를 읽지 못하면 2다.
+- finding 0건을 주장하는 selector(`findings: []`)는 `status`와 `node_id`를 함께 적어야 한다.
+  분석 성공과 대상 coverage를 같이 확인하기 위해서다.
+- 이 검사는 근거가 **있고 가리키는 내용이 맞는지**만 본다. 주장 문장이 근거를 넘지 않는지, 적용성이
+  맞는지는 사람 검토 범위다. 초안 생성과 활성 카드 승격은 아직 없다.
+
 ## 검증
 
 일반 단위 테스트는 서버를 요구하지 않는다. 실제 DB 검증은 전용 테스트 DB를 만들고
