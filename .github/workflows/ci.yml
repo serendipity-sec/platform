@@ -2,18 +2,28 @@ name: flowdelta-ci
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+# Actions minutes are limited (Free plan). On a PR, a new push cancels the
+# previous run; runs on main are never cancelled. See issue #97.
+concurrency:
+  group: flowdelta-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   input-contract:
+    # Draft PRs do not run CI. Windows runs only on main and manual runs.
+    if: ${{ !github.event.pull_request.draft }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: ${{ fromJSON(github.event_name == 'pull_request' && '["ubuntu-latest"]' || '["ubuntu-latest", "windows-latest"]') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     env:
@@ -23,6 +33,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # Full history: archived receipts are checked against their recorded source
+          # commit's Git blobs (#89/#105); a shallow clone would skip that test.
+          fetch-depth: 0
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version-file: .python-version
@@ -41,6 +54,9 @@ jobs:
       - run: uv build
 
   normal-n8n-baseline:
+    # Docker n8n run: main and manual runs only. PRs that change this path
+    # report a local run in the PR body.
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -62,6 +78,8 @@ jobs:
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-pipeline var/ci-integrated-order/bundle
 
   normal-node-conformance:
+    # Docker n8n run: main and manual runs only, as above.
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
     env:
@@ -99,6 +117,7 @@ jobs:
             var/ci-conformance/*/stderr.log
 
   knowledge-postgres:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:
@@ -144,6 +163,7 @@ jobs:
       - run: uv run --frozen --extra knowledge pytest tests/knowledge/test_database.py tests/knowledge/test_source_ingestion.py tests/graph/test_database.py
 
   cli-without-knowledge-extra:
+    if: ${{ !github.event.pull_request.draft }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:

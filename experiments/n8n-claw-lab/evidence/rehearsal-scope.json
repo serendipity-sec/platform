@@ -1,0 +1,249 @@
+{
+  "schema": "flowdelta-lab-rehearsal-scope-v1",
+  "tool": {
+    "repository": "https://github.com/0xCD4/n8n-ai-agent-security-lab",
+    "commit": "9d105b3bda7eeb7b382b16b0dc67e5e0c271c5d8",
+    "ported_from": "src/release-rehearsal-preflight.mjs"
+  },
+  "method": "CODE_READING_PORT",
+  "not_a_reproduction": true,
+  "versions": [
+    {
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+      "nodes": 48,
+      "active_nodes": 48,
+      "within_node_limits": false,
+      "reasons": {
+        "CODE_NODE_BLOCKED": 9,
+        "CONTROL_IN_SCOPE": 3,
+        "CREDENTIAL_REFERENCE_PRESENT": 18,
+        "NODE_UNSUPPORTED": 12,
+        "SUBWORKFLOW_UNSUPPORTED": 6
+      },
+      "blocking_nodes": 45,
+      "active_triggers": {
+        "n8n-nodes-base.executeWorkflowTrigger": 1,
+        "n8n-nodes-base.telegramTrigger": 1,
+        "n8n-nodes-base.webhook": 1
+      },
+      "single_webhook_2_1_entry": false,
+      "memory_tools": {},
+      "rehearsal_would_start_docker": false
+    },
+    {
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+      "nodes": 50,
+      "active_nodes": 50,
+      "within_node_limits": false,
+      "reasons": {
+        "CODE_NODE_BLOCKED": 9,
+        "CONTROL_IN_SCOPE": 3,
+        "CREDENTIAL_REFERENCE_PRESENT": 18,
+        "NODE_UNSUPPORTED": 14,
+        "SUBWORKFLOW_UNSUPPORTED": 6
+      },
+      "blocking_nodes": 47,
+      "active_triggers": {
+        "n8n-nodes-base.executeWorkflowTrigger": 1,
+        "n8n-nodes-base.telegramTrigger": 1,
+        "n8n-nodes-base.webhook": 1
+      },
+      "single_webhook_2_1_entry": false,
+      "memory_tools": {
+        "Memory Delete": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        },
+        "Memory Update": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        }
+      },
+      "rehearsal_would_start_docker": false
+    },
+    {
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "nodes": 58,
+      "active_nodes": 58,
+      "within_node_limits": false,
+      "reasons": {
+        "CODE_NODE_BLOCKED": 11,
+        "CONTROL_IN_SCOPE": 4,
+        "CREDENTIAL_REFERENCE_PRESENT": 18,
+        "HTTP_CAPTURE_SUPPORTED (destination not checked)": 1,
+        "METHOD_READ_ONLY_UNSUPPORTED": 1,
+        "NODE_UNSUPPORTED": 16,
+        "SUBWORKFLOW_UNSUPPORTED": 7
+      },
+      "blocking_nodes": 53,
+      "active_triggers": {
+        "n8n-nodes-base.executeWorkflowTrigger": 1,
+        "n8n-nodes-base.telegramTrigger": 1,
+        "n8n-nodes-base.webhook": 1
+      },
+      "single_webhook_2_1_entry": false,
+      "memory_tools": {
+        "Memory Delete": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        },
+        "Memory Update": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        }
+      },
+      "rehearsal_would_start_docker": false
+    },
+    {
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+      "nodes": 58,
+      "active_nodes": 58,
+      "within_node_limits": false,
+      "reasons": {
+        "CODE_NODE_BLOCKED": 11,
+        "CONTROL_IN_SCOPE": 4,
+        "CREDENTIAL_REFERENCE_PRESENT": 18,
+        "HTTP_CAPTURE_SUPPORTED (destination not checked)": 1,
+        "METHOD_READ_ONLY_UNSUPPORTED": 1,
+        "NODE_UNSUPPORTED": 16,
+        "SUBWORKFLOW_UNSUPPORTED": 7
+      },
+      "blocking_nodes": 53,
+      "active_triggers": {
+        "n8n-nodes-base.executeWorkflowTrigger": 1,
+        "n8n-nodes-base.telegramTrigger": 1,
+        "n8n-nodes-base.webhook": 1
+      },
+      "single_webhook_2_1_entry": false,
+      "memory_tools": {
+        "Memory Delete": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        },
+        "Memory Update": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        }
+      },
+      "rehearsal_would_start_docker": false
+    },
+    {
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+      "nodes": 58,
+      "active_nodes": 58,
+      "within_node_limits": false,
+      "reasons": {
+        "CODE_NODE_BLOCKED": 11,
+        "CONTROL_IN_SCOPE": 4,
+        "CREDENTIAL_REFERENCE_PRESENT": 18,
+        "HTTP_CAPTURE_SUPPORTED (destination not checked)": 1,
+        "METHOD_READ_ONLY_UNSUPPORTED": 1,
+        "NODE_UNSUPPORTED": 16,
+        "SUBWORKFLOW_UNSUPPORTED": 7
+      },
+      "blocking_nodes": 53,
+      "active_triggers": {
+        "n8n-nodes-base.executeWorkflowTrigger": 1,
+        "n8n-nodes-base.telegramTrigger": 1,
+        "n8n-nodes-base.webhook": 1
+      },
+      "single_webhook_2_1_entry": false,
+      "memory_tools": {
+        "Memory Delete": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        },
+        "Memory Update": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        }
+      },
+      "rehearsal_would_start_docker": false
+    },
+    {
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca",
+      "nodes": 60,
+      "active_nodes": 60,
+      "within_node_limits": false,
+      "reasons": {
+        "CODE_NODE_BLOCKED": 12,
+        "CONTROL_IN_SCOPE": 4,
+        "CREDENTIAL_REFERENCE_PRESENT": 19,
+        "HTTP_CAPTURE_SUPPORTED (destination not checked)": 1,
+        "METHOD_READ_ONLY_UNSUPPORTED": 1,
+        "NODE_UNSUPPORTED": 16,
+        "SUBWORKFLOW_UNSUPPORTED": 7
+      },
+      "blocking_nodes": 55,
+      "active_triggers": {
+        "n8n-nodes-base.executeWorkflowTrigger": 1,
+        "n8n-nodes-base.telegramTrigger": 1,
+        "n8n-nodes-base.webhook": 2
+      },
+      "single_webhook_2_1_entry": false,
+      "memory_tools": {
+        "Memory Delete": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        },
+        "Memory Update": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        }
+      },
+      "rehearsal_would_start_docker": false
+    },
+    {
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452",
+      "nodes": 61,
+      "active_nodes": 61,
+      "within_node_limits": false,
+      "reasons": {
+        "CODE_NODE_BLOCKED": 13,
+        "CONTROL_IN_SCOPE": 4,
+        "CREDENTIAL_REFERENCE_PRESENT": 19,
+        "HTTP_CAPTURE_SUPPORTED (destination not checked)": 1,
+        "METHOD_READ_ONLY_UNSUPPORTED": 1,
+        "NODE_UNSUPPORTED": 16,
+        "SUBWORKFLOW_UNSUPPORTED": 7
+      },
+      "blocking_nodes": 56,
+      "active_triggers": {
+        "n8n-nodes-base.executeWorkflowTrigger": 1,
+        "n8n-nodes-base.telegramTrigger": 1,
+        "n8n-nodes-base.webhook": 2
+      },
+      "single_webhook_2_1_entry": false,
+      "memory_tools": {
+        "Memory Delete": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        },
+        "Memory Update": {
+          "type": "@n8n/n8n-nodes-langchain.toolCode",
+          "typeVersion": 1.2,
+          "reason": "NODE_UNSUPPORTED"
+        }
+      },
+      "rehearsal_would_start_docker": false
+    }
+  ]
+}

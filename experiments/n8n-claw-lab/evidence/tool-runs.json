@@ -1,0 +1,214 @@
+{
+  "schema": "flowdelta-lab-tool-runs-v1",
+  "tool": {
+    "repository": "https://github.com/0xCD4/n8n-ai-agent-security-lab.git",
+    "commit": "9d105b3bda7eeb7b382b16b0dc67e5e0c271c5d8",
+    "node_image": "node@sha256:0e1754758c2df4cfa3e68d59e2e1b7374bb7fd9ea6328eaaacf15cc934af8202"
+  },
+  "isolation": "docker --network none --read-only; tool and workflows mounted read-only",
+  "fixtures": "examples/release-rehearsal/inputs/fixtures.json (tool example, unchanged)",
+  "audit": {
+    "versions": {
+      "before-feature": {
+        "exit_code": 0,
+        "score": 46,
+        "grade": "D",
+        "findings": {
+          "AA-002:medium": 1,
+          "AA-003:high": 1,
+          "AA-004:high": 1,
+          "AA-006:high": 1,
+          "AA-010:low": 1
+        },
+        "mentions_memory_tools": false,
+        "raw_sha256": "4d115a82683f17abef0eca227c506ec8bde16802f19c5fa04f7d35ab4c7d606e"
+      },
+      "feature": {
+        "exit_code": 0,
+        "score": 46,
+        "grade": "D",
+        "findings": {
+          "AA-002:medium": 1,
+          "AA-003:high": 1,
+          "AA-004:high": 1,
+          "AA-006:high": 1,
+          "AA-010:low": 1
+        },
+        "mentions_memory_tools": false,
+        "raw_sha256": "72330dc7942c1b25c65b49ecdd735e4b74231a980cacfbd3ed0d3213df90f2da"
+      },
+      "before-fix": {
+        "exit_code": 0,
+        "score": 24,
+        "grade": "F",
+        "findings": {
+          "AA-002:medium": 1,
+          "AA-003:high": 1,
+          "AA-004:high": 1,
+          "AA-006:high": 1,
+          "AA-007:high": 1,
+          "AA-008:medium": 1,
+          "AA-010:low": 1
+        },
+        "mentions_memory_tools": false,
+        "raw_sha256": "a7b248035c6a2b9a7ee12ca52d60a1787e3e640583e0b72dd0000a10abca5245"
+      },
+      "first-fix": {
+        "exit_code": 0,
+        "score": 24,
+        "grade": "F",
+        "findings": {
+          "AA-002:medium": 1,
+          "AA-003:high": 1,
+          "AA-004:high": 1,
+          "AA-006:high": 1,
+          "AA-007:high": 1,
+          "AA-008:medium": 1,
+          "AA-010:low": 1
+        },
+        "mentions_memory_tools": false,
+        "raw_sha256": "a7b248035c6a2b9a7ee12ca52d60a1787e3e640583e0b72dd0000a10abca5245"
+      },
+      "reverted": {
+        "exit_code": 0,
+        "score": 24,
+        "grade": "F",
+        "findings": {
+          "AA-002:medium": 1,
+          "AA-003:high": 1,
+          "AA-004:high": 1,
+          "AA-006:high": 1,
+          "AA-007:high": 1,
+          "AA-008:medium": 1,
+          "AA-010:low": 1
+        },
+        "mentions_memory_tools": false,
+        "raw_sha256": "a7b248035c6a2b9a7ee12ca52d60a1787e3e640583e0b72dd0000a10abca5245"
+      },
+      "before-september": {
+        "exit_code": 0,
+        "score": 24,
+        "grade": "F",
+        "findings": {
+          "AA-002:medium": 1,
+          "AA-003:high": 1,
+          "AA-004:high": 1,
+          "AA-006:high": 1,
+          "AA-007:high": 1,
+          "AA-008:medium": 1,
+          "AA-010:low": 1
+        },
+        "mentions_memory_tools": false,
+        "raw_sha256": "8c26421edd77f287d3cb2f5bacc0494046f0275994959b81d5dd225959f593b9"
+      },
+      "september": {
+        "exit_code": 0,
+        "score": 24,
+        "grade": "F",
+        "findings": {
+          "AA-002:medium": 1,
+          "AA-003:high": 1,
+          "AA-004:high": 1,
+          "AA-006:high": 1,
+          "AA-007:high": 1,
+          "AA-008:medium": 1,
+          "AA-010:low": 1
+        },
+        "mentions_memory_tools": false,
+        "raw_sha256": "32099454532feb29d4a6df704283e1b91244d2f1cd1b308e6eab0b3f1a41c8f5"
+      }
+    },
+    "findings_identical": {
+      "before-feature->feature": true,
+      "before-fix->first-fix": true,
+      "first-fix->reverted": true,
+      "before-september->september": false
+    }
+  },
+  "rehearsal": {
+    "feature-add": {
+      "baseline": "before-feature",
+      "candidate": "feature",
+      "exit_code": 3,
+      "overall_result": "BLOCKED_UNSUPPORTED",
+      "reason_codes": {
+        "baseline": [
+          "ACTION_NODE_REQUIRED",
+          "ACTIVE_NODE_LIMIT_EXCEEDED",
+          "CODE_NODE_BLOCKED",
+          "CREDENTIAL_REFERENCE_PRESENT",
+          "NODE_UNSUPPORTED",
+          "PATH_DISCONNECTED",
+          "PATH_OUTPUT_UNSUPPORTED",
+          "PATH_UNSUPPORTED",
+          "STRUCTURAL_VERSION_UNSUPPORTED",
+          "SUBWORKFLOW_UNSUPPORTED",
+          "TRANSFORMATION_FIDELITY_UNPROVEN",
+          "WORKFLOW_ID_INVALID",
+          "WORKFLOW_STATE_UNSUPPORTED"
+        ],
+        "candidate": [
+          "ACTION_NODE_REQUIRED",
+          "ACTIVE_NODE_LIMIT_EXCEEDED",
+          "CODE_NODE_BLOCKED",
+          "CREDENTIAL_REFERENCE_PRESENT",
+          "NODE_UNSUPPORTED",
+          "PATH_DISCONNECTED",
+          "PATH_OUTPUT_UNSUPPORTED",
+          "PATH_UNSUPPORTED",
+          "STRUCTURAL_VERSION_UNSUPPORTED",
+          "SUBWORKFLOW_UNSUPPORTED",
+          "TRANSFORMATION_FIDELITY_UNPROVEN",
+          "WORKFLOW_ID_INVALID",
+          "WORKFLOW_STATE_UNSUPPORTED"
+        ]
+      },
+      "containment_status": "NOT_RUN",
+      "observed_actions": 0,
+      "summary_sha256": "1908d33f9001f68003f50cbadf00801951e8c14fae9a265a9450797cfca5d5c9"
+    },
+    "first-fix": {
+      "baseline": "before-fix",
+      "candidate": "first-fix",
+      "exit_code": 3,
+      "overall_result": "BLOCKED_UNSUPPORTED",
+      "reason_codes": {
+        "baseline": [
+          "ACTION_PARAMETERS_UNSUPPORTED",
+          "ACTIVE_NODE_LIMIT_EXCEEDED",
+          "CODE_NODE_BLOCKED",
+          "CREDENTIAL_REFERENCE_PRESENT",
+          "METHOD_READ_ONLY_UNSUPPORTED",
+          "NODE_UNSUPPORTED",
+          "PATH_DISCONNECTED",
+          "PATH_OUTPUT_UNSUPPORTED",
+          "PATH_UNSUPPORTED",
+          "STRUCTURAL_VERSION_UNSUPPORTED",
+          "SUBWORKFLOW_UNSUPPORTED",
+          "TRANSFORMATION_FIDELITY_UNPROVEN",
+          "WORKFLOW_ID_INVALID",
+          "WORKFLOW_STATE_UNSUPPORTED"
+        ],
+        "candidate": [
+          "ACTION_PARAMETERS_UNSUPPORTED",
+          "ACTIVE_NODE_LIMIT_EXCEEDED",
+          "CODE_NODE_BLOCKED",
+          "CREDENTIAL_REFERENCE_PRESENT",
+          "METHOD_READ_ONLY_UNSUPPORTED",
+          "NODE_UNSUPPORTED",
+          "PATH_DISCONNECTED",
+          "PATH_OUTPUT_UNSUPPORTED",
+          "PATH_UNSUPPORTED",
+          "STRUCTURAL_VERSION_UNSUPPORTED",
+          "SUBWORKFLOW_UNSUPPORTED",
+          "TRANSFORMATION_FIDELITY_UNPROVEN",
+          "WORKFLOW_ID_INVALID",
+          "WORKFLOW_STATE_UNSUPPORTED"
+        ]
+      },
+      "containment_status": "NOT_RUN",
+      "observed_actions": 0,
+      "summary_sha256": "0f3f584fb0bb26cb8ae9b1cd6a97350c8b17bf765424773884ca97928794faa0"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "flowdelta-eval-label-seal-v1",
+  "labeler": "A (vmaca123)",
+  "file": "labels-A.json",
+  "sha256": "00a79b23c5a5c31bf4acf5f315abb34b62974140e2d38a2899976fc62b52128c",
+  "cases": 36,
+  "pairs": 6,
+  "created": "2026-11-12",
+  "kept_at": "labeler A's local var/eval-labels/ (git-ignored)",
+  "reveal": "after labeler B submits labels for the same cases (docs #70 1.1, 1.3)",
+  "generator": "experiments/eval-pairs/draft_labels.py"
+}
