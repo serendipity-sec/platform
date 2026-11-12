@@ -1,0 +1,791 @@
+{
+  "schema": "bounded-memory-observation-v2",
+  "scope": {
+    "caller_context": "SYNTHETIC",
+    "full_workflow_run": false,
+    "historical_deployment_reproduced": false,
+    "http_receiver": "SYNTHETIC_SUBSET",
+    "llm_run": false,
+    "original_tool_js": true,
+    "real_database": false
+  },
+  "runtime": {
+    "network": "none",
+    "node": "v26.7.0"
+  },
+  "projection_note": "expected_deleted, expectation_match, passed, deleted and observation summaries are excluded; B uses receiver requests and initial/final states.",
+  "original_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+  "observations": [
+    {
+      "source_pointer": "/observations/0",
+      "context_lookups": [],
+      "execution_status": "NOT_RUN",
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "foreign",
+      "requests": [],
+      "scope": "SELECTED_NODE_ONLY",
+      "tool_present": false,
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
+    },
+    {
+      "source_pointer": "/observations/1",
+      "context_lookups": [],
+      "execution_status": "NOT_RUN",
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "own",
+      "requests": [],
+      "scope": "SELECTED_NODE_ONLY",
+      "tool_present": false,
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
+    },
+    {
+      "source_pointer": "/observations/2",
+      "context_lookups": [],
+      "execution_status": "NOT_RUN",
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "admin",
+      "requests": [],
+      "scope": "SELECTED_NODE_ONLY",
+      "tool_present": false,
+      "version": "before-feature",
+      "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
+    },
+    {
+      "source_pointer": "/observations/3",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+    },
+    {
+      "source_pointer": "/observations/4",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+    },
+    {
+      "source_pointer": "/observations/5",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "feature",
+      "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+    },
+    {
+      "source_pointer": "/observations/6",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "source_pointer": "/observations/7",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "source_pointer": "/observations/8",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-fix",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "source_pointer": "/observations/9",
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        }
+      ],
+      "returned_error": true,
+      "returned_error_reason": "OWNERSHIP_DENIED",
+      "returned_error_sha256": "8c56a72891c67bbacb8fd4f247f6902ab350b02c96526a8704fba7f8ab2fc819",
+      "tool_present": true,
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+    },
+    {
+      "source_pointer": "/observations/10",
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+    },
+    {
+      "source_pointer": "/observations/11",
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "first-fix",
+      "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+    },
+    {
+      "source_pointer": "/observations/12",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "source_pointer": "/observations/13",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "source_pointer": "/observations/14",
+      "context_lookups": [],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "reverted",
+      "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "source_pointer": "/observations/15",
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        }
+      ],
+      "returned_error": true,
+      "returned_error_reason": "OWNERSHIP_DENIED",
+      "returned_error_sha256": "8c56a72891c67bbacb8fd4f247f6902ab350b02c96526a8704fba7f8ab2fc819",
+      "tool_present": true,
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca"
+    },
+    {
+      "source_pointer": "/observations/16",
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca"
+    },
+    {
+      "source_pointer": "/observations/17",
+      "context_lookups": [
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "before-september",
+      "workflow_sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca"
+    },
+    {
+      "source_pointer": "/observations/18",
+      "context_lookups": [
+        "Merge Input",
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "foreign",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "POST",
+          "path": "/rest/v1/tool_audit_log",
+          "url_sha256": "c979a2c4c08cc1a88ee568e5682c756a23318a63d4634956f288dcb8424557c2"
+        }
+      ],
+      "returned_error": true,
+      "returned_error_reason": "OWNERSHIP_DENIED",
+      "returned_error_sha256": "bc18fb4b9c7726ba0f2c7f95686e6389e1244d8db7392604a11ba85a9f8bd653",
+      "tool_present": true,
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452"
+    },
+    {
+      "source_pointer": "/observations/19",
+      "context_lookups": [
+        "Merge Input",
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-a",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "own",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "POST",
+          "path": "/rest/v1/tool_audit_log",
+          "url_sha256": "c979a2c4c08cc1a88ee568e5682c756a23318a63d4634956f288dcb8424557c2"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452"
+    },
+    {
+      "source_pointer": "/observations/20",
+      "context_lookups": [
+        "Merge Input",
+        "Merge Input"
+      ],
+      "execution_status": "COMPLETED",
+      "final_state": [],
+      "harness_violations": [],
+      "initial_state": [
+        {
+          "entity_name": null,
+          "id": 8,
+          "owner_user_id": "web:fixture-b",
+          "scope": "personal"
+        }
+      ],
+      "relationship": "admin",
+      "requests": [
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+          "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "GET",
+          "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+          "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "DELETE",
+          "path": "/rest/v1/memory_long?id=eq.8",
+          "removed_count": 1,
+          "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+        },
+        {
+          "host": "fixture.invalid",
+          "method": "POST",
+          "path": "/rest/v1/tool_audit_log",
+          "url_sha256": "c979a2c4c08cc1a88ee568e5682c756a23318a63d4634956f288dcb8424557c2"
+        }
+      ],
+      "returned_error": false,
+      "returned_error_reason": null,
+      "returned_error_sha256": null,
+      "tool_present": true,
+      "version": "september",
+      "workflow_sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452"
+    }
+  ]
+}

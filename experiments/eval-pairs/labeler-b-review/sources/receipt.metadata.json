@@ -1,0 +1,62 @@
+{
+  "image": "docker.n8n.io/n8nio/n8n:2.42.6@sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+  "actual_image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+  "started_at": "2026-10-24T01:16:39.837032+00:00",
+  "finished_at": "2026-10-24T01:16:44.234045+00:00",
+  "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+  "collector_sha256": "5590938b94926a1ed9ad0484d39607725f0be93f230dbc754fea1396dfcbaf10",
+  "runner_sha256": "16dcaf7cc3d1c99bca92e885381376579c69847f55bd1fb0ffa016f46ef417e2",
+  "runtime_lock_sha256": "6393db0ebcaec19ada7358ea9f41d714fa7bdc854e71a33630b8f7eed0eaad0e",
+  "sources_manifest_sha256": "e2ee0d3cc02ea0216f488f4c55ec0d06b295ad668071f00b3943dd79c80084b8",
+  "observation_run": {
+    "cleanup": {
+      "remove_returncode": 0,
+      "status": "COMPLETE"
+    },
+    "container": "flowdelta-memory-00a3cf471f824b68843afb0625c80030",
+    "label": "observations",
+    "published_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+    "returncode": 0,
+    "script": "/harness/replay.cjs",
+    "status": "COMPLETED",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "bf49900e0a78bde640a2a33cefe8ea84cfed192d9b67b0608776fa94ad81643d"
+  },
+  "source_files": [
+    {
+      "path": "before-feature/workflows/n8n-claw-agent.json",
+      "sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e"
+    },
+    {
+      "path": "feature/workflows/n8n-claw-agent.json",
+      "sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae"
+    },
+    {
+      "path": "before-fix/workflows/n8n-claw-agent.json",
+      "sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "path": "first-fix/workflows/n8n-claw-agent.json",
+      "sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa"
+    },
+    {
+      "path": "reverted/workflows/n8n-claw-agent.json",
+      "sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2"
+    },
+    {
+      "path": "before-september/workflows/n8n-claw-agent.json",
+      "sha256": "14e22a9dd025214c5181ff862db7056ce87bc516616bf1c9dd4cc41c0a7d16ca"
+    },
+    {
+      "path": "september/workflows/n8n-claw-agent.json",
+      "sha256": "5e5c95f33890dd6b268a0d0da1f8accd6b4ba041cc4f63413d84abd0cb207452"
+    }
+  ],
+  "integrity_check": {
+    "published_observations": true,
+    "sources_manifest": true,
+    "harness": true,
+    "collector": true,
+    "runner": true
+  }
+}

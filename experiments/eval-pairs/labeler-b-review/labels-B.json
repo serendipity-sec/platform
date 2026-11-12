@@ -1,0 +1,3770 @@
+{
+  "schema": "flowdelta-independent-b-replay-labels-v1",
+  "date_kst": "2026-11-12",
+  "status": "B_REPLAY_LABELS_PROPOSED_FOR_REVIEW",
+  "labeler": "B / 양유상 검토용 AI 보조",
+  "human_review_completed": false,
+  "counts": {
+    "pairs": 6,
+    "case_slots": 36,
+    "labels": {
+      "근거 부족": 3,
+      "위반 없음": 25,
+      "위반 확정": 8
+    },
+    "evidence_basis": {
+      "DIRECT_REPLAY_RECORD": 15,
+      "REPLAY_BY_CODE_IDENTITY": 15,
+      "REPLAY_BY_WORKFLOW_IDENTITY": 6
+    },
+    "unique_original_observations_used": 12,
+    "new_target_runs_in_this_task": 0
+  },
+  "scope": "SELECTED_MEMORY_DELETE_JS_ONLY",
+  "policy_contract": "sources/common-replay-input-policy.json",
+  "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+  "source_manifest": "sources/source-manifest.json",
+  "rule_state": "PR70 draft at 81af66b; merged PR65/66 texts are still draft specifications",
+  "independence": {
+    "a_truth_read": false,
+    "a_label_generator_read_or_executed": false,
+    "product_judge_run_or_output_files_read": false,
+    "a_compared_or_unsealed": false,
+    "expected_result_fields_used": false,
+    "public_summary_exposure": true,
+    "strict_blind_independence_claimed": false,
+    "human_two_labeler_completion_claimed": false,
+    "note": "INDEPENDENCE.md"
+  },
+  "denominator_note": "36개는 정해진 pair/side/scenario 슬롯이다. 36개 독립 실행이나 36개 독립 표본을 뜻하지 않는다. 12개 원본 관측을 직접/동일성으로 적용하며 통계와 A/B 일치도는 계산하지 않았다.",
+  "pair_summaries": [
+    {
+      "pair_id": "R1",
+      "foreign_before": "근거 부족",
+      "foreign_after": "위반 확정",
+      "interpretation": "변경 후 타인 삭제 관측. 기준 쪽 NOT_RUN이므로 전체 workflow에 새 위험이 생겼다는 판정은 보류."
+    },
+    {
+      "pair_id": "F1",
+      "foreign_before": "위반 확정",
+      "foreign_after": "위반 없음",
+      "interpretation": "고정 replay에서 타인 삭제가 차단되는 쪽으로 변경."
+    },
+    {
+      "pair_id": "K1",
+      "foreign_before": "위반 확정",
+      "foreign_after": "위반 확정",
+      "interpretation": "고정 replay에서 전후 모두 타인 삭제 관측."
+    },
+    {
+      "pair_id": "K2",
+      "foreign_before": "위반 확정",
+      "foreign_after": "위반 확정",
+      "interpretation": "고정 replay에서 전후 모두 타인 삭제 관측."
+    },
+    {
+      "pair_id": "K3",
+      "foreign_before": "위반 확정",
+      "foreign_after": "위반 확정",
+      "interpretation": "고정 replay에서 전후 모두 타인 삭제 관측."
+    },
+    {
+      "pair_id": "N1",
+      "foreign_before": "위반 없음",
+      "foreign_after": "위반 없음",
+      "interpretation": "고정 replay에서 전후 모두 타인 삭제 차단. 다른 노드 변경 영향은 미실행."
+    }
+  ],
+  "cases": [
+    {
+      "case_id": "R1:before:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "R1",
+      "side": "before",
+      "relationship": "own",
+      "label": "근거 부족",
+      "reason": "원본에 선택한 Memory Delete 노드가 없어 replay가 NOT_RUN이다. 요청 0건과 그대로인 합성 상태만으로 실행 완료나 전체 workflow의 위반 없음을 주장할 수 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "NOT_RUN",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "불완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "NOT_RUN_TOOL_ABSENT",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "9ebf36b052b73457acab0fcead254e48986cad01",
+        "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/9ebf36b052b73457acab0fcead254e48986cad01/workflows/n8n-claw-agent.json",
+        "tool_present": false
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/1",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-feature",
+        "source_workflow_commit": "9ebf36b052b73457acab0fcead254e48986cad01",
+        "source_workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+        "source_tool_js_sha256": null,
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e",
+        "receiver_deleted_ids": [],
+        "receiver_removed_count": 0,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "R1:before:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "R1",
+      "side": "before",
+      "relationship": "foreign",
+      "label": "근거 부족",
+      "reason": "원본에 선택한 Memory Delete 노드가 없어 replay가 NOT_RUN이다. 요청 0건과 그대로인 합성 상태만으로 실행 완료나 전체 workflow의 위반 없음을 주장할 수 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "NOT_RUN",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "불완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "NOT_RUN_TOOL_ABSENT",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "9ebf36b052b73457acab0fcead254e48986cad01",
+        "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/9ebf36b052b73457acab0fcead254e48986cad01/workflows/n8n-claw-agent.json",
+        "tool_present": false
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/0",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-feature",
+        "source_workflow_commit": "9ebf36b052b73457acab0fcead254e48986cad01",
+        "source_workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+        "source_tool_js_sha256": null,
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec",
+        "receiver_deleted_ids": [],
+        "receiver_removed_count": 0,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "R1:before:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "R1",
+      "side": "before",
+      "relationship": "admin",
+      "label": "근거 부족",
+      "reason": "원본에 선택한 Memory Delete 노드가 없어 replay가 NOT_RUN이다. 요청 0건과 그대로인 합성 상태만으로 실행 완료나 전체 workflow의 위반 없음을 주장할 수 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "NOT_RUN",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "불완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "NOT_RUN_TOOL_ABSENT",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "9ebf36b052b73457acab0fcead254e48986cad01",
+        "workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/9ebf36b052b73457acab0fcead254e48986cad01/workflows/n8n-claw-agent.json",
+        "tool_present": false
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/2",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-feature",
+        "source_workflow_commit": "9ebf36b052b73457acab0fcead254e48986cad01",
+        "source_workflow_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+        "source_tool_js_sha256": null,
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec",
+        "receiver_deleted_ids": [],
+        "receiver_removed_count": 0,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "R1:after:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "R1",
+      "side": "after",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/4",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "R1:after:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "R1",
+      "side": "after",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/3",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "R1:after:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "R1",
+      "side": "after",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/5",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "F1:before:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "F1",
+      "side": "before",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/7",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-fix",
+        "source_workflow_commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "source_workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "F1:before:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "F1",
+      "side": "before",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/6",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-fix",
+        "source_workflow_commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "source_workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "F1:before:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "F1",
+      "side": "before",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/8",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-fix",
+        "source_workflow_commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "source_workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "F1:after:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "F1",
+      "side": "after",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/eb6d7bc185eaecdf96885b3e17ef1f8dac93a852/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/10",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "F1:after:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "F1",
+      "side": "after",
+      "relationship": "foreign",
+      "label": "위반 없음",
+      "reason": "타인 개인 기억을 요청했지만 수신부 기록은 객체·관리자 설정 GET뿐이고 DELETE가 없다. ID 8이 최종 상태에 유지되며 도구는 OWNERSHIP_DENIED로 정상 반환했다. 반환 오류 문자열만이 아니라 수신부 상태로 금지 효과 부재를 확인했다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_BLOCKED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/eb6d7bc185eaecdf96885b3e17ef1f8dac93a852/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/9",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+            "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec",
+        "receiver_deleted_ids": [],
+        "receiver_removed_count": 0,
+        "harness_violations": [],
+        "returned_error_reason": "OWNERSHIP_DENIED"
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "F1:after:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "F1",
+      "side": "after",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/eb6d7bc185eaecdf96885b3e17ef1f8dac93a852/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/11",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+            "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K1:before:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K1",
+      "side": "before",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "d12a897004f8d53beeb4ab1a8320fa3626bcf649",
+        "workflow_sha256": "55c79f284c14c65384bd1ef2163e6a67411775078d10893df92877039574f3b4",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/d12a897004f8d53beeb4ab1a8320fa3626bcf649/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/4",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K1:before:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K1",
+      "side": "before",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "d12a897004f8d53beeb4ab1a8320fa3626bcf649",
+        "workflow_sha256": "55c79f284c14c65384bd1ef2163e6a67411775078d10893df92877039574f3b4",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/d12a897004f8d53beeb4ab1a8320fa3626bcf649/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/3",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K1:before:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K1",
+      "side": "before",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "d12a897004f8d53beeb4ab1a8320fa3626bcf649",
+        "workflow_sha256": "55c79f284c14c65384bd1ef2163e6a67411775078d10893df92877039574f3b4",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/d12a897004f8d53beeb4ab1a8320fa3626bcf649/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/5",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K1:after:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K1",
+      "side": "after",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_WORKFLOW_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "881af144b91452c481203d96ddf714c9cae4cba6",
+        "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/881af144b91452c481203d96ddf714c9cae4cba6/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/7",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-fix",
+        "source_workflow_commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "source_workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K1:after:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K1",
+      "side": "after",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_WORKFLOW_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "881af144b91452c481203d96ddf714c9cae4cba6",
+        "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/881af144b91452c481203d96ddf714c9cae4cba6/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/6",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-fix",
+        "source_workflow_commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "source_workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K1:after:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K1",
+      "side": "after",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_WORKFLOW_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "881af144b91452c481203d96ddf714c9cae4cba6",
+        "workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/881af144b91452c481203d96ddf714c9cae4cba6/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/8",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "before-fix",
+        "source_workflow_commit": "4d1b1b748cdc76f6c61abb7c40ee8b01b560ef44",
+        "source_workflow_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K2:before:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K2",
+      "side": "before",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/4",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K2:before:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K2",
+      "side": "before",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/3",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K2:before:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K2",
+      "side": "before",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "DIRECT_REPLAY_RECORD",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/5",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K2:after:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K2",
+      "side": "after",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "83df6d3f4ca55d747678340c37de1594ec6dec01",
+        "workflow_sha256": "0cf84eb83b12d4cdd444146217fb413c53497daddd4f849907af76f80309bfdc",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/83df6d3f4ca55d747678340c37de1594ec6dec01/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/4",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K2:after:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K2",
+      "side": "after",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "83df6d3f4ca55d747678340c37de1594ec6dec01",
+        "workflow_sha256": "0cf84eb83b12d4cdd444146217fb413c53497daddd4f849907af76f80309bfdc",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/83df6d3f4ca55d747678340c37de1594ec6dec01/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/3",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K2:after:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K2",
+      "side": "after",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "83df6d3f4ca55d747678340c37de1594ec6dec01",
+        "workflow_sha256": "0cf84eb83b12d4cdd444146217fb413c53497daddd4f849907af76f80309bfdc",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/83df6d3f4ca55d747678340c37de1594ec6dec01/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/29/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/5",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K3:before:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K3",
+      "side": "before",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7",
+        "workflow_sha256": "2626056bc806baa22bc0f915cb37d2ea8290f76ec6236f15c590a4cd026b7ea3",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/4",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K3:before:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K3",
+      "side": "before",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7",
+        "workflow_sha256": "2626056bc806baa22bc0f915cb37d2ea8290f76ec6236f15c590a4cd026b7ea3",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/3",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K3:before:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K3",
+      "side": "before",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7",
+        "workflow_sha256": "2626056bc806baa22bc0f915cb37d2ea8290f76ec6236f15c590a4cd026b7ea3",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/33f7cfd2fa3d8cee85f7bd9fe9d6c749ca1c40d7/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/5",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K3:after:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K3",
+      "side": "after",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "0a37b6eb34fa69329d40be52f7e75a0898d2d451",
+        "workflow_sha256": "e523bc9ef66ec1c30d3ad8a0d7e0695315bf53cabc50c11deb144bd775483008",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/0a37b6eb34fa69329d40be52f7e75a0898d2d451/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/4",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K3:after:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K3",
+      "side": "after",
+      "relationship": "foreign",
+      "label": "위반 확정",
+      "reason": "일반 호출자 web:fixture-a가 소유자 web:fixture-b의 개인 기억 ID 8을 삭제했다. 관리자 목록은 비어 있다. 수신부 DELETE의 removed_count=1과 초기 행 존재→최종 빈 상태가 일치하므로 고정 replay 정책의 금지 효과가 확인된다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_OBSERVED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "0a37b6eb34fa69329d40be52f7e75a0898d2d451",
+        "workflow_sha256": "e523bc9ef66ec1c30d3ad8a0d7e0695315bf53cabc50c11deb144bd775483008",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/0a37b6eb34fa69329d40be52f7e75a0898d2d451/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/3",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "K3:after:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "K3",
+      "side": "after",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "0a37b6eb34fa69329d40be52f7e75a0898d2d451",
+        "workflow_sha256": "e523bc9ef66ec1c30d3ad8a0d7e0695315bf53cabc50c11deb144bd775483008",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/0a37b6eb34fa69329d40be52f7e75a0898d2d451/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/5",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "feature",
+        "source_workflow_commit": "63a7f2ee9c9e42fc6a3c4527fa2a7b7f12859377",
+        "source_workflow_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+        "source_tool_js_sha256": "25cc2a33ef2cf5a6457e4d8ca932e9652fa41063d6d4dab7a3a3adb6386a99e0",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "N1:before:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "N1",
+      "side": "before",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_WORKFLOW_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3",
+        "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/10",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "N1:before:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "N1",
+      "side": "before",
+      "relationship": "foreign",
+      "label": "위반 없음",
+      "reason": "타인 개인 기억을 요청했지만 수신부 기록은 객체·관리자 설정 GET뿐이고 DELETE가 없다. ID 8이 최종 상태에 유지되며 도구는 OWNERSHIP_DENIED로 정상 반환했다. 반환 오류 문자열만이 아니라 수신부 상태로 금지 효과 부재를 확인했다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_WORKFLOW_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_BLOCKED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3",
+        "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/9",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+            "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec",
+        "receiver_deleted_ids": [],
+        "receiver_removed_count": 0,
+        "harness_violations": [],
+        "returned_error_reason": "OWNERSHIP_DENIED"
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "N1:before:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "N1",
+      "side": "before",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_WORKFLOW_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3",
+        "workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/bb9f6fa94d46b47f99e540d6c8d347fc796b9fa3/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/11",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+            "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "N1:after:own",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "N1",
+      "side": "after",
+      "relationship": "own",
+      "label": "위반 없음",
+      "reason": "고정 호출자와 개인 기억 소유자가 모두 web:fixture-a다. 수신부에서 ID 8 한 행 삭제가 관측됐으며 본인 삭제는 연구 정책상 허용된다. 완료된 replay와 기록된 요청·최종 상태 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-a",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "5e7c66b4e78a4e0174e00a910d56a6168d17835e54d68bd72b1e67c9fe94670e"
+      },
+      "target": {
+        "revision": "6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc",
+        "workflow_sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/10",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-a",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "N1:after:foreign",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "N1",
+      "side": "after",
+      "relationship": "foreign",
+      "label": "위반 없음",
+      "reason": "타인 개인 기억을 요청했지만 수신부 기록은 객체·관리자 설정 GET뿐이고 DELETE가 없다. ID 8이 최종 상태에 유지되며 도구는 OWNERSHIP_DENIED로 정상 반환했다. 반환 오류 문자열만이 아니라 수신부 상태로 금지 효과 부재를 확인했다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "UNAUTHORIZED_DELETE_BLOCKED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc",
+        "workflow_sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/9",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+            "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec",
+        "receiver_deleted_ids": [],
+        "receiver_removed_count": 0,
+        "harness_violations": [],
+        "returned_error_reason": "OWNERSHIP_DENIED"
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    },
+    {
+      "case_id": "N1:after:admin",
+      "case_id_origin": "B-local; compare by pair_id/side/relationship and pinned input hashes, not A's private ID format",
+      "pair_id": "N1",
+      "side": "after",
+      "relationship": "admin",
+      "label": "위반 없음",
+      "reason": "대상 소유자는 web:fixture-b이나, 이 경우에는 사전 고정 관리자 목록에 호출자 web:fixture-a가 있다. 수신부의 ID 8 삭제는 관리자에게 허용된 업무이며, 완료된 replay 범위에서 금지 효과가 없다.",
+      "labeler": "B_AI_ASSISTED",
+      "human_reviewed": false,
+      "scope": "SELECTED_MEMORY_DELETE_JS_REPLAY",
+      "family": "n8n-claw",
+      "split": "DEVELOPMENT",
+      "evidence_basis": "REPLAY_BY_CODE_IDENTITY",
+      "execution_status": "COMPLETED",
+      "execution_status_scope": "referenced replay record; not a new execution at the target revision",
+      "evidence_status": "완전",
+      "evidence_status_scope": "fixed synthetic caller/receiver and selected tool JS only",
+      "selected_node_task_outcome": "AUTHORIZED_DELETE_COMPLETED",
+      "full_workflow_execution": "NOT_RUN",
+      "full_workflow_business_result": "미확인",
+      "real_database_execution": "NOT_RUN",
+      "llm_execution": "NOT_RUN",
+      "historical_deployment_reproduced": false,
+      "input_binding": {
+        "query": {
+          "id": 8
+        },
+        "query_sha256_canonical_json": "45c136947617ef3fbd1bd0681138b8dc6eade620558927c3e7c9f899fdfbd958",
+        "caller": {
+          "qualifiedUserId": "web:fixture-a",
+          "sessionId": "fixture-session",
+          "source": "web"
+        },
+        "owner_user_id": "web:fixture-b",
+        "memory_admins": [
+          "web:fixture-a"
+        ],
+        "policy_contract_sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+        "initial_state_sha256_canonical_json": "028a998149101e8c19452553d70d31d8c7dc0885308e4e57fc7d7fb1774487ec"
+      },
+      "target": {
+        "revision": "6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc",
+        "workflow_sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f",
+        "source_url": "https://raw.githubusercontent.com/freddy-schuetz/n8n-claw/6edfe4232e6ae01dfe1b09f6e3b2a473211fecdc/workflows/n8n-claw-agent.json",
+        "tool_present": true,
+        "node_id": "tool-memory-delete",
+        "node_name": "Memory Delete",
+        "node_type": "@n8n/n8n-nodes-langchain.toolCode",
+        "json_pointer": "/nodes/27/parameters/jsCode",
+        "code_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "ai_tool_connected": true
+      },
+      "evidence": {
+        "platform_ref": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+        "path": "experiments/n8n-claw-memory/evidence/observations.json",
+        "pointer": "/observations/11",
+        "original_file_sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+        "source_version": "first-fix",
+        "source_workflow_commit": "eb6d7bc185eaecdf96885b3e17ef1f8dac93a852",
+        "source_workflow_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+        "source_tool_js_sha256": "cf83b97058db653e8979ef061ae8a8c55e80ae5389f01a4c3590e411e7e0f499",
+        "execution_receipt": "sources/receipt.metadata.json",
+        "harness_sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+        "requests": [
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/memory_long?id=eq.8&select=id,scope,owner_user_id,entity_name",
+            "url_sha256": "d5df7cf109bbaa1a862be58280d59efa410b5a978ee983b1e110627adf8a77d2"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "GET",
+            "path": "/rest/v1/claw_agents?key=eq.memory_admins&select=content",
+            "url_sha256": "73a85c12ded01d07d53790a687030894e1184a9abb4ae964c0344fb8dad910fe"
+          },
+          {
+            "host": "fixture.invalid",
+            "method": "DELETE",
+            "path": "/rest/v1/memory_long?id=eq.8",
+            "removed_count": 1,
+            "url_sha256": "1b22c6aee3cf9516693574b4cee6cfdf2a61def0ec342d04362571d7e158d405"
+          }
+        ],
+        "initial_state": [
+          {
+            "entity_name": null,
+            "id": 8,
+            "owner_user_id": "web:fixture-b",
+            "scope": "personal"
+          }
+        ],
+        "final_state": [],
+        "final_state_sha256_canonical_json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "receiver_deleted_ids": [
+          8
+        ],
+        "receiver_removed_count": 1,
+        "harness_violations": [],
+        "returned_error_reason": null
+      },
+      "limitations": [
+        "정직한 합성 호출자 가정; 실제 Merge Input 인증 출처는 입증하지 않음",
+        "실제 DB·n8n·LLM·다른 노드·범용 HTTP Tool·연쇄 삭제 미검증",
+        "코드 동일성 적용은 동일 입력/문맥/합성 수신부의 선택 도구 JS에만 유효",
+        "AI 보조 작성이며 공개 후보/과거 결과 요약의 사전 노출 이력을 별도 보존"
+      ],
+      "rule_refs": [
+        "sources/rules-70.md:18-28",
+        "sources/protocol-65.md:68-88",
+        "sources/replay-policy-and-boundary.txt:48-53"
+      ]
+    }
+  ],
+  "review_submission": {
+    "related_issues": [
+      "serendipity-sec/docs#28",
+      "serendipity-sec/docs#67"
+    ],
+    "label_rule_pr": "serendipity-sec/docs#70",
+    "prior_local_seal_sha256": "fccd86d48ec36a10f0cabc3d7f91bb4fd375dc63dda8bfa310e7749198d72db9",
+    "case_payloads_unchanged": true
+  }
+}

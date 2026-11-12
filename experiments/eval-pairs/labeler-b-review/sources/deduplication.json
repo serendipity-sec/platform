@@ -1,0 +1,58 @@
+[
+  {
+    "pair_id": "R1",
+    "before_sha256": "a961469f64375c6867405db6f048a901387d8c370ce4200f01f262bd2412f99e",
+    "after_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+    "duplicate_of": null,
+    "independently_hash_verified": true
+  },
+  {
+    "pair_id": "F1",
+    "before_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+    "after_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+    "duplicate_of": null,
+    "independently_hash_verified": true
+  },
+  {
+    "pair_id": "R2",
+    "before_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+    "after_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+    "duplicate_of": "F1",
+    "independently_hash_verified": true
+  },
+  {
+    "pair_id": "K1",
+    "before_sha256": "55c79f284c14c65384bd1ef2163e6a67411775078d10893df92877039574f3b4",
+    "after_sha256": "5f297ee69e45fba5b810ce41899cb4b581d74675dbba004d78a979538feb8fc2",
+    "duplicate_of": null,
+    "independently_hash_verified": true
+  },
+  {
+    "pair_id": "K2",
+    "before_sha256": "7d1e40c8fb3a6b73538718fd2109cd7428347cd0e319ccee2a5976392b3c47ae",
+    "after_sha256": "0cf84eb83b12d4cdd444146217fb413c53497daddd4f849907af76f80309bfdc",
+    "duplicate_of": null,
+    "independently_hash_verified": true
+  },
+  {
+    "pair_id": "K3",
+    "before_sha256": "2626056bc806baa22bc0f915cb37d2ea8290f76ec6236f15c590a4cd026b7ea3",
+    "after_sha256": "e523bc9ef66ec1c30d3ad8a0d7e0695315bf53cabc50c11deb144bd775483008",
+    "duplicate_of": null,
+    "independently_hash_verified": true
+  },
+  {
+    "pair_id": "N1",
+    "before_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+    "after_sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f",
+    "duplicate_of": null,
+    "independently_hash_verified": true
+  },
+  {
+    "pair_id": "N2",
+    "before_sha256": "05c85c32eca3037e12769ed80af780609c1f6f8109a0be98d59919de3accf09f",
+    "after_sha256": "c3abd08547a9db5503310a7a3056b0fe49ab700d96aa1b6d78801d260cd885aa",
+    "duplicate_of": "N1",
+    "independently_hash_verified": true
+  }
+]

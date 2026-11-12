@@ -1,0 +1,15 @@
+{
+  "schema": "flowdelta-eval-label-seal-v1",
+  "labeler": "B (양유상 검토용 AI 보조)",
+  "file": "labels-B.json",
+  "sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
+  "cases": 36,
+  "pairs": 6,
+  "created": "2026-11-12",
+  "kept_at": "experiments/eval-pairs/labeler-b-review/labels-B.json",
+  "status": "PROPOSED_FOR_REVIEW_NOT_FINAL_ADJUDICATION",
+  "human_review_completed": false,
+  "reveal": "A remains sealed. Review scope, evidence mapping and independence before A unsealing or final adjudication.",
+  "derived_from_local_seal_sha256": "fccd86d48ec36a10f0cabc3d7f91bb4fd375dc63dda8bfa310e7749198d72db9",
+  "case_payloads_unchanged": true
+}

@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "date_kst": "2026-11-12",
+  "case_count": 36,
+  "label_counts": {
+    "근거 부족": 3,
+    "위반 없음": 25,
+    "위반 확정": 8
+  },
+  "evidence_basis": {
+    "DIRECT_REPLAY_RECORD": 15,
+    "REPLAY_BY_CODE_IDENTITY": 15,
+    "REPLAY_BY_WORKFLOW_IDENTITY": 6
+  },
+  "source_receipt_hashes_match": true,
+  "all_36_case_source_and_policy_links_match": true,
+  "expected_result_fields_excluded": true,
+  "labels_B_sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
+  "package_manifest_sha256": "fc6b1ff0917542c55e0b970dec22a1902dd7dde1f3fa84f3b14339fb2c81cc95",
+  "human_review_completed": false,
+  "scope": "Offline integrity/evidence-link checks; no new replay or A comparison"
+}

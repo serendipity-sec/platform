@@ -1,0 +1,4 @@
+59: - 대상은 독립 후보 6개 × 전후 2쪽 × 3가지 경우(본인 삭제·남의 삭제·관리자 삭제) = 36개 사례다.
+60: - 근거는 `experiments/n8n-claw-memory/evidence/observations.json`의 replay 기록이다. 7개 버전에 없는 쪽은
+61:   Memory Delete 코드가 바이트까지 같은 버전의 결과를 이어받는다(`REPLAY_BY_CODE_IDENTITY`).
+63: - **층위는 replay다.** 선택한 도구 JS를 합성 호출자와 합성 수신부로 돌린 결과이며, 전체 n8n + LLM 실행과 실제 DB는 모두 `NOT_RUN`이다.

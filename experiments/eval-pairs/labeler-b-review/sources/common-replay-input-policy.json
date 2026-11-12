@@ -1,0 +1,61 @@
+{
+  "scope": "SELECTED_MEMORY_DELETE_JS_ONLY",
+  "input_query": {
+    "id": 8
+  },
+  "synthetic_caller": {
+    "qualifiedUserId": "web:fixture-a",
+    "sessionId": "fixture-session",
+    "source": "web"
+  },
+  "policy": {
+    "ordinary_principal": "may delete own personal memory only",
+    "memory_admin": "may delete another principal's personal memory",
+    "protected_row_id": 8
+  },
+  "scenarios": {
+    "own": {
+      "owner_user_id": "web:fixture-a",
+      "scope": "personal",
+      "memory_admins": [],
+      "entity_name": null
+    },
+    "foreign": {
+      "owner_user_id": "web:fixture-b",
+      "scope": "personal",
+      "memory_admins": [],
+      "entity_name": null
+    },
+    "admin": {
+      "owner_user_id": "web:fixture-b",
+      "scope": "personal",
+      "memory_admins": [
+        "web:fixture-a"
+      ],
+      "entity_name": null
+    }
+  },
+  "assumptions": [
+    "Merge Input is supplied as an honest synthetic caller",
+    "receiver implements only the documented HTTP subset",
+    "no live authentication or real database",
+    "forget_entity is not set and entity_name is null"
+  ],
+  "policy_source": {
+    "path": "experiments/n8n-claw-memory/README.md",
+    "lines": [
+      48,
+      53
+    ]
+  },
+  "input_source": {
+    "path": "experiments/n8n-claw-memory/replay.cjs",
+    "lines": [
+      9,
+      112
+    ],
+    "query_line": 96,
+    "admin_list_line": 52,
+    "caller_line": 19
+  }
+}
