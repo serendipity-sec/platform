@@ -41,7 +41,7 @@ KIND_FILES = {
 }
 
 Phase = Literal["QUEUED", "PREPARING", "READY", "RUNNING", "COLLECTING", "FINALIZING", "FINISHED"]
-ExecutionStatus = Literal["NOT_RUN", "SUCCEEDED", "FAILED", "TIMED_OUT"]
+ExecutionStatus = Literal["NOT_RUN", "SUCCEEDED", "FAILED", "TIMED_OUT", "CANCELLED", "INTERRUPTED"]
 
 
 @dataclass(frozen=True)
@@ -229,6 +229,8 @@ def run_side(
     actual_version: str | None = None
     actual_digest: str | None = None
     observed: list[str] = []
+    # 중단 신호(Ctrl+C)는 INTERRUPTED로 기록한 뒤, 실행 기록을 쓰고 나서 다시 던진다.
+    interrupt: BaseException | None = None
 
     save(
         shared / "allocation.json",
@@ -432,14 +434,19 @@ def run_side(
         if status_code != 200:
             raise RunFailure("NORMAL_REQUEST_REJECTED")
         execution_status = "SUCCEEDED"
-    except Exception as exc:  # Every failure still produces a run record and a cleanup attempt.
+    except BaseException as exc:  # Every failure, including a stop signal, gets a run record.
         failed_phase = phase
-        error_code = exc.code if isinstance(exc, RunFailure) else type(exc).__name__
-        timed_out = isinstance(exc, RunFailure) and exc.timed_out
-        if started_at is None:
-            execution_status = "NOT_RUN"
+        if not isinstance(exc, Exception):
+            interrupt = exc
+            error_code = "INTERRUPTED"
+            execution_status = "INTERRUPTED" if started_at is not None else "NOT_RUN"
         else:
-            execution_status = "TIMED_OUT" if timed_out else "FAILED"
+            error_code = exc.code if isinstance(exc, RunFailure) else type(exc).__name__
+            timed_out = isinstance(exc, RunFailure) and exc.timed_out
+            if started_at is None:
+                execution_status = "NOT_RUN"
+            else:
+                execution_status = "TIMED_OUT" if timed_out else "FAILED"
     finally:
         # --- FINALIZING: remove only this project's containers, networks and volumes.
         phase = "FINALIZING"
@@ -481,7 +488,7 @@ def run_side(
                 "execution_attempted": started_at is not None,
             },
         )
-    return _record(
+    record = _record(
         request,
         run_id=run_id,
         project=project,
@@ -495,6 +502,10 @@ def run_side(
         actual_version=actual_version,
         actual_digest=actual_digest,
     )
+    if interrupt is not None:
+        # The run record is already on disk; the stop signal continues to the caller.
+        raise interrupt
+    return record
 
 
 def _record(

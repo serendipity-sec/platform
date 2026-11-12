@@ -169,3 +169,28 @@ def test_invalid_plan_starts_nothing_and_creates_no_output(workspace) -> None:
         )
     assert docker.calls == []
     assert not (repo / "var" / "x").exists()
+
+
+class StopAtRequest(FakeDocker):
+    """Acts like Ctrl+C when the plan's request is sent to the order service."""
+
+    def __call__(self, args, *, timeout, input_text=None):
+        if input_text and '"operation": "normal-request"' in input_text:
+            raise KeyboardInterrupt
+        return super().__call__(args, timeout=timeout, input_text=input_text)
+
+
+def test_stop_signal_is_recorded_as_interrupted_then_raised(workspace) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    executor = PlanExecutor(bundle, repo, runner=StopAtRequest(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-stop"
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert run["execution_status"] == "INTERRUPTED"
+    assert run["error_code"] == "INTERRUPTED"
+    assert run["cleanup_status"] == "COMPLETE"
+    assert run["outcome"] is None
+    # The stop ends the whole plan: the second side is not started.
+    assert not (output / "runs" / "after-1.run.json").exists()
