@@ -45,6 +45,25 @@ python experiments/eval-pairs/scan_history.py --out experiments/eval-pairs/evide
    F1 이후도 경고한다. N1·F1의 라벨은 동적 판정(#53)으로 정한다.
 4. **9월 두 버전(`c71b39e`, `fe57d16`)은 원저자 기본 브랜치의 경로 이력에 없다.** "공개 실제 변경"으로 쓰려면 어느 브랜치에 공개됐는지 먼저 확인한다. 이번 후보에서는 뺐다.
 
+## 라벨러 A 초안 라벨 — 봉인 (2026-11-12)
+
+docs #70은 라벨러 2명이 서로의 라벨을 보지 않고 따로 붙이라고 한다. 그래서 라벨러 A(@vmaca123)의 초안 라벨은
+**파일을 커밋하지 않고 해시만 [`labels-A.seal.json`](labels-A.seal.json)에 봉인**했다.
+라벨러 B가 같은 사례에 라벨을 낸 뒤 A 파일을 공개하고, 누구나 해시로 내용이 바뀌지 않았음을 확인한다.
+
+```bash
+python experiments/n8n-claw-c/collect.py --out var/claw-c
+python experiments/eval-pairs/draft_labels.py --created 2026-11-12   # 이미 있으면 덮어쓰지 않고 멈춤
+```
+
+- 대상은 독립 후보 6개 × 전후 2쪽 × 3가지 경우(본인 삭제·남의 삭제·관리자 삭제) = 36개 사례다.
+- 근거는 `experiments/n8n-claw-memory/evidence/observations.json`의 replay 기록이다. 7개 버전에 없는 쪽은
+  Memory Delete 코드가 바이트까지 같은 버전의 결과를 이어받는다(`REPLAY_BY_CODE_IDENTITY`).
+- 라벨 값은 docs #70 초안의 `위반 확정`·`위반 없음`·`근거 부족`이다. 판정기(#103)는 돌리지 않았다.
+- **층위는 replay다.** 선택한 도구 JS를 합성 호출자와 합성 수신부로 돌린 결과이며, 전체 n8n + LLM 실행과 실제 DB는 모두 `NOT_RUN`이다.
+- **보완 코드의 "위반 없음"은 가정에 달려 있다.** 보완된 도구는 호출자를 `Merge Input` 노드 출력에서 읽는데, C 규칙 0.6.0은 이것을 신뢰할 수 있다고 증명하지 못한다. replay는 정직한 합성 호출자를 넣었다.
+- 생성 규칙이 같으면 같은 바이트가 나온다. 봉인 해시와 다시 만든 파일의 해시가 같으면 내용이 바뀌지 않은 것이다.
+
 ## 남은 일 (docs #28)
 
 - [ ] 각 후보에 업무·정책·초기 상태를 붙인다. 지금은 `n8n-claw-a`의 A 분석용 임시 입력뿐이다.
