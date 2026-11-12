@@ -1,0 +1,8 @@
+{
+  "basis": "Every path in summary.source_hashes equals the SHA-256 of its Git blob (committed LF bytes) at source_commit, and the selected path set is the same.",
+  "checked": "2026-11-12",
+  "schema": "flowdelta-example-provenance-v1",
+  "source_commit": "e8ce3ad9b5589b7f30a78917f96e77ea81e0c29c",
+  "source_tree_sha256": "db29c1e9cc97531927975ceebf46bbc3e7e3fea48cdf80fe3e08dce068cecff6",
+  "summary_sha256": "f3165015fcc756d4404f903a44935d7f6bd028f3136f13bea4bc8e69ce0f1956"
+}

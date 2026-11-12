@@ -30,8 +30,35 @@ uv run --frozen --extra baseline --extra knowledge python tools/check_profiled_o
 
 전체 Python 구현, runtime 설정, pyproject/uv.lock 등 127개 파일의 해시와 그 목록의
 `source_tree_sha256`으로 실행한 소스를 식별한다. source 목록은 summary/관측 예제 자체를
-포함하지 않는다. 회귀 테스트는 기록된 파일의 바이트뿐 아니라 현재 구현 파일 목록의 누락도
-검사한다. 구현이 바뀌면 실제 실행·독립 검증을 다시 수행하여 두 JSON을 함께 갱신해야 한다.
+포함하지 않는다.
+
+## 과거 증거와 현재 코드의 구분 (#89)
+
+이 예제는 **과거 실행 증거**다. 지금 코드로 실행한 결과가 아니다. `provenance.json`은 예제를 만든
+소스를 commit `e8ce3ad9b5589b7f30a78917f96e77ea81e0c29c`로 기록한다. 그 commit의 Git blob이 `summary.json`의
+`source_hashes` 127개와 모두 같고, 고른 파일 목록도 같다(2026-11-12 확인).
+
+`tests/test_runner_example_provenance.py`의 기본 검사:
+
+| 검사 | 실패하는 경우 |
+|---|---|
+| 내부 일치 | summary·verification·provenance의 해시가 서로 다름, 파일 누락, `status`가 `EXECUTED`가 아님 |
+| 기록된 commit 대조 | 그 commit의 Git blob이 기록된 해시와 다름. 고른 파일 목록이 다름 |
+| 최신 여부 | 실패하지 않는다. 지금 코드와 다르면 경고만 낸다 |
+
+그래서 관계없는 `src` 변경은 기본 검사를 깨지 않고, 증거를 바꾸거나 빼면 실패한다.
+
+**예제를 다시 만들었을 때**는 두 JSON과 함께 `provenance.json`의 `summary_sha256`·`source_tree_sha256`·
+`source_commit`을 갱신하고, 지금 코드가 예제를 만든 코드인지 확인한다.
+
+```sh
+FLOWDELTA_CHECK_EXAMPLE_IS_CURRENT=1 uv run --frozen --extra baseline --extra knowledge pytest tests/test_runner_example_provenance.py
+```
+
+검증 범위:
+- **Git이 없거나 얕은 clone**이면 commit 대조는 건너뛴다(`skip`). CI의 기본 `actions/checkout`도 얕은 clone이다. 내부 일치 검사는 그대로 돈다.
+- **배포 패키지**(wheel 등)에는 이 예제와 `.git`이 없으므로 이 검사 대상이 아니다.
+- **줄바꿈**: 해시는 `.gitattributes`가 LF로 고정한 커밋 바이트 기준이다. commit 대조는 Git blob을 읽어 작업 트리의 줄바꿈과 무관하다. 최신 여부 검사는 작업 트리를 읽으므로, 이 규칙이 생기기 전에 받은 CRLF 사본이 남아 있으면 다르게 나온다. 그 파일을 지우고 `git checkout -- <파일>`로 다시 받으면 된다.
 
 이번 기록의 before는 `run-902680b6ff3c40b2b22ea58a7b98db4a`, after는
 `run-769833e3c2344c0a86c3d5fe6442a7b7`이다. 정상 업무 검사 24개가 통과했고 두 실행 모두
