@@ -194,3 +194,33 @@ def test_stop_signal_is_recorded_as_interrupted_then_raised(workspace) -> None:
     assert run["outcome"] is None
     # The stop ends the whole plan: the second side is not started.
     assert not (output / "runs" / "after-1.run.json").exists()
+
+
+class StopAtCommand(FakeDocker):
+    """Acts like Ctrl+C while a cleanup command runs (for example ``logs`` or ``down``)."""
+
+    def __init__(self, word: str) -> None:
+        super().__init__()
+        self.word = word
+
+    def __call__(self, args, *, timeout, input_text=None):
+        if self.word in args:
+            raise KeyboardInterrupt
+        return super().__call__(args, timeout=timeout, input_text=input_text)
+
+
+@pytest.mark.parametrize("word", ["logs", "down"])
+def test_stop_during_cleanup_still_records_and_then_raises(workspace, word) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    executor = PlanExecutor(bundle, repo, runner=StopAtCommand(word), sleep=lambda seconds: None)
+    output = repo / "var" / f"run-stop-{word}"
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    # 정리 중 중단은 기록을 건너뛰지 않는다. 정리 완료를 확인할 수 없으면 FAILED다.
+    # logs 중단 뒤에도 down과 남은 자원 확인이 실행돼 정리는 완료된다. down 중단은 확인 불가다.
+    expected = "COMPLETE" if word == "logs" else "FAILED"
+    assert run["cleanup_status"] == expected
+    assert (output / "runs" / "before-1.run.json").exists()
+    assert not (output / "runs" / "after-1.run.json").exists()

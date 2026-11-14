@@ -454,6 +454,10 @@ def run_side(
             call([*compose, "logs", "--no-color"], "services", 60)
         except RunFailure:
             pass
+        except BaseException as exc:
+            # 로그 수집 중 중단돼도 정리와 기록은 계속하고, 중단은 마지막에 다시 던진다.
+            if interrupt is None:
+                interrupt = exc
         cleanup: dict[str, Any] = {"schema_version": "0.4.0", "run_id": run_id, "project": project}
         try:
             call([*compose, "down", "--volumes", "--remove-orphans"], "cleanup", prep_timeout)
@@ -474,6 +478,12 @@ def run_side(
         except RunFailure as exc:
             cleanup_status = "FAILED"
             cleanup.update(status="FAILED", error_code=exc.code)
+        except BaseException as exc:
+            # 정리 도중 중단되면 정리 완료를 확인할 수 없으므로 FAILED로 남긴다.
+            if interrupt is None:
+                interrupt = exc
+            cleanup_status = "FAILED"
+            cleanup.update(status="FAILED", error_code="INTERRUPTED")
         cleanup["check_command"] = f"docker ps --all --filter {label_filter}"
         cleanup["private_local_files_retained"] = True
         save(shared / "cleanup.json", cleanup)
