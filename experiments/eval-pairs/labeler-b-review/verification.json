@@ -28,7 +28,7 @@
   "expected_result_fields_excluded": true,
   "labels_B_sha256": "3dd75a05f3d4983cbaf0916841cd6bbf6fed9475feb43dd7982b688da9d4c413",
   "previous_public_labels_sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
-  "package_manifest_sha256": "2f3cefcc75560393364bf880ca56a0bb7ab8540f0cbccd31a17c1c513d5abc5b",
+  "package_manifest_sha256": "af95177fcb8535a454fc2cfe629d3d44f41c3d1e764653358093eeb77b2b9751",
   "human_review_completed": false,
   "product_judge_direct_input_supported": false,
   "scope": "Offline policy/evidence/contract checks; no new replay, product predictions or A comparison"

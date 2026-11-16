@@ -18,13 +18,18 @@
     },
     {
       "path": "README.md",
-      "sha256": "2c96bc3a382785eddb4a7ea9c4cbcf966102db9a169f0b64f91df9f778a7124d",
-      "bytes": 6287
+      "sha256": "bc8dcc69d27865fe642c5bfd34f01031da8aee851be8f89a329d4a41c2763a0f",
+      "bytes": 6654
     },
     {
       "path": "REVIEW_CONTRACT.md",
       "sha256": "cccff784b340dceb790112835bd23f3ebf810c6d32564ad3765a575460cef636",
       "bytes": 5373
+    },
+    {
+      "path": "TEAM_DECISIONS.md",
+      "sha256": "215e2a8a2ac7f4ae1b01db8ff50f04d159041bf2ab6109122f6ea19fba7b8612",
+      "bytes": 3397
     },
     {
       "path": "labels-B.json",
@@ -38,8 +43,8 @@
     },
     {
       "path": "review_contract.py",
-      "sha256": "97188a5adccbb7a2744ec37c50a76784766f148d557e1b24cee56c5acc366bec",
-      "bytes": 7951
+      "sha256": "b3e83b94853493cbc52860a066d547ef4622818e1eda86d64915d0ffb544fbbf",
+      "bytes": 8138
     },
     {
       "path": "sources/common-replay-input-policy.json",
@@ -128,8 +133,8 @@
     },
     {
       "path": "test_review_contract.py",
-      "sha256": "391a1bbbde0baebefaac99fa3542f35329f872200e995ab0a7349c28fe117899",
-      "bytes": 7246
+      "sha256": "3ea99469093780fc2ab80f4fb1bccc036d14c3b1dcd2d322d621c4ac9f2edea2",
+      "bytes": 8173
     },
     {
       "path": "verify.py",

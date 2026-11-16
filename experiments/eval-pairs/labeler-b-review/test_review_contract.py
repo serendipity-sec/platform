@@ -126,6 +126,27 @@ def test_replay_scope_cannot_be_upgraded_to_full_workflow(data):
         validate_case(case, source, policy)
 
 
+@pytest.mark.parametrize("target", ["package", "case"])
+def test_legacy_scope_fields_cannot_contradict_bounded_replay(data, target):
+    labels, observations, policy = data
+    case, source, _ = selected(data, "N1:before:foreign")
+    with pytest.raises(ValueError, match="SCOPE_MISMATCH"):
+        if target == "package":
+            labels["scope"] = "FULL_WORKFLOW"
+            validate_cases(labels, observations, policy)
+        else:
+            case["scope"] = "FULL_WORKFLOW"
+            validate_case(case, source, policy)
+
+
+@pytest.mark.parametrize("counts", [{"SUCCEEDED": 36}, {"COMPLETED": 33, "NOT_RUN": 3}, {}])
+def test_execution_status_summary_must_match_normalized_cases(data, counts):
+    labels, observations, policy = data
+    labels["counts"]["execution_status"] = counts
+    with pytest.raises(ValueError, match="EXECUTION_STATUS_COUNTS_MISMATCH"):
+        validate_cases(labels, observations, policy)
+
+
 @pytest.mark.parametrize("change", ["no-receiver-requests", "changed-state", "incomplete-run"])
 def test_error_string_alone_does_not_prove_control_block(data, change):
     _, source, policy = selected(data, "N1:before:foreign")

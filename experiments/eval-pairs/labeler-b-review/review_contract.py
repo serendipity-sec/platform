@@ -83,6 +83,7 @@ def observation_verdict(source, policy):
 
 
 def validate_case(case, source, policy):
+    require(case.get("scope") == "SELECTED_MEMORY_DELETE_JS_REPLAY", "CASE_SCOPE_MISMATCH")
     require(case.get("replay_scope") == REPLAY_SCOPE, "REPLAY_SCOPE_REQUIRED")
     raw_status = source["execution_status"]
     require(raw_status in STATUS_MAP, "SOURCE_EXECUTION_STATUS_UNSUPPORTED")
@@ -154,6 +155,7 @@ def validate_case(case, source, policy):
 
 def validate_cases(labels, observations, policy):
     require(labels["schema"] == "flowdelta-b-replay-label-review-v2", "LABEL_SCHEMA_VERSION")
+    require(labels.get("scope") == "SELECTED_MEMORY_DELETE_JS_ONLY", "PACKAGE_SCOPE_MISMATCH")
     sources = {o["source_pointer"]: o for o in observations["observations"]}
     verdicts = Counter(
         validate_case(case, sources[case["evidence"]["pointer"]], policy)
