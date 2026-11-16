@@ -1,11 +1,22 @@
 {
   "status": "PASS",
-  "date_kst": "2026-11-12",
+  "date_kst": "2026-11-16",
   "case_count": 36,
   "label_counts": {
     "근거 부족": 3,
     "위반 없음": 25,
     "위반 확정": 8
+  },
+  "security_verdict_counts": {
+    "INCONCLUSIVE": 3,
+    "NOT_OBSERVED_COMPLETE": 22,
+    "VIOLATION_OBSERVED": 8,
+    "BLOCKED": 3
+  },
+  "control_blocked": 3,
+  "execution_status_counts": {
+    "NOT_RUN": 3,
+    "SUCCEEDED": 33
   },
   "evidence_basis": {
     "DIRECT_REPLAY_RECORD": 15,
@@ -15,8 +26,10 @@
   "source_receipt_hashes_match": true,
   "all_36_case_source_and_policy_links_match": true,
   "expected_result_fields_excluded": true,
-  "labels_B_sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
-  "package_manifest_sha256": "fc6b1ff0917542c55e0b970dec22a1902dd7dde1f3fa84f3b14339fb2c81cc95",
+  "labels_B_sha256": "3dd75a05f3d4983cbaf0916841cd6bbf6fed9475feb43dd7982b688da9d4c413",
+  "previous_public_labels_sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
+  "package_manifest_sha256": "2f3cefcc75560393364bf880ca56a0bb7ab8540f0cbccd31a17c1c513d5abc5b",
   "human_review_completed": false,
-  "scope": "Offline integrity/evidence-link checks; no new replay or A comparison"
+  "product_judge_direct_input_supported": false,
+  "scope": "Offline policy/evidence/contract checks; no new replay, product predictions or A comparison"
 }

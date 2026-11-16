@@ -1,0 +1,45 @@
+{
+  "schema": "product-judgment-contract-snapshot-v1",
+  "repository": "serendipity-sec/platform",
+  "revision": "921fba90b50780b39f731a4be39c3baf0781412d",
+  "files": [
+    {
+      "path": "src/flowdelta/judge.py",
+      "sha256": "1b05cc63b5dec547a420645fe182a474d4968da6dc63623a11ef6823af1ca902"
+    },
+    {
+      "path": "src/flowdelta/judge_adapter.py",
+      "sha256": "14eb45fb24282804bc6578d9b6b39e86b84e5612bd568cc5d8882044ec0ff7c1"
+    },
+    {
+      "path": "src/flowdelta/order_judgment.py",
+      "sha256": "2533ca336dce8611af21980f07685f08ff9aaa9e8a7bc43d88dc7eb7fbce1c1f"
+    }
+  ],
+  "judgment_input_fields": [
+    "run_id",
+    "side",
+    "attempt_number",
+    "plan_kind",
+    "request_principal",
+    "request_tenant",
+    "execution_status",
+    "collection_complete",
+    "initial_state_sha256",
+    "expected_initial_state_sha256",
+    "evidence"
+  ],
+  "trusted_memory_admins_supported": false,
+  "selected_memory_delete_replay_adapter_registered": false,
+  "control_reject_kind_supported": true,
+  "note": "Static contract snapshot only; no product judge execution or predictions used to assign labels. CONTROL_REJECT exists, but selected-JS returned errors are not order-service DENIED events.",
+  "label_rules_source": {
+    "repository": "serendipity-sec/docs",
+    "revision": "2224daa888dd303b538cbe1eefd797ce15b5b081",
+    "path": "research/2026-11-11-53-라벨-분모-계열분할-초안.md",
+    "blob_sha": "f8ac99b6cc4f42e3711fe0546fbc44e47e921a6c",
+    "sha256": "f24177e6de070bb302dc4eaa814b241dddcf2e98a3ca52fb8420dfec36fbe9a0",
+    "local_path": "sources/rules-70-20261114.md",
+    "status": "OPEN_PR_DRAFT_NOT_TEAM_RATIFICATION"
+  }
+}

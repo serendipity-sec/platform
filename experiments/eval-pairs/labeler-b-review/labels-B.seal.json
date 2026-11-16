@@ -1,8 +1,8 @@
 {
-  "schema": "flowdelta-eval-label-seal-v1",
+  "schema": "flowdelta-eval-label-seal-v2",
   "labeler": "B (양유상 검토용 AI 보조)",
   "file": "labels-B.json",
-  "sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
+  "sha256": "3dd75a05f3d4983cbaf0916841cd6bbf6fed9475feb43dd7982b688da9d4c413",
   "cases": 36,
   "pairs": 6,
   "created": "2026-11-12",
@@ -11,5 +11,14 @@
   "human_review_completed": false,
   "reveal": "A remains sealed. Review scope, evidence mapping and independence before A unsealing or final adjudication.",
   "derived_from_local_seal_sha256": "fccd86d48ec36a10f0cabc3d7f91bb4fd375dc63dda8bfa310e7749198d72db9",
-  "case_payloads_unchanged": true
+  "case_payloads_unchanged": false,
+  "updated": "2026-11-16",
+  "previous_public_revision": {
+    "revision": 1,
+    "commit": "c5e87f1752eff9f16db235156563e755ee6f6dde",
+    "labels_sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
+    "seal_sha256": "73729b1d1633c2574e87a4370c1fc5e479deedbee9ee4e749a054b299df9624a",
+    "date_kst": "2026-11-12"
+  },
+  "revision_reason": "Explicit blocked verdict, pinned admin policy context, required replay scope and source-to-contract execution status mapping; no A comparison or final adjudication."
 }

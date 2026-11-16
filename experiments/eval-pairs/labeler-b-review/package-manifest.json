@@ -1,5 +1,5 @@
 {
-  "schema": "B-replay-review-package-v1",
+  "schema": "B-replay-review-package-v2",
   "files": [
     {
       "path": ".gitattributes",
@@ -8,28 +8,38 @@
     },
     {
       "path": "B_LABEL_REVIEW.md",
-      "sha256": "37243b3589bfd77a8e377cb68f29f5cb0c600b9a8e5a150325cee2771d9b79c9",
-      "bytes": 3653
+      "sha256": "54d6d506dc0f27e9743b4b1446d0667e796101c9dcf1de945d2964a611eb728a",
+      "bytes": 4636
     },
     {
       "path": "INDEPENDENCE.md",
-      "sha256": "ea8d4d24358c4d67d625b97b26d34a184449ababbd3b6cdf99d74dbf6f742e01",
-      "bytes": 2025
-    },
-    {
-      "path": "labels-B.json",
-      "sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
-      "bytes": 180422
-    },
-    {
-      "path": "labels-B.seal.json",
-      "sha256": "73729b1d1633c2574e87a4370c1fc5e479deedbee9ee4e749a054b299df9624a",
-      "bytes": 685
+      "sha256": "8150cd033d679e36b717d7b009ae24abf9e25b09af004abac88b67db30d7b3fb",
+      "bytes": 3250
     },
     {
       "path": "README.md",
-      "sha256": "5b6c68e70ff3bc81f61695a5fdb24ccbe9bffff2f5f4ee686810b3fad5524b0e",
-      "bytes": 4846
+      "sha256": "2c96bc3a382785eddb4a7ea9c4cbcf966102db9a169f0b64f91df9f778a7124d",
+      "bytes": 6287
+    },
+    {
+      "path": "REVIEW_CONTRACT.md",
+      "sha256": "cccff784b340dceb790112835bd23f3ebf810c6d32564ad3765a575460cef636",
+      "bytes": 5373
+    },
+    {
+      "path": "labels-B.json",
+      "sha256": "3dd75a05f3d4983cbaf0916841cd6bbf6fed9475feb43dd7982b688da9d4c413",
+      "bytes": 220068
+    },
+    {
+      "path": "labels-B.seal.json",
+      "sha256": "cf6cb960b810b976304087defacb730d1b2fe481e2dc235b2c8e59141a80c701",
+      "bytes": 1221
+    },
+    {
+      "path": "review_contract.py",
+      "sha256": "97188a5adccbb7a2744ec37c50a76784766f148d557e1b24cee56c5acc366bec",
+      "bytes": 7951
     },
     {
       "path": "sources/common-replay-input-policy.json",
@@ -87,6 +97,16 @@
       "bytes": 3195
     },
     {
+      "path": "sources/review-contract-sources.json",
+      "sha256": "7aa5d95feb50b851f04fc2d31a99381ac3041396829121f7f50b2a984ae42baa",
+      "bytes": 1676
+    },
+    {
+      "path": "sources/rules-70-20261114.md",
+      "sha256": "f24177e6de070bb302dc4eaa814b241dddcf2e98a3ca52fb8420dfec36fbe9a0",
+      "bytes": 11371
+    },
+    {
       "path": "sources/rules-70.md",
       "sha256": "c513cd0d41ba19b7fd554b8377a6aa8ac12b5656ece85fc6e15eb9c59d7ad650",
       "bytes": 8593
@@ -107,9 +127,14 @@
       "bytes": 8516
     },
     {
+      "path": "test_review_contract.py",
+      "sha256": "391a1bbbde0baebefaac99fa3542f35329f872200e995ab0a7349c28fe117899",
+      "bytes": 7246
+    },
+    {
       "path": "verify.py",
-      "sha256": "5ee868442c4b0d346c4889f1501dc0daf505c5e28a64fd945c17838e406f2c84",
-      "bytes": 6436
+      "sha256": "f39262a47bb8e7226d243cdf1a499e1feef809440027c316918fe58f994fa352",
+      "bytes": 9284
     }
   ]
 }
