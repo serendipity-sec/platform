@@ -1,0 +1,2 @@
+# Preserve the exact Git blob bytes and their pinned source hashes on every OS.
+*.json -text
