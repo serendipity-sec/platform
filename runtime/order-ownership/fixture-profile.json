@@ -14,7 +14,7 @@
     "src/flowdelta/baseline/fixture.py": "b2da69bb01464a3b529ef1919e6df57c87b4ace3fca89c11f2abd0a785a1d661",
     "src/flowdelta/baseline/probe.py": "59595d4d3198ad7c735b43683f2ae2e58e9f043f4527d4d4abfa95dea3162eff",
     "runtime/order-lookup/runtime.lock.toml": "6393db0ebcaec19ada7358ea9f41d714fa7bdc854e71a33630b8f7eed0eaad0e",
-    "src/flowdelta/baseline/ownership.py": "095616626ff5579bb741801ed56546bfd5166164e83367aba5a4a13d7788633b",
+    "src/flowdelta/baseline/ownership.py": "ef3b76efdaf82f3520a4a707dd5354f90a3aaf4983c7aa90747c2a70c77026ae",
     "src/flowdelta/runtime/order_lookup.py": "76a32cbf06a5cf5f23f2f94418e058135c11b764480b74ccfb13bb8c6b2b948d"
   }
 }

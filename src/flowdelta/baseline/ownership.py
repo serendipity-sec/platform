@@ -244,10 +244,13 @@ def _run(repo: Path, out: Path, profile: dict[str, Any], *, evaluation: bool) ->
     finally:
         try:
             command([*compose, "down", "--volumes", "--remove-orphans", "--timeout", "10"])
-            remaining = command(
-                ["docker", "ps", "-aq", "--filter", f"label=com.docker.compose.project={project}"]
-            )
-            require(not remaining, "CLEANUP_INCOMPLETE")
+            selector = f"label=com.docker.compose.project={project}"
+            remaining = [
+                command(["docker", "ps", "-aq", "--filter", selector]),
+                command(["docker", "network", "ls", "-q", "--filter", selector]),
+                command(["docker", "volume", "ls", "-q", "--filter", selector]),
+            ]
+            require(not any(remaining), "CLEANUP_INCOMPLETE")
             report["cleanup"] = "SUCCEEDED"
         except (RuntimeError, OSError, subprocess.TimeoutExpired):
             report["cleanup"] = "FAILED"

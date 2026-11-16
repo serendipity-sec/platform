@@ -1,5 +1,7 @@
 import asyncio
 import json
+import subprocess
+import tomllib
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -309,3 +311,143 @@ def test_stale_image_stops_before_business_request_and_always_attempts_cleanup(
     assert operations == ["fixture-health", "fixture-metadata"]
     assert any("down" in command for command in commands)
     assert "sensitive diagnostic" not in (tmp_path / "run/report.json").read_text("utf-8")
+
+
+@pytest.fixture
+def ownership_docker(tmp_path, monkeypatch):
+    source = Path(__file__).resolve().parents[1]
+    profile = check_profile(source)
+    repo = tmp_path / "repo"
+    for name in [ownership_check.PROFILE_PATH, *profile["files"]]:
+        target = repo / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((source / name).read_bytes())
+    versions = tomllib.loads((repo / "runtime/order-lookup/runtime.lock.toml").read_text("utf-8"))
+    failures, queries, projects = {}, [], []
+    project = None
+
+    def fake_runner(args, *, timeout, input_text=None):
+        nonlocal project
+        if input_text is not None:
+            request = json.loads(input_text)
+            operation = request["operation"]
+            if operation == "fixture-health":
+                status, body = 200, {"status": "ready"}
+            elif operation == "fixture-metadata":
+                status = 200
+                body = {
+                    "source_sha256": {
+                        name: profile["files"][f"src/flowdelta/baseline/{name}"]
+                        for name in ("fixture.py", "probe.py")
+                    },
+                    **{
+                        name: versions[f"{name}_version"]
+                        for name in ("python", "fastapi", "uvicorn")
+                    },
+                }
+            else:
+                order_id = request.get("order_id", "ORD-2001")
+                path = {
+                    "state": "/__fixture__/state",
+                    "scoped-read": f"/orders/lookup?order_id={order_id}",
+                    "ownership-context": "/internal/request-context",
+                    "ownership-metadata": f"/internal/orders/{order_id}/ownership",
+                    "ownership-read": f"/internal/orders/{order_id}",
+                }[operation]
+                status, body = http_get(path, headers=request.get("headers"))
+            return CommandResult(0, json.dumps({"status_code": status, "body": body}), "")
+        if args[:2] == ["docker", "compose"]:
+            if "up" in args:
+                project = args[args.index("--project-name") + 1]
+                projects.append(project)
+                env_file = Path(args[args.index("--env-file") + 1])
+                environment = dict(
+                    line.split("=", 1) for line in env_file.read_text("utf-8").splitlines()
+                )
+                evaluation = any(arg.endswith("compose.override.yaml") for arg in args)
+                store = OrderStore(
+                    env_file.parent / "fixture",
+                    repo / profile["initial_state"],
+                    environment["FD_RUN_ID"],
+                    profile=OWNERSHIP_PROFILE if evaluation else NORMAL_PROFILE,
+                    request_id=environment["FD_REQUEST_ID"] if evaluation else "",
+                )
+                monkeypatch.setattr(app.state, "store", store, raising=False)
+                monkeypatch.setattr(
+                    app.state, "service_token", environment["FD_SERVICE_TOKEN"], raising=False
+                )
+                monkeypatch.setattr(
+                    app.state, "control_token", environment["FD_CONTROL_TOKEN"], raising=False
+                )
+                return CommandResult(0, "", "")
+            if "ps" in args:
+                return CommandResult(0, "synthetic-container", "")
+            if "down" in args:
+                return CommandResult(0, "", "")
+        if args[:3] == ["docker", "image", "inspect"]:
+            return CommandResult(0, json.dumps([{"Id": "synthetic-image"}]), "")
+        if args[:2] == ["docker", "inspect"]:
+            container = {
+                "Image": "synthetic-image",
+                "HostConfig": {"PortBindings": {}},
+                "NetworkSettings": {"Networks": {"synthetic-network": {}}},
+            }
+            return CommandResult(0, json.dumps([container]), "")
+        if args[:3] == ["docker", "network", "inspect"]:
+            return CommandResult(0, json.dumps([{"Internal": True}]), "")
+        resource = {
+            ("docker", "ps", "-aq"): "container",
+            ("docker", "network", "ls"): "network",
+            ("docker", "volume", "ls"): "volume",
+        }.get(tuple(args[:3]))
+        if resource:
+            assert args[args.index("--filter") + 1] == f"label=com.docker.compose.project={project}"
+            queries.append((project, resource))
+            failure = failures.get(resource)
+            if failure == "leftover":
+                return CommandResult(0, "remaining-resource\n", "")
+            if failure == "query-error":
+                return CommandResult(1, "", "sensitive diagnostic must not enter report")
+            if failure == "query-timeout":
+                raise subprocess.TimeoutExpired(args, timeout, stderr="sensitive diagnostic")
+            if failure == "query-os-error":
+                raise OSError("sensitive diagnostic")
+            return CommandResult(0, " \n", "")
+        raise AssertionError(f"Unexpected Docker command: {args[:3]}")
+
+    monkeypatch.setattr(ownership_check, "subprocess_runner", fake_runner)
+    return repo, failures, queries, projects
+
+
+def test_ownership_cleanup_succeeds_only_after_all_project_resources_are_absent(ownership_docker):
+    repo, _, queries, projects = ownership_docker
+    summary = run_checks(repo, repo / "var/checks")
+    assert summary["status"] == "PASSED"
+    assert {run["cleanup"] for run in summary["runs"]} == {"SUCCEEDED"}
+    assert len(set(projects)) == 3
+    assert set(queries) == {
+        (project, resource)
+        for project in projects
+        for resource in ("container", "network", "volume")
+    }
+
+
+@pytest.mark.parametrize("resource", ["container", "network", "volume"])
+@pytest.mark.parametrize("failure", ["leftover", "query-error", "query-timeout", "query-os-error"])
+def test_ownership_cleanup_failure_fails_completed_checks(ownership_docker, resource, failure):
+    repo, failures, queries, projects = ownership_docker
+    failures[resource] = failure
+    output = repo / "var/checks"
+    summary = run_checks(repo, output)
+    assert summary["status"] == "FAILED"
+    assert {run["status"] for run in summary["runs"]} == {"FAILED"}
+    assert {run["cleanup"] for run in summary["runs"]} == {"FAILED"}
+    assert {(project, resource) for project in projects}.issubset(set(queries))
+    assert json.loads((output / "summary.json").read_bytes()) == summary
+    for name in ("normal", "evaluation", "fresh"):
+        report_text = (output / name / "report.json").read_text("utf-8")
+        report = json.loads(report_text)
+        assert report["final_state"]  # Business checks completed before the cleanup failure.
+        assert "failure" not in report
+        assert report["status"] == "FAILED" and report["cleanup"] == "FAILED"
+        assert "sensitive diagnostic" not in report_text
