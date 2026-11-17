@@ -229,6 +229,8 @@ def search_cards(
     query_vector: Sequence[float],
     profile: EmbeddingProfile,
     limit: int = 50,
+    *,
+    pinned_cards: Mapping[tuple[str, str], str] | None = None,
 ) -> list[CardCandidate]:
     """Return profile-matched cosine candidates; HNSW search is approximate."""
     _validate_profile(profile)
@@ -268,11 +270,51 @@ def search_cards(
             if not has_vectors:
                 raise InputError("CARD_CATALOG_PROFILE_NOT_INDEXED")
 
+            restriction = ""
+            parameters: dict[str, Any] = {
+                "query_vector": _vector_text(vector),
+                "profile_id": profile.profile_id,
+                "limit": limit,
+            }
+            if pinned_cards is not None:
+                if not 1 <= len(pinned_cards) <= 1000:
+                    raise InputError("CARD_CATALOG_PIN_INVALID")
+                clauses = []
+                for index, ((card_id, version), sha256) in enumerate(sorted(pinned_cards.items())):
+                    clauses.append(
+                        f"(c.card_id=:pin_id_{index} AND c.card_version=:pin_version_{index} "
+                        f"AND c.content_sha256=:pin_hash_{index})"
+                    )
+                    parameters.update(
+                        {
+                            f"pin_id_{index}": card_id,
+                            f"pin_version_{index}": version,
+                            f"pin_hash_{index}": sha256,
+                        }
+                    )
+                restriction = " AND (" + " OR ".join(clauses) + ")"
+                count = connection.execute(
+                    text(
+                        """
+                        SELECT count(*) FROM knowledge.b_scenario_card_embedding e
+                        JOIN knowledge.b_scenario_card c
+                          ON c.card_id=e.card_id AND c.card_version=e.card_version
+                         AND c.content_sha256=e.content_sha256
+                        WHERE e.profile_id=:profile_id
+                    """
+                        + restriction
+                    ),
+                    parameters,
+                ).scalar_one()
+                if count != len(pinned_cards):
+                    raise InputError("CARD_CATALOG_PIN_NOT_INDEXED")
+
             # pgvector 0.8+ continues filtered HNSW scans until enough profile rows are found.
             connection.execute(text("SET LOCAL hnsw.iterative_scan = 'strict_order'"))
             rows = (
                 connection.execute(
-                    text("""
+                    text(
+                        """
                         SELECT c.card_id, c.card_version,
                                c.content_sha256 AS card_sha256,
                                c.payload_size_bytes,
@@ -283,15 +325,15 @@ def search_cards(
                           ON c.card_id=e.card_id AND c.card_version=e.card_version
                          AND c.content_sha256=e.content_sha256
                         WHERE e.profile_id=:profile_id
+                    """
+                        + restriction
+                        + """
                         ORDER BY e.embedding <=> CAST(:query_vector AS vector(1024)),
                                  c.card_id, c.card_version
                         LIMIT :limit
-                    """),
-                    {
-                        "query_vector": _vector_text(vector),
-                        "profile_id": profile.profile_id,
-                        "limit": limit,
-                    },
+                    """
+                    ),
+                    parameters,
                 )
                 .mappings()
                 .all()

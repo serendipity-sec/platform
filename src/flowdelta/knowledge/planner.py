@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -31,7 +32,7 @@ from flowdelta.runtime.static_scan import StaticScanCatalog
 if TYPE_CHECKING:
     from sqlalchemy import Engine
 
-PRODUCER = "flowdelta.knowledge/1.3.0"
+PRODUCER = "flowdelta.knowledge/1.4.0"
 __all__ = [
     "compose_plan",
     "kb_bytes",
@@ -161,6 +162,8 @@ def write_vector_plan(
     handoff_root: Path | None = None,
     repo_root: Path | None = None,
     selected_path_id: str | None = None,
+    pinned_cards: Mapping[tuple[str, str], str] | None = None,
+    expected_profile_id: str | None = None,
 ) -> TestPlan:
     kb_path, _, _ = validate_output_paths(output)
     snapshot, retrieval = retrieve_vector_snapshot(
@@ -173,6 +176,8 @@ def write_vector_plan(
         kb_path=kb_path.name,
         producer=PRODUCER,
         selected_path_id=selected_path_id,
+        pinned_cards=pinned_cards,
+        expected_profile_id=expected_profile_id,
     )
     plan = _compose_snapshot(
         handoff,

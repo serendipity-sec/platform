@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Set
+from collections.abc import Mapping, Set
 from dataclasses import dataclass
 from math import isfinite
 from typing import TYPE_CHECKING, Literal, cast
@@ -257,11 +257,37 @@ def vector_query_context(
     producer: str,
 ) -> dict[str, JsonValue]:
     """Send bounded analysis values to a trusted endpoint; redaction is heuristic."""
+    # Trace IDs and case names remain in RetrievalResult, never in model input.
+    # Values are bounded/redacted using the same policy as the legacy query.
     return {
-        **retrieval_query_context(handoff, analysis, catalog, producer),
+        "runtime_profile": handoff.environment.extensions.get("flowdelta.semantic_profile"),
+        "node_types": cast(JsonValue, search_context(handoff, analysis)[1]),
+        "task": {
+            "purpose": handoff.task.purpose,
+            "success_conditions": list(handoff.task.success_conditions),
+            "protected_resources": list(handoff.task.protected_resources),
+        },
+        "policies": [
+            {
+                "condition": rule.condition,
+                "resource": rule.resource,
+                "subject": rule.subject,
+                "exceptions": list(rule.exceptions),
+            }
+            for rule in handoff.policy.rules
+        ],
+        "impact_paths": [
+            {
+                "side": path.side,
+                "support": path.support,
+                "policy_rule_ids": list(path.policy_rule_ids),
+                "limitations": list(path.limitations),
+            }
+            for path in analysis.impact_paths
+        ],
+        "limitations": list(analysis.limitations),
         "change_values": [
             {
-                "change_id": change.change_id,
                 "kind": change.kind,
                 "node_id": change.node_id,
                 "before_value": _embedding_safe_value(
@@ -599,6 +625,8 @@ def retrieve_vector_snapshot(
     kb_path: str,
     producer: str,
     selected_path_id: str | None = None,
+    pinned_cards: Mapping[tuple[str, str], str] | None = None,
+    expected_profile_id: str | None = None,
 ) -> tuple[_KnowledgeSnapshot, RetrievalResult]:
     from flowdelta.knowledge.card_catalog import (
         MAX_SEARCH_LIMIT,
@@ -617,7 +645,14 @@ def retrieve_vector_snapshot(
         provider.embed([query_text], "QUERY"), expected_count=1, dimensions=1024
     )
     profile, query_vector = query_batch.profile, query_batch.vectors[0]
-    search_candidates = search_cards(engine, query_vector, profile, limit=limit)
+    if expected_profile_id is not None and profile.profile_id != expected_profile_id:
+        raise InputError("RETRIEVAL_PROFILE_MISMATCH")
+    if pinned_cards is None:
+        search_candidates = search_cards(engine, query_vector, profile, limit=limit)
+    else:
+        search_candidates = search_cards(
+            engine, query_vector, profile, limit=limit, pinned_cards=pinned_cards
+        )
     if not isinstance(search_candidates, list):
         raise InputError("CARD_CATALOG_SEARCH_RESULT_INVALID")
 
@@ -632,6 +667,8 @@ def retrieve_vector_snapshot(
             raise InputError("CARD_CATALOG_CANDIDATE_DUPLICATE")
         seen.add(identity)
         card_hash = _vector_card_hash(card)
+        if pinned_cards is not None and pinned_cards.get(identity) != card_hash:
+            raise InputError("CARD_CATALOG_PIN_MISMATCH")
         if candidate.content_sha256 != card_hash:
             raise InputError("CARD_CATALOG_CARD_INTEGRITY_FAILED")
         if type(candidate.score) not in {int, float}:
@@ -705,6 +742,14 @@ def retrieve_vector_snapshot(
                 "profile": profile_metadata,
                 "query_sha256": query_sha256,
                 "candidates": cast(JsonValue, vector_candidates),
+                "search_scope": (
+                    [
+                        {"card_id": key[0], "version": key[1], "sha256": value}
+                        for key, value in sorted(pinned_cards.items())
+                    ]
+                    if pinned_cards is not None
+                    else None
+                ),
             },
         },
         hits=hits,

@@ -4,7 +4,7 @@ from math import isfinite
 from pathlib import Path
 from typing import cast
 
-from pydantic import JsonValue
+from pydantic import JsonValue, ValidationError
 
 from flowdelta.contracts import Handoff
 from flowdelta.ingestion import InputError, digest
@@ -57,8 +57,27 @@ def _validate_vector_retrieval(
     selected_path_id: str | None = None,
 ) -> None:
     vector = retrieval.query.get("vector")
-    if not isinstance(vector, dict) or set(vector) != {"profile", "query_sha256", "candidates"}:
+    if not isinstance(vector, dict) or set(vector) not in (
+        {"profile", "query_sha256", "candidates"},
+        {"profile", "query_sha256", "candidates", "search_scope"},
+    ):
         raise InputError("RETRIEVAL_VECTOR_METADATA_INVALID")
+    scope = vector.get("search_scope")
+    if scope is not None:
+        from flowdelta.knowledge.planning_config import FrozenCard
+
+        if not isinstance(scope, list):
+            raise InputError("CARD_CATALOG_PIN_INVALID")
+        try:
+            pinned = [FrozenCard.model_validate(item) for item in scope]
+        except ValidationError:
+            raise InputError("CARD_CATALOG_PIN_INVALID") from None
+        by_identity = {(item.card_id, item.version): item.sha256 for item in pinned}
+        if len(pinned) != len(by_identity) or any(
+            by_identity.get((card.card_id, card.version)) != _vector_card_hash(card)
+            for card in snapshot.cards
+        ):
+            raise InputError("CARD_CATALOG_PIN_MISMATCH")
     metadata_value = vector.get("profile")
     profile_fields = {
         "profile_id",
