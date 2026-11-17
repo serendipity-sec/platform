@@ -53,6 +53,8 @@ B의 조건·근거·독립성 처리부터 확인한다. 이 PR의 병합만으
 - [연구 정책과 입력](sources/common-replay-input-policy.json): 호출자 `web:fixture-a`, 기억 ID 8,
   사례별 소유자와 관리자 목록. 정책은 원래 replay README 48–53행,
   입력·관측 장치는 replay.cjs 9–112행에서 확인했다.
+  `labels-B.json`의 `replay-policy-and-boundary.txt:48-53`도 발췌문 앞에 보존한
+  원본 README 행 번호다. 로컬 발췌 파일에서는 14–19행에 해당한다.
 - [출처 manifest](sources/source-manifest.json): observations의 published hash와 source manifest,
   harness, collector, runner 해시를 역사적 receipt와 대조했다. 이것만으로 실행 당시 Git HEAD를 증명하지 않는다.
 - [원본 코드 동일성](sources/verified-target-code-identities.json): 14개 upstream revision의 원본
@@ -79,6 +81,8 @@ python experiments/eval-pairs/labeler-b-review/verify.py
 
 36개 슬롯의 중복·누락, 정책·입력·원본 관측 연결, workflow/JS 동일성 적용,
 기대값 필드 제외, 봉인 해시를 확인한다. 원본 도구·제품 judge를 실행하거나 A 원문을 열지 않는다.
+대상 revision은 pair/side의 commit에, 노드·JS·연결 정보는 해당 revision의 고정 기록에
+대조한다. 관측 제공 버전·commit·workflow/JS 해시도 replay 소스 manifest와 대조한다.
 기본 명령은 `verification.json`과 `package-manifest.json`을 읽기 전용으로 대조한다.
 수정 후 명시적으로 다시 생성하려면 `verify.py --write`를 쓴다. 반례 테스트는 다음과 같다.
 

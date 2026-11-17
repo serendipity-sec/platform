@@ -33,6 +33,28 @@ def write_json(name, value):
     )
 
 
+def validate_source_identity(case, source, pairs, targets, replay_sources):
+    target = case["target"]
+    pair_side = pairs[case["pair_id"]][case["side"]]
+    assert target["revision"] == pair_side["commit"], "TARGET_REVISION_MISMATCH"
+    assert target == targets[target["revision"]], "TARGET_IDENTITY_MISMATCH"
+    assert target["workflow_sha256"] == pair_side["sha256"], "TARGET_WORKFLOW_MISMATCH"
+
+    evidence = case["evidence"]
+    assert evidence["source_version"] == source["version"], "SOURCE_VERSION_MISMATCH"
+    replay = replay_sources[source["version"]]
+    assert evidence["source_workflow_commit"] == replay["commit"], "SOURCE_REVISION_MISMATCH"
+    donor = targets[replay["commit"]]
+    assert (
+        evidence["source_workflow_sha256"]
+        == source["workflow_sha256"]
+        == replay["sha256"]
+        == donor["workflow_sha256"]
+    ), "SOURCE_WORKFLOW_MISMATCH"
+    assert evidence["source_tool_js_sha256"] == donor.get("code_sha256"), "SOURCE_CODE_MISMATCH"
+    assert source["tool_present"] == donor["tool_present"], "SOURCE_TOOL_PRESENCE_MISMATCH"
+
+
 def verify(*, write=False):
     labels = load("labels-B.json")
     seal = load("labels-B.seal.json")
@@ -54,6 +76,10 @@ def verify(*, write=False):
     validate_cases(labels, projection, contract)
     targets = {x["revision"]: x for x in load("sources/verified-target-code-identities.json")}
     pairs = {p["id"]: p for p in load("sources/pairs.input-only.json")["pairs"]}
+    replay_sources = {
+        item["path"].split("/", 1)[0]: item
+        for item in load("sources/replay-source-manifest.json")["files"]
+    }
     obs = {o["source_pointer"]: o for o in projection["observations"]}
     cases = labels["cases"]
     assert len(cases) == 36 and len({c["case_id"] for c in cases}) == 36
@@ -93,6 +119,7 @@ def verify(*, write=False):
 
     for c in cases:
         source = obs[c["evidence"]["pointer"]]
+        validate_source_identity(c, source, pairs, targets, replay_sources)
         assert c["evidence"]["source_workflow_sha256"] == source["workflow_sha256"]
         assert c["relationship"] == source["relationship"]
         assert c["source_execution_status"] == source["execution_status"]

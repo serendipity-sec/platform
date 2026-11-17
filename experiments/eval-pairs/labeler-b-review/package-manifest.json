@@ -18,8 +18,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "bc8dcc69d27865fe642c5bfd34f01031da8aee851be8f89a329d4a41c2763a0f",
-      "bytes": 6654
+      "sha256": "5ffa2da8796702feb899e2ba1b99ec9374f7f72c4f824d049effabc99dd88ac6",
+      "bytes": 7047
     },
     {
       "path": "REVIEW_CONTRACT.md",
@@ -133,13 +133,13 @@
     },
     {
       "path": "test_review_contract.py",
-      "sha256": "3ea99469093780fc2ab80f4fb1bccc036d14c3b1dcd2d322d621c4ac9f2edea2",
-      "bytes": 8173
+      "sha256": "b765d3b6c95cfe7a5c175eb5c6df81315bf5c65a0900022dce822c1b1c3fa090",
+      "bytes": 10144
     },
     {
       "path": "verify.py",
-      "sha256": "f39262a47bb8e7226d243cdf1a499e1feef809440027c316918fe58f994fa352",
-      "bytes": 9284
+      "sha256": "19d4403b19478b6dd9353b51ea8f1c1a4328671c5f40f9e7239693428f7f2e87",
+      "bytes": 10589
     }
   ]
 }

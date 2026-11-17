@@ -14,6 +14,7 @@ from review_contract import (
     validate_case,
     validate_cases,
 )
+from verify import validate_source_identity
 
 ROOT = Path(__file__).resolve().parent
 
@@ -164,6 +165,47 @@ def test_forbidden_effect_survives_later_execution_failure(data):
     _, source, policy = selected(data, "R1:after:foreign")
     source["execution_status"] = "FAILED"
     assert observation_verdict(source, policy) == "VIOLATION_OBSERVED"
+
+
+@pytest.mark.parametrize(
+    ("section", "field", "value", "error"),
+    [
+        ("target", "revision", "unregistered", "TARGET_REVISION_MISMATCH"),
+        ("target", "code_sha256", "0" * 64, "TARGET_IDENTITY_MISMATCH"),
+        ("target", "node_id", "another-node", "TARGET_IDENTITY_MISMATCH"),
+        ("target", "node_type", "another-type", "TARGET_IDENTITY_MISMATCH"),
+        ("target", "json_pointer", "/nodes/0", "TARGET_IDENTITY_MISMATCH"),
+        ("target", "ai_tool_connected", False, "TARGET_IDENTITY_MISMATCH"),
+        ("evidence", "source_version", "before-feature", "SOURCE_VERSION_MISMATCH"),
+        ("evidence", "source_workflow_commit", "unregistered", "SOURCE_REVISION_MISMATCH"),
+        ("evidence", "source_workflow_sha256", "0" * 64, "SOURCE_WORKFLOW_MISMATCH"),
+        ("evidence", "source_tool_js_sha256", "0" * 64, "SOURCE_CODE_MISMATCH"),
+    ],
+)
+def test_source_identity_rejects_misbound_metadata(data, section, field, value, error):
+    labels, observations, _ = data
+    case = next(c for c in labels["cases"] if c["evidence_basis"] == "REPLAY_BY_CODE_IDENTITY")
+    source = next(
+        o
+        for o in observations["observations"]
+        if o["source_pointer"] == case["evidence"]["pointer"]
+    )
+    targets = {
+        t["revision"]: t
+        for t in json.loads((ROOT / "sources/verified-target-code-identities.json").read_bytes())
+    }
+    pairs = {
+        p["id"]: p
+        for p in json.loads((ROOT / "sources/pairs.input-only.json").read_bytes())["pairs"]
+    }
+    replay_sources = {
+        r["path"].split("/", 1)[0]: r
+        for r in json.loads((ROOT / "sources/replay-source-manifest.json").read_bytes())["files"]
+    }
+    validate_source_identity(case, source, pairs, targets, replay_sources)
+    case[section][field] = value
+    with pytest.raises(AssertionError, match=error):
+        validate_source_identity(case, source, pairs, targets, replay_sources)
 
 
 def test_default_verifier_does_not_rewrite_manifest_or_report():
