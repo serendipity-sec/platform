@@ -6,10 +6,12 @@ import pytest
 from flowdelta.graph import analyze
 from flowdelta.handoff import build_handoff
 from flowdelta.ingestion import InputError, json_bytes, load_case
+from flowdelta.knowledge.cards import load_cards
 from flowdelta.knowledge.generation import GenerationResult, Proposal
-from flowdelta.knowledge.order_plans import write_order_plans
+from flowdelta.knowledge.order_plans import registered_candidates, write_order_plans
 from flowdelta.knowledge.planning_config import GenerationSettings, PlanningConfig, SelectionBudget
 from flowdelta.knowledge.repository import export_b_outputs, read_b_outputs
+from flowdelta.knowledge.selection import select_trials
 from flowdelta.order_evaluation import materialize_pair
 from flowdelta.order_scenarios import ROOT, read_registered
 from flowdelta.pipeline_contracts import TemplateCatalog
@@ -184,3 +186,165 @@ def test_model_failure_keeps_failed_call_receipt(tmp_path):
         )
     receipt = json.loads((output / "generation-call.json").read_bytes())
     assert receipt["status"] == "FAILED" and receipt["called"] is True
+
+
+def test_saved_proposal_replays_identical_selection_without_provider(tmp_path):
+    handoff, analysis, catalog = selection_inputs(tmp_path)
+    output = tmp_path / "plans"
+    output.mkdir()
+    plans = write_order_plans(
+        handoff,
+        analysis,
+        catalog,
+        repo=REPO,
+        output=output,
+        planning_config=config(),
+        provider=ChoiceProvider(),
+    )
+    stored = read_b_outputs(plans[0][2]["plan.json"])
+    original = plans[0][1].planner_metadata["selection"]
+    replay = GenerationResult(Proposal.model_validate(original["proposal"]), original["generation"])
+    result = select_trials(
+        handoff,
+        analysis,
+        catalog,
+        stored.retrieval,
+        load_cards(REPO / ROOT / "cards"),
+        registered_candidates(handoff, REPO),
+        config(),
+        provider=None,
+        replay=replay,
+    )
+    assert result.model_dump(mode="json") == original
+
+
+def test_actual_a_change_context_changes_selected_registered_trial(tmp_path):
+    class ContextProvider(ChoiceProvider):
+        def propose(self, context):
+            values = json.dumps(context["evidence"]["change_values"])
+            self.preferred = (
+                "claimed-customer" if "json.body.customer_id" in values else "claimed-tenant"
+            )
+            return super().propose(context)
+
+    family = json.loads(read_registered(REPO, f"{ROOT}/family.json"))
+    actual_selected = []
+    for pair in family["pairs"][2:4]:
+        directory = tmp_path / pair["pair_id"]
+        directory.mkdir()
+        materialize_pair(REPO, pair, directory / "case")
+        handoff = build_handoff(load_case(directory / "case"))
+        analysis = analyze(handoff)
+        catalog = TemplateCatalog.model_validate_json(read_registered(REPO, f"{ROOT}/catalog.json"))
+        output = directory / "plans"
+        output.mkdir()
+        provider = ContextProvider()
+        plans = write_order_plans(
+            handoff,
+            analysis,
+            catalog,
+            repo=REPO,
+            output=output,
+            planning_config=config(),
+            provider=provider,
+        )
+        actual_selected.append(plans[-1][0])
+        assert [p[0] for p in plans[:3]] == ["normal", "other-order", "claimed-owner"]
+    assert actual_selected == ["claimed-tenant", "claimed-customer"]
+
+
+@pytest.mark.parametrize("preferred", [None, "claimed-customer", "claimed-tenant"])
+def test_vector_evidence_controls_optional_choice_and_empty_search_preserves_mandatory(
+    tmp_path, monkeypatch, preferred
+):
+    from types import SimpleNamespace
+
+    from flowdelta.ingestion import digest
+    from flowdelta.knowledge import card_catalog, database, embedding_settings
+    from flowdelta.knowledge.planning_config import FrozenCard
+
+    from .test_vector_planner import PROFILE, _Provider
+
+    handoff, analysis, catalog = selection_inputs(tmp_path)
+    cards = load_cards(REPO / ROOT / "cards")
+    settings = config().model_copy(
+        update={
+            "retrieval": "VECTOR",
+            "embedding_profile_id": PROFILE.profile_id,
+            "frozen_cards": [
+                FrozenCard(
+                    card_id=c.card_id,
+                    version=c.version,
+                    sha256=digest(json_bytes(c.model_dump(mode="json"))),
+                )
+                for c in cards
+            ],
+        }
+    )
+    monkeypatch.setenv("FLOWDELTA_KB_DATABASE_URL", "postgresql+psycopg://unused")
+    monkeypatch.setattr(
+        database, "engine_for", lambda settings: SimpleNamespace(dispose=lambda: None)
+    )
+    monkeypatch.setattr(
+        embedding_settings.EmbeddingSettings, "provider", lambda settings: _Provider()
+    )
+
+    def search(engine, vector, profile, limit, *, pinned_cards):
+        return (
+            [
+                card_catalog.CardCandidate(
+                    c,
+                    pinned_cards[(c.card_id, c.version)],
+                    0.9 if c.card_id == "order-" + preferred else 0.1,
+                )
+                for c in cards
+            ]
+            if preferred
+            else []
+        )
+
+    monkeypatch.setattr(card_catalog, "search_cards", search)
+
+    class EvidenceProvider:
+        calls = 0
+
+        def propose(self, context):
+            self.calls += 1
+            for hit in context["cards"]:
+                for candidate in context["candidates"]:
+                    if hit["card_key"] in candidate["card_keys"]:
+                        return GenerationResult(
+                            Proposal.model_validate(
+                                {
+                                    "choices": [
+                                        {
+                                            "candidate_id": candidate["candidate_id"],
+                                            "card_keys": [hit["card_key"]],
+                                            "path_ids": [],
+                                            "reason": "Highest applicable retrieved evidence",
+                                        }
+                                    ]
+                                }
+                            ),
+                            {"called": True, "provider": "DETERMINISTIC_TEST_DOUBLE"},
+                        )
+            pytest.fail("no applicable evidence")
+
+    output = tmp_path / "plans"
+    output.mkdir()
+    provider = EvidenceProvider()
+    plans = write_order_plans(
+        handoff,
+        analysis,
+        catalog,
+        repo=REPO,
+        output=output,
+        planning_config=settings,
+        provider=provider,
+    )
+    assert [p[0] for p in plans[:3]] == ["normal", "other-order", "claimed-owner"]
+    if preferred:
+        assert plans[-1][0] == preferred and provider.calls == 1
+    else:
+        assert len(plans) == 3 and provider.calls == 0
+        assert plans[0][1].planner_metadata["selection"]["search_status"] == "EMPTY_RETRIEVAL"

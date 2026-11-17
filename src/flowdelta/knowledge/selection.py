@@ -174,7 +174,7 @@ def select_trials(
             "claim_basis": c.claim_basis,
             "source_sha256": c.source_ref.sha256 if c.source_ref else None,
         }
-        for c in cards
+        for c in sorted(cards, key=lambda item: (item.card_id, item.version))
         if f"{c.card_id}@{c.version}" in hits
     ]
     if not optional or capacity == len(mandatory):

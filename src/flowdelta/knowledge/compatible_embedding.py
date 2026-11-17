@@ -5,6 +5,7 @@ from typing import Any
 
 from flowdelta.ingestion import InputError
 from flowdelta.knowledge.embedding import (
+    MAX_TEXT_BYTES,
     EmbeddingBatch,
     EmbeddingProfile,
     EmbeddingPurpose,
@@ -51,9 +52,15 @@ class CompatibleEmbeddingProvider:
             raise InputError("EMBEDDING_PURPOSE_INVALID")
         if not 1 <= len(texts) <= 16:
             raise InputError("EMBEDDING_BATCH_SIZE_INVALID")
+        if any(not isinstance(value, str) or not value.strip() for value in texts):
+            raise InputError("EMBEDDING_INPUT_INVALID")
+        if any(len(value.encode("utf-8")) > MAX_TEXT_BYTES for value in texts):
+            raise InputError("EMBEDDING_INPUT_TOO_LARGE")
         try:
             result = self.transport._request(
-                "/embeddings", {"model": self._profile.model, "input": list(texts)}
+                "/embeddings",
+                {"model": self._profile.model, "input": list(texts)},
+                max_response_bytes=2 * 1024 * 1024,
             )
         except InputError as exc:
             raise InputError(exc.code.replace("GENERATION_", "EMBEDDING_")) from None
