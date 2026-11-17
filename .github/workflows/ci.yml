@@ -41,8 +41,8 @@ jobs:
           python-version-file: .python-version
       - run: python -m pip install uv==0.9.30
       - run: uv sync --frozen --extra baseline --extra knowledge
-      - run: uv run --frozen --extra baseline --extra knowledge ruff check src tests tools/check_profiled_order.py tools/make_order_evaluation.py
-      - run: uv run --frozen --extra baseline --extra knowledge ruff format --check src tests tools/check_profiled_order.py tools/make_order_evaluation.py
+      - run: uv run --frozen --extra baseline --extra knowledge ruff check src tests tools/check_profiled_order.py tools/make_order_evaluation.py tools/check_order_evaluation.py
+      - run: uv run --frozen --extra baseline --extra knowledge ruff format --check src tests tools/check_profiled_order.py tools/make_order_evaluation.py tools/check_order_evaluation.py
       - run: uv run --frozen --extra baseline python tools/make_order_evaluation.py
       - run: uv run --frozen --extra baseline --extra knowledge mypy
       - run: uv run --frozen --extra baseline python tools/make_order_evaluation.py

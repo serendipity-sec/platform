@@ -18,6 +18,7 @@ docker build --tag flowdelta-order-fixture:0.4.0 --file runtime/order-lookup/fix
 uv run --frozen --extra baseline flowdelta evaluate-order-family --manifest runtime/order-evaluation/family.json --out var/order-prepare
 uv run --frozen --extra baseline flowdelta evaluate-order-family --manifest runtime/order-evaluation/family.json --out var/order-execute --execute
 uv run --frozen --extra baseline flowdelta check-pipeline var/order-execute/p0/s1/b
+uv run --frozen --extra baseline python tools/check_order_evaluation.py var/order-execute
 uv run --frozen --extra baseline flowdelta judge-order-evaluation-bundle var/order-execute/p0/s1/b --out var/order-recheck
 ```
 
@@ -101,7 +102,7 @@ A/B 입력이나 판정기 입력으로 전달하지 않는다. 순수 합성 �
 ```powershell
 uv run --frozen --extra baseline python tools/make_order_evaluation.py
 uv run --frozen --extra baseline pytest tests/runtime/test_order_evaluation.py
-uv run --frozen --extra baseline --extra knowledge ruff check src tests tools/make_order_evaluation.py
+uv run --frozen --extra baseline --extra knowledge ruff check src tests tools/make_order_evaluation.py tools/check_order_evaluation.py
 uv run --frozen --extra baseline --extra knowledge mypy
 uv run --frozen --extra baseline --extra knowledge pytest
 ```
