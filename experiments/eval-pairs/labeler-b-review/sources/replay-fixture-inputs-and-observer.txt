@@ -1,0 +1,114 @@
+1: // Team-written bounded receiver; Docker remains the isolation boundary, not node:vm.
+2: const fs = require('node:fs');
+3: const vm = require('node:vm');
+4: const crypto = require('node:crypto');
+5: const {Worker, isMainThread, parentPort, workerData} = require('node:worker_threads');
+6: const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+7: const versions = ['before-feature', 'feature', 'before-fix', 'first-fix', 'reverted', 'before-september', 'september'];
+8:
+9: function initialObservation({version, relationship, workflow_sha256, tool_present = true}) {
+10:   const row = {id: 8, scope: 'personal', owner_user_id:
+11:     relationship === 'own' ? 'web:fixture-a' : 'web:fixture-b', entity_name: null};
+12:   return {version, relationship, workflow_sha256, tool_present,
+13:     initial_state: [row], final_state: [structuredClone(row)], deleted: false,
+14:     requests: [], context_lookups: [], harness_violations: [], execution_status: 'RUNNING'};
+15: }
+16:
+17: async function executeCase(input) {
+18:   const observation = initialObservation(input);
+19:   const caller = {qualifiedUserId: 'web:fixture-a', sessionId: 'fixture-session', source: 'web'};
+20:   const progress = () => parentPort?.postMessage({type: 'progress', observation});
+21:   const violation = code => {
+22:     observation.harness_violations.push({code, request_index: observation.requests.length - 1});
+23:     progress();
+24:     throw new Error(code);
+25:   };
+26:   const helpers = {httpRequest: async request => {
+27:     // Log the attempt before validation; source try/catch cannot erase a harness failure.
+28:     const attempt = {method: String(request?.method || 'GET').toUpperCase(),
+29:       url_sha256: hash(String(request?.url))};
+30:     observation.requests.push(attempt);
+31:     progress();
+32:     let url;
+33:     try { url = new URL(String(request.url).replace('{{SUPABASE_URL}}', 'https://fixture.invalid')); }
+34:     catch { violation('UNSUPPORTED_URL'); }
+35:     attempt.host = url.hostname;
+36:     attempt.path = url.pathname + url.search;
+37:     if (url.origin !== 'https://fixture.invalid' || url.username || url.password || url.hash)
+38:       violation('UNSUPPORTED_HOST');
+39:     const params = [...url.searchParams];
+40:     if (new Set(params.map(([key]) => key)).size !== params.length)
+41:       violation('DUPLICATE_QUERY_PARAMETER');
+42:     const headers = Object.fromEntries(Object.entries(request.headers || {}).map(([k,v]) => [k.toLowerCase(), v]));
+43:     const prefer = headers.prefer || 'return=minimal';
+44:     if (!['return=minimal', 'return=representation'].includes(prefer)) violation('UNSUPPORTED_PREFER');
+45:     const respond = (body, statusCode = 200) => request.returnFullResponse
+46:       ? {body, statusCode, headers: {'preference-applied': prefer}} : body;
+47:     if (url.pathname === '/rest/v1/claw_agents') {
+48:       if (attempt.method !== 'GET' || url.searchParams.get('key') !== 'eq.memory_admins'
+49:           || url.searchParams.get('select') !== 'content' || params.length !== 2)
+50:         violation('UNSUPPORTED_ADMIN_QUERY');
+51:       progress();
+52:       return respond([{content: input.relationship === 'admin' ? caller.qualifiedUserId : ''}]);
+53:     }
+54:     if (url.pathname === '/rest/v1/tool_audit_log') {
+55:       if (attempt.method !== 'POST' || params.length) violation('UNSUPPORTED_AUDIT_REQUEST');
+56:       progress();
+57:       return respond(prefer === 'return=representation' ? [] : '', 201);
+58:     }
+59:     if (url.pathname !== '/rest/v1/memory_long') violation('UNSUPPORTED_PATH');
+60:     if (!['GET', 'DELETE'].includes(attempt.method)) violation('UNSUPPORTED_METHOD');
+61:     if (!url.searchParams.has('id')) violation('UNBOUNDED_MEMORY_QUERY');
+62:     const columns = new Set(['id', 'scope', 'owner_user_id', 'entity_name']);
+63:     const filters = [];
+64:     let select = null;
+65:     for (const [key, value] of params) {
+66:       if (key === 'select') {
+67:         select = value.split(',');
+68:         if (select.some(column => !columns.has(column))) violation('UNSUPPORTED_SELECT');
+69:       } else {
+70:         if (!columns.has(key)) violation('UNSUPPORTED_FILTER');
+71:         if (value.startsWith('eq.')) filters.push(row => String(row[key]) === value.slice(3));
+72:         else if (value === 'is.null') filters.push(row => row[key] === null);
+73:         else violation('UNSUPPORTED_FILTER');
+74:       }
+75:     }
+76:     const matches = row => filters.every(filter => filter(row));
+77:     const rows = observation.final_state.filter(matches);
+78:     const projected = rows.map(row => select
+79:       ? Object.fromEntries(select.map(key => [key, row[key]])) : structuredClone(row));
+80:     if (attempt.method === 'GET') { progress(); return respond(projected); }
+81:     observation.final_state = observation.final_state.filter(row => !matches(row));
+82:     observation.deleted = observation.final_state.length === 0;
+83:     attempt.removed_count = rows.length;
+84:     progress();
+85:     return respond(prefer === 'return=representation' ? projected : '',
+86:       prefer === 'return=representation' ? 200 : 204);
+87:   }};
+88:   const lookup = name => {
+89:     observation.context_lookups.push(String(name));
+90:     if (name !== 'Merge Input') violation('UNSUPPORTED_CONTEXT_LOOKUP');
+91:     return {first: () => ({json: structuredClone(caller)})};
+92:   };
+93:   try {
+94:     // Invoke inside the timed VM. Worker deadline also covers async/microtask loops.
+95:     const result = await vm.runInNewContext('(async function(){' + input.code + '\n})()',
+96:       {query: JSON.stringify({id: 8}), helpers, $: lookup, $execution: {id: 'fixture'}},
+97:       {timeout: input.syncTimeoutMs || 1000});
+98:     observation.private_return = String(result);
+99:     const parsed = JSON.parse(result);
+100:     observation.returned_error = Boolean(parsed.error);
+101:     observation.returned_error_reason = !parsed.error ? null
+102:       : /nicht erlaubt|not owner|not allowed|denied/i.test(String(parsed.error)) ? 'OWNERSHIP_DENIED'
+103:       : /not found/i.test(String(parsed.error)) ? 'MEMORY_NOT_FOUND' : 'UNCLASSIFIED_TOOL_ERROR';
+104:     observation.returned_error_sha256 = parsed.error ? hash(String(parsed.error)) : null;
+105:     observation.execution_status = 'COMPLETED';
+106:   } catch (error) {
+107:     observation.execution_status = error.code === 'ERR_SCRIPT_EXECUTION_TIMEOUT' ? 'TIMED_OUT' : 'FAILED';
+108:     observation.execution_error = error.code === 'ERR_SCRIPT_EXECUTION_TIMEOUT'
+109:       ? 'SCRIPT_TIMEOUT' : 'TOOL_EXECUTION_OR_RESULT_ERROR';
+110:     observation.private_error = String(error.message);
+111:   }
+112:   return observation;
+113: }
+114:

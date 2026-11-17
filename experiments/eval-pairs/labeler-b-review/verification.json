@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "date_kst": "2026-11-16",
+  "case_count": 36,
+  "label_counts": {
+    "근거 부족": 3,
+    "위반 없음": 25,
+    "위반 확정": 8
+  },
+  "security_verdict_counts": {
+    "INCONCLUSIVE": 3,
+    "NOT_OBSERVED_COMPLETE": 22,
+    "VIOLATION_OBSERVED": 8,
+    "BLOCKED": 3
+  },
+  "control_blocked": 3,
+  "execution_status_counts": {
+    "NOT_RUN": 3,
+    "SUCCEEDED": 33
+  },
+  "evidence_basis": {
+    "DIRECT_REPLAY_RECORD": 15,
+    "REPLAY_BY_CODE_IDENTITY": 15,
+    "REPLAY_BY_WORKFLOW_IDENTITY": 6
+  },
+  "source_receipt_hashes_match": true,
+  "all_36_case_source_and_policy_links_match": true,
+  "expected_result_fields_excluded": true,
+  "labels_B_sha256": "3dd75a05f3d4983cbaf0916841cd6bbf6fed9475feb43dd7982b688da9d4c413",
+  "previous_public_labels_sha256": "429a21c909fb72c2aeae6ed6d529505a71a9eb7bc3998f6e85dee9015fa92e53",
+  "package_manifest_sha256": "bee288782252f56f7dc32fc53e520846419f5c7828a94c238579f7b615085aa1",
+  "human_review_completed": false,
+  "product_judge_direct_input_supported": false,
+  "scope": "Offline policy/evidence/contract checks; no new replay, product predictions or A comparison"
+}
