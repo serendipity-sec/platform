@@ -2139,7 +2139,8 @@
         "mode": {
           "enum": [
             "NORMAL_BUSINESS_REQUEST",
-            "NORMAL_MANUAL_WORKFLOW"
+            "NORMAL_MANUAL_WORKFLOW",
+            "REGISTERED_SECURITY_REQUEST"
           ],
           "title": "Mode",
           "type": "string"

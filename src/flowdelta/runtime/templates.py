@@ -24,6 +24,7 @@ class RegisteredTemplate:
     fixture_image: str
     # Artifact kinds this implementation can actually collect for the template.
     collectible_kinds: frozenset[str]
+    fixture_profile: str | None = None
 
 
 REGISTERED_TEMPLATES: dict[tuple[str, str], RegisteredTemplate] = {
@@ -41,6 +42,25 @@ REGISTERED_TEMPLATES: dict[tuple[str, str], RegisteredTemplate] = {
         collectible_kinds=frozenset({"response", "initial-state", "final-state", "events"}),
     ),
 }
+
+for _template_id, _mode in (
+    ("order-evaluation-normal", "NORMAL_BUSINESS_REQUEST"),
+    ("order-evaluation-security", "REGISTERED_SECURITY_REQUEST"),
+):
+    REGISTERED_TEMPLATES[(_template_id, "1.0.0")] = RegisteredTemplate(
+        template_id=_template_id,
+        version="1.0.0",
+        mode=_mode,
+        runtime_profile="core-local-v1",
+        lock_path="runtime/order-evaluation/runtime.lock.toml",
+        approved_inputs_path="runtime/order-evaluation/approved-inputs.json",
+        compose_path="runtime/order-evaluation/compose.yaml",
+        method="POST",
+        webhook_path="/webhook/flowdelta-order-lookup",
+        fixture_image="flowdelta-order-fixture:0.4.0",
+        collectible_kinds=frozenset({"response", "initial-state", "final-state", "events"}),
+        fixture_profile="order-ownership-eval-v1",
+    )
 
 
 def find_registered(template_id: str, version: str) -> RegisteredTemplate:

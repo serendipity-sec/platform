@@ -150,11 +150,21 @@ class Parser:
                 "string",
                 "field",
                 "named_field",
+                "concat",
             }:
                 raise UnsupportedExpression("UNSUPPORTED_ADDITION")
-            if "string" not in {expression.kind, right.kind}:
+            if "string" not in {expression.kind, right.kind} and right.kind != "concat":
                 raise UnsupportedExpression("STRING_LITERAL_REQUIRED_FOR_CONCAT")
-            expression = Expression("concat", terms=(expression, right))
+            if right.kind == "concat":
+                expression = Expression(
+                    "concat",
+                    terms=(
+                        Expression("concat", terms=(expression, right.terms[0])),
+                        right.terms[1],
+                    ),
+                )
+            else:
+                expression = Expression("concat", terms=(expression, right))
         elif self.peek() in {"===", "!==", ">", ">=", "<", "<="}:
             operator = self.take()
             right = self.value(depth + 1)

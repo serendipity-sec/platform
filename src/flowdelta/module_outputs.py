@@ -76,6 +76,17 @@ def read_module_outputs(root: Path) -> dict[str, Any]:
     if analysis.authorship.origin != "MODULE_OUTPUT" or plan.authorship.origin != "MODULE_OUTPUT":
         raise InputError("MODULE_OUTPUT_REQUIRED")
     validate_pipeline(handoff, analysis, catalog, plan)
+    from flowdelta.order_scenarios import request_input, scenario_ref
+
+    if scenario_ref(plan) is not None:
+        from flowdelta.pipeline_io import validate_input_fields
+
+        template = next(
+            t
+            for t in catalog.templates
+            if t.template_id == plan.template_id and t.version == plan.template_version
+        )
+        validate_input_fields(request_input(plan, root), template.input_fields)
     if plan.retrieval_ref is not None:
         verify_ref(root, plan.retrieval_ref)
         if plan.retrieval_ref.path not in docs:

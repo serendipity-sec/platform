@@ -576,6 +576,56 @@ def run_pipeline_command(
         raise typer.Exit(code=2) from None
 
 
+@app.command("evaluate-order-family")
+def evaluate_order_family_command(
+    manifest: Annotated[Path, typer.Option(help="Registered order family manifest.")],
+    out: Annotated[Path, typer.Option(help="New output directory under var/.")],
+    execute: Annotated[
+        bool, typer.Option(help="Execute selected plans and judge independent evidence.")
+    ] = False,
+) -> None:
+    """A analysis → B registered scenarios → optional C execution and automatic judgment."""
+    from flowdelta.order_evaluation import evaluate_order_family
+
+    try:
+        result = evaluate_order_family(
+            repo=Path.cwd(), manifest=manifest, output=out, execute=execute
+        )
+        typer.echo(
+            json_bytes(
+                {"status": result["status"], "pairs": len(result["pairs"]), "output": str(out)}
+            ).decode(),
+            nl=False,
+        )
+        if result["status"] == "INCOMPLETE":
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("judge-order-evaluation-bundle")
+def judge_order_evaluation_bundle_command(
+    bundle: Path,
+    out: Annotated[Path, typer.Option(help="New judgment directory under var/.")],
+) -> None:
+    """Rejudge a registered evaluation bundle without running Docker."""
+    from flowdelta.order_evaluation import judge_evaluation_bundle
+    from flowdelta.runtime.preflight import check_fresh_output
+
+    try:
+        target = check_fresh_output(out, Path.cwd())
+        report = judge_evaluation_bundle(bundle, Path.cwd())
+        target.mkdir(parents=True, exist_ok=False)
+        (target / "report.json").write_bytes(json_bytes(report))
+        typer.echo(json_bytes({"status": report["status"], "output": str(target)}).decode())
+        if report["status"] == "INCOMPLETE":
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("judge-order-bundle")
 def judge_order_bundle_command(
     bundle: Path,

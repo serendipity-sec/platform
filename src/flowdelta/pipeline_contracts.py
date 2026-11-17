@@ -168,7 +168,9 @@ class Template(Contract):
     version: NonEmpty
     task_id: Identifier
     runtime_profile: Identifier
-    mode: Literal["NORMAL_BUSINESS_REQUEST", "NORMAL_MANUAL_WORKFLOW"]
+    mode: Literal[
+        "NORMAL_BUSINESS_REQUEST", "NORMAL_MANUAL_WORKFLOW", "REGISTERED_SECURITY_REQUEST"
+    ]
     method: Literal["GET", "POST"] | None
     webhook_path: NonEmpty | None
     materialized_input_bindings: list[MaterializedInputBinding] = Field(default_factory=list)

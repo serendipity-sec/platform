@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
 
+from pydantic import JsonValue
+
 from flowdelta.contracts import Handoff
 from flowdelta.ingestion import InputError, parse_file_model
 from flowdelta.pipeline_contracts import Template, TemplateCatalog, TestPlan
@@ -51,6 +53,7 @@ class PreflightResult:
     sides: tuple[SideSource, SideSource]
     initial_state_path: Path
     timeout_seconds: int
+    request_input: dict[str, JsonValue] | None = None
 
 
 def _same(actual: object, expected: object, code: str) -> None:
@@ -170,6 +173,16 @@ def preflight(
     # 5. Normal input: shape from the template, value from the fixed task contract.
     validate_input_fields(plan.normal_input, template.input_fields)
     _same(plan.normal_input, handoff.task.normal_input, "NORMAL_INPUT_MISMATCH")
+    from flowdelta.order_scenarios import request_input, scenario_ref, validate_registration
+
+    body = plan.normal_input
+    if registered.fixture_profile is not None:
+        validate_registration(handoff, catalog, repo)
+    if template.mode == "REGISTERED_SECURITY_REQUEST":
+        body = request_input(plan, bundle_root, repo=repo)
+        validate_input_fields(body, template.input_fields)
+    elif scenario_ref(plan) is not None:
+        raise InputError("SCENARIO_REQUIRES_SECURITY_TEMPLATE")
 
     # 6. Every requested artifact kind is one this runner can actually collect.
     if not set(template.required_artifact_kinds).issubset(registered.collectible_kinds):
@@ -218,4 +231,5 @@ def preflight(
         sides=(sides[0], sides[1]),
         initial_state_path=bundle_root / plan.initial_state_ref.path,
         timeout_seconds=plan.timeout_seconds,
+        request_input=body,
     )

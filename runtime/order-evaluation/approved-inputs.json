@@ -1,0 +1,33 @@
+{
+  "files": {
+    "pyproject.toml": "d7aea587aa9f09e423c693c463dbff3b523bb0fe96b88d57b129c504e5a52126",
+    "runtime/order-evaluation/cards/business.json": "da7925edf4fb1e7cdec360a37297752cdd7f22ca2337ba4171d48a6f3e33e8d3",
+    "runtime/order-evaluation/catalog.json": "ad822f1d282873161f6a433f7dabc82259476b19f4b68860b38e1e86e722bbca",
+    "runtime/order-evaluation/compose.yaml": "78d640d5120ed5d9fdaf40df60b8a8e41fe4caf9b4ebd662ad7a408b84da20ec",
+    "runtime/order-evaluation/data/case-template.json": "cf26ed867fdb025105067d7d2b2344503ae52b33c8c950285e663d43641e4e9a",
+    "runtime/order-evaluation/data/dependencies.json": "db646d50ba2e394112b43d75ad9300b89e761fd62b541d49da323fbe36e71828",
+    "runtime/order-evaluation/data/dependencies/runtime.json": "a5465fdb5e07fbb78d3952532c266f22af304a16edf0c2c3892a24d1c4e4d97e",
+    "runtime/order-evaluation/data/environment.json": "e9c4f4729c9456eababc50f6d4040a0b0d9fc38e9670a2af6ab514216b44941f",
+    "runtime/order-evaluation/data/policy.json": "aa9c6de038ee34b4442175f0282b7941d106ac7588c0ac6b955179372421c838",
+    "runtime/order-evaluation/data/provenance.json": "511642201857ad16c61d524d4440061a47d1cb6a0553e67b3c9159d2f6b51c77",
+    "runtime/order-evaluation/data/state/initial.json": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+    "runtime/order-evaluation/data/task.json": "b6cbeeeff8c7310545a7490aa99b93565f428d5f5624e66cf5f9b083510c3472",
+    "runtime/order-evaluation/family.json": "60fc69223bc50624a136dde6a552cfe39be9643708778ef4818dc511a666af16",
+    "runtime/order-evaluation/runtime.lock.toml": "6eb16d5ea9c7510b9f101cf06a117e1a315b31314afd4ac13e6da1f2267e2f93",
+    "runtime/order-evaluation/scenarios/claimed-owner.json": "26e6a81bb0689ba08df9d28940d71004e1287f62956190e8ce393d2a381c4c8b",
+    "runtime/order-evaluation/scenarios/other-order.json": "f903753fa4e9e9f8fed84793b783eb23a29ed8ab0903ca501d22bac18f0a7c64",
+    "runtime/order-evaluation/workflows/v0-display.json": "c707c19ba8056d965f88441191e27a31e9ff044c38759f15b93e9f28bac04d6b",
+    "runtime/order-evaluation/workflows/v0.json": "55e54818d3f4097b512c6119eef4c42c382ce75669eebb327efcf78e0d70149d",
+    "runtime/order-evaluation/workflows/v1.json": "382972e0115a1032718d209a00c6d4a09fe68ad23d72ed8df1357285f97002e6",
+    "runtime/order-evaluation/workflows/v2-display.json": "4d25d293d4130d43263829a68cf935281cf43e09818dcdd05d96d71e0154e017",
+    "runtime/order-evaluation/workflows/v2.json": "6027f128d541b45847ca09bff4a2a9f6f8cca925cae0250bc7e9f5059193e627",
+    "runtime/order-evaluation/workflows/v3.json": "f5e330a155a6fa916a8ba38037cfb89e57e29e567fdd1c48e4cccb7d7db48721",
+    "runtime/order-lookup/fixture.Dockerfile": "cbdf2379d0643aee7fcf21ccafb5e3047f03253c1f5bb683ef41138232cdaec7",
+    "src/flowdelta/baseline/fixture.py": "b2da69bb01464a3b529ef1919e6df57c87b4ace3fca89c11f2abd0a785a1d661",
+    "src/flowdelta/baseline/probe.py": "59595d4d3198ad7c735b43683f2ae2e58e9f043f4527d4d4abfa95dea3162eff",
+    "src/flowdelta/runtime/order_lookup.py": "34d88defdf3c8ebf1ffe724180bfd1bfe6759c31149fd2f87d624d24eeceaebd",
+    "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
+  },
+  "profile_id": "core-local-v1",
+  "schema_version": "0.4.0"
+}

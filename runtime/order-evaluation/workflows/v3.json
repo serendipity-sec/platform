@@ -1,0 +1,329 @@
+{
+  "active": false,
+  "connections": {
+    "Compare customer": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Compare tenant",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Denied response",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Compare tenant": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Read sample order",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Denied response",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Order ownership": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Compare customer",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Denied response",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Order request": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Trusted context",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Read sample order": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Order response",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Denied response",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Trusted context": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Order ownership",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Denied response",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "name": "FlowDelta synthetic order ownership v3",
+  "nodes": [
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fd-client-auth",
+          "name": "FlowDelta local client"
+        }
+      },
+      "id": "request",
+      "name": "Order request",
+      "parameters": {
+        "authentication": "headerAuth",
+        "httpMethod": "POST",
+        "options": {},
+        "path": "flowdelta-order-lookup",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "webhookId": "flowdelta-order-lookup"
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fd-service-auth",
+          "name": "FlowDelta order service"
+        }
+      },
+      "id": "read-order",
+      "name": "Read sample order",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        },
+        "url": "={{ 'http://orders-api:8080/internal/orders/' + $('Order request').first().json.body.order_id }}"
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5
+    },
+    {
+      "id": "response",
+      "name": "Order response",
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        },
+        "respondWith": "json",
+        "responseBody": "={{ { order_id: $json.order_id, status: $json.status } }}"
+      },
+      "position": [
+        480,
+        0
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    },
+    {
+      "id": "denied",
+      "name": "Denied response",
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        },
+        "respondWith": "json",
+        "responseBody": "={{ { denied: true } }}"
+      },
+      "position": [
+        960,
+        240
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fd-service-auth",
+          "name": "FlowDelta order service"
+        }
+      },
+      "id": "context",
+      "name": "Trusted context",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        },
+        "url": "http://orders-api:8080/internal/request-context"
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fd-service-auth",
+          "name": "FlowDelta order service"
+        }
+      },
+      "id": "ownership",
+      "name": "Order ownership",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        },
+        "url": "={{ 'http://orders-api:8080/internal/orders/' + $('Order request').first().json.body.order_id + '/ownership' }}"
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5
+    },
+    {
+      "id": "customer-check",
+      "name": "Compare customer",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "customer-check",
+              "leftValue": "={{ $json.customer_id }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "={{ $('Order request').first().json.body.customer_id }}"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        480,
+        0
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    },
+    {
+      "id": "tenant-check",
+      "name": "Compare tenant",
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "tenant-check",
+              "leftValue": "={{ $json.tenant_id }}",
+              "operator": {
+                "operation": "equals",
+                "type": "string"
+              },
+              "rightValue": "={{ $('Order request').first().json.body.tenant_id }}"
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          }
+        },
+        "options": {}
+      },
+      "position": [
+        480,
+        0
+      ],
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

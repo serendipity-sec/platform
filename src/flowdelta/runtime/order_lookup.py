@@ -41,7 +41,7 @@ KIND_FILES = {
 }
 
 Phase = Literal["QUEUED", "PREPARING", "READY", "RUNNING", "COLLECTING", "FINALIZING", "FINISHED"]
-ExecutionStatus = Literal["NOT_RUN", "SUCCEEDED", "FAILED", "TIMED_OUT"]
+ExecutionStatus = Literal["NOT_RUN", "SUCCEEDED", "FAILED", "TIMED_OUT", "INTERRUPTED"]
 
 
 @dataclass(frozen=True)
@@ -111,6 +111,8 @@ def run_side(
 ) -> ExecutionRun:
     checked, source, plan = request.checked, request.source, request.plan
     lock, registered = checked.lock, checked.registered
+    body_input = checked.request_input if checked.request_input is not None else plan.normal_input
+    request_id = f"request-{uuid4().hex}" if registered.fixture_profile else ""
     label = f"{source.side}-{request.attempt}"
 
     # --- Allocation: a new identity, project, folders and credentials for this run only.
@@ -136,6 +138,9 @@ def run_side(
         newline="\n",
     )
     env_file.chmod(0o600)
+    if registered.fixture_profile:
+        with env_file.open("a", encoding="utf-8", newline="\n") as stream:
+            stream.write(f"FD_REQUEST_ID={request_id}\n")
     compose = [
         "docker",
         "compose",
@@ -229,6 +234,7 @@ def run_side(
     actual_version: str | None = None
     actual_digest: str | None = None
     observed: list[str] = []
+    interrupted: BaseException | None = None
 
     save(
         shared / "allocation.json",
@@ -387,7 +393,9 @@ def run_side(
             {
                 "method": registered.method,
                 "path": registered.webhook_path,
-                "body": plan.normal_input,
+                "body": body_input,
+                "run_id": run_id,
+                "request_id": request_id,
                 "timeout_seconds": checked.timeout_seconds,
                 "authentication": "local-credential-reference",
             },
@@ -399,7 +407,7 @@ def run_side(
             status_code, body = observe(
                 "normal-request",
                 {"x-flowdelta-client": credentials["client"]},
-                plan.normal_input,
+                body_input,
                 timeout=checked.timeout_seconds + EXEC_OVERHEAD_SECONDS,
             )
             save(shared / "response.json", {"status_code": status_code, "body": body})
@@ -440,6 +448,11 @@ def run_side(
             execution_status = "NOT_RUN"
         else:
             execution_status = "TIMED_OUT" if timed_out else "FAILED"
+    except BaseException as exc:
+        interrupted = exc
+        failed_phase = phase
+        execution_status = "INTERRUPTED"
+        error_code = "RUNTIME_INTERRUPTED"
     finally:
         # --- FINALIZING: remove only this project's containers, networks and volumes.
         phase = "FINALIZING"
@@ -447,6 +460,10 @@ def run_side(
             call([*compose, "logs", "--no-color"], "services", 60)
         except RunFailure:
             pass
+        except BaseException as exc:
+            interrupted = interrupted or exc
+            execution_status = "INTERRUPTED"
+            error_code = "RUNTIME_INTERRUPTED"
         cleanup: dict[str, Any] = {"schema_version": "0.4.0", "run_id": run_id, "project": project}
         try:
             call([*compose, "down", "--volumes", "--remove-orphans"], "cleanup", prep_timeout)
@@ -467,6 +484,12 @@ def run_side(
         except RunFailure as exc:
             cleanup_status = "FAILED"
             cleanup.update(status="FAILED", error_code=exc.code)
+        except BaseException as exc:
+            interrupted = interrupted or exc
+            cleanup_status = "FAILED"
+            execution_status = "INTERRUPTED"
+            error_code = "RUNTIME_INTERRUPTED"
+            cleanup.update(status="FAILED", error_code="CLEANUP_INTERRUPTED")
         cleanup["check_command"] = f"docker ps --all --filter {label_filter}"
         cleanup["private_local_files_retained"] = True
         save(shared / "cleanup.json", cleanup)
@@ -481,7 +504,7 @@ def run_side(
                 "execution_attempted": started_at is not None,
             },
         )
-    return _record(
+    record = _record(
         request,
         run_id=run_id,
         project=project,
@@ -494,7 +517,11 @@ def run_side(
         started_at=started_at,
         actual_version=actual_version,
         actual_digest=actual_digest,
+        request_id=request_id,
     )
+    if interrupted is not None:
+        raise interrupted
+    return record
 
 
 def _record(
@@ -511,6 +538,7 @@ def _record(
     started_at: str | None,
     actual_version: str | None,
     actual_digest: str | None,
+    request_id: str = "",
 ) -> ExecutionRun:
     """Link the files that really exist, by bundle-root path, and write runs/<side>-<n>.run.json."""
     label = shared.name
@@ -532,6 +560,9 @@ def _record(
     kinds = {kind: by_name[KIND_FILES[kind]] for kind in observed}
     missing = sorted(set(required) - set(observed))
     extensions: dict[str, Any] = {"flowdelta.compose_project": project}
+    if request_id:
+        extensions["flowdelta.request_id"] = request_id
+        extensions["flowdelta.fixture_profile"] = request.checked.registered.fixture_profile
     if failed_phase is not None:
         extensions["flowdelta.failed_phase"] = failed_phase
     run = ExecutionRun(

@@ -1,0 +1,65 @@
+{
+  "engine": "n8n",
+  "environment_id": "synthetic-order-ownership-integration",
+  "extensions": {
+    "flowdelta.order_evaluation": "v1",
+    "flowdelta.semantic_profile": "core-local-v1"
+  },
+  "http_endpoints": [
+    {
+      "description_basis": "DECLARED_ONLY",
+      "endpoint_id": "order-lookup",
+      "method": "GET",
+      "response_fields": [
+        "order_id",
+        "status"
+      ],
+      "response_shape": "SINGLE_JSON_OBJECT",
+      "url": "http://orders-api:8080/orders/lookup"
+    },
+    {
+      "endpoint_id": "trusted-context",
+      "method": "GET",
+      "response_fields": [
+        "principal",
+        "tenant",
+        "request_id",
+        "run_id"
+      ],
+      "response_shape": "SINGLE_JSON_OBJECT",
+      "url": "http://orders-api:8080/internal/request-context"
+    },
+    {
+      "endpoint_id": "ownership",
+      "method": "GET",
+      "response_fields": [
+        "order_id",
+        "customer_id",
+        "tenant_id"
+      ],
+      "response_shape": "SINGLE_JSON_OBJECT",
+      "url": "http://orders-api:8080/internal/orders/{order_id}/ownership"
+    },
+    {
+      "endpoint_id": "internal-order",
+      "method": "GET",
+      "response_fields": [
+        "order_id",
+        "status"
+      ],
+      "response_shape": "SINGLE_JSON_OBJECT",
+      "url": "http://orders-api:8080/internal/orders/{order_id}"
+    }
+  ],
+  "runtime_status": "NOT_VALIDATED",
+  "schema_version": "0.4.0",
+  "service_bindings": {
+    "orders": {
+      "base_url": "http://orders-api:8080",
+      "kind": "team-synthetic-service",
+      "principal_binding": "fd-service-auth -> customer-demo / tenant-demo",
+      "scope": "ownership-metadata-and-internal-order-read"
+    }
+  },
+  "target_version": "2.42.6"
+}
