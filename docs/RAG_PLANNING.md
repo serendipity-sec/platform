@@ -110,6 +110,8 @@ API 키가 필요하면 `FLOWDELTA_EMBEDDING_API_KEY_ENV`에 환경변수 이름
 runs[].c_attempt_number로 별도 기록한다. 실행하지 않은 후보도 before/after=null로 남긴다.
 NOT_SELECTED, NOT_RUN, FAILED, UNSUPPORTED, INCOMPLETE와 정상 업무·수집·정리 상태를 보존한다.
 판정기 INCONCLUSIVE/UNSUPPORTED도 원래 값으로 내보낸다. 누락을 안전으로 바꾸지 않는다.
+수집 상태는 C의 ExecutionRun에서 trial.run_records와 export runs[]로 전달한다. 기존 v1 판정
+records에 필드를 추가하지 않으므로 과거 저장 증거를 같은 계약으로 계속 재검증할 수 있다.
 
 `result.json`에서 request·attempts 해시와 엔진 요약을, 각 행에서 선택·plan·bundle·judgment 참조와
 해시·run ID를 읽는다. DB에서 B 결과를 조회·내보내면 작은 등록 scenario.json도 plan에 고정된

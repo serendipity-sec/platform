@@ -204,7 +204,6 @@ def judge_evaluation_bundle(bundle: Path, repo: Path) -> dict[str, Any]:
                 "reason": reason,
                 "normal_business_passed": business,
                 "execution_status": run.execution_status,
-                "collection_status": run.artifacts.collection_status,
                 "cleanup_status": run.cleanup_status,
                 "request_id": run.extensions.get("flowdelta.request_id"),
                 "source_artifacts": [r.model_dump(mode="json") for r in run.artifacts.artifacts],
@@ -411,6 +410,19 @@ def evaluate_order_family(
                     runs = PlanExecutor(
                         plan_bundle, repo, runner=execution_runner, sleep=sleep
                     ).execute_plan(checked_handoff, checked_plan, checked_catalog, trial_root / "e")
+                    # Runtime status belongs to the trial envelope, not the stable
+                    # judgment record contract used by archived #120 evidence.
+                    trial["run_records"] = [
+                        {
+                            "side": run.side,
+                            "run_id": run.run_id,
+                            "attempt": run.attempt_number,
+                            "execution_status": run.execution_status,
+                            "collection_status": run.artifacts.collection_status,
+                            "cleanup_status": run.cleanup_status,
+                        }
+                        for run in runs
+                    ]
                     for run in runs:
                         sources[f"runs/{run.side}-{run.attempt_number}.run.json"] = (
                             trial_root / "e" / f"runs/{run.side}-{run.attempt_number}.run.json"

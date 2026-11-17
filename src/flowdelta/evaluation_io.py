@@ -167,7 +167,7 @@ def run_evaluation_attempt(
                                 "collection_status": r["collection_status"],
                                 "cleanup_status": r["cleanup_status"],
                             }
-                            for r in trial.get("records", [])
+                            for r in trial.get("run_records", [])
                         ],
                     }
                 )

@@ -41,3 +41,15 @@ uv run --frozen --extra baseline --extra knowledge flowdelta judge-order-evaluat
 s1/s2/s3도 같은 방식이다. DB export는 B 산출물과 등록 scenario.json을 복원한다. 새 C 실행에는
 그 계획과 일치하는 기존 input handoff·analysis·catalog를 함께 module bundle로 묶어야 한다.
 새 실행과 평가 입출력 설정은 [RAG 안내](../../../docs/RAG_PLANNING.md)를 따른다.
+
+## 정규 CI에서 확인한 판정 형식 호환 수정
+
+#125 Ready 전환 뒤 CI의 기존 #120 증거 검사에서, 새 collection_status 필드 때문에 v1 판정 records의
+완전 일치 검사가 실패했다. 판정 records는 기존 형식으로 유지하고 수집 상태를 trial.run_records와
+평가 export의 runs[]로 분리했다. 기존 checker의 비교 조건과 원본 실행 ZIP은 변경하지 않았다.
+과거 36회 실행 증거 검사와 추가 호환·평가 입출력 시험 8개가 로컬에서 통과했다.
+
+이 폴더의 원본 ZIP은 92a729f 실행·판정 당시 자료로 보존한다. 현재 코드로 다시 판정한 네 시험과
+원본 ExecutionRun에서 확인한 수집 상태는 rejudgment-compatibility-20261117.json에 별도 기록했다.
+판정·run ID·원본 참조는 같으며 수집 상태만 판정 레코드 밖으로 옮겼다. 모델과 C를 재실행한 기록이
+아니라 같은 원본 증거를 재검증한 기록이다.

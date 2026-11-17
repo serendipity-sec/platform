@@ -43,6 +43,8 @@ def test_fixed_attempt_exports_complete_missing_denominators_and_c_attempt_numbe
     assert len(selected) == 3
     assert all(r["attempt"] == 3 and r["seed"] == 7 for r in selected)
     assert all(run["c_attempt_number"] == 1 for r in selected for run in r["runs"])
+    assert all(len(r["runs"]) == 2 for r in selected)
+    assert all(run["collection_status"] == "COMPLETE" for r in selected for run in r["runs"])
     assert all(r["before"] is not None and r["after"] is not None for r in selected)
     assert [r["status"] for r in result["attempts"] if not r["selected"]] == ["NOT_SELECTED"] * 2
     assert json.loads((output / "attempts.json").read_bytes()) == result["attempts"]
@@ -194,6 +196,8 @@ def test_rag_attempt_connects_selected_plans_to_c_rows_and_preserves_seed(tmp_pa
     assert result["status"] == "COMPLETE"
     rows = [r for r in result["attempts"] if r["selected"]]
     assert len(rows) == 4 and len(result["attempts"]) == 5
+    assert all(len(r["runs"]) == 2 for r in rows)
+    assert all(run["collection_status"] == "COMPLETE" for r in rows for run in r["runs"])
     assert all(r["selection_id"] and r["attempt"] == 7 and r["seed"] == 99 for r in rows)
     for row in rows:
         assert digest((output / row["bundle"] / "plan.json").read_bytes()) == row["plan_sha256"]
