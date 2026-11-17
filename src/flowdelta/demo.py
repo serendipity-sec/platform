@@ -16,7 +16,7 @@ from flowdelta.runtime.executor import PlanExecutor
 from flowdelta.runtime.preflight import check_fresh_output, read_plan_bundle
 
 
-def run_order_lookup_demo(repo: Path, output: Path) -> dict[str, Any]:
+def run_order_lookup_demo(repo: Path, output: Path, *, judge_order: bool = False) -> dict[str, Any]:
     """No result substitution: generated analysis and plan are the executor's inputs."""
     repo = repo.resolve(strict=True)
     target = check_fresh_output(output, repo)
@@ -78,7 +78,7 @@ def run_order_lookup_demo(repo: Path, output: Path) -> dict[str, Any]:
         observed.append(
             {"side": run.side, "run_id": run.run_id, "response": response, "checks": checks}
         )
-    summary = {
+    summary: dict[str, Any] = {
         "schema_version": "0.4.0",
         "case_id": handoff.case.case_id,
         "analysis_id": analysis.analysis_id,
@@ -95,5 +95,10 @@ def run_order_lookup_demo(repo: Path, output: Path) -> dict[str, Any]:
         "observations": observed,
         "security_outcome": None,
     }
+    if judge_order:
+        from flowdelta.order_judgment import publish_order_judgments
+
+        summary["judgment"] = publish_order_judgments(bundle, repo, target / "judgments")
+        summary["judgment"]["report"] = "judgments/report.json"
     (target / "summary.json").write_bytes(json_bytes(summary))
     return summary
