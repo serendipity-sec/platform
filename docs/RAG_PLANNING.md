@@ -76,6 +76,8 @@ bytes만 사용한다. 정상 입력은 모든 계획에서 유지한다. 후보
 `selection.json`에 전체 후보 결정과 제안·근거·예산·모델 metadata를 남긴다. 각 TestPlan에도 같은
 selection 기록을 넣고 계획 전체 내용으로 content-v1 ID를 만든다. 기존 plan ID도 읽을 수 있다.
 생성 호출 실패·중단은 generation-call.json에 남긴다. 생성 모델은 최종 보안 판정을 제공하지 않는다.
+호출 영수증의 called는 provider 함수 호출 시도를 뜻한다. 실패 영수증만으로 모델 서버가 요청을
+받거나 완료했다고 판단하지 않는다. 완료 호출은 SUCCEEDED와 응답 metadata·해시로 구별한다.
 
 로컬 Ollama는 실제 모델 digest를 확인한다. 호환 API의 model_revision은 운영자가 고정한 식별자이며,
 서비스가 제공한 reported_model/system_fingerprint도 기록한다. 불변 버전을 확인할 수 없으면 그 한계를
@@ -90,3 +92,32 @@ API 키가 필요하면 `FLOWDELTA_EMBEDDING_API_KEY_ENV`에 환경변수 이름
 운영자가 확인한 모델 revision이다. 서비스가 실제 같은 가중치를 제공함을 API만으로 증명하지 않는다.
 각 vector는 L2 정규화하고 plain-query-v1 profile로 분리한다. query/document 모두 같은 공간을 쓰며,
 기존 Qwen instruction profile과 섞지 않는다.
+
+## 평가 실행기 입출력
+
+`flowdelta run-evaluation-attempt request.json --out var/attempt-001 [--execute]`가 외부 실행기용
+한 번의 호출이다. 요청에는 `schema_version=0.4.0`, `request_format=flowdelta-evaluation-request-v1`,
+`arm`, `attempt`, `seed`, 선택할 `pair_ids`, 선택 방식의 `planning` 설정을 넣는다.
+전체 반복·재시도·자료 배정은 외부 실행기가 관리한다. truth·기대 판정 필드는 받지 않는다.
+
+- `fixed`: 기존 세 필수 시험. planning은 생략한다.
+- `graph+retrieval+llm`: VECTOR와 generation이 있는 planning 설정. seed를 생성 호출에 전달한다.
+- 나머지 arm: 실행·모델 호출 없이 UNSUPPORTED 기록. 기존 사전 설정의 graph+retrieval과 이번
+  LLM 결합 구현을 같은 실험 방식으로 표시하지 않는다. 전체 비교 방법 구현과 통계 분석은 별도다.
+
+`attempts.json`은 #107 집계기가 읽는 목록이다. `(등록 case ID)/(scenario ID)`를 case_id로 써서
+서로 다른 시험의 before/after를 합치지 않는다. arm과 외부 attempt를 유지하며 C 내부 재시도 번호는
+runs[].c_attempt_number로 별도 기록한다. 실행하지 않은 후보도 before/after=null로 남긴다.
+NOT_SELECTED, NOT_RUN, FAILED, UNSUPPORTED, INCOMPLETE와 정상 업무·수집·정리 상태를 보존한다.
+판정기 INCONCLUSIVE/UNSUPPORTED도 원래 값으로 내보낸다. 누락을 안전으로 바꾸지 않는다.
+
+`result.json`에서 request·attempts 해시와 엔진 요약을, 각 행에서 선택·plan·bundle·judgment 참조와
+해시·run ID를 읽는다. DB에서 B 결과를 조회·내보내면 작은 등록 scenario.json도 plan에 고정된
+bytes로 복원된다. 임베딩 DB나 생성 서버가 없어도 저장된 계획과 요청 파일을 C에 전달할 수 있다.
+
+스키마: schemas/planning-config-0.4.0.schema.json, schemas/plan-selection-0.4.0.schema.json,
+schemas/evaluation-request-0.4.0.schema.json. 작은 고정 방식 요청은 examples/planning/fixed-attempt.json에 있다.
+
+시간 예산은 사례별 계획 시작부터 C 명령까지 적용한다. 남은 시간이 없으면 새 시험을 시작하지 않고,
+진행 중 명령의 timeout도 남은 시간으로 제한한다. 컨테이너·네트워크·볼륨 정리와 잔여 확인은 예산
+만료 뒤에도 수행하며 해당 상태를 기록한다. model 호출은 자체 timeout과 토큰 상한도 함께 적용한다.

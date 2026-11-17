@@ -144,3 +144,15 @@ DB 이미지는 로컬 개발용이며 실제 pull한 digest를 runtime 설정�
 | FlowSentry | 비교 도구 | 0.1.0 (PyPI sdist) | Apache-2.0: PyPI sdist의 `LICENSE`. GitHub 저장소에는 LICENSE가 감지되지 않음 | 무수정 실행. 결과 수치만 기록 |
 | n8n-flowguard | 비교 도구 | 0.1.1 (npm) | [AGPL-3.0](https://github.com/MohibShaikh/FlowGuard/blob/main/LICENSE), npm `AGPL-3.0-only` | 무수정 독립 실행만. 링크·수정·서비스 통합 없음 |
 | n8n `audit` | 비교 기준선 | 2.42.6 | 위 팀장 기준 환경의 Sustainable Use License | 로컬 비상업 실행. 바이너리·소스 미포함 |
+
+## #121 로컬 모델 연결 검증 — 2026-11-17
+
+기존 PC의 GGUF 파일과 Docker 이미지를 무수정으로 실행했다. 모델 가중치·서버 바이너리는 저장소에
+복사하거나 배포하지 않는다. 아래 digest는 실제 로컬 파일/이미지 식별자이며 upstream safetensors의
+digest와 같다는 뜻은 아니다. 테스트용 HTTP double과 실제 모델 실행은 별도 기록한다.
+
+| 구성요소 | 실행 식별자 | 출처·라이선스 | 용도 |
+|---|---|---|---|
+| BGE-M3 GGUF (기존 Ollama 파일) | `sha256:daec91ffb5dd0c27411bd71f29932917c49cf529a641d0168496c3a501e3062c` | [공식 BAAI/bge-m3, MIT](https://huggingface.co/BAAI/bge-m3) | 1024차원 dense embedding, L2 정규화, plain-query-v1. 기본 Qwen embedding과 다른 profile |
+| Qwen3-8B GGUF (기존 Ollama 파일) | `sha256:a3de86cd1c132c822487ededd47a324c50491393e6565cd14bafa40d0b8e686f` | [공식 Qwen3-8B, Apache-2.0](https://huggingface.co/Qwen/Qwen3-8B) | 도구 없는 등록 시험 선택 제안. 결과는 계약 검증 후 사용 |
+| llama.cpp Docker | b12030, commit `a91eab67d8389d979d29fdf6633b2edd0718eb4b`, image ID `sha256:3944f77ce0553ebd2d5466871fa73d1de998b981be5442424e18157013fe62fd` | [고정 revision MIT LICENSE](https://github.com/ggml-org/llama.cpp/blob/a91eab67d8389d979d29fdf6633b2edd0718eb4b/LICENSE) | localhost에만 port publish한 OpenAI 호환 HTTP 서버. 읽기 전용 모델 mount |

@@ -613,6 +613,28 @@ def evaluate_order_family_command(
         raise typer.Exit(code=2) from None
 
 
+@app.command("run-evaluation-attempt")
+def run_evaluation_attempt_command(
+    request: Path,
+    out: Annotated[Path, typer.Option(help="New output directory under var/.")],
+    execute: Annotated[bool, typer.Option()] = False,
+) -> None:
+    """Run one configured attempt and export #107 rows without reading evaluation truth."""
+    from flowdelta.evaluation_io import EvaluationRequest, run_evaluation_attempt
+    from flowdelta.ingestion import parse_file_model, parse_json
+
+    try:
+        config = parse_file_model(EvaluationRequest, parse_json(request.read_bytes()))
+        result = run_evaluation_attempt(config, repo=Path.cwd(), output=out, execute=execute)
+        typer.echo(json_bytes({"status": result["status"], "output": str(out)}).decode(), nl=False)
+        if result["status"] not in {"COMPLETE", "PREPARED"}:
+            raise typer.Exit(code=2)
+    except (InputError, OSError) as exc:
+        error = exc if isinstance(exc, InputError) else InputError("EVALUATION_REQUEST_UNREADABLE")
+        typer.echo(json_bytes(error.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
 @app.command("judge-order-evaluation-bundle")
 def judge_order_evaluation_bundle_command(
     bundle: Path,

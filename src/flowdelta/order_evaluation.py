@@ -204,6 +204,7 @@ def judge_evaluation_bundle(bundle: Path, repo: Path) -> dict[str, Any]:
                 "reason": reason,
                 "normal_business_passed": business,
                 "execution_status": run.execution_status,
+                "collection_status": run.artifacts.collection_status,
                 "cleanup_status": run.cleanup_status,
                 "request_id": run.extensions.get("flowdelta.request_id"),
                 "source_artifacts": [r.model_dump(mode="json") for r in run.artifacts.artifacts],
@@ -261,6 +262,7 @@ def evaluate_order_family(
     execute: bool = False,
     planning_config: PlanningConfig | None = None,
     planning_provider: PlanningProvider | None = None,
+    pair_ids: list[str] | None = None,
     runner: CommandRunner = subprocess_runner,
     sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
@@ -272,6 +274,12 @@ def evaluate_order_family(
     if family_data != read_registered(repo, f"{ROOT}/family.json"):
         raise InputError("ORDER_FAMILY_NOT_REGISTERED")
     family = json.loads(family_data)
+    selected_pairs = family["pairs"]
+    if pair_ids is not None:
+        known = {p["pair_id"] for p in selected_pairs}
+        if not pair_ids or len(pair_ids) != len(set(pair_ids)) or not set(pair_ids).issubset(known):
+            raise InputError("ORDER_PAIR_SELECTION_INVALID")
+        selected_pairs = [p for p in selected_pairs if p["pair_id"] in pair_ids]
     # Check every registered source/config before allocating runs, including image source and locks.
     from flowdelta.order_scenarios import registered_files
 
@@ -286,6 +294,7 @@ def evaluate_order_family(
         "source_hashes": _code_hashes(repo),
         "status": "IN_PROGRESS",
         "pairs": [],
+        "requested_pair_ids": [p["pair_id"] for p in selected_pairs],
         "security_outcome": None,
         "limitations": [
             "Purely synthetic integration development family; not independent held-out evaluation.",
@@ -298,7 +307,7 @@ def evaluate_order_family(
     try:
         catalog_data = read_registered(repo, f"{ROOT}/catalog.json")
         catalog = TemplateCatalog.model_validate_json(catalog_data)
-        for index, pair in enumerate(family["pairs"]):
+        for index, pair in enumerate(selected_pairs):
             pair_root = target / f"p{index}"
             pair_root.mkdir()
             materialize_pair(repo, pair, pair_root / "c")
@@ -327,17 +336,31 @@ def evaluate_order_family(
             }
             summary["pairs"].append(pair_report)
             pair_started = time.monotonic()
-            for trial_index, (scenario, plan, sources) in enumerate(
-                write_order_plans(
-                    handoff,
-                    analysis,
-                    catalog,
-                    repo=repo,
-                    output=producers,
-                    planning_config=planning_config,
-                    provider=planning_provider,
+            plans = write_order_plans(
+                handoff,
+                analysis,
+                catalog,
+                repo=repo,
+                output=producers,
+                planning_config=planning_config,
+                provider=planning_provider,
+            )
+            pair_report["selected_candidate_ids"] = [scenario for scenario, _, _ in plans]
+            pair_report["plans"] = [
+                {
+                    "scenario_id": scenario,
+                    "plan_id": plan.plan_id,
+                    "plan_sha256": digest(sources["plan.json"].read_bytes()),
+                    "plan_artifact": f"p{index}/o/{sources['plan.json'].name}",
+                }
+                for scenario, plan, sources in plans
+            ]
+            if (producers / "selection.json").is_file():
+                pair_report["selection"] = f"p{index}/o/selection.json"
+                pair_report["selection_sha256"] = digest(
+                    (producers / "selection.json").read_bytes()
                 )
-            ):
+            for trial_index, (scenario, plan, sources) in enumerate(plans):
                 if planning_config and planning_config.generation:
                     if time.monotonic() - pair_started > planning_config.budget.max_runtime_seconds:
                         raise InputError("SELECTION_RUNTIME_BUDGET_EXCEEDED")
