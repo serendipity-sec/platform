@@ -45,10 +45,27 @@ jobs:
       - run: uv run --frozen --extra baseline --extra knowledge ruff format --check src tests tools/check_profiled_order.py tools/make_order_evaluation.py tools/check_order_evaluation.py
       - run: uv run --frozen --extra baseline python tools/make_order_evaluation.py
       - run: uv run --frozen --extra baseline --extra knowledge mypy
-      - run: uv run --frozen --extra baseline python tools/make_order_evaluation.py
       - run: uv run --frozen --extra baseline --extra knowledge ruff check experiments/n8n-claw-memory
       - run: uv run --frozen --extra baseline --extra knowledge ruff format --check experiments/n8n-claw-memory
+      - run: >-
+          uv run --frozen --extra baseline --extra knowledge ruff check
+          experiments/eval-pairs/labeler-b-review/verify.py
+          experiments/eval-pairs/labeler-b-review/review_contract.py
+          experiments/eval-pairs/labeler-b-review/test_review_contract.py
+      - run: >-
+          uv run --frozen --extra baseline --extra knowledge ruff format --check
+          experiments/eval-pairs/labeler-b-review/verify.py
+          experiments/eval-pairs/labeler-b-review/review_contract.py
+          experiments/eval-pairs/labeler-b-review/test_review_contract.py
+      - name: Verify bounded B replay review contract
+        run: |
+          uv run --frozen --extra baseline --extra knowledge python experiments/eval-pairs/labeler-b-review/verify.py
+          uv run --frozen --extra baseline --extra knowledge pytest experiments/eval-pairs/labeler-b-review/test_review_contract.py
       - run: uv run --frozen --extra baseline --extra knowledge pytest
+      - name: Verify archived order evaluation evidence
+        run: |
+          uv run --frozen --extra baseline python -m zipfile -e examples/module-outputs/order-evaluation/evidence-20261117.zip var/ci-order-evidence
+          uv run --frozen --extra baseline python tools/check_order_evaluation.py var/ci-order-evidence
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta inspect-case examples/order-lookup
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-examples examples/contracts/order-lookup
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta inspect-case examples/support-triage

@@ -1,0 +1,97 @@
+{
+  "platform_revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+  "capture_date_kst": "2026-11-12",
+  "records": [
+    {
+      "path": "experiments/n8n-claw-memory/evidence/observations.json",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "f04e78590939f1f2a32d94ae434d23423d576223",
+      "sha256": "88039348d8963431af9a229a17c46812ddb920534c70d1d7dcc80b0bb73d6ae7",
+      "bytes": 25817,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/n8n-claw-memory/evidence/observations.json"
+    },
+    {
+      "path": "experiments/n8n-claw-memory/evidence/receipt.json",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "a6adbe2990f77e92deff993e786e0671ea549e6d",
+      "sha256": "a3209c3dd18a72247f38cb0495c7e649e31b2a94ab7291c440e02993a280da9c",
+      "bytes": 3243,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/n8n-claw-memory/evidence/receipt.json"
+    },
+    {
+      "path": "experiments/n8n-claw-memory/sources.json",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "1eccbde205ba2fee632cde6d7083861d9cf113a4",
+      "sha256": "e2ee0d3cc02ea0216f488f4c55ec0d06b295ad668071f00b3943dd79c80084b8",
+      "bytes": 3632,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/n8n-claw-memory/sources.json"
+    },
+    {
+      "path": "experiments/n8n-claw-memory/replay.cjs",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "8d8606c5da66e291ab1fb72146a956ca1320d792",
+      "sha256": "86f1f81afa7a731e81037895889fd0d46923c0fc4db2b6ad2f2ec25f806f45b3",
+      "bytes": 9906,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/n8n-claw-memory/replay.cjs"
+    },
+    {
+      "path": "experiments/n8n-claw-memory/collect.py",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "3fcc2209f8358e38a614d654fff3b18d7efb80be",
+      "sha256": "5590938b94926a1ed9ad0484d39607725f0be93f230dbc754fea1396dfcbaf10",
+      "bytes": 4225,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/n8n-claw-memory/collect.py"
+    },
+    {
+      "path": "experiments/n8n-claw-memory/run.py",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "f3074ece548b88b8ec88e9780bc07cfedaa84939",
+      "sha256": "16dcaf7cc3d1c99bca92e885381376579c69847f55bd1fb0ffa016f46ef417e2",
+      "bytes": 7708,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/n8n-claw-memory/run.py"
+    },
+    {
+      "path": "experiments/n8n-claw-memory/README.md",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "14ebbabca4e17a5596d089826a693908747cac16",
+      "sha256": "ff7343c54d97885daea83cb2f34ddcc20d4b6667be1e68637c2f71dab3170a4d",
+      "bytes": 6268,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/n8n-claw-memory/README.md"
+    },
+    {
+      "path": "experiments/eval-pairs/README.md",
+      "revision": "9e9362a1a333a4aa193e3093d22e665fd6af4f6f",
+      "blob_sha": "f8d35749c914c87a4c7e313162287a09decca1c0",
+      "sha256": "89ce254f0ad7bd2961fbef641ff291fae40d634c178fec2c2beb4e4918ea1142",
+      "bytes": 5967,
+      "url": "https://github.com/serendipity-sec/platform/blob/9e9362a1a333a4aa193e3093d22e665fd6af4f6f/experiments/eval-pairs/README.md"
+    }
+  ],
+  "copied_pinned_files": [
+    {
+      "file": "pairs.input-only.json",
+      "sha256": "1194ba9622b4180a47209190cecd960a7981145990d97c045dafbe7a370dd33f"
+    },
+    {
+      "file": "rules-70.md",
+      "sha256": "c513cd0d41ba19b7fd554b8377a6aa8ac12b5656ece85fc6e15eb9c59d7ad650"
+    },
+    {
+      "file": "protocol-65.md",
+      "sha256": "224dacff5d7eee7d21e7ed867401899ed63447ad93d7dd1c6dc39739216c427e"
+    },
+    {
+      "file": "contract-66.md",
+      "sha256": "c485765c9c2aa1d1b5c03283df42a30af5ceea8fcc2a2a0f4f2109b23d752916"
+    },
+    {
+      "file": "labels-A.seal.json",
+      "sha256": "20fbdf99fab6d34eee99a05452486f3c0babcff00821330b41d726788c9048fa"
+    },
+    {
+      "file": "deduplication.json",
+      "sha256": "92d6dcf29f38b250ca50185863b9cb5e8a817e9939238c7da3b8828f44b1ee18"
+    }
+  ],
+  "integrity_conclusion": "Observed artifact bytes and the collector/runner/harness bytes match the historical receipt. This alone is not proof of historical execution-time Git HEAD."
+}
