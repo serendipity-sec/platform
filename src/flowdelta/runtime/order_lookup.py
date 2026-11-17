@@ -231,6 +231,22 @@ def run_side(
     observed: list[str] = []
     # 중단 신호(Ctrl+C)는 INTERRUPTED로 기록한 뒤, 실행 기록을 쓰고 나서 다시 던진다.
     interrupt: BaseException | None = None
+    # 정리 단계에서 중단된 지점. 실행 상태와 별개로 cleanup.json에 남긴다.
+    cleanup_stop_step: str | None = None
+    write_failure: Exception | None = None
+    record: ExecutionRun | None = None
+
+    def write_guarded(step: Callable[[], None]) -> None:
+        # 기록 한 단계가 실패해도 다음 기록을 계속 쓴다. 중단은 최초 것을 보관한다.
+        nonlocal interrupt, write_failure
+        try:
+            step()
+        except Exception as exc:
+            if write_failure is None:
+                write_failure = exc
+        except BaseException as exc:
+            if interrupt is None:
+                interrupt = exc
 
     save(
         shared / "allocation.json",
@@ -454,10 +470,14 @@ def run_side(
             call([*compose, "logs", "--no-color"], "services", 60)
         except RunFailure:
             pass
+        except Exception:
+            # 로그 수집은 진단용이라 실패해도 정리와 기록을 계속한다.
+            pass
         except BaseException as exc:
             # 로그 수집 중 중단돼도 정리와 기록은 계속하고, 중단은 마지막에 다시 던진다.
             if interrupt is None:
                 interrupt = exc
+            cleanup_stop_step = "services-logs"
         cleanup: dict[str, Any] = {"schema_version": "0.4.0", "run_id": run_id, "project": project}
         try:
             call([*compose, "down", "--volumes", "--remove-orphans"], "cleanup", prep_timeout)
@@ -478,43 +498,67 @@ def run_side(
         except RunFailure as exc:
             cleanup_status = "FAILED"
             cleanup.update(status="FAILED", error_code=exc.code)
+        except Exception as exc:
+            # 일반 오류(예: 로그 파일 쓰기 실패)는 중단이 아니므로 실제 원인을 그대로 남긴다.
+            cleanup_status = "FAILED"
+            cleanup.update(status="FAILED", error_code=type(exc).__name__)
         except BaseException as exc:
             # 정리 도중 중단되면 정리 완료를 확인할 수 없으므로 FAILED로 남긴다.
             if interrupt is None:
                 interrupt = exc
+            cleanup_stop_step = "cleanup"
             cleanup_status = "FAILED"
             cleanup.update(status="FAILED", error_code="INTERRUPTED")
+        if cleanup_stop_step is not None:
+            # 중단 단계와 코드를 실행 상태와 별도로 남겨 공유 증거만으로 사유를 알 수 있게 한다.
+            cleanup["interrupted"] = {
+                "phase": "FINALIZING",
+                "step": cleanup_stop_step,
+                "error_code": "INTERRUPTED",
+            }
         cleanup["check_command"] = f"docker ps --all --filter {label_filter}"
         cleanup["private_local_files_retained"] = True
-        save(shared / "cleanup.json", cleanup)
+        write_guarded(lambda: save(shared / "cleanup.json", cleanup))
 
     phase = "FINISHED"
     if error_code is not None:
-        save(
-            shared / "error.json",
-            {
-                "error_code": error_code,
-                "failed_phase": failed_phase,
-                "execution_attempted": started_at is not None,
-            },
+        write_guarded(
+            lambda: save(
+                shared / "error.json",
+                {
+                    "error_code": error_code,
+                    "failed_phase": failed_phase,
+                    "execution_attempted": started_at is not None,
+                },
+            )
         )
-    record = _record(
-        request,
-        run_id=run_id,
-        project=project,
-        shared=shared,
-        observed=observed,
-        execution_status=execution_status,
-        cleanup_status=cleanup_status,
-        error_code=error_code,
-        failed_phase=failed_phase,
-        started_at=started_at,
-        actual_version=actual_version,
-        actual_digest=actual_digest,
-    )
+
+    def build_record() -> None:
+        nonlocal record
+        record = _record(
+            request,
+            run_id=run_id,
+            project=project,
+            shared=shared,
+            observed=observed,
+            execution_status=execution_status,
+            cleanup_status=cleanup_status,
+            error_code=error_code,
+            failed_phase=failed_phase,
+            started_at=started_at,
+            actual_version=actual_version,
+            actual_digest=actual_digest,
+        )
+
+    # 앞 단계 기록이 실패하거나 다시 중단돼도 run.json은 쓴다.
+    write_guarded(build_record)
     if interrupt is not None:
-        # The run record is already on disk; the stop signal continues to the caller.
+        # 최초 중단을 그대로 다시 던진다. 기록 실패는 중단보다 뒤에 알린다.
         raise interrupt
+    if write_failure is not None:
+        raise write_failure
+    if record is None:
+        raise RuntimeError("RUN_RECORD_NOT_WRITTEN")
     return record
 
 

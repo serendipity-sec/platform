@@ -224,3 +224,98 @@ def test_stop_during_cleanup_still_records_and_then_raises(workspace, word) -> N
     assert run["cleanup_status"] == expected
     assert (output / "runs" / "before-1.run.json").exists()
     assert not (output / "runs" / "after-1.run.json").exists()
+
+
+@pytest.mark.parametrize(
+    ("word", "step"),
+    [("logs", "services-logs"), ("down", "cleanup")],
+)
+def test_cleanup_stop_is_kept_in_shared_cleanup_evidence(workspace, word, step) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    executor = PlanExecutor(bundle, repo, runner=StopAtCommand(word), sleep=lambda seconds: None)
+    output = repo / "var" / f"run-cleanup-stop-{word}"
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    # 공유 증거만 읽어도 정리 단계의 중단 지점과 코드를 알 수 있어야 한다.
+    cleanup = load(output, "runs/before-1/cleanup.json")
+    assert cleanup["interrupted"] == {
+        "phase": "FINALIZING",
+        "step": step,
+        "error_code": "INTERRUPTED",
+    }
+
+
+def test_ordinary_cleanup_write_error_is_not_reported_as_interrupt(workspace, monkeypatch) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    original = Path.write_bytes
+
+    def deny_cleanup_log(self, data):
+        # 중단이 아닌 일반 파일 오류. 원인이 그대로 남아야 한다.
+        if self.name == "cleanup.log":
+            raise PermissionError("denied")
+        return original(self, data)
+
+    monkeypatch.setattr(Path, "write_bytes", deny_cleanup_log)
+    executor = PlanExecutor(bundle, repo, runner=FakeDocker(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-cleanup-write-error"
+    executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert run["cleanup_status"] == "FAILED"
+    cleanup = load(output, "runs/before-1/cleanup.json")
+    assert cleanup["error_code"] == "PermissionError"
+    assert "interrupted" not in cleanup
+
+
+def _deny_write(monkeypatch, name: str, error: BaseException) -> None:
+    original = Path.write_bytes
+
+    def write(self, data):
+        if self.name == name:
+            raise error
+        return original(self, data)
+
+    monkeypatch.setattr(Path, "write_bytes", write)
+
+
+def test_cleanup_record_write_failure_still_writes_run_record(workspace, monkeypatch) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    _deny_write(monkeypatch, "cleanup.json", PermissionError("denied"))
+    executor = PlanExecutor(bundle, repo, runner=FakeDocker(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-cleanup-json-denied"
+    # 파일 쓰기 오류는 실패로 전달하되, 실행 기록은 먼저 남아야 한다.
+    with pytest.raises(PermissionError):
+        executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert run["execution_status"] == "SUCCEEDED"
+    assert run["cleanup_status"] == "COMPLETE"
+
+
+def test_stop_then_cleanup_write_failure_keeps_first_stop_and_run_record(
+    workspace, monkeypatch
+) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    _deny_write(monkeypatch, "cleanup.json", PermissionError("denied"))
+    executor = PlanExecutor(bundle, repo, runner=StopAtRequest(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-stop-then-write-error"
+    # 최초 중단이 우선이고, 기록 오류는 중단 뒤에 알리지 않는다.
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert run["execution_status"] == "INTERRUPTED"
+    assert run["error_code"] == "INTERRUPTED"
+
+
+def test_second_stop_while_writing_cleanup_still_writes_run_record(workspace, monkeypatch) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    _deny_write(monkeypatch, "cleanup.json", KeyboardInterrupt())
+    executor = PlanExecutor(bundle, repo, runner=StopAtRequest(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-second-stop"
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert run["execution_status"] == "INTERRUPTED"
