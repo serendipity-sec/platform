@@ -1,0 +1,15 @@
+{
+  "actual_c_runs": 8,
+  "additional_rag_test_passed": 1,
+  "archive_files": 192,
+  "archive_sha256": "1fce5ac016cf6d08efdc77b5d01fa34bdb8756bcf72978c1fdebf0a7370bb11e",
+  "archive_size_bytes": 245452,
+  "db_round_trips": 4,
+  "linux_semgrep_tests_passed": 3,
+  "normal_regression_runs": 2,
+  "record_format": "flowdelta-rag-validation-receipt-v1",
+  "schema_version": "0.4.0",
+  "security_outcome": null,
+  "source_commit": "92a729f2b5cf91126df969f6816676777672fc81",
+  "windows_tests_passed": 985
+}
