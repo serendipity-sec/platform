@@ -552,8 +552,10 @@ def run_pipeline_command(
     judge_order: Annotated[
         bool, typer.Option(help="Judge registered own-order reads; requires --execute.")
     ] = False,
+    planning_config: Annotated[Path | None, typer.Option()] = None,
 ) -> None:
     """Profile gate → stored input → A → B → optional C → verified artifact bundle."""
+    from flowdelta.knowledge.planning_config import read_planning_config
     from flowdelta.pipeline_runner import run_pipeline
 
     try:
@@ -567,6 +569,7 @@ def run_pipeline_command(
             output=out,
             execute=execute,
             judge_order=judge_order,
+            planning_config=read_planning_config(planning_config) if planning_config else None,
         )
         typer.echo(json_bytes(result).decode(), nl=False)
         if result["status"] == "INCOMPLETE":
