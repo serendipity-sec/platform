@@ -2,6 +2,7 @@
 
 import json
 import math
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -34,8 +35,22 @@ def main() -> None:
         "fixture-health": "http://127.0.0.1:8080/health",
         "state": "http://127.0.0.1:8080/__fixture__/state",
         "normal-request": "http://n8n:5678/webhook/flowdelta-order-lookup",
+        "ownership-context": "http://127.0.0.1:8080/internal/request-context",
     }
-    url = endpoints[payload["operation"]]
+    order_routes = {
+        "scoped-read": "/orders/lookup?order_id={order_id}",
+        "ownership-read": "/internal/orders/{order_id}",
+        "ownership-metadata": "/internal/orders/{order_id}/ownership",
+    }
+    operation = payload["operation"]
+    if operation in order_routes:
+        order_id = payload.get("order_id")
+        if not isinstance(order_id, str) or not re.fullmatch(r"ORD-[0-9]{4}", order_id):
+            sys.stdout.write(json.dumps({"transport_error": "InvalidOrderId"}))
+            return
+        url = "http://127.0.0.1:8080" + order_routes[operation].format(order_id=order_id)
+    else:
+        url = endpoints[operation]
     body = payload.get("body")
     request = urllib.request.Request(
         url,

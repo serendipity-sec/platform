@@ -76,6 +76,8 @@ jobs:
       - run: docker build --tag flowdelta-order-fixture:0.3.0 --file runtime/order-lookup/fixture.Dockerfile .
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta demo-order-lookup --judge-order --out var/ci-integrated-order
       - run: uv run --frozen --extra baseline --extra knowledge flowdelta check-pipeline var/ci-integrated-order/bundle
+      - run: docker build --tag flowdelta-order-fixture:0.4.0 --file runtime/order-lookup/fixture.Dockerfile .
+      - run: uv run --frozen --extra baseline python -m flowdelta.baseline.ownership --out var/ci-ownership-fixture
 
   normal-node-conformance:
     # Docker n8n run: main and manual runs only, as above.
