@@ -277,3 +277,44 @@ def test_self_consistent_but_unregistered_scenario_is_rejected(evaluation, tmp_p
     (bundle / "manifest.json").write_bytes(json_bytes(manifest))
     with pytest.raises(InputError, match="ORDER_SCENARIO_NOT_REGISTERED"):
         preflight(*read_plan_bundle(bundle), bundle, repo)
+
+
+def test_relative_bundle_can_be_rejudged_from_cli(evaluation, monkeypatch):
+    from typer.testing import CliRunner
+
+    from flowdelta.cli import app
+
+    repo, _, _, _ = evaluation
+    monkeypatch.chdir(repo)
+    result = CliRunner().invoke(
+        app,
+        [
+            "judge-order-evaluation-bundle",
+            "var/e/p0/s1/b",
+            "--out",
+            "var/relative-recheck",
+        ],
+    )
+    assert result.exit_code == 0, result.output
+    report = json.loads((repo / "var/relative-recheck/report.json").read_bytes())
+    assert report["status"] == "COMPLETE"
+
+
+def test_missing_family_is_a_stable_cli_error(tmp_path, monkeypatch):
+    from typer.testing import CliRunner
+
+    from flowdelta.cli import app
+
+    monkeypatch.chdir(tmp_path)
+    result = CliRunner().invoke(
+        app,
+        [
+            "evaluate-order-family",
+            "--manifest",
+            "absent/family.json",
+            "--out",
+            "var/e",
+        ],
+    )
+    assert result.exit_code == 2
+    assert json.loads(result.stderr)["error"] == "ORDER_FAMILY_UNREADABLE"

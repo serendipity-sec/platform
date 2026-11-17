@@ -47,3 +47,17 @@ def test_unregistered_url_forms_remain_unsupported(tmp_path, change):
     h = build_handoff(loaded)
     fact = next(f for f in h.semantics.semantics if f.side == "after" and f.node_id == "ownership")
     assert fact.support == "UNSUPPORTED"
+
+
+@pytest.mark.parametrize(
+    "expression",
+    [
+        "={{ $json.a + $json.b + '/suffix' }}",
+        "={{ 'prefix' + $json.a + $json.b + '/suffix' }}",
+    ],
+)
+def test_extended_concat_does_not_guess_numeric_addition(expression):
+    from flowdelta.expressions import UnsupportedExpression, parse_expression
+
+    with pytest.raises(UnsupportedExpression):
+        parse_expression(expression)

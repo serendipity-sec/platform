@@ -72,6 +72,7 @@ def materialize_pair(repo: Path, pair: dict[str, str], output: Path) -> None:
 
 
 def judge_evaluation_bundle(bundle: Path, repo: Path) -> dict[str, Any]:
+    bundle = bundle.resolve(strict=True)
     read_module_outputs(bundle)
     manifest_data = (bundle / "manifest.json").read_bytes()
     _, docs = read_manifest(bundle)
@@ -240,7 +241,10 @@ def evaluate_order_family(
     sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
     repo = repo.resolve(strict=True)
-    family_data = manifest.read_bytes()
+    try:
+        family_data = manifest.read_bytes()
+    except OSError as exc:
+        raise InputError("ORDER_FAMILY_UNREADABLE") from exc
     if family_data != read_registered(repo, f"{ROOT}/family.json"):
         raise InputError("ORDER_FAMILY_NOT_REGISTERED")
     family = json.loads(family_data)
