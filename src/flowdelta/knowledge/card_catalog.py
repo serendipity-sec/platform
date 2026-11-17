@@ -311,6 +311,33 @@ def search_cards(
 
             # pgvector 0.8+ continues filtered HNSW scans until enough profile rows are found.
             connection.execute(text("SET LOCAL hnsw.iterative_scan = 'strict_order'"))
+            # A pinned manifest is small (<=1000) and must not depend on changes
+            # to the approximate index's graph outside that manifest.
+            if pinned_cards is not None:
+                exact_query = (
+                    """
+                    WITH frozen AS MATERIALIZED (
+                        SELECT c.card_id, c.card_version, c.content_sha256 AS card_sha256,
+                               c.payload_size_bytes, e.content_sha256 AS embedding_sha256,
+                               e.embedding
+                        FROM knowledge.b_scenario_card_embedding e
+                        JOIN knowledge.b_scenario_card c
+                          ON c.card_id=e.card_id AND c.card_version=e.card_version
+                         AND c.content_sha256=e.content_sha256
+                        WHERE e.profile_id=:profile_id
+                """
+                    + restriction
+                    + """
+                    )
+                    SELECT card_id, card_version, card_sha256, payload_size_bytes,
+                           embedding_sha256,
+                           embedding <=> CAST(:query_vector AS vector(1024)) AS distance
+                    FROM frozen
+                    ORDER BY distance, card_id, card_version LIMIT :limit
+                """
+                )
+                pinned_rows = connection.execute(text(exact_query), parameters).mappings().all()
+                return _fetch_candidate_payloads(connection, pinned_rows, profile)
             rows = (
                 connection.execute(
                     text(

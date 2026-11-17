@@ -1,0 +1,247 @@
+{
+  "$defs": {
+    "CandidateDecision": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "card_keys": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Card Keys",
+          "type": "array"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "mandatory": {
+          "title": "Mandatory",
+          "type": "boolean"
+        },
+        "path_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Path Ids",
+          "type": "array"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rank"
+        },
+        "reason": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "selected": {
+          "title": "Selected",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "selected",
+        "mandatory",
+        "rank",
+        "reason"
+      ],
+      "title": "CandidateDecision",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Proposal": {
+      "additionalProperties": false,
+      "properties": {
+        "choices": {
+          "items": {
+            "$ref": "#/$defs/ProposedChoice"
+          },
+          "maxItems": 100,
+          "title": "Choices",
+          "type": "array"
+        }
+      },
+      "required": [
+        "choices"
+      ],
+      "title": "Proposal",
+      "type": "object"
+    },
+    "ProposedChoice": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "card_keys": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "title": "Card Keys",
+          "type": "array"
+        },
+        "path_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Path Ids",
+          "type": "array"
+        },
+        "reason": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "card_keys",
+        "path_ids",
+        "reason"
+      ],
+      "title": "ProposedChoice",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "analysis_id": {
+      "title": "Analysis Id",
+      "type": "string"
+    },
+    "candidate_catalog_sha256": {
+      "title": "Candidate Catalog Sha256",
+      "type": "string"
+    },
+    "catalog_sha256": {
+      "title": "Catalog Sha256",
+      "type": "string"
+    },
+    "config_sha256": {
+      "title": "Config Sha256",
+      "type": "string"
+    },
+    "decisions": {
+      "items": {
+        "$ref": "#/$defs/CandidateDecision"
+      },
+      "maxItems": 100,
+      "title": "Decisions",
+      "type": "array"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "generation": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Generation",
+      "type": "object"
+    },
+    "kb_sha256": {
+      "title": "Kb Sha256",
+      "type": "string"
+    },
+    "proposal": {
+      "$ref": "#/$defs/Proposal"
+    },
+    "reserved_c_runs": {
+      "title": "Reserved C Runs",
+      "type": "integer"
+    },
+    "retrieval_id": {
+      "title": "Retrieval Id",
+      "type": "string"
+    },
+    "retrieval_sha256": {
+      "title": "Retrieval Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.4.0",
+      "default": "0.4.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "search_status": {
+      "enum": [
+        "HITS",
+        "EMPTY_RETRIEVAL"
+      ],
+      "title": "Search Status",
+      "type": "string"
+    },
+    "selected_candidate_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Selected Candidate Ids",
+      "type": "array"
+    },
+    "selection_format": {
+      "const": "flowdelta-plan-selection-v1",
+      "default": "flowdelta-plan-selection-v1",
+      "title": "Selection Format",
+      "type": "string"
+    },
+    "selection_id": {
+      "title": "Selection Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "selection_id",
+    "analysis_id",
+    "retrieval_id",
+    "config_sha256",
+    "retrieval_sha256",
+    "kb_sha256",
+    "catalog_sha256",
+    "candidate_catalog_sha256",
+    "search_status",
+    "generation",
+    "proposal",
+    "decisions",
+    "selected_candidate_ids",
+    "reserved_c_runs"
+  ],
+  "title": "PlanSelection",
+  "type": "object"
+}

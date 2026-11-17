@@ -138,6 +138,8 @@ def run_pipeline(
         analysis_bundle = target / "analysis-bundle"
         write_module_bundle(handoff_dir, sources, analysis_bundle)
         config = planning_config or PlanningConfig()
+        if config.generation is not None:
+            raise InputError("GENERATION_REQUIRES_REGISTERED_SELECTION_RUNNER")
         summary["planning_config"] = config.model_dump(mode="json")
         summary["generation"] = {"called": False, "mode": "DETERMINISTIC_COMPOSITION"}
         if config.retrieval == "VECTOR":

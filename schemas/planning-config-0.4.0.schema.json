@@ -1,0 +1,287 @@
+{
+  "$defs": {
+    "FrozenCard": {
+      "additionalProperties": false,
+      "properties": {
+        "card_id": {
+          "maxLength": 128,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "title": "Card Id",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "version": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "card_id",
+        "version",
+        "sha256"
+      ],
+      "title": "FrozenCard",
+      "type": "object"
+    },
+    "GenerationSettings": {
+      "additionalProperties": false,
+      "properties": {
+        "api_key_env": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z][A-Z0-9_]*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Key Env"
+        },
+        "base_url": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Base Url",
+          "type": "string"
+        },
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "max_output_tokens": {
+          "default": 2048,
+          "maximum": 8192,
+          "minimum": 128,
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "max_request_bytes": {
+          "default": 32768,
+          "maximum": 131072,
+          "minimum": 1024,
+          "title": "Max Request Bytes",
+          "type": "integer"
+        },
+        "model": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "model_revision": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Revision"
+        },
+        "provider": {
+          "enum": [
+            "ollama",
+            "openai-compatible"
+          ],
+          "title": "Provider",
+          "type": "string"
+        },
+        "response_format": {
+          "default": "json_schema",
+          "enum": [
+            "json_schema",
+            "json_object"
+          ],
+          "title": "Response Format",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Seed"
+        },
+        "temperature": {
+          "default": 0.0,
+          "maximum": 2,
+          "minimum": 0,
+          "title": "Temperature",
+          "type": "number"
+        },
+        "timeout_seconds": {
+          "default": 120,
+          "maximum": 600,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "provider",
+        "base_url",
+        "model"
+      ],
+      "title": "GenerationSettings",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "SelectionBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "extensions": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Extensions",
+          "type": "object"
+        },
+        "max_c_runs": {
+          "default": 8,
+          "maximum": 200,
+          "minimum": 2,
+          "title": "Max C Runs",
+          "type": "integer"
+        },
+        "max_runtime_seconds": {
+          "default": 1800,
+          "maximum": 7200,
+          "minimum": 1,
+          "title": "Max Runtime Seconds",
+          "type": "integer"
+        },
+        "max_test_pairs": {
+          "default": 4,
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Max Test Pairs",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "0.4.0",
+          "default": "0.4.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "title": "SelectionBudget",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "budget": {
+      "$ref": "#/$defs/SelectionBudget"
+    },
+    "config_format": {
+      "const": "flowdelta-planning-config-v1",
+      "default": "flowdelta-planning-config-v1",
+      "title": "Config Format",
+      "type": "string"
+    },
+    "embedding_profile_id": {
+      "anyOf": [
+        {
+          "maxLength": 4096,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Embedding Profile Id"
+    },
+    "extensions": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Extensions",
+      "type": "object"
+    },
+    "frozen_cards": {
+      "items": {
+        "$ref": "#/$defs/FrozenCard"
+      },
+      "maxItems": 1000,
+      "title": "Frozen Cards",
+      "type": "array"
+    },
+    "generation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GenerationSettings"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "retrieval": {
+      "default": "KEYWORD",
+      "enum": [
+        "KEYWORD",
+        "VECTOR"
+      ],
+      "title": "Retrieval",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "0.4.0",
+      "default": "0.4.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "search_limit": {
+      "default": 50,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Search Limit",
+      "type": "integer"
+    }
+  },
+  "title": "PlanningConfig",
+  "type": "object"
+}

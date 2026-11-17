@@ -586,13 +586,19 @@ def evaluate_order_family_command(
     execute: Annotated[
         bool, typer.Option(help="Execute selected plans and judge independent evidence.")
     ] = False,
+    planning_config: Annotated[Path | None, typer.Option()] = None,
 ) -> None:
     """A analysis → B registered scenarios → optional C execution and automatic judgment."""
+    from flowdelta.knowledge.planning_config import read_planning_config
     from flowdelta.order_evaluation import evaluate_order_family
 
     try:
         result = evaluate_order_family(
-            repo=Path.cwd(), manifest=manifest, output=out, execute=execute
+            repo=Path.cwd(),
+            manifest=manifest,
+            output=out,
+            execute=execute,
+            planning_config=read_planning_config(planning_config) if planning_config else None,
         )
         typer.echo(
             json_bytes(

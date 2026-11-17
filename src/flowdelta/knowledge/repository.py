@@ -1,6 +1,6 @@
 """Exact-ID PostgreSQL storage for B's bounded output artifacts."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from sqlalchemy import Connection, Engine, text
@@ -25,6 +25,7 @@ class BOutputBundle:
     kb_snapshot_json: bytes
     retrieval_json: bytes
     plan_json: bytes
+    execution_inputs: dict[str, bytes] = field(default_factory=dict)
 
 
 # shortcut: 8 MiB per artifact; switch when shared artifact storage is provisioned.
@@ -46,7 +47,11 @@ def read_b_outputs(plan_path: Path) -> BOutputBundle:
         raise InputError("KNOWLEDGE_OUTPUT_REFERENCE_INVALID")
     verify_ref(root, snapshot_ref)
     kb_snapshot_json = _read_local(root, snapshot_ref.path)
-    return _validate_bundle(kb_snapshot_json, retrieval_json, plan_json)
+    bundle = _validate_bundle(kb_snapshot_json, retrieval_json, plan_json)
+    for name, content in bundle.execution_inputs.items():
+        if (root / name).exists() and _read_local(root, name) != content:
+            raise InputError("KNOWLEDGE_OUTPUT_INTEGRITY_FAILED")
+    return bundle
 
 
 def store_b_outputs(engine: Engine, plan_path: Path) -> BOutputBundle:
@@ -196,6 +201,8 @@ def load_b_outputs(engine: Engine, plan_id: str) -> BOutputBundle | None:
 
 
 def export_b_outputs(bundle: BOutputBundle, output: Path) -> None:
+    if _validate_bundle(bundle.kb_snapshot_json, bundle.retrieval_json, bundle.plan_json) != bundle:
+        raise InputError("KNOWLEDGE_OUTPUT_INTEGRITY_FAILED")
     _reject_links(output)
     if output.exists() or output.is_symlink():
         raise InputError("OUTPUT_ALREADY_EXISTS")
@@ -212,6 +219,7 @@ def export_b_outputs(bundle: BOutputBundle, output: Path) -> None:
         for name, content in (
             ("kb-snapshot.json", bundle.kb_snapshot_json),
             ("retrieval.json", bundle.retrieval_json),
+            *bundle.execution_inputs.items(),
             ("plan.json", bundle.plan_json),
         ):
             path = target / name
@@ -270,7 +278,9 @@ def _validate_bundle(
         raise InputError("KNOWLEDGE_OUTPUT_INVALID")
     retrieval = parse_file_model(RetrievalResult, parse_json(retrieval_json))
     plan = parse_file_model(TestPlan, parse_json(plan_json))
-    expected_plan_id = f"plan-{retrieval.retrieval_id.removeprefix('retrieval-')}"
+    from flowdelta.knowledge.plan_identity import expected_plan_id as identity
+
+    expected_plan_id = identity(plan, retrieval.retrieval_id)
     context = retrieval.query.get("analysis_context")
     if (
         plan.retrieval_ref is None
@@ -299,7 +309,21 @@ def _validate_bundle(
         )
     ):
         raise InputError("KNOWLEDGE_OUTPUT_INTEGRITY_FAILED")
-    return BOutputBundle(plan, retrieval, kb_snapshot_json, retrieval_json, plan_json)
+    from flowdelta.order_scenarios import scenario_ref
+
+    inputs = {}
+    value = plan.planner_metadata.get("registered_scenario_utf8")
+    ref = scenario_ref(plan)
+    if value is not None:
+        if not isinstance(value, str) or ref is None or ref.path != "scenario.json":
+            raise InputError("KNOWLEDGE_OUTPUT_INTEGRITY_FAILED")
+        data = value.encode("utf-8")
+        if len(data) != ref.size_bytes or digest(data) != ref.sha256:
+            raise InputError("KNOWLEDGE_OUTPUT_INTEGRITY_FAILED")
+        inputs[ref.path] = data
+    elif ref is not None and plan.planner_metadata.get("plan_identity") == "content-v1":
+        raise InputError("KNOWLEDGE_OUTPUT_INTEGRITY_FAILED")
+    return BOutputBundle(plan, retrieval, kb_snapshot_json, retrieval_json, plan_json, inputs)
 
 
 def _reject_links(path: Path) -> None:

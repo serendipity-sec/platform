@@ -1,0 +1,10 @@
+{
+  "request_input": {
+    "customer_id": "other-demo",
+    "order_id": "ORD-2001",
+    "tenant_id": "tenant-demo"
+  },
+  "scenario_format": "flowdelta-order-scenario-v1",
+  "scenario_id": "claimed-customer",
+  "schema_version": "0.4.0"
+}

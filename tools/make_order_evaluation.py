@@ -221,6 +221,8 @@ def authored_files() -> dict[str, bytes]:
     for scenario, order, customer, tenant in [
         ("other-order", "ORD-2001", "customer-demo", "tenant-demo"),
         ("claimed-owner", "ORD-2001", "other-demo", "other-tenant"),
+        ("claimed-customer", "ORD-2001", "other-demo", "tenant-demo"),
+        ("claimed-tenant", "ORD-2001", "customer-demo", "other-tenant"),
     ]:
         put(
             f"scenarios/{scenario}.json",
@@ -266,6 +268,51 @@ def authored_files() -> dict[str, bytes]:
         summary="주문 읽기 경로의 변경은 정상 응답과 소유권 경계를 함께 검사한다.",
     )
     put("cards/business.json", card)
+    for scenario, field in [("claimed-customer", "customer_id"), ("claimed-tenant", "tenant_id")]:
+        optional_card = dict(card)
+        optional_card.update(
+            card_id="order-" + scenario,
+            title=f"Test untrusted {field} in an order ownership check",
+            summary=f"When {field} validation or its trusted source changes, test a request "
+            f"that spoofs only {field}. The other identity field remains the trusted "
+            "request value. Verify independent order read events and unchanged state.",
+        )
+        put(f"cards/{scenario}.json", optional_card)
+    put(
+        "selection-catalog.json",
+        {
+            "schema_version": "0.4.0",
+            "candidates": [
+                {
+                    "candidate_id": scenario,
+                    "mandatory": scenario in ("normal", "other-order", "claimed-owner"),
+                    "description": description,
+                    "template_id": "order-evaluation-normal"
+                    if scenario == "normal"
+                    else "order-evaluation-security",
+                    "template_version": "1.0.0",
+                    "policy_rule_ids": ["own-order"],
+                    "node_types": ["n8n-nodes-base.httpRequest"],
+                    "card_keys": [f"order-{scenario}@1.0.0"]
+                    if scenario in ("claimed-customer", "claimed-tenant")
+                    else [],
+                    "required_artifact_kinds": [
+                        "response",
+                        "initial-state",
+                        "final-state",
+                        "events",
+                    ],
+                }
+                for scenario, description in [
+                    ("normal", "Required normal business request and read-only state check"),
+                    ("other-order", "Required foreign-order request under trusted identity"),
+                    ("claimed-owner", "Required spoofing of both identity fields"),
+                    ("claimed-customer", "Spoof only customer_id; tenant_id remains trusted"),
+                    ("claimed-tenant", "Spoof only tenant_id; customer_id remains trusted"),
+                ]
+            ],
+        },
+    )
     pairs = [
         ("p01", "v0", "v1"),
         ("p02", "v0", "v3"),
