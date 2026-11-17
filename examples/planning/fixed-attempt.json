@@ -1,0 +1,8 @@
+{
+  "schema_version": "0.4.0",
+  "request_format": "flowdelta-evaluation-request-v1",
+  "arm": "fixed",
+  "attempt": 1,
+  "seed": 0,
+  "pair_ids": ["p03"]
+}

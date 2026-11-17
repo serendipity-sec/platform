@@ -1,0 +1,1152 @@
+{
+  "execution_source_commit": "92a729f2b5cf91126df969f6816676777672fc81",
+  "original_archive_sha256": "1fce5ac016cf6d08efdc77b5d01fa34bdb8756bcf72978c1fdebf0a7370bb11e",
+  "reason": "Restore stable judgment v1 records; export collection status from validated ExecutionRun artifacts separately.",
+  "record_format": "flowdelta-rag-judgment-compatibility-v1",
+  "schema_version": "0.4.0",
+  "status": "COMPLETE",
+  "trials": [
+    {
+      "judgment": {
+        "bundle_manifest_sha256": "3096813229ba003b60da7e9fbd605dddfdd3a9d95d8672c47f7f5d17212ed993",
+        "judge_sources": {
+          "judge.py": "1b05cc63b5dec547a420645fe182a474d4968da6dc63623a11ef6823af1ca902",
+          "judge_adapter.py": "14eb45fb24282804bc6578d9b6b39e86b84e5612bd568cc5d8882044ec0ff7c1",
+          "order_evaluation.py": "bd05fd5bf64656942665d94cfc6455c6e69c86f7532aed39344b143a01bd264e"
+        },
+        "plan_id": "plan-bb1548699a58b71510ad39d8",
+        "records": [
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 1,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "67153c5c91aaff50895c6d96eed7f92021fa3c20f098b65c55cf480f6ca85e77",
+                "0c82a85ea7dd7864ed0f803121bc0e12f53c57f6c99ac2e9a02031a0468b5eb3",
+                "c7862950addb083c5c1dee665993298ae19655d72c41ce8c7f030b62a4881039",
+                "c3643488ad48c854817422857ffebb35317aef3312ec826e05422f4d85b57a09"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "NOT_OBSERVED_COMPLETE",
+              "outcome": null,
+              "reasons": [
+                "NO_FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-8a8ac13517064863aec550d888f53f55",
+              "schema_version": "0.4.0",
+              "side": "after"
+            },
+            "label": "NOT_OBSERVED_COMPLETE",
+            "normal_business_passed": true,
+            "reason": null,
+            "request_id": "request-5780a9fb2d1542979a67d0a54b721899",
+            "run_id": "run-8a8ac13517064863aec550d888f53f55",
+            "side": "after",
+            "source_artifacts": [
+              {
+                "artifact_id": "after-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "30022ff4535d9d260158806e1f4f55a3939e8dc1b8155f5145ce19175fc4e0a7",
+                "size_bytes": 337
+              },
+              {
+                "artifact_id": "after-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "f28ab0302f51edd070737d29a57896e70b858444fee5196c010524f4a49b9dcb",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "after-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "f478c161716cc0ea3d994c31946a879d69b3980884f5fad53b9e50a57137c9ac",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "after-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "b1d2a340b06fb63401b4dd34ce58051034dbe6eb7724f5331cfdc081a67d6fa8",
+                "size_bytes": 1693
+              },
+              {
+                "artifact_id": "after-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "66fc5c969393c7fcb26da2844079c49ffe64cc4d2fc39f9cdda668c31efbe7d0",
+                "size_bytes": 2454
+              },
+              {
+                "artifact_id": "after-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "e7ee6f6572a2afa02afaf34df03e2d42ae7a3fd51f67bf7cb346723faad89647",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "after-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "43608c302ff4ac7c05295ae403750cedbd6391b68a646cb9b136e52a96eb0062",
+                "size_bytes": 367
+              },
+              {
+                "artifact_id": "after-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "1e2ddd7c142662545df34c69f2791cf5c8ea33a826b3345ed1743bfc7eb15697",
+                "size_bytes": 96
+              },
+              {
+                "artifact_id": "after-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "9eb83c6ad4cf940174deaafb6fa4258a695c76bb762cc9b348ade6096f366219",
+                "size_bytes": 841
+              }
+            ]
+          },
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 1,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "bbd4b8646425ba7ff256529dea340e99b70ac78fd1869f3addd6b12ec62bf7b2",
+                "29b00195acefee52acc7567cb90367816a4c4d53f45949d6907a67082d9d8a6c",
+                "955db2e381d83c42dcefda88330cbdd5642425f844f9c2e4114a5da60bfb4cd6"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "NOT_OBSERVED_COMPLETE",
+              "outcome": null,
+              "reasons": [
+                "NO_FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-5a37b32395b1416c925200fb1c0fdc48",
+              "schema_version": "0.4.0",
+              "side": "before"
+            },
+            "label": "NOT_OBSERVED_COMPLETE",
+            "normal_business_passed": true,
+            "reason": null,
+            "request_id": "request-47984d1787254d3581c71597bc6b4eb5",
+            "run_id": "run-5a37b32395b1416c925200fb1c0fdc48",
+            "side": "before",
+            "source_artifacts": [
+              {
+                "artifact_id": "before-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "6746f8896890e834d45eabfed434c2f9eb516845d364367c6bb7bcaadb86d145",
+                "size_bytes": 338
+              },
+              {
+                "artifact_id": "before-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "0dd4e7078b40de842ef8b124cf6c6f3d0a51e4bd4a5b6d4321e494c36c39023b",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "before-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "8222f14339f43f0c2f99640900f7b2fd9bf2994284e95cfb6330ef8119f3fa42",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "before-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "2b822594eb94bdb0663df5de247fdcf7980b45f0ab4438e237053da0e8bacf84",
+                "size_bytes": 905
+              },
+              {
+                "artifact_id": "before-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "e214e4be151707d99d922072f331a9f1a374ae338b53f412cdcf1009999e2fa6",
+                "size_bytes": 1666
+              },
+              {
+                "artifact_id": "before-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "f371945b8a8eb4036285f0f583b5ae76b09144d9ea8cda969124726fa80b5776",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "before-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "831611012a2f0b339dce97ccd9e20c8d0634f08467660b2cf16f4b187f2d998b",
+                "size_bytes": 367
+              },
+              {
+                "artifact_id": "before-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "1e2ddd7c142662545df34c69f2791cf5c8ea33a826b3345ed1743bfc7eb15697",
+                "size_bytes": 96
+              },
+              {
+                "artifact_id": "before-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "0cff08815ac0900a520609ca0f93bd87633b6c994429b07ae0c98e27fe797462",
+                "size_bytes": 841
+              }
+            ]
+          }
+        ],
+        "report_format": "flowdelta-order-evaluation-judgment-v1",
+        "request_binding": {
+          "basis": "REGISTERED_FIXTURE_SERVICE_BINDING",
+          "principal": "customer-demo",
+          "tenant": "tenant-demo"
+        },
+        "security_outcome": null,
+        "status": "COMPLETE"
+      },
+      "run_records": [
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-8a8ac13517064863aec550d888f53f55",
+          "side": "after"
+        },
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-5a37b32395b1416c925200fb1c0fdc48",
+          "side": "before"
+        }
+      ],
+      "trial": "s0"
+    },
+    {
+      "judgment": {
+        "bundle_manifest_sha256": "75134938d11eb89da0495ec5086236b5c2ac624e350b676265dcbbdbab1e52b7",
+        "judge_sources": {
+          "judge.py": "1b05cc63b5dec547a420645fe182a474d4968da6dc63623a11ef6823af1ca902",
+          "judge_adapter.py": "14eb45fb24282804bc6578d9b6b39e86b84e5612bd568cc5d8882044ec0ff7c1",
+          "order_evaluation.py": "bd05fd5bf64656942665d94cfc6455c6e69c86f7532aed39344b143a01bd264e"
+        },
+        "plan_id": "plan-d48fffebe2a72736ca87d8d5",
+        "records": [
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 0,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "21374b01fd72cf263cb8df8017850d85a079a00cc60f6a948057a6ec97f339d2",
+                "3ccc17e5777bd89127b865ae05242f8904cf1de5293f564cc05883b5c29b0a21"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "NOT_OBSERVED_COMPLETE",
+              "outcome": null,
+              "reasons": [
+                "NO_FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-27cc2dba7c88416a8feca1d0283421f4",
+              "schema_version": "0.4.0",
+              "side": "after"
+            },
+            "label": "NOT_OBSERVED_COMPLETE",
+            "normal_business_passed": null,
+            "reason": null,
+            "request_id": "request-d5df889750204f0296526b3bc1912e2e",
+            "run_id": "run-27cc2dba7c88416a8feca1d0283421f4",
+            "side": "after",
+            "source_artifacts": [
+              {
+                "artifact_id": "after-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "f0571f90df851b003177b34307a63a09297fa58e5f6ec243c1a3c912c8ac3efd",
+                "size_bytes": 339
+              },
+              {
+                "artifact_id": "after-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "997d4b6b3766f4ea127a50ae714a1c38f770c0e9fe59222bd19bfaf977982743",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "after-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "83972d5378e52666d493a42d37c62f8616b5a67967bd7a7cb7c06190a02c3872",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "after-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "915345ff09e71db7c99373772c5e174ed83cd45efe29d9f7cbd2b38f57b8592d",
+                "size_bytes": 923
+              },
+              {
+                "artifact_id": "after-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "2146c8f50b48d794e90c4d2ede308fe501309f8a0305555c71bf3c066bdd1231",
+                "size_bytes": 1684
+              },
+              {
+                "artifact_id": "after-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "bb7a09b15dba512199a052208bc198c2c9cf405c83b770a4aadfe4697555d4c2",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "after-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "425d31c68d3aff4d9eb1811f69de780997fe0f8fb276edf9f41d5c50b0f17a44",
+                "size_bytes": 367
+              },
+              {
+                "artifact_id": "after-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "fc0c12b062796d17cfe3137a6744b0a40640a82c13f423368d03710600c6d572",
+                "size_bytes": 61
+              },
+              {
+                "artifact_id": "after-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "a9f9e3f96f0870aaeaa44a604e9593624eef6ee6f246344785cb0579aecbc536",
+                "size_bytes": 841
+              }
+            ]
+          },
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 0,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "528755ab4ee250253dca9bf6c0cc32b954e4031ca892e25a89c8acb09fd20f9d",
+                "e86c509db46890c87f1ac16adf1805fde83cc8b7d96b6fa1df2f19cac87f6197",
+                "b0b5aeea8b3baf12b9000800067516ba54e2de396f6a9bbb96f7f26196909db7"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "VIOLATION_OBSERVED",
+              "outcome": null,
+              "reasons": [
+                "FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-0fdff03b9fe644c09154d116fe23dba7",
+              "schema_version": "0.4.0",
+              "side": "before"
+            },
+            "label": "VIOLATION_OBSERVED",
+            "normal_business_passed": null,
+            "reason": null,
+            "request_id": "request-8344069dfbcc41778485eae81fde8fbb",
+            "run_id": "run-0fdff03b9fe644c09154d116fe23dba7",
+            "side": "before",
+            "source_artifacts": [
+              {
+                "artifact_id": "before-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "b5a7717b3c519710f9ef24b0d28245cbc9beee1db82af37de094251518b948a5",
+                "size_bytes": 340
+              },
+              {
+                "artifact_id": "before-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "48c09889f6538f14473c1275ba592f4ecc13871d45ac4f5651d3688762764485",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "before-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "f207039119ad5f25663ed3aa2b579c9d22fbdb5a158db5aa07d312f68459bc74",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "before-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "975e3f2944344ccd274d6eb0ad9ce224ab055a2650e9bde2f743b11665448bfe",
+                "size_bytes": 903
+              },
+              {
+                "artifact_id": "before-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "fba072e34082e9e8dc1047cb2da8aa78a76c3b7cab8bfde3992773fa0be838dc",
+                "size_bytes": 1664
+              },
+              {
+                "artifact_id": "before-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "69a21493082c929be46762d0d72a14f2987c571eacd9509760791c3f304b2fab",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "before-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "e4c379d1cb8e498fbb7657caddc99f5aa7af2f91e41bd7d3668ca928f5422236",
+                "size_bytes": 367
+              },
+              {
+                "artifact_id": "before-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "9801540786cebaf542c5768d4276c893d72a2df07fff29229cae09c966ad3da7",
+                "size_bytes": 96
+              },
+              {
+                "artifact_id": "before-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "83c76c834f2ec7a9ffeeff1e3f46777c0da3d79e33a78e5854ce2308f780953b",
+                "size_bytes": 841
+              }
+            ]
+          }
+        ],
+        "report_format": "flowdelta-order-evaluation-judgment-v1",
+        "request_binding": {
+          "basis": "REGISTERED_FIXTURE_SERVICE_BINDING",
+          "principal": "customer-demo",
+          "tenant": "tenant-demo"
+        },
+        "security_outcome": null,
+        "status": "COMPLETE"
+      },
+      "run_records": [
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-27cc2dba7c88416a8feca1d0283421f4",
+          "side": "after"
+        },
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-0fdff03b9fe644c09154d116fe23dba7",
+          "side": "before"
+        }
+      ],
+      "trial": "s1"
+    },
+    {
+      "judgment": {
+        "bundle_manifest_sha256": "52d44f5c02befa0aa94fc27c2bce2eb0220db1c944bc0ad280d65fd52bc16d8f",
+        "judge_sources": {
+          "judge.py": "1b05cc63b5dec547a420645fe182a474d4968da6dc63623a11ef6823af1ca902",
+          "judge_adapter.py": "14eb45fb24282804bc6578d9b6b39e86b84e5612bd568cc5d8882044ec0ff7c1",
+          "order_evaluation.py": "bd05fd5bf64656942665d94cfc6455c6e69c86f7532aed39344b143a01bd264e"
+        },
+        "plan_id": "plan-a09f3983348532ef55aaef71",
+        "records": [
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 0,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "541ee004431a06094a8a245d39a4cb64331b949af3a70d6ef4c7d67f5447ac60",
+                "a54edb052929e6132b8293d8829fb2681399faad5b0ded5b5647127798d36de3"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "NOT_OBSERVED_COMPLETE",
+              "outcome": null,
+              "reasons": [
+                "NO_FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-6e16541518c749dca25452a5fa8b445b",
+              "schema_version": "0.4.0",
+              "side": "after"
+            },
+            "label": "NOT_OBSERVED_COMPLETE",
+            "normal_business_passed": null,
+            "reason": null,
+            "request_id": "request-5828a15397654255a45b6e0bc0e4f464",
+            "run_id": "run-6e16541518c749dca25452a5fa8b445b",
+            "side": "after",
+            "source_artifacts": [
+              {
+                "artifact_id": "after-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "2536d6f642b66ca8de9e3a5ab1800b7c987493301313da4c8928bf375fab457e",
+                "size_bytes": 339
+              },
+              {
+                "artifact_id": "after-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "5625cc7bf2b48a2593aaadf7faa4e0345b3384594b6adaf65ecbdba1e46d8b3b",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "after-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "32cc721c5282972b9ad74adf12ac649e40350ef938e88e4eb41e9df9cba81927",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "after-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "ac196f60cace4c48eb7f5c8522d957ceb310dc3143b2ed4bfade0e108a412214",
+                "size_bytes": 923
+              },
+              {
+                "artifact_id": "after-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "a7c89d5c9f47bcd5fd90e52efb9e24c9d756d13eec5fa6c278e6d3190cf4937e",
+                "size_bytes": 1684
+              },
+              {
+                "artifact_id": "after-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "d1533564f4a152cfdff3f5427d57970aa4a2c93bc05547a049d9b8c532f0b23a",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "after-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "48592b3c5208b65cfe10130afddbc131b7fa796668ed8263fcbd7a943ffb98aa",
+                "size_bytes": 365
+              },
+              {
+                "artifact_id": "after-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "fc0c12b062796d17cfe3137a6744b0a40640a82c13f423368d03710600c6d572",
+                "size_bytes": 61
+              },
+              {
+                "artifact_id": "after-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "390672d1773cf49880885df1a6026ca8b6463af3dc87a9803c5d51ed508b90b1",
+                "size_bytes": 841
+              }
+            ]
+          },
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 0,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "abdfba1b1179b24f2fea84240207e9ae88f46c8697a08a0e384ca7a67e6b7739",
+                "17755fe26fe66d409470681df5bdb3ac9402bf13758909b3f08ada725b53f00e",
+                "274d8b191e32ac790f4015d0da5b5c174d487a30218400bcb3b95f0748d02348"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "VIOLATION_OBSERVED",
+              "outcome": null,
+              "reasons": [
+                "FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-b9f96ac1c31b48908fa7b81bc106fac4",
+              "schema_version": "0.4.0",
+              "side": "before"
+            },
+            "label": "VIOLATION_OBSERVED",
+            "normal_business_passed": null,
+            "reason": null,
+            "request_id": "request-01b79fc5a4ef4966853ed06c3d8e09c9",
+            "run_id": "run-b9f96ac1c31b48908fa7b81bc106fac4",
+            "side": "before",
+            "source_artifacts": [
+              {
+                "artifact_id": "before-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "56696ee9d54f9306466d46e205aebb5215a300ada4637267c79782d258a79d10",
+                "size_bytes": 340
+              },
+              {
+                "artifact_id": "before-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "25c3c55f28a364add0a37b22abdb5027577055bface8e4bbe1f4a10effe459db",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "before-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "3af7a2631addf4e2d06057fb61096e694d35c8656eab26d688f9a2710d7a2f29",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "before-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "eeee93eeea6fac91a17343e25748d57e484b0b3cb64a5fdbc2c67084ef9c8a93",
+                "size_bytes": 903
+              },
+              {
+                "artifact_id": "before-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "39d4dd2e1acd464c563f651c0f647bcbf1003380ae5e912ba829ba07908ec5f1",
+                "size_bytes": 1664
+              },
+              {
+                "artifact_id": "before-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "990482a9b4c9dce647e41f8c5fc1c5f2aa132a4990a3301e5f0ee96539978948",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "before-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "eaacf72df7e20f71b4c2231eb08919dff259b27faf42d650830ed273ee7b1f2c",
+                "size_bytes": 365
+              },
+              {
+                "artifact_id": "before-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "9801540786cebaf542c5768d4276c893d72a2df07fff29229cae09c966ad3da7",
+                "size_bytes": 96
+              },
+              {
+                "artifact_id": "before-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "32cd7913530e6b757f37b6edc1401c80ee86a2086a1b2cb450ac144a25f9a696",
+                "size_bytes": 841
+              }
+            ]
+          }
+        ],
+        "report_format": "flowdelta-order-evaluation-judgment-v1",
+        "request_binding": {
+          "basis": "REGISTERED_FIXTURE_SERVICE_BINDING",
+          "principal": "customer-demo",
+          "tenant": "tenant-demo"
+        },
+        "security_outcome": null,
+        "status": "COMPLETE"
+      },
+      "run_records": [
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-6e16541518c749dca25452a5fa8b445b",
+          "side": "after"
+        },
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-b9f96ac1c31b48908fa7b81bc106fac4",
+          "side": "before"
+        }
+      ],
+      "trial": "s2"
+    },
+    {
+      "judgment": {
+        "bundle_manifest_sha256": "5c4db9ebdd1efd67c4619fa548c53204a6aa76d6fe8c5c18dab07023afad4fac",
+        "judge_sources": {
+          "judge.py": "1b05cc63b5dec547a420645fe182a474d4968da6dc63623a11ef6823af1ca902",
+          "judge_adapter.py": "14eb45fb24282804bc6578d9b6b39e86b84e5612bd568cc5d8882044ec0ff7c1",
+          "order_evaluation.py": "bd05fd5bf64656942665d94cfc6455c6e69c86f7532aed39344b143a01bd264e"
+        },
+        "plan_id": "plan-8cfc504210b268e98eca5eb8",
+        "records": [
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 0,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "f82c47ba741edc6789286ad942bc75d1af855a8277a672179b2cb49f8160c9f4",
+                "9bb64521d7ae6d21272def509a957fc8f6bbd325541c9c75618e128b4f31d398"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "NOT_OBSERVED_COMPLETE",
+              "outcome": null,
+              "reasons": [
+                "NO_FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-9177d8f813834e64b145cb73b598195a",
+              "schema_version": "0.4.0",
+              "side": "after"
+            },
+            "label": "NOT_OBSERVED_COMPLETE",
+            "normal_business_passed": null,
+            "reason": null,
+            "request_id": "request-6addda6bca004cd2b717287e3b285eac",
+            "run_id": "run-9177d8f813834e64b145cb73b598195a",
+            "side": "after",
+            "source_artifacts": [
+              {
+                "artifact_id": "after-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "13b67b728b11bad73c4ce42c67dd61f87836570e93aeb3f55352acd3d6549e2d",
+                "size_bytes": 339
+              },
+              {
+                "artifact_id": "after-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "921d632a4376357fe33c1fd88871148c8e56c3836692a28ec693dc19399b51ae",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "after-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "a9cb16a42391db7682fba10146f3f855531f5e2bdd455dd30fea28e84f4aad94",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "after-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "73761d44054030f96e37afd64887d608e1bf0db525e439e306130e8738cbd52c",
+                "size_bytes": 923
+              },
+              {
+                "artifact_id": "after-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "32918c2b77b14513e9bd8e707b7d6a410fc4a0c6956407b38408848dd18c769f",
+                "size_bytes": 1684
+              },
+              {
+                "artifact_id": "after-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "6661ec032a9020960527306410f3e533eef87d8f78ed805a0f6b836653e943e4",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "after-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "b0146026e030034935f18864271056d9246908bff5ecaa85dbc26566809699e0",
+                "size_bytes": 364
+              },
+              {
+                "artifact_id": "after-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "fc0c12b062796d17cfe3137a6744b0a40640a82c13f423368d03710600c6d572",
+                "size_bytes": 61
+              },
+              {
+                "artifact_id": "after-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/after-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "bfa9ff73df71387f2b05d8a9e36c6fb62e31fd1a38883fc1652291a74e279da2",
+                "size_bytes": 841
+              }
+            ]
+          },
+          {
+            "attempt": 1,
+            "cleanup_status": "COMPLETE",
+            "execution_status": "SUCCEEDED",
+            "judgment": {
+              "allowed_effects_observed": 0,
+              "attempt_number": 1,
+              "evidence_completeness": "COMPLETE",
+              "evidence_hashes": [
+                "31916f9a44d11fd0b75cb768ec95a1f6983cb0bb529ec392cbfcd5de7664ab0a",
+                "7e9b50c4ea8dd9c24ae398e87f165bff2062621f55ad093f0a64d7c02c445b7c",
+                "e10e021620cdbd6b86e47e10bfaa987a6848950d987b103cc0c434b027c6052e"
+              ],
+              "execution_status": "SUCCEEDED",
+              "extensions": {},
+              "label": "VIOLATION_OBSERVED",
+              "outcome": null,
+              "reasons": [
+                "FORBIDDEN_EFFECT"
+              ],
+              "run_id": "run-09b1fa42eb6941e8b79938966382c29d",
+              "schema_version": "0.4.0",
+              "side": "before"
+            },
+            "label": "VIOLATION_OBSERVED",
+            "normal_business_passed": null,
+            "reason": null,
+            "request_id": "request-f6dd3d16d52f4901bf13139cc44c1b82",
+            "run_id": "run-09b1fa42eb6941e8b79938966382c29d",
+            "side": "before",
+            "source_artifacts": [
+              {
+                "artifact_id": "before-1-0",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/allocation.json",
+                "schema_version": "0.4.0",
+                "sha256": "0c2dd99347536634e13dd62d25e73e4f5ade1014438a2c9dc7ee560e0e90c7f1",
+                "size_bytes": 340
+              },
+              {
+                "artifact_id": "before-1-1",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/binding.json",
+                "schema_version": "0.4.0",
+                "sha256": "f02151c2da01465bbd17daaa2af7aee0960799fdff0155f3bc8b8a0f14921f8d",
+                "size_bytes": 711
+              },
+              {
+                "artifact_id": "before-1-2",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/cleanup.json",
+                "schema_version": "0.4.0",
+                "sha256": "07947ce76b6031b99b72c59a3b7d555859a1099cc9332c6d42a52bd52a295872",
+                "size_bytes": 370
+              },
+              {
+                "artifact_id": "before-1-3",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/events.json",
+                "schema_version": "0.4.0",
+                "sha256": "e4e7cf18c73519e9311f62cca6970166fc6d4afd3e600e0d3632f13162326aba",
+                "size_bytes": 903
+              },
+              {
+                "artifact_id": "before-1-4",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/final-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "36627b06dc4a34672073429f5e6351c30372c009bdfea8a23a1e59163a6d1286",
+                "size_bytes": 1664
+              },
+              {
+                "artifact_id": "before-1-5",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/initial-state.json",
+                "schema_version": "0.4.0",
+                "sha256": "bfe755fb8366406f9e00f14517996a000f6acb181d9ff361954a1a18da4a611a",
+                "size_bytes": 896
+              },
+              {
+                "artifact_id": "before-1-6",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/request.json",
+                "schema_version": "0.4.0",
+                "sha256": "04f44fdecaaf6dd03534a752ef82868425a0115d7bbea5d5919344eca9762f22",
+                "size_bytes": 364
+              },
+              {
+                "artifact_id": "before-1-7",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/response.json",
+                "schema_version": "0.4.0",
+                "sha256": "9801540786cebaf542c5768d4276c893d72a2df07fff29229cae09c966ad3da7",
+                "size_bytes": 96
+              },
+              {
+                "artifact_id": "before-1-8",
+                "extensions": {},
+                "kind": "generated",
+                "media_type": "application/json",
+                "path": "runs/before-1/runtime.json",
+                "schema_version": "0.4.0",
+                "sha256": "bd85d2b12ae887597b91c6f14ced38d49a2ac465889a085ccc391c80341065a5",
+                "size_bytes": 841
+              }
+            ]
+          }
+        ],
+        "report_format": "flowdelta-order-evaluation-judgment-v1",
+        "request_binding": {
+          "basis": "REGISTERED_FIXTURE_SERVICE_BINDING",
+          "principal": "customer-demo",
+          "tenant": "tenant-demo"
+        },
+        "security_outcome": null,
+        "status": "COMPLETE"
+      },
+      "run_records": [
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-9177d8f813834e64b145cb73b598195a",
+          "side": "after"
+        },
+        {
+          "attempt": 1,
+          "cleanup_status": "COMPLETE",
+          "collection_status": "COMPLETE",
+          "execution_status": "SUCCEEDED",
+          "run_id": "run-09b1fa42eb6941e8b79938966382c29d",
+          "side": "before"
+        }
+      ],
+      "trial": "s3"
+    }
+  ]
+}
