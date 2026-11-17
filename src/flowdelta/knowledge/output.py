@@ -38,7 +38,9 @@ def _write_snapshot(
     output: Path,
 ) -> TestPlan:
     kb_path, retrieval_path, plan_path = validate_output_paths(output)
-    expected_plan_id = f"plan-{retrieval.retrieval_id.removeprefix('retrieval-')}"
+    from flowdelta.knowledge.plan_identity import expected_plan_id as identity
+
+    expected_plan_id = identity(plan, retrieval.retrieval_id)
     if plan.plan_id != expected_plan_id or plan.analysis_id != retrieval.analysis_id:
         raise InputError("PLAN_RETRIEVAL_MISMATCH")
     expected = snapshot.reference

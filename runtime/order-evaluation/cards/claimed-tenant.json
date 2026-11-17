@@ -1,0 +1,32 @@
+{
+  "authorship": {
+    "extensions": {},
+    "note": "팀장이 작성한 기대 입출력. 분석기·검색기·실행 엔진이 생성한 결과가 아니다.",
+    "origin": "CONTRACT_EXAMPLE",
+    "producer": "team-lead-reference",
+    "schema_version": "0.4.0"
+  },
+  "card_id": "order-claimed-tenant",
+  "claim_basis": "TEAM_HYPOTHESIS",
+  "extensions": {},
+  "license_identifier": null,
+  "node_types": [
+    "n8n-nodes-base.webhook",
+    "n8n-nodes-base.httpRequest",
+    "n8n-nodes-base.respondToWebhook"
+  ],
+  "required_artifact_kinds": [
+    "response"
+  ],
+  "reuse_status": "TEAM_AUTHORED",
+  "runtime_profile": "core-local-v1",
+  "schema_version": "0.4.0",
+  "source": "team-authored:examples/order-lookup/task.json",
+  "source_ref": null,
+  "source_revision": null,
+  "summary": "When tenant_id validation or its trusted source changes, test a request that spoofs only tenant_id. The other identity field remains the trusted request value. Verify independent order read events and unchanged state.",
+  "template_id": "order-evaluation-normal",
+  "template_version": "1.0.0",
+  "title": "Test untrusted tenant_id in an order ownership check",
+  "version": "1.0.0"
+}

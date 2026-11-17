@@ -1,0 +1,109 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "normal",
+      "card_keys": [],
+      "description": "Required normal business request and read-only state check",
+      "mandatory": true,
+      "node_types": [
+        "n8n-nodes-base.httpRequest"
+      ],
+      "policy_rule_ids": [
+        "own-order"
+      ],
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "template_id": "order-evaluation-normal",
+      "template_version": "1.0.0"
+    },
+    {
+      "candidate_id": "other-order",
+      "card_keys": [],
+      "description": "Required foreign-order request under trusted identity",
+      "mandatory": true,
+      "node_types": [
+        "n8n-nodes-base.httpRequest"
+      ],
+      "policy_rule_ids": [
+        "own-order"
+      ],
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "template_id": "order-evaluation-security",
+      "template_version": "1.0.0"
+    },
+    {
+      "candidate_id": "claimed-owner",
+      "card_keys": [],
+      "description": "Required spoofing of both identity fields",
+      "mandatory": true,
+      "node_types": [
+        "n8n-nodes-base.httpRequest"
+      ],
+      "policy_rule_ids": [
+        "own-order"
+      ],
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "template_id": "order-evaluation-security",
+      "template_version": "1.0.0"
+    },
+    {
+      "candidate_id": "claimed-customer",
+      "card_keys": [
+        "order-claimed-customer@1.0.0"
+      ],
+      "description": "Spoof only customer_id; tenant_id remains trusted",
+      "mandatory": false,
+      "node_types": [
+        "n8n-nodes-base.httpRequest"
+      ],
+      "policy_rule_ids": [
+        "own-order"
+      ],
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "template_id": "order-evaluation-security",
+      "template_version": "1.0.0"
+    },
+    {
+      "candidate_id": "claimed-tenant",
+      "card_keys": [
+        "order-claimed-tenant@1.0.0"
+      ],
+      "description": "Spoof only tenant_id; customer_id remains trusted",
+      "mandatory": false,
+      "node_types": [
+        "n8n-nodes-base.httpRequest"
+      ],
+      "policy_rule_ids": [
+        "own-order"
+      ],
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "template_id": "order-evaluation-security",
+      "template_version": "1.0.0"
+    }
+  ],
+  "schema_version": "0.4.0"
+}

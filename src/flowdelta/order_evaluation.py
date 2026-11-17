@@ -1,6 +1,7 @@
 """Registered synthetic order comparisons through real A, B, C and independent judgment."""
 
 import json
+import subprocess
 import sys
 import time
 from collections.abc import Callable
@@ -14,7 +15,9 @@ from flowdelta.handoff import write_handoff
 from flowdelta.ingestion import InputError, digest, json_bytes, load_case
 from flowdelta.judge import judge
 from flowdelta.judge_adapter import AdapterError, EffectRule, build_input
+from flowdelta.knowledge.generation import PlanningProvider
 from flowdelta.knowledge.order_plans import write_order_plans
+from flowdelta.knowledge.planning_config import PlanningConfig
 from flowdelta.module_outputs import read_module_outputs
 from flowdelta.order_scenarios import ROOT, read_registered
 from flowdelta.pipeline_bundle import write_module_bundle
@@ -28,6 +31,25 @@ from flowdelta.runtime.preflight import check_fresh_output, preflight, read_plan
 
 def save(path: Path, value: object) -> None:
     path.write_bytes(json_bytes(value))
+
+
+def _budgeted_runner(runner: CommandRunner, deadline: float) -> CommandRunner:
+    """Clip C commands to remaining time; always allow its cleanup and leak checks."""
+
+    def bounded(args: list[str], *, timeout: float, input_text: str | None = None):  # type: ignore[no-untyped-def]
+        cleanup = "down" in args or args[1:3] in (
+            ["container", "ls"],
+            ["network", "ls"],
+            ["volume", "ls"],
+        )
+        if not cleanup:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(args, timeout)
+            timeout = min(timeout, remaining)
+        return runner(args, timeout=timeout, input_text=input_text)
+
+    return bounded
 
 
 def materialize_pair(repo: Path, pair: dict[str, str], output: Path) -> None:
@@ -237,6 +259,8 @@ def evaluate_order_family(
     manifest: Path,
     output: Path,
     execute: bool = False,
+    planning_config: PlanningConfig | None = None,
+    planning_provider: PlanningProvider | None = None,
     runner: CommandRunner = subprocess_runner,
     sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
@@ -269,6 +293,8 @@ def evaluate_order_family(
         ],
     }
     save(target / "family.json", family)
+    if planning_config is not None:
+        summary["planning_config"] = planning_config.model_dump(mode="json")
     try:
         catalog_data = read_registered(repo, f"{ROOT}/catalog.json")
         catalog = TemplateCatalog.model_validate_json(catalog_data)
@@ -300,9 +326,21 @@ def evaluate_order_family(
                 "trials": [],
             }
             summary["pairs"].append(pair_report)
+            pair_started = time.monotonic()
             for trial_index, (scenario, plan, sources) in enumerate(
-                write_order_plans(handoff, analysis, catalog, repo=repo, output=producers)
+                write_order_plans(
+                    handoff,
+                    analysis,
+                    catalog,
+                    repo=repo,
+                    output=producers,
+                    planning_config=planning_config,
+                    provider=planning_provider,
+                )
             ):
+                if planning_config and planning_config.generation:
+                    if time.monotonic() - pair_started > planning_config.budget.max_runtime_seconds:
+                        raise InputError("SELECTION_RUNTIME_BUDGET_EXCEEDED")
                 trial_root = pair_root / f"s{trial_index}"
                 trial_root.mkdir()
                 sources.update(
@@ -323,19 +361,33 @@ def evaluate_order_family(
                     for r in bundle_manifest.artifacts
                     if not r.path.startswith("input/")
                 }
+                selection = plan.planner_metadata.get("selection")
                 trial: dict[str, Any] = {
                     "scenario_id": scenario,
                     "plan_id": plan.plan_id,
                     "selection": plan.planner_metadata["order_test_selection"],
                     "bundle": f"p{index}/s{trial_index}/p",
                     "status": "PREPARED",
+                    "plan_sha256": digest((plan_bundle / "plan.json").read_bytes()),
+                    "selection_id": selection.get("selection_id")
+                    if isinstance(selection, dict)
+                    else None,
                 }
                 pair_report["trials"].append(trial)
                 if execute:
                     checked_handoff, checked_plan, checked_catalog = read_plan_bundle(plan_bundle)
-                    runs = PlanExecutor(plan_bundle, repo, runner=runner, sleep=sleep).execute_plan(
-                        checked_handoff, checked_plan, checked_catalog, trial_root / "e"
+                    if digest((plan_bundle / "plan.json").read_bytes()) != trial["plan_sha256"]:
+                        raise InputError("PIPELINE_PLAN_BUNDLE_CHANGED")
+                    execution_runner = (
+                        _budgeted_runner(
+                            runner, pair_started + planning_config.budget.max_runtime_seconds
+                        )
+                        if planning_config and planning_config.generation
+                        else runner
                     )
+                    runs = PlanExecutor(
+                        plan_bundle, repo, runner=execution_runner, sleep=sleep
+                    ).execute_plan(checked_handoff, checked_plan, checked_catalog, trial_root / "e")
                     for run in runs:
                         sources[f"runs/{run.side}-{run.attempt_number}.run.json"] = (
                             trial_root / "e" / f"runs/{run.side}-{run.attempt_number}.run.json"
