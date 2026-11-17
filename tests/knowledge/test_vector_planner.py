@@ -85,7 +85,8 @@ def test_write_vector_plan_embeds_context_and_publishes_linked_outputs(tmp_path,
     [query_texts, purpose] = provider.calls[0]
     assert purpose == "QUERY"
     assert len(query_texts) == 1
-    assert analysis.analysis_id in query_texts[0]
+    assert analysis.analysis_id not in query_texts[0]
+    assert handoff.case.case_id not in query_texts[0]
     assert "impact_paths" in query_texts[0]
 
     retrieval = parse_file_model(

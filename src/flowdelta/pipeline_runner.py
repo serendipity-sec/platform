@@ -20,6 +20,7 @@ from flowdelta.ingestion import (
 )
 from flowdelta.input_repository import FileInputRepository
 from flowdelta.knowledge import load_cards, write_plan
+from flowdelta.knowledge.planning_config import PlanningConfig
 from flowdelta.module_outputs import read_module_outputs
 from flowdelta.pipeline_bundle import write_module_bundle
 from flowdelta.pipeline_contracts import TemplateCatalog
@@ -70,6 +71,7 @@ def run_pipeline(
     output: Path,
     execute: bool = False,
     judge_order: bool = False,
+    planning_config: PlanningConfig | None = None,
     runner: CommandRunner = subprocess_runner,
     sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
@@ -135,8 +137,35 @@ def run_pipeline(
         sources = {"analysis.json": analysis_path, "template-catalog.json": catalog_path}
         analysis_bundle = target / "analysis-bundle"
         write_module_bundle(handoff_dir, sources, analysis_bundle)
-        parsed_cards = load_cards(cards, bundle_root=analysis_bundle)
-        plan = write_plan(handoff, analysis, parsed_cards, parsed_catalog, producers / "plan.json")
+        config = planning_config or PlanningConfig()
+        summary["planning_config"] = config.model_dump(mode="json")
+        summary["generation"] = {"called": False, "mode": "DETERMINISTIC_COMPOSITION"}
+        if config.retrieval == "VECTOR":
+            from flowdelta.knowledge.database import engine_for
+            from flowdelta.knowledge.embedding_settings import EmbeddingSettings
+            from flowdelta.knowledge.planner import write_vector_plan
+            from flowdelta.knowledge.settings import KnowledgeSettings
+
+            engine = engine_for(KnowledgeSettings.from_environment())
+            try:
+                plan = write_vector_plan(
+                    handoff,
+                    analysis,
+                    parsed_catalog,
+                    producers / "plan.json",
+                    engine=engine,
+                    provider=EmbeddingSettings.from_environment().provider(),
+                    limit=config.search_limit,
+                    pinned_cards={(c.card_id, c.version): c.sha256 for c in config.frozen_cards},
+                    expected_profile_id=config.embedding_profile_id,
+                )
+            finally:
+                engine.dispose()
+        else:
+            parsed_cards = load_cards(cards, bundle_root=analysis_bundle)
+            plan = write_plan(
+                handoff, analysis, parsed_cards, parsed_catalog, producers / "plan.json"
+            )
         for name in ("plan.json", "retrieval.json", "kb-snapshot.json"):
             sources[name] = producers / name
         plan_bundle = target / "plan-bundle"
