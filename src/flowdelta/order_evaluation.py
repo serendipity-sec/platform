@@ -73,7 +73,7 @@ def materialize_pair(repo: Path, pair: dict[str, str], output: Path) -> None:
 
 def judge_evaluation_bundle(bundle: Path, repo: Path) -> dict[str, Any]:
     bundle = bundle.resolve(strict=True)
-    read_module_outputs(bundle)
+    read_module_outputs(bundle, require_declared_run_artifacts=False)
     manifest_data = (bundle / "manifest.json").read_bytes()
     _, docs = read_manifest(bundle)
     handoff, plan, catalog = read_plan_bundle(bundle)
@@ -83,6 +83,7 @@ def judge_evaluation_bundle(bundle: Path, repo: Path) -> dict[str, Any]:
     from flowdelta.ingestion import parse_file_model
     from flowdelta.pipeline_contracts import ExecutionRun
 
+    required_kinds = set(checked.template.required_artifact_kinds)
     records = []
     for name, doc in sorted(docs.items()):
         if not name.startswith("runs/") or not name.endswith(".run.json"):
@@ -94,6 +95,8 @@ def judge_evaluation_bundle(bundle: Path, repo: Path) -> dict[str, Any]:
         result = None
         reason = None
         try:
+            if not required_kinds.issubset(run.artifacts.required_kinds):
+                raise AdapterError("REQUIRED_EVIDENCE_MISSING")
             for kind in ("initial-state", "final-state", "events"):
                 if kind not in kinds:
                     raise AdapterError("REQUIRED_EVIDENCE_MISSING")

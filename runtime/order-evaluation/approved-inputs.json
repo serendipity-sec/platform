@@ -25,7 +25,7 @@
     "runtime/order-lookup/fixture.Dockerfile": "cbdf2379d0643aee7fcf21ccafb5e3047f03253c1f5bb683ef41138232cdaec7",
     "src/flowdelta/baseline/fixture.py": "b2da69bb01464a3b529ef1919e6df57c87b4ace3fca89c11f2abd0a785a1d661",
     "src/flowdelta/baseline/probe.py": "59595d4d3198ad7c735b43683f2ae2e58e9f043f4527d4d4abfa95dea3162eff",
-    "src/flowdelta/runtime/order_lookup.py": "34d88defdf3c8ebf1ffe724180bfd1bfe6759c31149fd2f87d624d24eeceaebd",
+    "src/flowdelta/runtime/order_lookup.py": "e9399b7d801418b2e2eac46b3f66029646a520e82c80367a0402b47cc52662b4",
     "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
   },
   "profile_id": "core-local-v1",

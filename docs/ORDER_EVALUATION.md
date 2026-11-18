@@ -87,10 +87,19 @@ A/B 입력이나 판정기 입력으로 전달하지 않는다. 순수 합성 �
 
 독립 fixture 이벤트에서 `ORDER_READ + RETURNED`만 내용 읽기다. NOT_FOUND는 효과도 명시적
 거절도 아니며, 완전한 완료 실행에서 NOT_OBSERVED_COMPLETE다. metadata만 읽고 내용 호출을
-하지 않은 정상 거절 역시 관측 범위의 미관측이다. BLOCKED는 독립적인 명시적 DENIED 증거가
-있을 때만 쓴다. 신원·request/run·상태·sequence·파일 해시가 맞지 않으면 INCONCLUSIVE다.
+하지 않은 정상 거절 역시 관측 범위의 미관측이다. 정책의 `ownership-metadata` 규칙은 권한 판단에
+필요한 내부 서비스의 `order_id`, `customer_id`, `tenant_id` 조회를 허용한다. 고객 응답의
+소유권 정보 공개 여부는 별도의 판정 범위다.
+
+BLOCKED는 독립적인 명시적 DENIED 증거가 있을 때만 쓴다. 필수 증거 종류가 누락되거나
+신원·request/run·상태·sequence가 맞지 않으면 해당 실행은 INCONCLUSIVE다. manifest가
+참조하는 파일이 없거나 해시가 맞지 않으면 번들 검증 오류를 반환한다.
 금지 효과 후 실행 오류가 나도 완전한 증거의 위반은 남는다. `security_outcome`은 기존처럼 null이고
 보안 판정은 별도 보고서에서 읽는다. read-only 정책 전체를 검증하는 범용 판정기는 아니다.
+
+요청이 끝난 뒤 정리나 저장 중 중단되면 실행 상태를 보존하고 `finalize-interrupt.json`과
+`run.json`에 중단 지점을 기록한다. 기록 뒤 중단이 호출자에게 전달되며, 평가 요약은
+`allocated_runs`에 남은 실행 기록의 경로를 담는다.
 
 ## 유지보수와 검증
 

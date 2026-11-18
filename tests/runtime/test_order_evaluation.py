@@ -14,6 +14,7 @@ from flowdelta.order_evaluation import (
     judge_evaluation_bundle,
 )
 from flowdelta.order_scenarios import ROOT, SCENARIO_KEY, registered_files
+from flowdelta.runtime import order_lookup
 from flowdelta.runtime.order_lookup import CommandResult
 from flowdelta.runtime.preflight import preflight, read_plan_bundle
 
@@ -178,23 +179,65 @@ def test_new_and_remaining_effects_are_distinct(before, after, expected):
     )
 
 
-@pytest.mark.parametrize("operation", ["request", "logs"])
-def test_interruption_preserves_run_and_cleans_project(evaluation, operation):
-    repo, output, _, _ = evaluation
-    from flowdelta.runtime.executor import PlanExecutor
-
-    bundle = output / "p0/s0/p"
+@pytest.mark.parametrize(
+    ("operation", "finalize_step"),
+    [
+        ("request", None),
+        ("logs", "services-logs"),
+        ("cleanup.json", "cleanup-record"),
+        ("before-1.run.json", "run-record"),
+    ],
+)
+def test_interruption_preserves_run_and_cleans_project(
+    evaluation, monkeypatch, operation, finalize_step
+):
+    repo, _, _, _ = evaluation
     docker = OrderDocker(interrupt=operation)
     target = repo / "var" / ("interrupt-" + operation)
+    save = order_lookup.save
+    interrupted_write = False
+
+    def interrupt_save(path, value):
+        nonlocal interrupted_write
+        if path.name == operation and not interrupted_write:
+            interrupted_write = True
+            path.write_bytes(b'{"incomplete":')
+            raise KeyboardInterrupt
+        save(path, value)
+
+    monkeypatch.setattr(order_lookup, "save", interrupt_save)
     with pytest.raises(KeyboardInterrupt):
-        PlanExecutor(bundle, repo, runner=docker, sleep=lambda _: None).execute_plan(
-            *read_plan_bundle(bundle), target
+        evaluate_order_family(
+            repo=repo,
+            manifest=repo / ROOT / "family.json",
+            output=target,
+            execute=True,
+            runner=docker,
+            sleep=lambda _: None,
         )
-    runs = list(target.glob("runs/*.run.json"))
-    assert len(runs) == 1
-    record = json.loads(runs[0].read_bytes())
-    assert record["execution_status"] == "INTERRUPTED"
+
+    summary = json.loads((target / "summary.json").read_bytes())
+    assert summary["status"] == "INTERRUPTED"
+    assert summary["allocated_runs"] == ["p0/s0/e/runs/before-1.run.json"]
+    record = json.loads((target / summary["allocated_runs"][0]).read_bytes())
+    assert record["execution_status"] == ("SUCCEEDED" if finalize_step else "INTERRUPTED")
     assert record["cleanup_status"] == "COMPLETE"
+    assert record["extensions"]["flowdelta.request_id"]
+    evidence = target / "p0/s0/e/runs/before-1"
+    assert json.loads((evidence / "cleanup.json").read_bytes())["status"] == "COMPLETE"
+    if finalize_step:
+        expected = {
+            "phase": "FINALIZING",
+            "step": finalize_step,
+            "error_code": "INTERRUPTED",
+        }
+        assert record["extensions"]["flowdelta.finalize_interrupt"] == expected
+        assert json.loads((evidence / "finalize-interrupt.json").read_bytes()) == {
+            "schema_version": "0.4.0",
+            "run_id": record["run_id"],
+            **expected,
+        }
+    assert len(docker.projects) == 1
     assert all(not p.up for p in docker.projects.values())
 
 
@@ -243,6 +286,51 @@ def test_request_binding_tampering_never_becomes_safe(evaluation, tmp_path, muta
     report = judge_evaluation_bundle(bundle, repo)
     before = next(r for r in report["records"] if r["side"] == "before")
     assert before["label"] == "INCONCLUSIVE"
+
+
+@pytest.mark.parametrize("declared", [True, False])
+def test_missing_evidence_kind_marks_only_the_affected_run(evaluation, tmp_path, declared):
+    repo, output, _, _ = evaluation
+    bundle = Path(shutil.copytree(output / "p0/s0/b", tmp_path / "bundle"))
+    before_path = "runs/before-1.run.json"
+    events_path = "runs/before-1/events.json"
+    before = json.loads((bundle / before_path).read_bytes())
+    artifacts = before["artifacts"]
+    artifacts["artifact_kinds"].pop("events")
+    artifacts["observed_kinds"].remove("events")
+    artifacts["artifacts"] = [ref for ref in artifacts["artifacts"] if ref["path"] != events_path]
+    if declared:
+        artifacts.update(missing_kinds=["events"], collection_status="PARTIAL")
+    else:
+        artifacts["required_kinds"].remove("events")
+    run_bytes = json_bytes(before)
+    (bundle / before_path).write_bytes(run_bytes)
+    (bundle / events_path).unlink()
+    manifest_path = bundle / "manifest.json"
+    manifest = json.loads(manifest_path.read_bytes())
+    manifest["artifacts"] = [ref for ref in manifest["artifacts"] if ref["path"] != events_path]
+    for ref in manifest["artifacts"]:
+        if ref["path"] == before_path:
+            ref.update(sha256=digest(run_bytes), size_bytes=len(run_bytes))
+    manifest_path.write_bytes(json_bytes(manifest))
+
+    if not declared:
+        with pytest.raises(InputError, match="RUN_REQUIRED_ARTIFACT_MISSING"):
+            read_module_outputs(bundle)
+    report = judge_evaluation_bundle(bundle, repo)
+    records = {record["side"]: record for record in report["records"]}
+    assert report["status"] == "INCOMPLETE"
+    assert records["before"]["label"] == "INCONCLUSIVE"
+    assert records["before"]["reason"] == "REQUIRED_EVIDENCE_MISSING"
+    assert records["after"]["label"] == "NOT_OBSERVED_COMPLETE"
+
+
+def test_missing_referenced_evidence_file_is_a_contract_error(evaluation, tmp_path):
+    repo, output, _, _ = evaluation
+    bundle = Path(shutil.copytree(output / "p0/s0/b", tmp_path / "bundle"))
+    (bundle / "runs/before-1/events.json").unlink()
+    with pytest.raises(InputError, match="MISSING_ARTIFACT"):
+        judge_evaluation_bundle(bundle, repo)
 
 
 def test_suite_rejects_changed_registration_before_docker(evaluation):
