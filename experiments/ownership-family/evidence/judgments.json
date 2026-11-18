@@ -1,0 +1,326 @@
+{
+  "schema_version": "0.1.0",
+  "summary": {
+    "adapter": "7/12",
+    "returned_only": "12/12",
+    "provenance_ok": "12/12"
+  },
+  "runs": [
+    {
+      "variant": "v0-service-check",
+      "input": "claimed-owner",
+      "run_id": "run-39b9349cd2894970b9a901a20fcdd7f8",
+      "execution_status": "SUCCEEDED",
+      "http_status": 500,
+      "service_reads": [
+        "ORD-2001:NOT_FOUND"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": false,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v0-service-check",
+      "input": "normal",
+      "run_id": "run-c1802d5dfe9a445fb61d242ed345c166",
+      "execution_status": "SUCCEEDED",
+      "http_status": 200,
+      "service_reads": [
+        "ORD-1001:RETURNED"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "NOT_OBSERVED_COMPLETE",
+      "adapter_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": true,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v0-service-check",
+      "input": "other-order",
+      "run_id": "run-6797b9effe5e41efa596856debb65a3b",
+      "execution_status": "SUCCEEDED",
+      "http_status": 500,
+      "service_reads": [
+        "ORD-2001:NOT_FOUND"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": false,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v1-internal-no-owner",
+      "input": "claimed-owner",
+      "run_id": "run-dd80b4d8005f4f26a50b94805701766c",
+      "execution_status": "SUCCEEDED",
+      "http_status": 200,
+      "service_reads": [
+        "ORD-2001:RETURNED"
+      ],
+      "expected": "VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "VIOLATION_OBSERVED",
+      "returned_only_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": true,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v1-internal-no-owner",
+      "input": "normal",
+      "run_id": "run-b1b8d2e4f0234c199924c7d866c8c8ea",
+      "execution_status": "SUCCEEDED",
+      "http_status": 200,
+      "service_reads": [
+        "ORD-1001:RETURNED"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "NOT_OBSERVED_COMPLETE",
+      "adapter_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": true,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v1-internal-no-owner",
+      "input": "other-order",
+      "run_id": "run-8cfdcabfbc794217a298f48392f19897",
+      "execution_status": "SUCCEEDED",
+      "http_status": 200,
+      "service_reads": [
+        "ORD-2001:RETURNED"
+      ],
+      "expected": "VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "VIOLATION_OBSERVED",
+      "returned_only_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": true,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v2-internal-owner-fixed",
+      "input": "claimed-owner",
+      "run_id": "run-47511864a08143a9861e5fd3a4a56e19",
+      "execution_status": "SUCCEEDED",
+      "http_status": 500,
+      "service_reads": [
+        "ORD-2001:NOT_FOUND"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": false,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v2-internal-owner-fixed",
+      "input": "normal",
+      "run_id": "run-3e55afafda024eb7a4fc76a719989843",
+      "execution_status": "SUCCEEDED",
+      "http_status": 200,
+      "service_reads": [
+        "ORD-1001:RETURNED"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "NOT_OBSERVED_COMPLETE",
+      "adapter_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": true,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v2-internal-owner-fixed",
+      "input": "other-order",
+      "run_id": "run-a10ce11bbc7944958b5d2b293dff5f7f",
+      "execution_status": "SUCCEEDED",
+      "http_status": 500,
+      "service_reads": [
+        "ORD-2001:NOT_FOUND"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": false,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v3-internal-owner-from-body",
+      "input": "claimed-owner",
+      "run_id": "run-5489097502cc47d5a2ccd3a1a9631a03",
+      "execution_status": "SUCCEEDED",
+      "http_status": 200,
+      "service_reads": [
+        "ORD-2001:RETURNED"
+      ],
+      "expected": "VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "VIOLATION_OBSERVED",
+      "returned_only_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": true,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v3-internal-owner-from-body",
+      "input": "normal",
+      "run_id": "run-90ac3b55290747b0ab88c8a8884265bb",
+      "execution_status": "SUCCEEDED",
+      "http_status": 200,
+      "service_reads": [
+        "ORD-1001:RETURNED"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "NOT_OBSERVED_COMPLETE",
+      "adapter_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": true,
+      "returned_only_matches_expected": true
+    },
+    {
+      "variant": "v3-internal-owner-from-body",
+      "input": "other-order",
+      "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+      "execution_status": "SUCCEEDED",
+      "http_status": 500,
+      "service_reads": [
+        "ORD-2001:NOT_FOUND"
+      ],
+      "expected": "NO_VIOLATION",
+      "provenance_problems": [],
+      "adapter": "VIOLATION_OBSERVED",
+      "adapter_reasons": [
+        "FORBIDDEN_EFFECT"
+      ],
+      "returned_only": "NOT_OBSERVED_COMPLETE",
+      "returned_only_reasons": [
+        "NO_FORBIDDEN_EFFECT"
+      ],
+      "adapter_matches_expected": false,
+      "returned_only_matches_expected": true
+    }
+  ],
+  "pairs": [
+    {
+      "before": "v0-service-check",
+      "after": "v1-internal-no-owner",
+      "meaning": "regression",
+      "adapter_new_violations": [],
+      "returned_only_new_violations": [
+        "claimed-owner",
+        "other-order"
+      ],
+      "expected_new_violations": [
+        "claimed-owner",
+        "other-order"
+      ]
+    },
+    {
+      "before": "v1-internal-no-owner",
+      "after": "v2-internal-owner-fixed",
+      "meaning": "real fix",
+      "adapter_new_violations": [],
+      "returned_only_new_violations": [],
+      "expected_new_violations": []
+    },
+    {
+      "before": "v1-internal-no-owner",
+      "after": "v3-internal-owner-from-body",
+      "meaning": "incomplete fix",
+      "adapter_new_violations": [],
+      "returned_only_new_violations": [],
+      "expected_new_violations": []
+    },
+    {
+      "before": "v0-service-check",
+      "after": "v2-internal-owner-fixed",
+      "meaning": "refactor, no regression",
+      "adapter_new_violations": [],
+      "returned_only_new_violations": [],
+      "expected_new_violations": []
+    },
+    {
+      "before": "v0-service-check",
+      "after": "v3-internal-owner-from-body",
+      "meaning": "refactor with a hidden hole",
+      "adapter_new_violations": [],
+      "returned_only_new_violations": [
+        "claimed-owner"
+      ],
+      "expected_new_violations": [
+        "claimed-owner"
+      ]
+    }
+  ]
+}

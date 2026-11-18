@@ -1,0 +1,150 @@
+{
+  "schema_version": "0.1.0",
+  "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+  "variant": "v3-internal-owner-from-body",
+  "input": "other-order",
+  "workflow_sha256": "43bb06810947a8f145495b800b1caca192e4182a221688b1df2cd3ecb00c8440",
+  "initial_state_file_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
+  "started_at": "2026-11-12T06:39:53.493678+00:00",
+  "execution_status": "SUCCEEDED",
+  "error_code": null,
+  "runtime": {
+    "engine_version": "2.42.6",
+    "n8n_image_id": "sha256:526daa38b68e923cc00c5280d18b4da5d489f115a73bdbf3b8e452b184197a9a",
+    "fixture_image": "flowdelta-ownership-fixture:0.1.0",
+    "fixture_ext_sha256": "a151085e80cfa2ddbc240f0b5d0f6de1bb4e48f50f158d0b348930e5c368dc5b",
+    "network_internal": true
+  },
+  "cleanup_status": "COMPLETE",
+  "finished_at": "2026-11-12T06:40:34.301514+00:00",
+  "embedded_artifacts": {
+    "initial-state.json": {
+      "content": {
+        "schema_version": "0.4.0",
+        "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+        "metadata": {
+          "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+          "initial_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0"
+        },
+        "orders": [
+          {
+            "customer_id": "customer-demo",
+            "internal_note": "synthetic internal field excluded from public response",
+            "order_id": "ORD-1001",
+            "status": "준비중",
+            "tenant_id": "tenant-demo"
+          },
+          {
+            "customer_id": "other-demo",
+            "internal_note": "synthetic second tenant",
+            "order_id": "ORD-2001",
+            "status": "배송중",
+            "tenant_id": "other-tenant"
+          }
+        ],
+        "orders_sha256": "c77dac14cabe172afa25a8e98eda7ec3647811786bea62422e29955895530df2",
+        "events": []
+      },
+      "sha256": "223541b6b5bf213674692683c5c59b3bc41b038e3bc1ef2269dc9d5e1ddb9ce5",
+      "size_bytes": 784
+    },
+    "request.json": {
+      "content": {
+        "method": "POST",
+        "path": "/webhook/flowdelta-order-lookup",
+        "body": {
+          "order_id": "ORD-2001",
+          "customer_id": "customer-demo"
+        },
+        "authentication": "local-credential-reference"
+      },
+      "sha256": "d394daff232ee4556f9adfa9a6abee6a3ada813d98970f40854d4f26af52e258",
+      "size_bytes": 198
+    },
+    "response.json": {
+      "content": {
+        "status_code": 500,
+        "body": {
+          "message": "Error in workflow"
+        }
+      },
+      "sha256": "aea7af995a026b5defc25d9c4dbb49a6fa55db1fb63f003091a635cd5e0f5371",
+      "size_bytes": 77
+    },
+    "final-state.json": {
+      "content": {
+        "schema_version": "0.4.0",
+        "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+        "metadata": {
+          "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+          "initial_sha256": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0"
+        },
+        "orders": [
+          {
+            "customer_id": "customer-demo",
+            "internal_note": "synthetic internal field excluded from public response",
+            "order_id": "ORD-1001",
+            "status": "준비중",
+            "tenant_id": "tenant-demo"
+          },
+          {
+            "customer_id": "other-demo",
+            "internal_note": "synthetic second tenant",
+            "order_id": "ORD-2001",
+            "status": "배송중",
+            "tenant_id": "other-tenant"
+          }
+        ],
+        "orders_sha256": "c77dac14cabe172afa25a8e98eda7ec3647811786bea62422e29955895530df2",
+        "events": [
+          {
+            "schema_version": "0.4.0",
+            "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+            "producer": "orders-api",
+            "observed_at": "2026-11-12T06:40:31.746113+00:00",
+            "event_type": "ORDER_READ",
+            "route": "internal",
+            "principal": "customer-demo",
+            "tenant": "tenant-demo",
+            "resource_id": "ORD-2001",
+            "owner_filter": "customer-demo",
+            "method": "GET",
+            "outcome": "NOT_FOUND",
+            "response_sha256": "5a9ba6c6847770eaac6d099956e4e6b59a98a9b7d9a8440bc8252bf5890cb749",
+            "sequence": 1
+          }
+        ]
+      },
+      "sha256": "8e43027d4ede7593447e2c8d8b51ddb8e96c31bbcaa419db93f310a48704041a",
+      "size_bytes": 1343
+    },
+    "events.json": {
+      "content": {
+        "schema_version": "0.4.0",
+        "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+        "events": [
+          {
+            "schema_version": "0.4.0",
+            "run_id": "run-3c80818a2d9c4f229097c0ef8b6cb2c3",
+            "producer": "orders-api",
+            "observed_at": "2026-11-12T06:40:31.746113+00:00",
+            "event_type": "ORDER_READ",
+            "route": "internal",
+            "principal": "customer-demo",
+            "tenant": "tenant-demo",
+            "resource_id": "ORD-2001",
+            "owner_filter": "customer-demo",
+            "method": "GET",
+            "outcome": "NOT_FOUND",
+            "response_sha256": "5a9ba6c6847770eaac6d099956e4e6b59a98a9b7d9a8440bc8252bf5890cb749",
+            "sequence": 1
+          }
+        ],
+        "collection_status": "COMPLETE"
+      },
+      "sha256": "34c28b2ab1a22fe378aaf9ba2757d753c24c2469d03f850cd4d5b0fa976c90c1",
+      "size_bytes": 694
+    }
+  },
+  "runtime_lock_engine_version": "2.42.6"
+}

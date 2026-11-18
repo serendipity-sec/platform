@@ -1,0 +1,2 @@
+# Hashes in evidence/ are over LF bytes; keep every checkout identical.
+* text eol=lf
