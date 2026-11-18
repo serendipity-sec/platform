@@ -174,9 +174,13 @@ def test_invalid_plan_starts_nothing_and_creates_no_output(workspace) -> None:
 class StopAtRequest(FakeDocker):
     """Acts like Ctrl+C when the plan's request is sent to the order service."""
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.stop = KeyboardInterrupt("request interrupted")
+
     def __call__(self, args, *, timeout, input_text=None):
         if input_text and '"operation": "normal-request"' in input_text:
-            raise KeyboardInterrupt
+            raise self.stop
         return super().__call__(args, timeout=timeout, input_text=input_text)
 
 
@@ -299,11 +303,13 @@ def test_stop_then_cleanup_write_failure_keeps_first_stop_and_run_record(
     bundle, repo = workspace
     handoff, plan, catalog = read_plan_bundle(bundle)
     _deny_write(monkeypatch, "cleanup.json", PermissionError("denied"))
-    executor = PlanExecutor(bundle, repo, runner=StopAtRequest(), sleep=lambda seconds: None)
+    docker = StopAtRequest()
+    executor = PlanExecutor(bundle, repo, runner=docker, sleep=lambda seconds: None)
     output = repo / "var" / "run-stop-then-write-error"
-    # 최초 중단이 우선이고, 기록 오류는 중단 뒤에 알리지 않는다.
-    with pytest.raises(KeyboardInterrupt):
+    with pytest.raises(KeyboardInterrupt) as caught:
         executor.execute_plan(handoff, plan, catalog, output)
+    assert caught.value is docker.stop
+    assert any("PermissionError" in note for note in caught.value.__notes__)
     run = load(output, "runs/before-1.run.json")
     assert run["execution_status"] == "INTERRUPTED"
     assert run["error_code"] == "INTERRUPTED"
@@ -340,15 +346,22 @@ def test_stop_while_writing_final_run_record_is_retried_and_first_stop_is_kept(
 ) -> None:
     bundle, repo = workspace
     handoff, plan, catalog = read_plan_bundle(bundle)
-    executor = PlanExecutor(bundle, repo, runner=StopAtRequest(), sleep=lambda seconds: None)
+    docker = StopAtRequest()
+    executor = PlanExecutor(bundle, repo, runner=docker, sleep=lambda seconds: None)
     output = repo / "var" / "run-stop-then-run-record"
     _interrupt_once_on_write(monkeypatch, "before-1.run.json")
     # 최초 중단(요청)은 그대로 전파되고, run.json은 한 번 더 시도해 남아야 한다.
-    with pytest.raises(KeyboardInterrupt):
+    with pytest.raises(KeyboardInterrupt) as caught:
         executor.execute_plan(handoff, plan, catalog, output)
+    assert caught.value is docker.stop
     run = load(output, "runs/before-1.run.json")
     assert run["execution_status"] == "INTERRUPTED"
     assert run["error_code"] == "INTERRUPTED"
+    marker = load(output, "runs/before-1/finalize-interrupt.json")
+    assert marker["run_id"] == run["run_id"]
+    assert (
+        marker["step"] == run["extensions"]["flowdelta.finalize_interrupt"]["step"] == "run-record"
+    )
 
 
 def test_stop_while_writing_cleanup_is_kept_in_shared_evidence_and_run_record(
@@ -361,15 +374,16 @@ def test_stop_while_writing_cleanup_is_kept_in_shared_evidence_and_run_record(
     _interrupt_once_on_write(monkeypatch, "cleanup.json")
     with pytest.raises(KeyboardInterrupt):
         executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert load(output, "runs/before-1/cleanup.json")["status"] == "COMPLETE"
     marker = load(output, "runs/before-1/finalize-interrupt.json")
     assert marker == {
         "schema_version": "0.4.0",
-        "run_id": marker["run_id"],
+        "run_id": run["run_id"],
         "phase": "FINALIZING",
         "step": "cleanup-record",
         "error_code": "INTERRUPTED",
     }
-    run = load(output, "runs/before-1.run.json")
     # 요청은 끝났으므로 실행 상태는 SUCCEEDED로 두고, 중단 단계는 확장 필드에 남긴다.
     assert run["execution_status"] == "SUCCEEDED"
     assert run["extensions"]["flowdelta.finalize_interrupt"] == {
@@ -390,3 +404,52 @@ def test_stop_while_writing_run_record_leaves_marker_and_run_record(workspace, m
     run = load(output, "runs/before-1.run.json")
     assert run["extensions"]["flowdelta.finalize_interrupt"]["step"] == "run-record"
     assert run["execution_status"] == "SUCCEEDED"
+
+
+@pytest.mark.parametrize("filename", ["cleanup.json", "before-1.run.json"])
+def test_incomplete_final_write_never_publishes_partial_json(
+    workspace, monkeypatch, filename
+) -> None:
+    bundle, repo = workspace
+    output = repo / "var" / "partial-write"
+    original_write = Path.write_bytes
+    failures = []
+
+    def fail_after_prefix(path, data):
+        if path.name == filename:
+            original_write(path, data[:4])
+            failures.append(path)
+            raise PermissionError("partial write")
+        return original_write(path, data)
+
+    monkeypatch.setattr(Path, "write_bytes", fail_after_prefix)
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    executor = PlanExecutor(bundle, repo, runner=FakeDocker(), sleep=lambda _: None)
+    with pytest.raises(PermissionError, match="partial write"):
+        executor.execute_plan(handoff, plan, catalog, output)
+
+    assert failures
+    assert not list((output / "runs").rglob(filename))
+    if filename == "cleanup.json":
+        run = load(output, "runs/before-1.run.json")
+        assert run["execution_status"] == "SUCCEEDED"
+        assert not any(
+            ref["path"].endswith("/cleanup.json") for ref in run["artifacts"]["artifacts"]
+        )
+
+
+def test_repeated_run_record_interrupt_reports_missing_record(workspace, monkeypatch) -> None:
+    bundle, repo = workspace
+    output = repo / "var" / "repeated-stop"
+    _deny_write(monkeypatch, "before-1.run.json", KeyboardInterrupt("write interrupted"))
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    docker = StopAtRequest()
+    executor = PlanExecutor(bundle, repo, runner=docker, sleep=lambda _: None)
+    with pytest.raises(KeyboardInterrupt) as caught:
+        executor.execute_plan(handoff, plan, catalog, output)
+
+    assert caught.value is docker.stop
+    assert any("before-1.run.json" in note for note in caught.value.__notes__)
+    assert load(output, "runs/before-1/finalize-interrupt.json")["step"] == "run-record"
+    assert not (output / "runs/before-1.run.json").exists()
+    assert not (output / "runs/after-1").exists()

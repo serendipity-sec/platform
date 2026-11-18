@@ -16,8 +16,8 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from functools import partial
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, Literal, Protocol
 from uuid import uuid4
 
@@ -105,10 +105,12 @@ def save(path: Path, value: object) -> None:
     path.write_bytes(json_bytes(value))
 
 
-# 정리·기록 단계에서 난 중단. 이 단계 중단은 실행 상태와 별도로 증거를 남긴다.
-FINALIZE_STEPS = frozenset(
-    {"services-logs", "cleanup", "cleanup-record", "error-record", "run-record"}
-)
+def _save_record(path: Path, value: object) -> None:
+    """Publish a complete record without exposing a partial write."""
+    with TemporaryDirectory(dir=path.parent) as directory:
+        staged = Path(directory) / path.name
+        save(staged, value)
+        staged.replace(path)
 
 
 def run_side(
@@ -236,31 +238,31 @@ def run_side(
     actual_version: str | None = None
     actual_digest: str | None = None
     observed: list[str] = []
-    # 중단 신호(Ctrl+C)는 INTERRUPTED로 기록한 뒤, 실행 기록을 쓰고 나서 다시 던진다.
-    interrupt: BaseException | None = None
-    # 정리 단계에서 중단된 지점. 실행 상태와 별개로 cleanup.json에 남긴다.
-    cleanup_stop_step: str | None = None
-    # 최초 중단이 일어난 단계 이름. 정리·기록 단계의 중단은 별도 증거 파일과 run 확장 필드에 남긴다.
-    stop_step: str | None = None
+    interrupted: BaseException | None = None
+    finalize_interrupt: dict[str, str] | None = None
     write_failure: Exception | None = None
-    record: ExecutionRun | None = None
-    finalize_marker_written = False
 
-    def write_guarded(name: str, step: Callable[[], None]) -> bool:
-        # 기록 한 단계가 실패해도 다음 기록을 계속 쓴다. 중단은 최초 것을 보관한다.
-        nonlocal interrupt, write_failure, stop_step
-        try:
-            step()
-        except Exception as exc:
-            if write_failure is None:
-                write_failure = exc
-            return False
-        except BaseException as exc:
-            if interrupt is None:
-                interrupt = exc
-                stop_step = stop_step or name
-            return False
-        return True
+    def note_finalize_interrupt(step: str, exc: BaseException) -> None:
+        nonlocal interrupted, finalize_interrupt
+        if interrupted is None:
+            interrupted = exc
+        if finalize_interrupt is None:
+            finalize_interrupt = {"phase": "FINALIZING", "step": step, "error_code": "INTERRUPTED"}
+
+    def save_final_artifact(path: Path, value: object, step: str) -> None:
+        nonlocal write_failure
+        # An interruption can be transient. Keep its cause even when the retry succeeds.
+        for _ in range(2):
+            try:
+                _save_record(path, value)
+                return
+            except Exception as exc:
+                write_failure = write_failure or exc
+                return
+            except BaseException as exc:
+                note_finalize_interrupt(step, exc)
+        if interrupted is not None:
+            interrupted.add_note(f"Could not publish {path.name} after two interruptions.")
 
     save(
         shared / "allocation.json",
@@ -464,36 +466,30 @@ def run_side(
         if status_code != 200:
             raise RunFailure("NORMAL_REQUEST_REJECTED")
         execution_status = "SUCCEEDED"
-    except BaseException as exc:  # Every failure, including a stop signal, gets a run record.
+    except Exception as exc:  # Every failure still produces a run record and a cleanup attempt.
         failed_phase = phase
-        if not isinstance(exc, Exception):
-            interrupt = exc
-            stop_step = "request"
-            error_code = "INTERRUPTED"
-            execution_status = "INTERRUPTED" if started_at is not None else "NOT_RUN"
+        error_code = exc.code if isinstance(exc, RunFailure) else type(exc).__name__
+        timed_out = isinstance(exc, RunFailure) and exc.timed_out
+        if started_at is None:
+            execution_status = "NOT_RUN"
         else:
-            error_code = exc.code if isinstance(exc, RunFailure) else type(exc).__name__
-            timed_out = isinstance(exc, RunFailure) and exc.timed_out
-            if started_at is None:
-                execution_status = "NOT_RUN"
-            else:
-                execution_status = "TIMED_OUT" if timed_out else "FAILED"
+            execution_status = "TIMED_OUT" if timed_out else "FAILED"
+    except BaseException as exc:
+        interrupted = exc
+        failed_phase = phase
+        execution_status = "INTERRUPTED" if started_at is not None else "NOT_RUN"
+        error_code = "INTERRUPTED"
     finally:
         # --- FINALIZING: remove only this project's containers, networks and volumes.
-        phase = "FINALIZING"
+        cleanup_stop_step = None
         try:
             call([*compose, "logs", "--no-color"], "services", 60)
-        except RunFailure:
-            pass
         except Exception:
-            # 로그 수집은 진단용이라 실패해도 정리와 기록을 계속한다.
+            # Diagnostic log collection must not prevent cleanup.
             pass
         except BaseException as exc:
-            # 로그 수집 중 중단돼도 정리와 기록은 계속하고, 중단은 마지막에 다시 던진다.
-            if interrupt is None:
-                interrupt = exc
-                stop_step = "services-logs"
             cleanup_stop_step = "services-logs"
+            note_finalize_interrupt(cleanup_stop_step, exc)
         cleanup: dict[str, Any] = {"schema_version": "0.4.0", "run_id": run_id, "project": project}
         try:
             call([*compose, "down", "--volumes", "--remove-orphans"], "cleanup", prep_timeout)
@@ -511,23 +507,18 @@ def run_side(
             }
             cleanup_status = "COMPLETE" if not any(remaining.values()) else "FAILED"
             cleanup.update(status=cleanup_status, remaining=remaining)
-        except RunFailure as exc:
-            cleanup_status = "FAILED"
-            cleanup.update(status="FAILED", error_code=exc.code)
         except Exception as exc:
-            # 일반 오류(예: 로그 파일 쓰기 실패)는 중단이 아니므로 실제 원인을 그대로 남긴다.
             cleanup_status = "FAILED"
-            cleanup.update(status="FAILED", error_code=type(exc).__name__)
+            cleanup.update(
+                status="FAILED",
+                error_code=exc.code if isinstance(exc, RunFailure) else type(exc).__name__,
+            )
         except BaseException as exc:
-            # 정리 도중 중단되면 정리 완료를 확인할 수 없으므로 FAILED로 남긴다.
-            if interrupt is None:
-                interrupt = exc
-                stop_step = "cleanup"
             cleanup_stop_step = "cleanup"
+            note_finalize_interrupt(cleanup_stop_step, exc)
             cleanup_status = "FAILED"
             cleanup.update(status="FAILED", error_code="INTERRUPTED")
         if cleanup_stop_step is not None:
-            # 중단 단계와 코드를 실행 상태와 별도로 남겨 공유 증거만으로 사유를 알 수 있게 한다.
             cleanup["interrupted"] = {
                 "phase": "FINALIZING",
                 "step": cleanup_stop_step,
@@ -535,68 +526,60 @@ def run_side(
             }
         cleanup["check_command"] = f"docker ps --all --filter {label_filter}"
         cleanup["private_local_files_retained"] = True
-        write_guarded("cleanup-record", lambda: save(shared / "cleanup.json", cleanup))
+        save_final_artifact(shared / "cleanup.json", cleanup, "cleanup-record")
 
-    phase = "FINISHED"
     if error_code is not None:
-        write_guarded(
+        save_final_artifact(
+            shared / "error.json",
+            {
+                "error_code": error_code,
+                "failed_phase": failed_phase,
+                "execution_attempted": started_at is not None,
+            },
             "error-record",
-            lambda: save(
-                shared / "error.json",
-                {
-                    "error_code": error_code,
-                    "failed_phase": failed_phase,
-                    "execution_attempted": started_at is not None,
-                },
-            ),
         )
 
-    finalize_stop: dict[str, str] | None = None
-
-    def build_record() -> None:
-        nonlocal record
-        record = _record(
-            request,
-            run_id=run_id,
-            project=project,
-            shared=shared,
-            observed=observed,
-            execution_status=execution_status,
-            cleanup_status=cleanup_status,
-            error_code=error_code,
-            failed_phase=failed_phase,
-            started_at=started_at,
-            actual_version=actual_version,
-            actual_digest=actual_digest,
-            finalize_stop=finalize_stop,
-        )
-
-    # 정리·기록 단계에서 중단이 났으면 중단 증거를 먼저 남기고, run.json 쓰기를 한 번 더 시도한다.
+    record: ExecutionRun | None = None
+    marker_attempted = False
+    # Retry the record once so an interruption in the first write can be recorded too.
     for _ in range(2):
-        if record is not None:
-            break
-        if stop_step in FINALIZE_STEPS and not finalize_marker_written:
-            marker = {
-                "schema_version": "0.4.0",
-                "run_id": run_id,
-                "phase": "FINALIZING",
-                "step": stop_step,
-                "error_code": "INTERRUPTED",
-            }
-            finalize_marker_written = write_guarded(
+        if finalize_interrupt is not None and not marker_attempted:
+            save_final_artifact(
+                shared / "finalize-interrupt.json",
+                {"schema_version": "0.4.0", "run_id": run_id, **finalize_interrupt},
                 "finalize-marker",
-                partial(save, shared / "finalize-interrupt.json", marker),
             )
-            if finalize_marker_written:
-                finalize_stop = {
-                    "phase": "FINALIZING",
-                    "step": stop_step,
-                    "error_code": "INTERRUPTED",
-                }
-        write_guarded("run-record", build_record)
-    if interrupt is not None:
-        # 최초 중단을 그대로 다시 던진다. 기록 실패는 중단보다 뒤에 알린다.
-        raise interrupt
+            marker_attempted = True
+        try:
+            record = _record(
+                request,
+                run_id=run_id,
+                project=project,
+                shared=shared,
+                observed=observed,
+                execution_status=execution_status,
+                cleanup_status=cleanup_status,
+                error_code=error_code,
+                failed_phase=failed_phase,
+                started_at=started_at,
+                actual_version=actual_version,
+                actual_digest=actual_digest,
+                finalize_interrupt=finalize_interrupt,
+            )
+        except Exception as exc:
+            write_failure = write_failure or exc
+        except BaseException as exc:
+            note_finalize_interrupt("run-record", exc)
+        else:
+            break
+    if interrupted is not None:
+        if record is None:
+            interrupted.add_note(f"Could not publish {label}.run.json after two attempts.")
+        if write_failure is not None:
+            interrupted.add_note(
+                f"Evidence persistence also failed ({type(write_failure).__name__})."
+            )
+        raise interrupted
     if write_failure is not None:
         raise write_failure
     if record is None:
@@ -618,7 +601,7 @@ def _record(
     started_at: str | None,
     actual_version: str | None,
     actual_digest: str | None,
-    finalize_stop: dict[str, str] | None = None,
+    finalize_interrupt: dict[str, str] | None = None,
 ) -> ExecutionRun:
     """Link the files that really exist, by bundle-root path, and write runs/<side>-<n>.run.json."""
     label = shared.name
@@ -642,8 +625,8 @@ def _record(
     extensions: dict[str, Any] = {"flowdelta.compose_project": project}
     if failed_phase is not None:
         extensions["flowdelta.failed_phase"] = failed_phase
-    if finalize_stop is not None:
-        extensions["flowdelta.finalize_interrupt"] = finalize_stop
+    if finalize_interrupt is not None:
+        extensions["flowdelta.finalize_interrupt"] = finalize_interrupt
     run = ExecutionRun(
         run_id=run_id,
         comparison_run_id=request.comparison_run_id,
@@ -680,5 +663,5 @@ def _record(
             ),
         ),
     )
-    save(request.output / "runs" / f"{label}.run.json", run.model_dump(mode="json"))
+    _save_record(request.output / "runs" / f"{label}.run.json", run.model_dump(mode="json"))
     return run

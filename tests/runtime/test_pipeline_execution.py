@@ -278,9 +278,11 @@ def test_pipeline_stop_at_request_with_one_run_record_write_stop_keeps_run_recor
         run_pipeline(**options, execute=True, runner=StopAtRequestDocker(), sleep=lambda _: None)
     summary = json.loads((options["output"] / "summary.json").read_bytes())
     assert summary["status"] == "INTERRUPTED"
+    assert summary["stages"]["execution"] == "INTERRUPTED"
     run = json.loads((options["output"] / "execution/runs/before-1.run.json").read_bytes())
     assert run["execution_status"] == "INTERRUPTED"
-    assert not (options["output"] / "execution/runs/after-1.run.json").exists()
+    assert run["extensions"]["flowdelta.finalize_interrupt"]["step"] == "run-record"
+    assert not (options["output"] / "execution/runs/after-1").exists()
 
 
 def test_pipeline_stop_while_writing_cleanup_is_kept_as_evidence(options, monkeypatch):
