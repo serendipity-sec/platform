@@ -189,8 +189,14 @@ async def lifespan(application: FastAPI) -> AsyncIterator[None]:
     yield
 
 
+# No interactive docs and no OpenAPI schema: the schema listed every route without
+# authentication (w12 security check). Clients use the documented routes directly.
 app = FastAPI(
-    title="FlowDelta local order fixture", lifespan=lifespan, docs_url=None, redoc_url=None
+    title="FlowDelta local order fixture",
+    lifespan=lifespan,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
 )
 
 
