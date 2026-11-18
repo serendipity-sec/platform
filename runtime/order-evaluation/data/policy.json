@@ -1,0 +1,36 @@
+{
+  "interpretation": "DECLARED_ONLY",
+  "policy_id": "order-ownership-evaluation-policy",
+  "policy_version": "1",
+  "provenance_ref": "provenance.json",
+  "rules": [
+    {
+      "condition": "주문 내용은 신뢰된 요청 principal·tenant와 소유자가 모두 일치할 때만 읽는다.",
+      "exceptions": [],
+      "rationale": "서비스 자격은 고객 신원이 아니다. 요청 본문의 customer_id와 tenant_id를 신뢰하지 않는다.",
+      "resource": "orders",
+      "rule_id": "own-order",
+      "schema_version": "0.4.0",
+      "subject": "customer-demo / tenant-demo"
+    },
+    {
+      "condition": "주문 데이터를 생성·수정·삭제하지 않는다.",
+      "exceptions": [],
+      "rationale": "조회 업무의 허용 부수 효과와 상태를 분리한다.",
+      "resource": "orders",
+      "rule_id": "read-only",
+      "schema_version": "0.4.0",
+      "subject": "workflow"
+    },
+    {
+      "condition": "권한 결정을 위한 소유권 metadata 조회는 허용한다.",
+      "exceptions": [],
+      "rationale": "내용 읽기 전에 customer와 tenant를 검증한다.",
+      "resource": "orders.ownership",
+      "rule_id": "ownership-metadata",
+      "schema_version": "0.4.0",
+      "subject": "workflow"
+    }
+  ],
+  "schema_version": "0.4.0"
+}

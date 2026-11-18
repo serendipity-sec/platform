@@ -22,6 +22,8 @@ def validate_runs(
     plan: TestPlan,
     runs: list[ExecutionRun],
     root: Path,
+    *,
+    require_declared_run_artifacts: bool = True,
 ) -> None:
     expected = {
         (side, attempt)
@@ -50,7 +52,9 @@ def validate_runs(
             raise InputError("RUN_CONTEXT_MISMATCH")
         if run.initial_state_sha256 != plan.initial_state_ref.sha256:
             raise InputError("STATE_HASH_MISMATCH")
-        if not set(template.required_artifact_kinds).issubset(run.artifacts.required_kinds):
+        if require_declared_run_artifacts and not set(template.required_artifact_kinds).issubset(
+            run.artifacts.required_kinds
+        ):
             raise InputError("RUN_REQUIRED_ARTIFACT_MISSING")
         if (
             run.execution_status == "SUCCEEDED"
@@ -61,7 +65,10 @@ def validate_runs(
             verify_ref(root, ref)
 
 
-def read_module_outputs(root: Path) -> dict[str, Any]:
+def read_module_outputs(
+    root: Path, *, require_declared_run_artifacts: bool = True
+) -> dict[str, Any]:
+    """Validate module outputs, optionally leaving missing kind declarations to the judge."""
     _, docs = read_manifest(root)
     handoff = read_handoff(root / "input")
     try:
@@ -76,6 +83,17 @@ def read_module_outputs(root: Path) -> dict[str, Any]:
     if analysis.authorship.origin != "MODULE_OUTPUT" or plan.authorship.origin != "MODULE_OUTPUT":
         raise InputError("MODULE_OUTPUT_REQUIRED")
     validate_pipeline(handoff, analysis, catalog, plan)
+    from flowdelta.order_scenarios import request_input, scenario_ref
+
+    if scenario_ref(plan) is not None:
+        from flowdelta.pipeline_io import validate_input_fields
+
+        template = next(
+            t
+            for t in catalog.templates
+            if t.template_id == plan.template_id and t.version == plan.template_version
+        )
+        validate_input_fields(request_input(plan, root), template.input_fields)
     if plan.retrieval_ref is not None:
         verify_ref(root, plan.retrieval_ref)
         if plan.retrieval_ref.path not in docs:
@@ -96,7 +114,14 @@ def read_module_outputs(root: Path) -> dict[str, Any]:
         if run.authorship.origin != "RUNTIME_OBSERVATION":
             raise InputError("RUNTIME_OBSERVATION_REQUIRED")
     if runs:
-        validate_runs(handoff, catalog, plan, runs, root)
+        validate_runs(
+            handoff,
+            catalog,
+            plan,
+            runs,
+            root,
+            require_declared_run_artifacts=require_declared_run_artifacts,
+        )
     return {
         "schema_version": "0.4.0",
         "status": "CONTRACT_LINKS_VALID",

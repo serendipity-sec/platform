@@ -1,0 +1,109 @@
+{
+  "authorship": {
+    "note": "Registered synthetic integration scenarios; no expected labels.",
+    "origin": "MODULE_OUTPUT",
+    "producer": "team-authored-order-evaluation/1.0.0"
+  },
+  "catalog_id": "order-evaluation-v1",
+  "schema_version": "0.4.0",
+  "templates": [
+    {
+      "allowed_effects": [
+        "read:own-order",
+        "respond:normal-order",
+        "fixture:append-order-read-event"
+      ],
+      "extensions": {},
+      "input_fields": [
+        {
+          "extensions": {},
+          "items": null,
+          "max_items": 1000,
+          "name": "order_id",
+          "pattern": "^ORD-[0-9]{4}$",
+          "properties": [],
+          "required": true,
+          "schema_version": "0.4.0",
+          "value_type": "string"
+        },
+        {
+          "name": "customer_id",
+          "pattern": "^[a-z-]+$",
+          "required": true,
+          "value_type": "string"
+        },
+        {
+          "name": "tenant_id",
+          "pattern": "^[a-z-]+$",
+          "required": true,
+          "value_type": "string"
+        }
+      ],
+      "materialized_input_bindings": [],
+      "method": "POST",
+      "mode": "NORMAL_BUSINESS_REQUEST",
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "runtime_profile": "core-local-v1",
+      "schema_version": "0.4.0",
+      "task_id": "order-lookup",
+      "template_id": "order-evaluation-normal",
+      "timeout_seconds": 30,
+      "version": "1.0.0",
+      "webhook_path": "/webhook/flowdelta-order-lookup"
+    },
+    {
+      "allowed_effects": [
+        "read:own-order",
+        "respond:normal-order",
+        "fixture:append-order-read-event"
+      ],
+      "extensions": {},
+      "input_fields": [
+        {
+          "extensions": {},
+          "items": null,
+          "max_items": 1000,
+          "name": "order_id",
+          "pattern": "^ORD-[0-9]{4}$",
+          "properties": [],
+          "required": true,
+          "schema_version": "0.4.0",
+          "value_type": "string"
+        },
+        {
+          "name": "customer_id",
+          "pattern": "^[a-z-]+$",
+          "required": true,
+          "value_type": "string"
+        },
+        {
+          "name": "tenant_id",
+          "pattern": "^[a-z-]+$",
+          "required": true,
+          "value_type": "string"
+        }
+      ],
+      "materialized_input_bindings": [],
+      "method": "POST",
+      "mode": "REGISTERED_SECURITY_REQUEST",
+      "required_artifact_kinds": [
+        "response",
+        "initial-state",
+        "final-state",
+        "events"
+      ],
+      "runtime_profile": "core-local-v1",
+      "schema_version": "0.4.0",
+      "task_id": "order-lookup",
+      "template_id": "order-evaluation-security",
+      "timeout_seconds": 30,
+      "version": "1.0.0",
+      "webhook_path": "/webhook/flowdelta-order-lookup"
+    }
+  ]
+}

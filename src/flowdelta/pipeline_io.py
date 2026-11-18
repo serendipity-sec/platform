@@ -219,6 +219,13 @@ def validate_pipeline(
         raise InputError("TEMPLATE_TIMEOUT_EXCEEDED")
     validate_input_fields(plan.normal_input, template.input_fields)
     _same(plan.normal_input, handoff.task.normal_input, "NORMAL_INPUT_MISMATCH")
+    from flowdelta.order_scenarios import scenario_ref
+
+    if template.mode == "REGISTERED_SECURITY_REQUEST":
+        if scenario_ref(plan) is None:
+            raise InputError("ORDER_SCENARIO_REQUIRED")
+    elif scenario_ref(plan) is not None:
+        raise InputError("SCENARIO_REQUIRES_SECURITY_TEMPLATE")
     if template.mode == "NORMAL_MANUAL_WORKFLOW":
         for workflow in [handoff.before, handoff.after]:
             nodes = {node.node_id: node for node in workflow.nodes}

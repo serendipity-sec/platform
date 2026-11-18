@@ -150,11 +150,29 @@ class Parser:
                 "string",
                 "field",
                 "named_field",
+                "concat",
             }:
                 raise UnsupportedExpression("UNSUPPORTED_ADDITION")
-            if "string" not in {expression.kind, right.kind}:
+            if "string" not in {expression.kind, right.kind} and right.kind != "concat":
                 raise UnsupportedExpression("STRING_LITERAL_REQUIRED_FOR_CONCAT")
-            expression = Expression("concat", terms=(expression, right))
+            if right.kind == "concat":
+                # Three terms are supported only when a literal prefix forces string
+                # concatenation. Do not guess whether two input fields add numerically.
+                if (
+                    expression.kind != "string"
+                    or right.terms[0].kind not in {"field", "named_field"}
+                    or right.terms[1].kind != "string"
+                ):
+                    raise UnsupportedExpression("UNSUPPORTED_ADDITION")
+                expression = Expression(
+                    "concat",
+                    terms=(
+                        Expression("concat", terms=(expression, right.terms[0])),
+                        right.terms[1],
+                    ),
+                )
+            else:
+                expression = Expression("concat", terms=(expression, right))
         elif self.peek() in {"===", "!==", ">", ">=", "<", "<="}:
             operator = self.take()
             right = self.value(depth + 1)

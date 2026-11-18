@@ -26,6 +26,8 @@ runtime/**/*.yaml text eol=lf
 runtime/**/*.toml text eol=lf
 src/**/*.py text eol=lf
 tools/check_profiled_order.py text eol=lf
+tools/make_order_evaluation.py text eol=lf
+tools/check_order_evaluation.py text eol=lf
 tests/**/*.py text eol=lf
 schemas/*.json     text eol=lf
 poetry.lock        linguist-generated=true -diff
@@ -33,6 +35,7 @@ poetry.lock        linguist-generated=true -diff
 # Acquired originals retain the exact bytes recorded in acquisition.json on every OS.
 examples/public-sources/** -text
 # Preserve recorded harness and observation bytes on every OS.
+examples/module-outputs/order-evaluation/*.zip binary
 experiments/n8n-claw-memory/** -text
 # Preserve referenced static-analysis summaries byte-for-byte on every OS.
 experiments/n8n-claw-c/evidence/semgrep-summary*.json text eol=lf

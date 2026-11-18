@@ -79,6 +79,36 @@ def describe_http(
     endpoint = [
         e for e in context.environment.http_endpoints if (e.method, e.url) == (method, p.get("url"))
     ]
+    if not endpoint and context.environment.extensions.get("flowdelta.order_evaluation") == "v1":
+        # Only this team's registered synthetic route grammar. No arbitrary URL evaluation.
+        url = _value(p.get("url"), context)
+        terms = list(url.terms)
+        if len(terms) == 2 and terms[0].kind == "concat":
+            terms = [*terms[0].terms, terms[1]]
+        if (
+            url.kind == "concat"
+            and len(terms) in {2, 3}
+            and terms[0].kind == "constant"
+            and terms[0].value == "http://orders-api:8080/internal/orders/"
+            and terms[1].kind == "named_field"
+            and terms[1].field_path == ["body", "order_id"]
+            and terms[1].node_name == "Order request"
+            and (
+                len(terms) == 2 or (terms[2].kind == "constant" and terms[2].value == "/ownership")
+            )
+            and any(
+                item.name == "Order request" and item.node_type == "n8n-nodes-base.webhook"
+                for item in context.workflow.nodes
+            )
+        ):
+            suffix = "/ownership" if len(terms) == 3 else ""
+            endpoint = [
+                e
+                for e in context.environment.http_endpoints
+                if (e.method, e.url)
+                == (method, "http://orders-api:8080/internal/orders/{order_id}" + suffix)
+            ]
+            expressions["/url"] = url
     if len(endpoint) != 1 or method != "GET":
         raise UnsupportedNode("DECLARED_GET_ENDPOINT_REQUIRED")
     if p.get("authentication", "none") not in {"none", "genericCredentialType"}:

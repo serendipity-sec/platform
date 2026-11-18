@@ -62,6 +62,8 @@ uv run --frozen --extra baseline python -m flowdelta.cli conformance --out var/n
 
 `examples/contracts/`의 분석·계획은 **CONTRACT_EXAMPLE**입니다. 실제 모듈 출력이 아닙니다.
 실제 출력은 `flowdelta check-pipeline <bundle>`로 파일 연결을 확인합니다.
+등록된 합성 주문 소유권 변형의 A→B→C 실행·자동 판정은
+[주문 평가 통합 안내](docs/ORDER_EVALUATION.md)의 `flowdelta evaluate-order-family`로 확인합니다.
 
 ## 개발 확인
 

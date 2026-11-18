@@ -1,0 +1,35 @@
+{
+  "scope": "SYNTHETIC_INTEGRATION_ACCEPTANCE",
+  "execution_sources_match_commit": "c5cf8fd6cffebd7c438c125a82f519f586d65646",
+  "followup_commit": "5c05f57dea7f1c70be15a51a4584d6d96a9c52dc",
+  "followup_notes": "Relative-path/error handling and conservative parsing; all six A analyses byte-identical and all recorded judgments unchanged.",
+  "acceptance": {
+    "status": "PASS",
+    "real_runs": 36,
+    "normal_business_passed": 12,
+    "comparisons": {
+      "NO_VIOLATION_OBSERVED_IN_TEST": 11,
+      "NEW_VIOLATION": 3,
+      "REMEDIATED_IN_TEST": 3,
+      "REMAINING_VIOLATION": 1
+    },
+    "scope": "SYNTHETIC_INTEGRATION_ACCEPTANCE"
+  },
+  "normal_demo_passed": true,
+  "normal_pipeline_passed": true,
+  "full_pytest": {
+    "passed": 887,
+    "skipped": 54
+  },
+  "post_fix_related_pytest": {
+    "passed": 66
+  },
+  "cleanup_remaining": {
+    "containers": 0,
+    "networks": 0,
+    "volumes": 0
+  },
+  "archive": "evidence-20261117.zip",
+  "archive_sha256": "fd3e5104e768c6f9928a7860d7e41e7a7ff96b4a30f7089d77a9ae91406e6ce1",
+  "archived_files": 808
+}

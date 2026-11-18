@@ -17,6 +17,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any, Literal, Protocol
 from uuid import uuid4
 
@@ -41,7 +42,7 @@ KIND_FILES = {
 }
 
 Phase = Literal["QUEUED", "PREPARING", "READY", "RUNNING", "COLLECTING", "FINALIZING", "FINISHED"]
-ExecutionStatus = Literal["NOT_RUN", "SUCCEEDED", "FAILED", "TIMED_OUT"]
+ExecutionStatus = Literal["NOT_RUN", "SUCCEEDED", "FAILED", "TIMED_OUT", "INTERRUPTED"]
 
 
 @dataclass(frozen=True)
@@ -104,6 +105,14 @@ def save(path: Path, value: object) -> None:
     path.write_bytes(json_bytes(value))
 
 
+def _save_record(path: Path, value: object) -> None:
+    """Publish a complete record without exposing a partial write."""
+    with TemporaryDirectory(dir=path.parent) as directory:
+        staged = Path(directory) / path.name
+        save(staged, value)
+        staged.replace(path)
+
+
 def run_side(
     request: SideRequest,
     runner: CommandRunner = subprocess_runner,
@@ -111,6 +120,8 @@ def run_side(
 ) -> ExecutionRun:
     checked, source, plan = request.checked, request.source, request.plan
     lock, registered = checked.lock, checked.registered
+    body_input = checked.request_input if checked.request_input is not None else plan.normal_input
+    request_id = f"request-{uuid4().hex}" if registered.fixture_profile else ""
     label = f"{source.side}-{request.attempt}"
 
     # --- Allocation: a new identity, project, folders and credentials for this run only.
@@ -136,6 +147,9 @@ def run_side(
         newline="\n",
     )
     env_file.chmod(0o600)
+    if registered.fixture_profile:
+        with env_file.open("a", encoding="utf-8", newline="\n") as stream:
+            stream.write(f"FD_REQUEST_ID={request_id}\n")
     compose = [
         "docker",
         "compose",
@@ -229,6 +243,29 @@ def run_side(
     actual_version: str | None = None
     actual_digest: str | None = None
     observed: list[str] = []
+    interrupted: BaseException | None = None
+    finalize_interrupt: dict[str, str] | None = None
+    write_failure: Exception | None = None
+
+    def note_finalize_interrupt(step: str, exc: BaseException) -> None:
+        nonlocal interrupted, finalize_interrupt
+        if interrupted is None:
+            interrupted = exc
+        if finalize_interrupt is None:
+            finalize_interrupt = {"phase": "FINALIZING", "step": step, "error_code": "INTERRUPTED"}
+
+    def save_final_artifact(path: Path, value: object, step: str) -> None:
+        nonlocal write_failure
+        # An interruption can be transient. Keep its cause even when the retry succeeds.
+        for _ in range(2):
+            try:
+                _save_record(path, value)
+                return
+            except Exception as exc:
+                write_failure = write_failure or exc
+                return
+            except BaseException as exc:
+                note_finalize_interrupt(step, exc)
 
     save(
         shared / "allocation.json",
@@ -387,7 +424,9 @@ def run_side(
             {
                 "method": registered.method,
                 "path": registered.webhook_path,
-                "body": plan.normal_input,
+                "body": body_input,
+                "run_id": run_id,
+                "request_id": request_id,
                 "timeout_seconds": checked.timeout_seconds,
                 "authentication": "local-credential-reference",
             },
@@ -399,7 +438,7 @@ def run_side(
             status_code, body = observe(
                 "normal-request",
                 {"x-flowdelta-client": credentials["client"]},
-                plan.normal_input,
+                body_input,
                 timeout=checked.timeout_seconds + EXEC_OVERHEAD_SECONDS,
             )
             save(shared / "response.json", {"status_code": status_code, "body": body})
@@ -440,13 +479,22 @@ def run_side(
             execution_status = "NOT_RUN"
         else:
             execution_status = "TIMED_OUT" if timed_out else "FAILED"
+    except BaseException as exc:
+        interrupted = exc
+        failed_phase = phase
+        execution_status = "INTERRUPTED" if started_at is not None else "NOT_RUN"
+        error_code = "INTERRUPTED"
     finally:
         # --- FINALIZING: remove only this project's containers, networks and volumes.
-        phase = "FINALIZING"
+        cleanup_stop_step = None
         try:
             call([*compose, "logs", "--no-color"], "services", 60)
-        except RunFailure:
+        except Exception:
+            # Diagnostic log collection must not prevent cleanup.
             pass
+        except BaseException as exc:
+            cleanup_stop_step = "services-logs"
+            note_finalize_interrupt(cleanup_stop_step, exc)
         cleanup: dict[str, Any] = {"schema_version": "0.4.0", "run_id": run_id, "project": project}
         try:
             call([*compose, "down", "--volumes", "--remove-orphans"], "cleanup", prep_timeout)
@@ -464,37 +512,83 @@ def run_side(
             }
             cleanup_status = "COMPLETE" if not any(remaining.values()) else "FAILED"
             cleanup.update(status=cleanup_status, remaining=remaining)
-        except RunFailure as exc:
+        except Exception as exc:
             cleanup_status = "FAILED"
-            cleanup.update(status="FAILED", error_code=exc.code)
+            cleanup.update(
+                status="FAILED",
+                error_code=exc.code if isinstance(exc, RunFailure) else type(exc).__name__,
+            )
+        except BaseException as exc:
+            cleanup_stop_step = "cleanup"
+            note_finalize_interrupt(cleanup_stop_step, exc)
+            cleanup_status = "FAILED"
+            cleanup.update(status="FAILED", error_code="INTERRUPTED")
+        if cleanup_stop_step is not None:
+            cleanup["interrupted"] = {
+                "phase": "FINALIZING",
+                "step": cleanup_stop_step,
+                "error_code": "INTERRUPTED",
+            }
         cleanup["check_command"] = f"docker ps --all --filter {label_filter}"
         cleanup["private_local_files_retained"] = True
-        save(shared / "cleanup.json", cleanup)
+        save_final_artifact(shared / "cleanup.json", cleanup, "cleanup-record")
 
-    phase = "FINISHED"
     if error_code is not None:
-        save(
+        save_final_artifact(
             shared / "error.json",
             {
                 "error_code": error_code,
                 "failed_phase": failed_phase,
                 "execution_attempted": started_at is not None,
             },
+            "error-record",
         )
-    return _record(
-        request,
-        run_id=run_id,
-        project=project,
-        shared=shared,
-        observed=observed,
-        execution_status=execution_status,
-        cleanup_status=cleanup_status,
-        error_code=error_code,
-        failed_phase=failed_phase,
-        started_at=started_at,
-        actual_version=actual_version,
-        actual_digest=actual_digest,
-    )
+
+    record: ExecutionRun | None = None
+    marker_attempted = False
+    # Retry the record once so an interruption in the first write can be recorded too.
+    for _ in range(2):
+        if finalize_interrupt is not None and not marker_attempted:
+            save_final_artifact(
+                shared / "finalize-interrupt.json",
+                {"schema_version": "0.4.0", "run_id": run_id, **finalize_interrupt},
+                "finalize-marker",
+            )
+            marker_attempted = True
+        try:
+            record = _record(
+                request,
+                run_id=run_id,
+                project=project,
+                shared=shared,
+                observed=observed,
+                execution_status=execution_status,
+                cleanup_status=cleanup_status,
+                error_code=error_code,
+                failed_phase=failed_phase,
+                started_at=started_at,
+                actual_version=actual_version,
+                actual_digest=actual_digest,
+                request_id=request_id,
+                finalize_interrupt=finalize_interrupt,
+            )
+        except Exception as exc:
+            write_failure = write_failure or exc
+        except BaseException as exc:
+            note_finalize_interrupt("run-record", exc)
+        else:
+            break
+    if interrupted is not None:
+        if write_failure is not None:
+            interrupted.add_note(
+                f"Evidence persistence also failed ({type(write_failure).__name__})."
+            )
+        raise interrupted
+    if write_failure is not None:
+        raise write_failure
+    if record is None:
+        raise RuntimeError("RUN_RECORD_NOT_WRITTEN")
+    return record
 
 
 def _record(
@@ -511,6 +605,8 @@ def _record(
     started_at: str | None,
     actual_version: str | None,
     actual_digest: str | None,
+    request_id: str = "",
+    finalize_interrupt: dict[str, str] | None = None,
 ) -> ExecutionRun:
     """Link the files that really exist, by bundle-root path, and write runs/<side>-<n>.run.json."""
     label = shared.name
@@ -532,8 +628,13 @@ def _record(
     kinds = {kind: by_name[KIND_FILES[kind]] for kind in observed}
     missing = sorted(set(required) - set(observed))
     extensions: dict[str, Any] = {"flowdelta.compose_project": project}
+    if request_id:
+        extensions["flowdelta.request_id"] = request_id
+        extensions["flowdelta.fixture_profile"] = request.checked.registered.fixture_profile
     if failed_phase is not None:
         extensions["flowdelta.failed_phase"] = failed_phase
+    if finalize_interrupt is not None:
+        extensions["flowdelta.finalize_interrupt"] = finalize_interrupt
     run = ExecutionRun(
         run_id=run_id,
         comparison_run_id=request.comparison_run_id,
@@ -570,5 +671,5 @@ def _record(
             ),
         ),
     )
-    save(request.output / "runs" / f"{label}.run.json", run.model_dump(mode="json"))
+    _save_record(request.output / "runs" / f"{label}.run.json", run.model_dump(mode="json"))
     return run

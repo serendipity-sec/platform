@@ -1,20 +1,20 @@
 {
-  "schema_version": "0.4.0",
-  "profile_id": "order-ownership-eval-v1",
-  "kind": "FIXTURE_CONTRACT_CHECK",
-  "fixture_image": "flowdelta-order-fixture:0.4.0",
-  "initial_state": "examples/order-lookup/state/initial.json",
   "files": {
     "examples/order-lookup/state/initial.json": "9201ab76bb9f73fe663c872cb5da5a028c7ac45f5e5b9c288ba269b98ab2e9c0",
-    "runtime/order-lookup/compose.yaml": "4178631aff8393549a6fdde26fbf22dfd8e1c8e0deae7f0c925383ad1c785033",
-    "runtime/order-ownership/compose.override.yaml": "7c9ae3937d14769dbf2081ea7edb56503c2dffc7b16930fabb3872a59b2b8e58",
-    "runtime/order-lookup/fixture.Dockerfile": "cbdf2379d0643aee7fcf21ccafb5e3047f03253c1f5bb683ef41138232cdaec7",
     "pyproject.toml": "d7aea587aa9f09e423c693c463dbff3b523bb0fe96b88d57b129c504e5a52126",
-    "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec",
-    "src/flowdelta/baseline/fixture.py": "b2da69bb01464a3b529ef1919e6df57c87b4ace3fca89c11f2abd0a785a1d661",
-    "src/flowdelta/baseline/probe.py": "59595d4d3198ad7c735b43683f2ae2e58e9f043f4527d4d4abfa95dea3162eff",
+    "runtime/order-lookup/compose.yaml": "4178631aff8393549a6fdde26fbf22dfd8e1c8e0deae7f0c925383ad1c785033",
+    "runtime/order-lookup/fixture.Dockerfile": "cbdf2379d0643aee7fcf21ccafb5e3047f03253c1f5bb683ef41138232cdaec7",
     "runtime/order-lookup/runtime.lock.toml": "6393db0ebcaec19ada7358ea9f41d714fa7bdc854e71a33630b8f7eed0eaad0e",
+    "runtime/order-ownership/compose.override.yaml": "7c9ae3937d14769dbf2081ea7edb56503c2dffc7b16930fabb3872a59b2b8e58",
+    "src/flowdelta/baseline/fixture.py": "b2da69bb01464a3b529ef1919e6df57c87b4ace3fca89c11f2abd0a785a1d661",
     "src/flowdelta/baseline/ownership.py": "ef3b76efdaf82f3520a4a707dd5354f90a3aaf4983c7aa90747c2a70c77026ae",
-    "src/flowdelta/runtime/order_lookup.py": "76a32cbf06a5cf5f23f2f94418e058135c11b764480b74ccfb13bb8c6b2b948d"
-  }
+    "src/flowdelta/baseline/probe.py": "59595d4d3198ad7c735b43683f2ae2e58e9f043f4527d4d4abfa95dea3162eff",
+    "src/flowdelta/runtime/order_lookup.py": "e9399b7d801418b2e2eac46b3f66029646a520e82c80367a0402b47cc52662b4",
+    "uv.lock": "58db053d1884ef36bf6fcda32244fa3791cde4d5aa8cf6ac5507d578d86bf1ec"
+  },
+  "fixture_image": "flowdelta-order-fixture:0.4.0",
+  "initial_state": "examples/order-lookup/state/initial.json",
+  "kind": "FIXTURE_CONTRACT_CHECK",
+  "profile_id": "order-ownership-eval-v1",
+  "schema_version": "0.4.0"
 }

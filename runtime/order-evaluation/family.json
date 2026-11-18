@@ -1,0 +1,47 @@
+{
+  "family_format": "flowdelta-order-family-v1",
+  "family_id": "synthetic-order-ownership-integration",
+  "pairs": [
+    {
+      "after": "v1",
+      "before": "v0",
+      "case_id": "order-eval-p01",
+      "pair_id": "p01"
+    },
+    {
+      "after": "v3",
+      "before": "v0",
+      "case_id": "order-eval-p02",
+      "pair_id": "p02"
+    },
+    {
+      "after": "v2",
+      "before": "v1",
+      "case_id": "order-eval-p03",
+      "pair_id": "p03"
+    },
+    {
+      "after": "v3",
+      "before": "v1",
+      "case_id": "order-eval-p04",
+      "pair_id": "p04"
+    },
+    {
+      "after": "v0-display",
+      "before": "v0",
+      "case_id": "order-eval-p05",
+      "pair_id": "p05"
+    },
+    {
+      "after": "v2-display",
+      "before": "v2",
+      "case_id": "order-eval-p06",
+      "pair_id": "p06"
+    }
+  ],
+  "purpose": "INTEGRATION_DEVELOPMENT",
+  "revision": "1.0.0",
+  "source": "https://github.com/serendipity-sec/platform/pull/113",
+  "source_kind": "TEAM_SYNTHETIC",
+  "source_revision": "4b4dba5d2aa78b4b63b3af512f40768da1bffed3"
+}

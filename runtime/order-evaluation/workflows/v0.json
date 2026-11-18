@@ -1,0 +1,138 @@
+{
+  "active": false,
+  "connections": {
+    "Order request": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Read sample order",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Read sample order": {
+      "main": [
+        [
+          {
+            "index": 0,
+            "node": "Order response",
+            "type": "main"
+          }
+        ],
+        [
+          {
+            "index": 0,
+            "node": "Denied response",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  },
+  "name": "FlowDelta synthetic order ownership v0",
+  "nodes": [
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fd-client-auth",
+          "name": "FlowDelta local client"
+        }
+      },
+      "id": "request",
+      "name": "Order request",
+      "parameters": {
+        "authentication": "headerAuth",
+        "httpMethod": "POST",
+        "options": {},
+        "path": "flowdelta-order-lookup",
+        "responseMode": "responseNode"
+      },
+      "position": [
+        0,
+        0
+      ],
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "webhookId": "flowdelta-order-lookup"
+    },
+    {
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "fd-service-auth",
+          "name": "FlowDelta order service"
+        }
+      },
+      "id": "read-order",
+      "name": "Read sample order",
+      "onError": "continueErrorOutput",
+      "parameters": {
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "method": "GET",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 10000
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "order_id",
+              "value": "={{ $('Order request').first().json.body.order_id }}"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "url": "http://orders-api:8080/orders/lookup"
+      },
+      "position": [
+        240,
+        0
+      ],
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5
+    },
+    {
+      "id": "response",
+      "name": "Order response",
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        },
+        "respondWith": "json",
+        "responseBody": "={{ { order_id: $json.order_id, status: $json.status } }}"
+      },
+      "position": [
+        480,
+        0
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    },
+    {
+      "id": "denied",
+      "name": "Denied response",
+      "parameters": {
+        "options": {
+          "responseCode": 200
+        },
+        "respondWith": "json",
+        "responseBody": "={{ { denied: true } }}"
+      },
+      "position": [
+        960,
+        240
+      ],
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
