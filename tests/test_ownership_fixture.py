@@ -266,14 +266,22 @@ def test_lifespan_binds_explicit_evaluation_environment(tmp_path, monkeypatch):
     asyncio.run(start())
 
 
-def test_registered_profile_and_input_tampering(tmp_path):
+@pytest.mark.parametrize(
+    "registered_path",
+    [None, "src/flowdelta/runtime/order_lookup.py"],
+    ids=["initial-state", "runtime-source"],
+)
+def test_registered_profile_and_input_tampering(tmp_path, registered_path):
     repo = Path(__file__).resolve().parents[1]
     profile = check_profile(repo)
     for name in ["runtime/order-ownership/fixture-profile.json", *profile["files"]]:
         target = tmp_path / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes((repo / name).read_bytes())
-    (tmp_path / profile["initial_state"]).write_bytes(b"{}")
+    changed_input = registered_path or profile["initial_state"]
+    assert changed_input in profile["files"]
+    target = tmp_path / changed_input
+    target.write_bytes(target.read_bytes() + b"\n")
     with pytest.raises(RuntimeError, match="REGISTERED_FIXTURE_INPUT_CHANGED"):
         check_profile(tmp_path)
 
