@@ -235,3 +235,85 @@ def test_analysis_limits_are_forwarded_without_invented_defaults(options, monkey
 
     monkeypatch.setattr(pipeline_runner, "analyze", bounded)
     assert run_pipeline(**options)["analysis_graph_limits"] == limits
+
+
+class StopAtRequestDocker(OrderDocker):
+    """Acts like Ctrl+C when the normal request is sent to the order service."""
+
+    def probe(self, project, payload, timeout):
+        if payload["operation"] == "normal-request":
+            raise KeyboardInterrupt
+        return super().probe(project, payload, timeout)
+
+
+def _once_on_write(monkeypatch, name: str, error: BaseException) -> None:
+    original = Path.write_bytes
+    fired: list[bool] = []
+
+    def write(self, data):
+        if self.name == name and not fired:
+            fired.append(True)
+            raise error
+        return original(self, data)
+
+    monkeypatch.setattr(Path, "write_bytes", write)
+
+
+def _deny_writes(monkeypatch, name: str, error: BaseException) -> None:
+    original = Path.write_bytes
+
+    def write(self, data):
+        if self.name == name:
+            raise error
+        return original(self, data)
+
+    monkeypatch.setattr(Path, "write_bytes", write)
+
+
+def test_pipeline_stop_at_request_with_one_run_record_write_stop_keeps_run_record(
+    options, monkeypatch
+):
+    _once_on_write(monkeypatch, "before-1.run.json", KeyboardInterrupt())
+    with pytest.raises(KeyboardInterrupt):
+        run_pipeline(**options, execute=True, runner=StopAtRequestDocker(), sleep=lambda _: None)
+    summary = json.loads((options["output"] / "summary.json").read_bytes())
+    assert summary["status"] == "INTERRUPTED"
+    run = json.loads((options["output"] / "execution/runs/before-1.run.json").read_bytes())
+    assert run["execution_status"] == "INTERRUPTED"
+    assert not (options["output"] / "execution/runs/after-1.run.json").exists()
+
+
+def test_pipeline_stop_while_writing_cleanup_is_kept_as_evidence(options, monkeypatch):
+    _once_on_write(monkeypatch, "cleanup.json", KeyboardInterrupt())
+    with pytest.raises(KeyboardInterrupt):
+        run_pipeline(**options, execute=True, runner=OrderDocker(), sleep=lambda _: None)
+    summary = json.loads((options["output"] / "summary.json").read_bytes())
+    assert summary["status"] == "INTERRUPTED"
+    assert summary["stages"]["execution"] == "INTERRUPTED"
+    marker = json.loads(
+        (options["output"] / "execution/runs/before-1/finalize-interrupt.json").read_bytes()
+    )
+    assert (marker["phase"], marker["step"], marker["error_code"]) == (
+        "FINALIZING",
+        "cleanup-record",
+        "INTERRUPTED",
+    )
+    run = json.loads((options["output"] / "execution/runs/before-1.run.json").read_bytes())
+    # 요청은 끝났으므로 실행 상태는 SUCCEEDED이고, 중단 단계는 확장 필드에 남는다.
+    assert run["execution_status"] == "SUCCEEDED"
+    assert run["extensions"]["flowdelta.finalize_interrupt"]["step"] == "cleanup-record"
+    assert not (options["output"] / "execution/runs/after-1.run.json").exists()
+
+
+def test_pipeline_ordinary_cleanup_write_error_is_not_an_interrupt(options, monkeypatch):
+    _deny_writes(monkeypatch, "cleanup.log", PermissionError("denied"))
+    result = run_pipeline(**options, execute=True, runner=OrderDocker(), sleep=lambda _: None)
+    assert result["status"] == "INCOMPLETE"
+    assert result["stages"]["execution"] == "INCOMPLETE"
+    run = json.loads((options["output"] / "execution/runs/before-1.run.json").read_bytes())
+    assert run["cleanup_status"] == "FAILED"
+    cleanup = json.loads((options["output"] / "execution/runs/before-1/cleanup.json").read_bytes())
+    assert cleanup["error_code"] == "PermissionError"
+    assert "interrupted" not in cleanup
+    summary = json.loads((options["output"] / "summary.json").read_bytes())
+    assert summary["status"] != "INTERRUPTED"
