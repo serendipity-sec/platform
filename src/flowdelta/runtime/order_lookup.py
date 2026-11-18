@@ -16,6 +16,7 @@ import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from functools import partial
 from pathlib import Path
 from typing import Any, Literal, Protocol
 from uuid import uuid4
@@ -102,6 +103,12 @@ def now() -> str:
 
 def save(path: Path, value: object) -> None:
     path.write_bytes(json_bytes(value))
+
+
+# 정리·기록 단계에서 난 중단. 이 단계 중단은 실행 상태와 별도로 증거를 남긴다.
+FINALIZE_STEPS = frozenset(
+    {"services-logs", "cleanup", "cleanup-record", "error-record", "run-record"}
+)
 
 
 def run_side(
@@ -233,20 +240,27 @@ def run_side(
     interrupt: BaseException | None = None
     # 정리 단계에서 중단된 지점. 실행 상태와 별개로 cleanup.json에 남긴다.
     cleanup_stop_step: str | None = None
+    # 최초 중단이 일어난 단계 이름. 정리·기록 단계의 중단은 별도 증거 파일과 run 확장 필드에 남긴다.
+    stop_step: str | None = None
     write_failure: Exception | None = None
     record: ExecutionRun | None = None
+    finalize_marker_written = False
 
-    def write_guarded(step: Callable[[], None]) -> None:
+    def write_guarded(name: str, step: Callable[[], None]) -> bool:
         # 기록 한 단계가 실패해도 다음 기록을 계속 쓴다. 중단은 최초 것을 보관한다.
-        nonlocal interrupt, write_failure
+        nonlocal interrupt, write_failure, stop_step
         try:
             step()
         except Exception as exc:
             if write_failure is None:
                 write_failure = exc
+            return False
         except BaseException as exc:
             if interrupt is None:
                 interrupt = exc
+                stop_step = stop_step or name
+            return False
+        return True
 
     save(
         shared / "allocation.json",
@@ -454,6 +468,7 @@ def run_side(
         failed_phase = phase
         if not isinstance(exc, Exception):
             interrupt = exc
+            stop_step = "request"
             error_code = "INTERRUPTED"
             execution_status = "INTERRUPTED" if started_at is not None else "NOT_RUN"
         else:
@@ -477,6 +492,7 @@ def run_side(
             # 로그 수집 중 중단돼도 정리와 기록은 계속하고, 중단은 마지막에 다시 던진다.
             if interrupt is None:
                 interrupt = exc
+                stop_step = "services-logs"
             cleanup_stop_step = "services-logs"
         cleanup: dict[str, Any] = {"schema_version": "0.4.0", "run_id": run_id, "project": project}
         try:
@@ -506,6 +522,7 @@ def run_side(
             # 정리 도중 중단되면 정리 완료를 확인할 수 없으므로 FAILED로 남긴다.
             if interrupt is None:
                 interrupt = exc
+                stop_step = "cleanup"
             cleanup_stop_step = "cleanup"
             cleanup_status = "FAILED"
             cleanup.update(status="FAILED", error_code="INTERRUPTED")
@@ -518,11 +535,12 @@ def run_side(
             }
         cleanup["check_command"] = f"docker ps --all --filter {label_filter}"
         cleanup["private_local_files_retained"] = True
-        write_guarded(lambda: save(shared / "cleanup.json", cleanup))
+        write_guarded("cleanup-record", lambda: save(shared / "cleanup.json", cleanup))
 
     phase = "FINISHED"
     if error_code is not None:
         write_guarded(
+            "error-record",
             lambda: save(
                 shared / "error.json",
                 {
@@ -530,8 +548,10 @@ def run_side(
                     "failed_phase": failed_phase,
                     "execution_attempted": started_at is not None,
                 },
-            )
+            ),
         )
+
+    finalize_stop: dict[str, str] | None = None
 
     def build_record() -> None:
         nonlocal record
@@ -548,10 +568,32 @@ def run_side(
             started_at=started_at,
             actual_version=actual_version,
             actual_digest=actual_digest,
+            finalize_stop=finalize_stop,
         )
 
-    # 앞 단계 기록이 실패하거나 다시 중단돼도 run.json은 쓴다.
-    write_guarded(build_record)
+    # 정리·기록 단계에서 중단이 났으면 중단 증거를 먼저 남기고, run.json 쓰기를 한 번 더 시도한다.
+    for _ in range(2):
+        if record is not None:
+            break
+        if stop_step in FINALIZE_STEPS and not finalize_marker_written:
+            marker = {
+                "schema_version": "0.4.0",
+                "run_id": run_id,
+                "phase": "FINALIZING",
+                "step": stop_step,
+                "error_code": "INTERRUPTED",
+            }
+            finalize_marker_written = write_guarded(
+                "finalize-marker",
+                partial(save, shared / "finalize-interrupt.json", marker),
+            )
+            if finalize_marker_written:
+                finalize_stop = {
+                    "phase": "FINALIZING",
+                    "step": stop_step,
+                    "error_code": "INTERRUPTED",
+                }
+        write_guarded("run-record", build_record)
     if interrupt is not None:
         # 최초 중단을 그대로 다시 던진다. 기록 실패는 중단보다 뒤에 알린다.
         raise interrupt
@@ -576,6 +618,7 @@ def _record(
     started_at: str | None,
     actual_version: str | None,
     actual_digest: str | None,
+    finalize_stop: dict[str, str] | None = None,
 ) -> ExecutionRun:
     """Link the files that really exist, by bundle-root path, and write runs/<side>-<n>.run.json."""
     label = shared.name
@@ -599,6 +642,8 @@ def _record(
     extensions: dict[str, Any] = {"flowdelta.compose_project": project}
     if failed_phase is not None:
         extensions["flowdelta.failed_phase"] = failed_phase
+    if finalize_stop is not None:
+        extensions["flowdelta.finalize_interrupt"] = finalize_stop
     run = ExecutionRun(
         run_id=run_id,
         comparison_run_id=request.comparison_run_id,

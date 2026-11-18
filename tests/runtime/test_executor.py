@@ -319,3 +319,74 @@ def test_second_stop_while_writing_cleanup_still_writes_run_record(workspace, mo
         executor.execute_plan(handoff, plan, catalog, output)
     run = load(output, "runs/before-1.run.json")
     assert run["execution_status"] == "INTERRUPTED"
+
+
+def _interrupt_once_on_write(monkeypatch, name: str) -> None:
+    """Raise one KeyboardInterrupt the first time a file with this name is written."""
+    original = Path.write_bytes
+    fired: list[bool] = []
+
+    def write(self, data):
+        if self.name == name and not fired:
+            fired.append(True)
+            raise KeyboardInterrupt
+        return original(self, data)
+
+    monkeypatch.setattr(Path, "write_bytes", write)
+
+
+def test_stop_while_writing_final_run_record_is_retried_and_first_stop_is_kept(
+    workspace, monkeypatch
+) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    executor = PlanExecutor(bundle, repo, runner=StopAtRequest(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-stop-then-run-record"
+    _interrupt_once_on_write(monkeypatch, "before-1.run.json")
+    # 최초 중단(요청)은 그대로 전파되고, run.json은 한 번 더 시도해 남아야 한다.
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert run["execution_status"] == "INTERRUPTED"
+    assert run["error_code"] == "INTERRUPTED"
+
+
+def test_stop_while_writing_cleanup_is_kept_in_shared_evidence_and_run_record(
+    workspace, monkeypatch
+) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    executor = PlanExecutor(bundle, repo, runner=FakeDocker(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-stop-at-cleanup-record"
+    _interrupt_once_on_write(monkeypatch, "cleanup.json")
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    marker = load(output, "runs/before-1/finalize-interrupt.json")
+    assert marker == {
+        "schema_version": "0.4.0",
+        "run_id": marker["run_id"],
+        "phase": "FINALIZING",
+        "step": "cleanup-record",
+        "error_code": "INTERRUPTED",
+    }
+    run = load(output, "runs/before-1.run.json")
+    # 요청은 끝났으므로 실행 상태는 SUCCEEDED로 두고, 중단 단계는 확장 필드에 남긴다.
+    assert run["execution_status"] == "SUCCEEDED"
+    assert run["extensions"]["flowdelta.finalize_interrupt"] == {
+        "phase": "FINALIZING",
+        "step": "cleanup-record",
+        "error_code": "INTERRUPTED",
+    }
+
+
+def test_stop_while_writing_run_record_leaves_marker_and_run_record(workspace, monkeypatch) -> None:
+    bundle, repo = workspace
+    handoff, plan, catalog = read_plan_bundle(bundle)
+    executor = PlanExecutor(bundle, repo, runner=FakeDocker(), sleep=lambda seconds: None)
+    output = repo / "var" / "run-stop-at-run-record"
+    _interrupt_once_on_write(monkeypatch, "before-1.run.json")
+    with pytest.raises(KeyboardInterrupt):
+        executor.execute_plan(handoff, plan, catalog, output)
+    run = load(output, "runs/before-1.run.json")
+    assert run["extensions"]["flowdelta.finalize_interrupt"]["step"] == "run-record"
+    assert run["execution_status"] == "SUCCEEDED"
