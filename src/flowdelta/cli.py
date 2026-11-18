@@ -520,14 +520,20 @@ def execute_command(
 @app.command("demo-order-lookup")
 def demo_order_lookup(
     out: Annotated[Path, typer.Option(help="New demo directory under var/.")],
+    judge_order: Annotated[
+        bool, typer.Option(help="Also judge registered own-order read observations.")
+    ] = False,
 ) -> None:
     """Generate A/B outputs, execute C, bundle evidence and check the fixed normal case."""
     from flowdelta.demo import run_order_lookup_demo
 
     try:
-        summary = run_order_lookup_demo(Path.cwd(), out)
+        summary = run_order_lookup_demo(Path.cwd(), out, judge_order=judge_order)
         typer.echo(json_bytes(summary).decode(), nl=False)
-        if not summary["all_normal_checks_passed"]:
+        if (
+            not summary["all_normal_checks_passed"]
+            or summary.get("judgment", {}).get("status", "COMPLETE") != "COMPLETE"
+        ):
             raise typer.Exit(code=2)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
@@ -543,6 +549,9 @@ def run_pipeline_command(
     cards: Annotated[Path, typer.Option()],
     out: Annotated[Path, typer.Option(help="New output directory under var/.")],
     execute: Annotated[bool, typer.Option(help="Execute only C-registered templates.")] = False,
+    judge_order: Annotated[
+        bool, typer.Option(help="Judge registered own-order reads; requires --execute.")
+    ] = False,
 ) -> None:
     """Profile gate → stored input → A → B → optional C → verified artifact bundle."""
     from flowdelta.pipeline_runner import run_pipeline
@@ -557,9 +566,31 @@ def run_pipeline_command(
             cards=cards,
             output=out,
             execute=execute,
+            judge_order=judge_order,
         )
         typer.echo(json_bytes(result).decode(), nl=False)
         if result["status"] == "INCOMPLETE":
+            raise typer.Exit(code=2)
+    except InputError as exc:
+        typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)
+        raise typer.Exit(code=2) from None
+
+
+@app.command("judge-order-bundle")
+def judge_order_bundle_command(
+    bundle: Path,
+    out: Annotated[Path, typer.Option(help="New judgment directory under var/.")],
+) -> None:
+    """Judge existing registered order evidence without executing workflows again."""
+    from flowdelta.order_judgment import publish_order_judgments
+    from flowdelta.runtime.preflight import check_fresh_output
+
+    try:
+        repo = Path.cwd()
+        target = check_fresh_output(out, repo)
+        result = publish_order_judgments(bundle, repo, target)
+        typer.echo(json_bytes(result).decode(), nl=False)
+        if result["status"] != "COMPLETE":
             raise typer.Exit(code=2)
     except InputError as exc:
         typer.echo(json_bytes(exc.diagnostic()).decode(), err=True, nl=False)

@@ -1,0 +1,145 @@
+{
+  "schema": "B-replay-review-package-v2",
+  "files": [
+    {
+      "path": ".gitattributes",
+      "sha256": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
+      "bytes": 14
+    },
+    {
+      "path": "B_LABEL_REVIEW.md",
+      "sha256": "54d6d506dc0f27e9743b4b1446d0667e796101c9dcf1de945d2964a611eb728a",
+      "bytes": 4636
+    },
+    {
+      "path": "INDEPENDENCE.md",
+      "sha256": "8150cd033d679e36b717d7b009ae24abf9e25b09af004abac88b67db30d7b3fb",
+      "bytes": 3250
+    },
+    {
+      "path": "README.md",
+      "sha256": "5ffa2da8796702feb899e2ba1b99ec9374f7f72c4f824d049effabc99dd88ac6",
+      "bytes": 7047
+    },
+    {
+      "path": "REVIEW_CONTRACT.md",
+      "sha256": "cccff784b340dceb790112835bd23f3ebf810c6d32564ad3765a575460cef636",
+      "bytes": 5373
+    },
+    {
+      "path": "TEAM_DECISIONS.md",
+      "sha256": "215e2a8a2ac7f4ae1b01db8ff50f04d159041bf2ab6109122f6ea19fba7b8612",
+      "bytes": 3397
+    },
+    {
+      "path": "labels-B.json",
+      "sha256": "3dd75a05f3d4983cbaf0916841cd6bbf6fed9475feb43dd7982b688da9d4c413",
+      "bytes": 220068
+    },
+    {
+      "path": "labels-B.seal.json",
+      "sha256": "cf6cb960b810b976304087defacb730d1b2fe481e2dc235b2c8e59141a80c701",
+      "bytes": 1221
+    },
+    {
+      "path": "review_contract.py",
+      "sha256": "b3e83b94853493cbc52860a066d547ef4622818e1eda86d64915d0ffb544fbbf",
+      "bytes": 8138
+    },
+    {
+      "path": "sources/common-replay-input-policy.json",
+      "sha256": "3c5ae341d788e80639c465b6af1e8efa8f15e45db6b02dfc08d1b23e870d74c9",
+      "bytes": 1423
+    },
+    {
+      "path": "sources/contract-66.md",
+      "sha256": "c485765c9c2aa1d1b5c03283df42a30af5ceea8fcc2a2a0f4f2109b23d752916",
+      "bytes": 11536
+    },
+    {
+      "path": "sources/deduplication.json",
+      "sha256": "92d6dcf29f38b250ca50185863b9cb5e8a817e9939238c7da3b8828f44b1ee18",
+      "bytes": 2187
+    },
+    {
+      "path": "sources/labels-A.seal.json",
+      "sha256": "20fbdf99fab6d34eee99a05452486f3c0babcff00821330b41d726788c9048fa",
+      "bytes": 446
+    },
+    {
+      "path": "sources/observations.evidence-only.json",
+      "sha256": "4acbdc24ff5c7fcb9d30dc957a5f1fdb08fa9f56e1ed63429f97c57cde6554eb",
+      "bytes": 24543
+    },
+    {
+      "path": "sources/pairs.input-only.json",
+      "sha256": "1194ba9622b4180a47209190cecd960a7981145990d97c045dafbe7a370dd33f",
+      "bytes": 3919
+    },
+    {
+      "path": "sources/protocol-65.md",
+      "sha256": "224dacff5d7eee7d21e7ed867401899ed63447ad93d7dd1c6dc39739216c427e",
+      "bytes": 11267
+    },
+    {
+      "path": "sources/receipt.metadata.json",
+      "sha256": "416e0a793fbec420d833a53421db2c994df83d3e2600f73da963d00f999cbfcc",
+      "bytes": 2600
+    },
+    {
+      "path": "sources/replay-fixture-inputs-and-observer.txt",
+      "sha256": "84414611a6821f9d6e17e19579a7d7e3076bb2ffe98384b735043f6edc5a48a1",
+      "bytes": 6731
+    },
+    {
+      "path": "sources/replay-policy-and-boundary.txt",
+      "sha256": "efd90974ffa7cf9b354d5bca3aac860a09fba63d5005bc1eb6e05a120ab428c8",
+      "bytes": 2484
+    },
+    {
+      "path": "sources/replay-source-manifest.json",
+      "sha256": "713d515f405cafb0439933c373b461bb7de81c8ccc603b0d09ff7a6b540844f0",
+      "bytes": 3195
+    },
+    {
+      "path": "sources/review-contract-sources.json",
+      "sha256": "7aa5d95feb50b851f04fc2d31a99381ac3041396829121f7f50b2a984ae42baa",
+      "bytes": 1676
+    },
+    {
+      "path": "sources/rules-70-20261114.md",
+      "sha256": "f24177e6de070bb302dc4eaa814b241dddcf2e98a3ca52fb8420dfec36fbe9a0",
+      "bytes": 11371
+    },
+    {
+      "path": "sources/rules-70.md",
+      "sha256": "c513cd0d41ba19b7fd554b8377a6aa8ac12b5656ece85fc6e15eb9c59d7ad650",
+      "bytes": 8593
+    },
+    {
+      "path": "sources/shared-labeling-scope.txt",
+      "sha256": "1589a459d37a12770c780383a2616d9be18de85e2ddb4c68572be12ce0ac6b34",
+      "bytes": 557
+    },
+    {
+      "path": "sources/source-manifest.json",
+      "sha256": "7afe6a20b1c50d9a4c7cf8e0950710f0008b5055595723ac3cc671d9ae4269df",
+      "bytes": 4694
+    },
+    {
+      "path": "sources/verified-target-code-identities.json",
+      "sha256": "34c89108b1247384edde8406928dad576d2be786aa83e59f344d3e82c137b808",
+      "bytes": 8516
+    },
+    {
+      "path": "test_review_contract.py",
+      "sha256": "b765d3b6c95cfe7a5c175eb5c6df81315bf5c65a0900022dce822c1b1c3fa090",
+      "bytes": 10144
+    },
+    {
+      "path": "verify.py",
+      "sha256": "19d4403b19478b6dd9353b51ea8f1c1a4328671c5f40f9e7239693428f7f2e87",
+      "bytes": 10589
+    }
+  ]
+}
